@@ -25,3 +25,4 @@ format: #- Run code formatting
 check: #- Run code checks
 	${bin}black --check ${pysources}
 	${bin}flake8 ${pysources}
+	${bin}isort --check --diff ${pysources}
