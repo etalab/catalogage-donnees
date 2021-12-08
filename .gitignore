@@ -1,0 +1,30 @@
+# Node
+node_modules
+yarn-error.log*
+
+# Python
+venv
+*.pyc
+__pycache__
+.pytest_cache
+.mypy_cache
+
+
+# Private
+.env
+*.db
+
+# OS
+.DS_Store
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode
