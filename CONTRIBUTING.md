@@ -43,3 +43,11 @@ Pour lancer les vérifications de qualité du code (_code linting_) :
 ```
 make check
 ```
+
+## Outils de développement
+
+### mypy
+
+Ce projet est équipé du _type checking_ avec [`mypy`](https://mypy.readthedocs.io).
+
+La vérification se fait avec une exécution standard de `$ mypy` lors de `make check`.
