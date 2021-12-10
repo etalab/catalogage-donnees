@@ -6,6 +6,20 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      db:
+        image: postgres:12
+        env:
+          POSTGRES_USER: username
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: catalogage
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    env:
+      APP_DATABASE_URL: "postgresql+asyncpg://username:password@localhost:5432/catalogage"
+
     steps:
       - uses: actions/checkout@v2
 
@@ -16,6 +30,9 @@ jobs:
 
       - name: "Install dependencies"
         run: make install
+
+      - name: "Run migrations"
+        run: make migrate
 
       - name: "Run checks"
         run: make check

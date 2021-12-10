@@ -15,6 +15,15 @@ install: #- Install dependencies
 serve: #- Run API server
 	${bin}uvicorn server.main:app --port 3579 --reload
 
+migrate: #- Apply pending migrations
+	${bin}alembic upgrade head
+
+migration: #- Create a migration
+	${bin}alembic revision --autogenerate -m $(name)
+
+currentmigration: #- Show current migraiton
+	${bin}alembic show current
+
 test: #- Run the test suite
 	${bin}pytest
 
