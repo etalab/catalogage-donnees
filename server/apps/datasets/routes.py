@@ -24,7 +24,7 @@ async def create_dataset(
 @router.get("/", response_model=List[schemas.Dataset])
 async def list_datasets(
     limit: int = 10, db: AsyncSession = Depends(get_db)
-) -> list[models.Dataset]:
+) -> List[models.Dataset]:
     return await queries.list_datasets(db, limit=limit)
 
 

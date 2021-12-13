@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -12,7 +12,7 @@ async def get_dataset(db: AsyncSession, id: int) -> Optional[models.Dataset]:
     return result.scalars().first()
 
 
-async def list_datasets(db: AsyncSession, *, limit: int = 10) -> list[models.Dataset]:
+async def list_datasets(db: AsyncSession, *, limit: int = 10) -> List[models.Dataset]:
     stmt = select(models.Dataset).limit(limit)
     result = await db.execute(stmt)
     return result.scalars().all()

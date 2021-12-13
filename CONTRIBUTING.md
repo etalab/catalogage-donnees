@@ -127,5 +127,5 @@ APP_DATABASE_URL="postgresql+asyncpg://user:pass@localhost:6543/catalogage"
 Les variables peuvent aussi être passées en arguments, par exemple :
 
 ```bash
-app_database_url="..." make serve
+APP_DATABASE_URL="..." make serve
 ```
