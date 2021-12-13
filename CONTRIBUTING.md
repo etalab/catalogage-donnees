@@ -6,7 +6,7 @@ Merci pour votre intéret pour ce projet ! Ce guide devrait vous mettre en selle
 
 **Prérequis** - Vous allez avoir besoin de :
 
-- Python 3.8+
+- Python 3.10
 
 La façon principale d'interagir avec le projet est via des commandes `make`. Elles sont définies dans le `Makefile`.
 
