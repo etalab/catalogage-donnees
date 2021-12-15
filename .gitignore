@@ -9,6 +9,9 @@ __pycache__
 .pytest_cache
 .mypy_cache
 
+# GraphViz
+*.dot
+
 # Private
 .env
 *.db

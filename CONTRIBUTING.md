@@ -129,3 +129,19 @@ Les variables peuvent aussi être passées en arguments, par exemple :
 ```bash
 APP_DATABASE_URL="..." make serve
 ```
+
+### Diagramme de la base de données
+
+Le fichier `docs/db.erd.json` permet de générer un diagramme du schéma de la base de données.
+
+Pour cela, installer d'abord [`graphviz`](https://graphviz.org/download/) (sous Linux : `$ sudo apt install graphviz`).
+
+Puis lancer :
+
+```
+make dbdiagram
+```
+
+Ce qui génèrera `docs/db.png`.
+
+Le format de `docs/db.erd.json` reprend celui de [`erdot`](https://github.com/ehne/ERDot), dont la documentation peut donc vous être utile.

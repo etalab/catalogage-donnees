@@ -5,7 +5,7 @@ venv = venv
 bin = ${venv}/bin/
 python = ${bin}python
 pip = ${bin}pip
-pysources = server/ tests/
+pysources = server/ tools/ tests/
 
 install: #- Install dependencies
 	python3 -m venv ${venv}
@@ -23,6 +23,10 @@ migration: #- Create a migration
 
 currentmigration: #- Show current migraiton
 	${bin}alembic show current
+
+dbdiagram: #- Generate database diagram image
+	${bin}python -m tools.erd docs/db.erd.json -o docs/db.dot
+	dot docs/db.dot -T png -o docs/db.png
 
 test: #- Run the test suite
 	${bin}pytest
