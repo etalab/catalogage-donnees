@@ -42,7 +42,7 @@ digraph G {{
         pad="0.2,0.2"
     ];
 
-    node [shape=plain, fontname="Arial"];
+    node [shape=plain, fontname="{font}"];
     edge [
         dir=both,
         fontsize=12,
@@ -50,7 +50,7 @@ digraph G {{
         penwidth=1.0,
         labelangle=32,
         labeldistance=1.8,
-        fontname="Arial"
+        fontname="{font}]"
     ];
 
     {tables}
