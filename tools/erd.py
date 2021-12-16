@@ -63,8 +63,7 @@ digraph G {{
 
 
 def render_table(name: str, columns: Dict[str, str]) -> str:
-    label_lines = []
-    label_lines += [
+    label_lines = [
         '<table border="0" cellborder="1" cellspacing="0">',
         f"<tr><td><i>{name}</i></td></tr>",
     ]
@@ -83,8 +82,7 @@ def render_table(name: str, columns: Dict[str, str]) -> str:
 
 
 def render_enum(name: str, items: List[str]) -> str:
-    label_lines = []
-    label_lines += [
+    label_lines = [
         '<table border="0" cellborder="1" cellspacing="0">',
         f"<tr><td><i>{name}</i></td></tr>",
     ]
