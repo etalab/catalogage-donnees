@@ -1,0 +1,44 @@
+{
+    "tables": {
+        "dataset": {
+            "*id": "int",
+            "+producer_id": "int",
+            "+organization_id": "int",
+            "published_at": "timestamp",
+            "updated_at": "timestamp",
+            "name": "text",
+            "description": "text",
+            "url": "text",
+            "tags": "text[]",
+            "owners": "text[]",
+            "license": "License"
+        },
+        "producer": {
+            "*id": "int",
+            "name": "text",
+            "identifier": "text"
+        },
+        "organization": {
+            "*id": "int",
+            "name": "int"
+        },
+        "user": {
+            "*id": "int",
+            "+organization_id": "int",
+            "email": "text",
+            "password_hash": "text",
+            "full_name": "text"
+        }
+    },
+    "enums": {
+        "License": [
+            "OPEN_LICENSE",
+            "OTHER"
+        ]
+    },
+    "relations": [
+        "dataset:producer_id *--1 producer:id",
+        "user:organization_id *--1 organization:id",
+        "dataset:organization_id *--1 organization:id"
+    ]
+}
