@@ -21,12 +21,10 @@ Si vous avez un [serveur PostgreSQL](https://www.postgresql.org/download/linux/)
 createdb catalogage
 ```
 
-Sinon, vous pouvez utiliser un [conteneur Docker](https://linuxiac.com/postgresql-docker/) :
+Sinon, vous pouvez utiliser [Docker Compose](https://docs.docker.com/compose/install/) :
 
 ```bash
-docker pull postgres:12
-docker volume create pg-data
-docker run -d --name=postgres12 -p 5432:5432 -v pg-data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=[mdp] postgres:12
+docker-compose up
 ```
 
 Assurez-vous de [configurer](#configuration) votre `APP_DATABASE_URL` en conséquence.
