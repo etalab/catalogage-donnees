@@ -13,7 +13,7 @@ install: #- Install dependencies
 	${pip} install -r requirements.txt
 
 serve: #- Run API server
-	${bin}uvicorn server.main:app --port 3579 --reload
+	${bin}uvicorn server.main:app --port 3579 --reload --reload-dir server
 
 migrate: #- Apply pending migrations
 	${bin}alembic upgrade head
