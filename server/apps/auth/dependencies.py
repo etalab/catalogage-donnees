@@ -1,20 +1,21 @@
 from fastapi import Depends, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from server.db import get_db
 
-from .authentication import authenticate
+from . import queries
 from .models import User
-from .security import email_security
+from .security import bearer_security
 
 
 async def get_current_user(
     db: AsyncSession = Depends(get_db),
-    email: str = Depends(email_security),
+    authorization: HTTPAuthorizationCredentials = Depends(bearer_security),
 ) -> User:
-    user = await authenticate(db, email)
+    token = await queries.get_token(db, key=authorization.credentials)
 
-    if user is None:
+    if token is None:
         raise HTTPException(403, detail="Invalid credentials")
 
-    return user
+    return token.user

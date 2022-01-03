@@ -1,6 +1,3 @@
-from fastapi.security import APIKeyHeader
+from fastapi.security import HTTPBearer
 
-# XXX: Temporary password-less identification mechanism.
-# Must be replaced with a regular user-password authentication mechanism later on
-# (e.g. OAuth bearer, token auth, etc).
-email_security = APIKeyHeader(name="X-Email")
+bearer_security = HTTPBearer()
