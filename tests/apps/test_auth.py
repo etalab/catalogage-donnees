@@ -20,7 +20,7 @@ async def setup(client: httpx.AsyncClient) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "data, errors",
+    "payload, expected_errors_attrs",
     [
         pytest.param(
             {},
@@ -49,40 +49,50 @@ async def setup(client: httpx.AsyncClient) -> None:
             [
                 {"type": "value_error.email"},
             ],
-            id="invalid-email",
+            id="invalid-email-no-domain",
         ),
         pytest.param(
-            {"email": "john@", "password": "p@ssw0rd"},
-            [{"type": "value_error.email"}],
-            id="invalid-email",
-        ),
-        pytest.param(
-            {"email": "@doe.com", "password": "p@ssw0rd"},
+            {"email": "john@doe", "password": "p@ssw0rd"},
             [
                 {"type": "value_error.email"},
             ],
-            id="invalid-email",
+            id="invalid-email-no-domain-extension",
         ),
         pytest.param(
             {"email": "johndoe.com", "password": "p@ssw0rd"},
             [
                 {"type": "value_error.email"},
             ],
-            id="invalid-email",
+            id="invalid-email-no-@",
+        ),
+        pytest.param(
+            {"email": "john@", "password": "p@ssw0rd"},
+            [
+                {"type": "value_error.email"},
+            ],
+            id="invalid-email-no-suffix",
+        ),
+        pytest.param(
+            {"email": "@doe.com", "password": "p@ssw0rd"},
+            [
+                {"type": "value_error.email"},
+            ],
+            id="invalid-email-no-prefix",
         ),
     ],
 )
 async def test_create_user_invalid(
-    client: httpx.AsyncClient, data: dict, errors: list
+    client: httpx.AsyncClient, payload: dict, expected_errors_attrs: list
 ) -> None:
-    response = await client.post("/auth/users/", json=data)
+    response = await client.post("/auth/users/", json=payload)
     assert response.status_code == 422
 
     data = response.json()
-    assert len(data["detail"]) == len(errors)
+    assert len(data["detail"]) == len(expected_errors_attrs)
 
-    for actual_error, expected_error in zip(data["detail"], errors):
-        assert expected_error.items() <= actual_error.items()
+    for error, expected_error_attrs in zip(data["detail"], expected_errors_attrs):
+        error_attrs = {key: error[key] for key in expected_error_attrs}
+        assert error_attrs == expected_error_attrs
 
 
 @pytest.mark.asyncio
