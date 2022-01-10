@@ -122,18 +122,44 @@ async def test_create_user_already_exists(client: httpx.AsyncClient) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "data",
+    "payload, expected_errors_attrs",
     [
-        pytest.param({}, id="empty"),
-        pytest.param({"password": "s3kr3t"}, id="missing-email"),
-        pytest.param({"email": "token@user.com"}, id="missing-password"),
+        pytest.param(
+            {},
+            [
+                {"loc": ["body", "email"], "type": "value_error.missing"},
+                {"loc": ["body", "password"], "type": "value_error.missing"},
+            ],
+            id="empty",
+        ),
+        pytest.param(
+            {"password": "s3kr3t"},
+            [
+                {"loc": ["body", "email"], "type": "value_error.missing"},
+            ],
+            id="missing-email",
+        ),
+        pytest.param(
+            {"email": "token@user.com"},
+            [
+                {"loc": ["body", "password"], "type": "value_error.missing"},
+            ],
+            id="missing-password",
+        ),
     ],
 )
 async def test_token_create_invalid_payload(
-    client: httpx.AsyncClient, data: dict
+    client: httpx.AsyncClient, payload: dict, expected_errors_attrs: list
 ) -> None:
-    response = await client.post("/auth/tokens/", json=data)
+    response = await client.post("/auth/tokens/", json=payload)
     assert response.status_code == 422
+
+    data = response.json()
+    assert len(data["detail"]) == len(expected_errors_attrs)
+
+    for error, expected_error_attrs in zip(data["detail"], expected_errors_attrs):
+        error_attrs = {key: error[key] for key in expected_error_attrs}
+        assert error_attrs == expected_error_attrs
 
 
 @pytest.mark.asyncio
@@ -181,6 +207,7 @@ async def test_cascade_user_is_kept_when_token_deleted(
     email = temp_user.email  # Prevent stale read
 
     token, _ = await queries.get_or_create_token(db, user=temp_user)
+    assert await queries.get_token(db, token.key) == token
 
     await queries.delete_token(db, token)
 
@@ -195,6 +222,7 @@ async def test_cascade_token_deleted_when_user_deleted(
     email = temp_user.email  # Prevent stale read
 
     token, _ = await queries.get_or_create_token(db, user=temp_user)
+    assert await queries.get_token(db, token.key) == token
 
     await queries.delete_user(db, temp_user)
 
