@@ -4,7 +4,7 @@ import pytest
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "data, error",
+    "payload, expected_error_attrs",
     [
         pytest.param(
             {},
@@ -14,34 +14,41 @@ import pytest
         pytest.param(
             {"email": "john"},
             {"type": "value_error.email"},
-            id="invalid-email",
+            id="invalid-email-no-domain",
         ),
         pytest.param(
-            {"email": "john@"},
+            {"email": "john@doe"},
             {"type": "value_error.email"},
-            id="invalid-email",
-        ),
-        pytest.param(
-            {"email": "@doe.com"},
-            {"type": "value_error.email"},
-            id="invalid-email",
+            id="invalid-email-no-domain-extension",
         ),
         pytest.param(
             {"email": "johndoe.com"},
             {"type": "value_error.email"},
-            id="invalid-email",
+            id="invalid-email-no-@",
+        ),
+        pytest.param(
+            {"email": "john@"},
+            {"type": "value_error.email"},
+            id="invalid-email-no-suffix",
+        ),
+        pytest.param(
+            {"email": "@doe.com"},
+            {"type": "value_error.email"},
+            id="invalid-email-no-prefix",
         ),
     ],
 )
 async def test_create_user_invalid(
-    client: httpx.AsyncClient, data: dict, error: dict
+    client: httpx.AsyncClient, payload: dict, expected_error_attrs: dict
 ) -> None:
-    response = await client.post("/auth/users/", json=data)
+    response = await client.post("/auth/users/", json=payload)
     assert response.status_code == 422
 
     data = response.json()
     assert len(data["detail"]) == 1
-    assert error.items() <= data["detail"][0].items()
+
+    error_attrs = {key: data["detail"][0][key] for key in expected_error_attrs}
+    assert error_attrs == expected_error_attrs
 
 
 @pytest.mark.asyncio
