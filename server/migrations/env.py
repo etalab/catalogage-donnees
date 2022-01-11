@@ -5,15 +5,18 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-import server.app  # noqa: F401  # Trigger table discovery for autogeneration
-from server.conf import settings
-from server.db import Base
+from server.config.di import bootstrap, resolve
+from server.config.settings import Settings
+from server.infrastructure.database import Base
+
+bootstrap()
+settings = resolve(Settings)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-config.set_main_option("sqlalchemy.url", settings.database_url)
+config.set_main_option("sqlalchemy.url", settings.env_database_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

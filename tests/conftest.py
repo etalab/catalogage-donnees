@@ -9,12 +9,17 @@ from alembic.config import Config
 from asgi_lifespan import LifespanManager
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
+from server.config import Settings
+from server.config.di import bootstrap, resolve
+
 os.environ["APP_TESTING"] = "True"
+
+bootstrap()
 
 
 @pytest.fixture(autouse=True, scope="session")
 def test_database() -> Iterator[None]:
-    from server.conf import settings
+    settings = resolve(Settings)
 
     url = settings.sync_test_database_url
     assert not database_exists(url), "Test database already exists, aborting tests."
@@ -41,7 +46,7 @@ def event_loop() -> Iterator[asyncio.AbstractEventLoop]:
 
 @pytest.fixture(scope="session")
 async def client() -> AsyncIterator[httpx.AsyncClient]:
-    from server.app import create_app
+    from server.api.app import create_app
 
     app = create_app()
 
