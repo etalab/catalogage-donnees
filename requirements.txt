@@ -17,4 +17,5 @@ mypy==0.910
 psycopg2-binary==2.9.2
 pytest==6.2.5
 pytest-asyncio==0.16.0
+pytest-cov==3.0.0
 sqlalchemy-utils==0.37.9
