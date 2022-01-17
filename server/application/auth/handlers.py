@@ -18,7 +18,8 @@ async def create_user(command: CreateUser) -> ID:
     if user is not None:
         raise EmailAlreadyExists(email)
 
-    user = User(id=repository.make_id(), email=email)
+    user = User(id=repository.make_id(), email=email, role=command.role)
+
     return await repository.insert(user)
 
 

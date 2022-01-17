@@ -9,8 +9,12 @@ from alembic.config import Config
 from asgi_lifespan import LifespanManager
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
+from server.application.auth.commands import CreateUser
+from server.application.auth.queries import GetUserByEmail
 from server.config import Settings
 from server.config.di import bootstrap, resolve
+from server.domain.auth.entities import User, UserRole
+from server.seedwork.application.messages import MessageBus
 
 os.environ["APP_TESTING"] = "True"
 
@@ -53,3 +57,18 @@ async def client() -> AsyncIterator[httpx.AsyncClient]:
     async with LifespanManager(app):
         async with httpx.AsyncClient(app=app, base_url="http://testserver") as client:
             yield client
+
+
+@pytest.fixture(scope="session", autouse=True)
+async def admin_user(test_database: None) -> User:
+    """
+    Provide an admin user for use in tests.
+    """
+    admin_email = "admin@example.org"
+
+    bus = resolve(MessageBus)
+    command = CreateUser(email=admin_email, role=UserRole.ADMIN)
+    await bus.execute(command)
+
+    query = GetUserByEmail(email=admin_email)
+    return await bus.execute(query)

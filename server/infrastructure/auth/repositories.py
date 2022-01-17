@@ -1,9 +1,9 @@
 from typing import Optional
 
-from sqlalchemy import Column, Integer, String, delete, insert, select
+from sqlalchemy import Column, Enum, Integer, String, delete, insert, select
 from sqlalchemy.exc import NoResultFound
 
-from server.domain.auth.entities import User
+from server.domain.auth.entities import User, UserRole
 from server.domain.auth.repositories import UserRepository
 from server.domain.common.types import ID
 
@@ -15,6 +15,7 @@ class UserModel(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, nullable=False, unique=True, index=True)
+    role = Column(Enum(UserRole), nullable=False, default=UserRole.USER)
 
 
 class SqlUserRepository(UserRepository):

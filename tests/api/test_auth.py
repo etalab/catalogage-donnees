@@ -1,6 +1,18 @@
 import httpx
 import pytest
 
+from server.domain.auth.entities import User
+
+from ..utils import authenticate
+
+
+@pytest.mark.asyncio
+async def test_create_user_user_role_denied(client: httpx.AsyncClient) -> None:
+    payload = {"email": "john@doe.com"}
+    request = client.build_request("POST", "/auth/users/", json=payload)
+    response = await client.send(request)
+    assert response.status_code == 403
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
@@ -39,9 +51,15 @@ import pytest
     ],
 )
 async def test_create_user_invalid(
-    client: httpx.AsyncClient, payload: dict, expected_error_attrs: dict
+    client: httpx.AsyncClient,
+    admin_user: User,
+    payload: dict,
+    expected_error_attrs: dict,
 ) -> None:
-    response = await client.post("/auth/users/", json=payload)
+    request = client.build_request("POST", "/auth/users/", json=payload)
+    authenticate(request, admin_user)
+
+    response = await client.send(request)
     assert response.status_code == 422
 
     data = response.json()
@@ -52,17 +70,29 @@ async def test_create_user_invalid(
 
 
 @pytest.mark.asyncio
-async def test_create_user(client: httpx.AsyncClient) -> None:
-    response = await client.post("/auth/users/", json={"email": "john@doe.com"})
+async def test_create_user(client: httpx.AsyncClient, admin_user: User) -> None:
+    payload = {"email": "john@doe.com"}
+    request = client.build_request("POST", "/auth/users/", json=payload)
+    authenticate(request, admin_user)
+
+    response = await client.send(request)
     assert response.status_code == 201
     data = response.json()
-    assert isinstance(data.pop("id"), int)
-    assert data == {"email": "john@doe.com"}
+
+    pk = data["id"]
+    assert isinstance(pk, int)
+    assert data == {"id": pk, "email": "john@doe.com", "role": "USER"}
 
 
 @pytest.mark.asyncio
-async def test_create_user_already_exists(client: httpx.AsyncClient) -> None:
-    response = await client.post("/auth/users/", json={"email": "john@doe.com"})
+async def test_create_user_already_exists(
+    client: httpx.AsyncClient, admin_user: User
+) -> None:
+    payload = {"email": "john@doe.com"}
+    request = client.build_request("POST", "/auth/users/", json=payload)
+    authenticate(request, admin_user)
+
+    response = await client.send(request)
     assert response.status_code == 400
 
 
