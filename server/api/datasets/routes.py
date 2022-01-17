@@ -39,7 +39,11 @@ async def get_dataset_by_id(id: ID) -> Dataset:
 async def create_dataset(data: DatasetCreate) -> Dataset:
     bus = resolve(MessageBus)
 
-    command = CreateDataset(name=data.name)
+    command = CreateDataset(
+        title=data.title,
+        description=data.description,
+    )
+
     id = await bus.execute(command)
 
     query = GetDatasetByID(id=id)

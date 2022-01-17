@@ -3,7 +3,8 @@ from server.seedwork.application.commands import Command
 
 
 class CreateDataset(Command[ID]):
-    name: str
+    title: str
+    description: str
 
 
 class DeleteDataset(Command[None]):

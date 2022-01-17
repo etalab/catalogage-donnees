@@ -19,9 +19,9 @@ async def test_datasets_get_all() -> None:
             return self.items
 
     mock_datasets = [
-        Dataset(id=0, name="mock0"),
-        Dataset(id=1, name="mock1"),
-        Dataset(id=2, name="mock2"),
+        Dataset(id=0, title="mock0", description="mock0-desc"),
+        Dataset(id=1, title="mock1", description="mock1-desc"),
+        Dataset(id=2, title="mock2", description="mock2-desc"),
     ]
 
     with override() as container:
