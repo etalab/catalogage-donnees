@@ -1,2 +1,3 @@
 [run]
 omit = server/migrations/*
+concurrency = thread, greenlet
