@@ -8,10 +8,10 @@ from .entities import User
 
 class UserRepository(Repository):
     async def get_by_email(self, email: str) -> Optional[User]:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     async def insert(self, entity: User) -> ID:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     async def delete(self, id: ID) -> None:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover

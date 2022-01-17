@@ -8,13 +8,13 @@ from .entities import Dataset
 
 class DatasetRepository(Repository):
     async def get_all(self) -> List[Dataset]:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     async def get_by_id(self, id: ID) -> Optional[Dataset]:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     async def insert(self, entity: Dataset) -> ID:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     async def delete(self, id: ID) -> None:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
