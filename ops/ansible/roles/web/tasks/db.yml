@@ -1,0 +1,11 @@
+- name: Ensure migrations are up to date
+  # NOTE: We need to consider what happens if this step fails.
+  # Currently, if this fails, Ansible exits here and does not run any handler.
+  # See: https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#handlers-and-failure
+  # So the application should keep keep running using the old code.
+  # But if any reload occurs, the application may start to fail as new code is picked up and may expect latest migrations.
+  # So monitor migrations closely. If they fail, a fix should be issued quickly.
+  # Alternatively (probably best), deploy migrations first, code changes second.
+  shell:
+    cmd: make migrate
+    chdir: "{{ workdir }}"

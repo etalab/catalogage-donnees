@@ -1,0 +1,12 @@
+---
+- hosts: web
+
+  vars:
+    workdir: "{{ ansible_env.HOME }}/catalogage"
+    pyenv_python_version: "3.8.9"
+    git_repo: "https://github.com/multi-coop/catalogage-donnees.git"
+    git_version: "{{ env_branch }}"
+
+  roles:
+    - common
+    - web
