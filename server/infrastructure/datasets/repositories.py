@@ -1,6 +1,8 @@
+import uuid
 from typing import List, Optional
 
-from sqlalchemy import Column, Integer, String, delete, insert, select
+from sqlalchemy import Column, String, delete, insert, select
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import NoResultFound
 
 from server.domain.common.types import ID
@@ -13,7 +15,7 @@ from ..database import Base, Database
 class DatasetModel(Base):
     __tablename__ = "dataset"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True)
     name = Column(String, nullable=False)
 
 

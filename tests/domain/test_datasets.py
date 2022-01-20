@@ -4,6 +4,7 @@ import pytest
 
 from server.application.datasets.queries import GetAllDatasets
 from server.config.di import override, resolve
+from server.domain.common.types import id_factory
 from server.domain.datasets.entities import Dataset
 from server.domain.datasets.repositories import DatasetRepository
 from server.seedwork.application.messages import MessageBus
@@ -19,9 +20,9 @@ async def test_datasets_get_all() -> None:
             return self.items
 
     mock_datasets = [
-        Dataset(id=0, name="mock0"),
-        Dataset(id=1, name="mock1"),
-        Dataset(id=2, name="mock2"),
+        Dataset(id=id_factory(), name="mock0"),
+        Dataset(id=id_factory(), name="mock1"),
+        Dataset(id=id_factory(), name="mock2"),
     ]
 
     with override() as container:

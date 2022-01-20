@@ -1,6 +1,8 @@
+import uuid
 from typing import Optional
 
-from sqlalchemy import Column, Integer, String, delete, insert, select
+from sqlalchemy import Column, String, delete, insert, select
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import NoResultFound
 
 from server.domain.auth.entities import User
@@ -13,7 +15,7 @@ from ..database import Base, Database
 class UserModel(Base):
     __tablename__ = "user"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True)
     email = Column(String, nullable=False, unique=True, index=True)
 
 

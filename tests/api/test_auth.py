@@ -56,7 +56,7 @@ async def test_create_user(client: httpx.AsyncClient) -> None:
     response = await client.post("/auth/users/", json={"email": "john@doe.com"})
     assert response.status_code == 201
     data = response.json()
-    assert isinstance(data.pop("id"), int)
+    assert isinstance(data.pop("id"), str)
     assert data == {"email": "john@doe.com"}
 
 
