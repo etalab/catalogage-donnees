@@ -4,6 +4,7 @@ from server.config import Settings
 from server.config.di import resolve
 from server.infrastructure.database import Database
 
+from . import datasets
 from .routes import router
 
 
@@ -17,5 +18,6 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(router)
+    app.mount("/datasets/", datasets.app)
 
     return app

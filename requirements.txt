@@ -1,6 +1,7 @@
 # App
 asyncpg==0.25.0
 alembic==1.7.5
+falcon==3.0.1
 fastapi==0.70.0
 punq==0.5
 pydantic[email]==1.8.2

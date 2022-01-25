@@ -1,54 +1,81 @@
-from typing import List
-
-from fastapi import APIRouter
-from fastapi.exceptions import HTTPException
+import falcon
+import falcon.asgi
+import falcon.routing
 
 from server.application.datasets.commands import CreateDataset, DeleteDataset
 from server.application.datasets.queries import GetAllDatasets, GetDatasetByID
 from server.config.di import resolve
 from server.domain.common.types import ID
-from server.domain.datasets.entities import Dataset
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
 from .schemas import DatasetCreate, DatasetRead
 
-router = APIRouter(prefix="/datasets", tags=["datasets"])
+
+class DatasetList:
+    async def on_get(
+        self, req: falcon.asgi.Request, resp: falcon.asgi.Response
+    ) -> None:
+        bus = resolve(MessageBus)
+        query = GetAllDatasets()
+        datasets = await bus.execute(query)
+
+        resp.status = falcon.HTTP_200
+        resp.media = [DatasetRead(**dataset.dict()).dict() for dataset in datasets]
+
+    async def on_post(
+        self, req: falcon.asgi.Request, resp: falcon.asgi.Response
+    ) -> None:
+        data = DatasetCreate(**(await req.get_media()))
+
+        bus = resolve(MessageBus)
+        command = CreateDataset(name=data.name)
+        pk = await bus.execute(command)
+
+        query = GetDatasetByID(id=pk)
+        dataset = await bus.execute(query)
+
+        resp.status = falcon.HTTP_201
+        resp.media = DatasetRead(**dataset.dict()).dict()
 
 
-@router.get("/", response_model=List[DatasetRead])
-async def list_datasets() -> List[Dataset]:
-    bus = resolve(MessageBus)
+class DatasetDetail:
+    async def on_get(
+        self, req: falcon.asgi.Request, resp: falcon.asgi.Response, *, pk: ID
+    ) -> None:
+        bus = resolve(MessageBus)
 
-    query = GetAllDatasets()
-    return await bus.execute(query)
+        query = GetDatasetByID(id=pk)
+        try:
+            dataset = await bus.execute(query)
+        except DatasetDoesNotExist:
+            raise falcon.HTTPError(404)
 
+        resp.status = falcon.HTTP_200
+        resp.media = DatasetRead(**dataset.dict()).dict()
 
-@router.get("/{id}/", response_model=DatasetRead, responses={404: {}})
-async def get_dataset_by_id(id: ID) -> Dataset:
-    bus = resolve(MessageBus)
+    async def on_delete(
+        self, req: falcon.asgi.Request, resp: falcon.asgi.Response, *, pk: ID
+    ) -> None:
+        bus = resolve(MessageBus)
 
-    query = GetDatasetByID(id=id)
-    try:
-        return await bus.execute(query)
-    except DatasetDoesNotExist:
-        raise HTTPException(404)
+        command = DeleteDataset(id=pk)
+        await bus.execute(command)
 
-
-@router.post("/", response_model=DatasetRead, status_code=201)
-async def create_dataset(data: DatasetCreate) -> Dataset:
-    bus = resolve(MessageBus)
-
-    command = CreateDataset(name=data.name)
-    id = await bus.execute(command)
-
-    query = GetDatasetByID(id=id)
-    return await bus.execute(query)
+        resp.status = falcon.HTTP_204
 
 
-@router.delete("/{id}/", status_code=204)
-async def delete_dataset(id: ID) -> None:
-    bus = resolve(MessageBus)
+async def handle_http_error(
+    req: falcon.asgi.Request,
+    resp: falcon.asgi.Response,
+    exc: falcon.HTTPError,
+    params: dict,
+) -> None:
+    resp.status = getattr(falcon, f"HTTP_{exc.status}")
+    resp.media = exc.to_dict()
 
-    command = DeleteDataset(id=id)
-    await bus.execute(command)
+
+app = falcon.asgi.App()
+app.add_route("/", DatasetList())
+app.add_route("/{pk}/", DatasetDetail())
+app.add_error_handler(falcon.HTTPError, handle_http_error)

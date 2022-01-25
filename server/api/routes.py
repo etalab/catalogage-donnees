@@ -4,7 +4,7 @@ from starlette.responses import RedirectResponse
 from server.config import Settings
 from server.config.di import resolve
 
-from . import auth, datasets
+from . import auth
 
 router = APIRouter()
 
@@ -15,4 +15,3 @@ def index(settings: Settings = Depends(lambda: resolve(Settings))) -> str:
 
 
 router.include_router(auth.router)
-router.include_router(datasets.router)

@@ -1,5 +1,5 @@
-from .routes import router
+from .routes import app
 
 __all__ = [
-    "router",
+    "app",
 ]
