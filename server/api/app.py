@@ -20,6 +20,7 @@ def create_app() -> FastAPI:
         on_startup=[db.create_all],
         docs_url=settings.docs_url,
     )
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
