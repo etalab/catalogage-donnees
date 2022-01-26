@@ -12,6 +12,11 @@ origins = [
 ]
 
 
+origins = [
+    "http://localhost:3000",
+]
+
+
 def create_app() -> FastAPI:
     db = resolve(Database)
     settings = resolve(Settings)
@@ -19,6 +24,13 @@ def create_app() -> FastAPI:
     app = FastAPI(
         on_startup=[db.create_all],
         docs_url=settings.docs_url,
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
     app.add_middleware(
