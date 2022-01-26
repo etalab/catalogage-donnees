@@ -16,6 +16,8 @@ __pycache__
 # Private
 .env
 *.db
+ops/ansible/secrets/*.vault-password
+ops/ansible/hosts_test
 
 # OS
 .DS_Store

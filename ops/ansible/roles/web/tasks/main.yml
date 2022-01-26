@@ -1,0 +1,20 @@
+- name: Deploy web
+  tags: deploy
+  block:
+  - name: Sync Nginx
+    import_tasks: nginx.yml
+
+  - name: Sync repository
+    import_tasks: git.yml
+
+  - name: Sync environment variables
+    import_tasks: env.yml
+
+  - name: Sync Python dependencies
+    import_tasks: python.yml
+
+  - name: Sync DB
+    import_tasks: db.yml
+
+  - name: Sync Supervisor
+    import_tasks: supervisor.yml

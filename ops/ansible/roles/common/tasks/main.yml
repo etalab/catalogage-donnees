@@ -1,0 +1,33 @@
+- name: Provision-time setup
+  tags: provision
+  block:
+  - name: Update system
+    apt: update_cache=yes
+    become: true
+
+  - name: Setup Python
+    # We use pyenv to be able to install or update Python
+    # to a specific version more easily, without messing with
+    # the OS package manager which may not have that specific
+    # version anyway.
+    import_role:
+      name: pyenv
+
+  - name: Ensure nginx is installed and up to date
+    apt: name=nginx state=latest
+    become: true
+
+  - name: Ensure supervisor is installed
+    apt: name=supervisor state=present
+    become: true
+
+- name: Deploy-time setup
+  tags: deploy
+  block:
+  - name: Ensure nginx is running
+    service: name=nginx state=started
+    become: true
+
+  - name: Ensure supervisor is running
+    service: name=supervisor state=started enabled=yes
+    become: true

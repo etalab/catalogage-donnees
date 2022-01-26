@@ -1,0 +1,17 @@
+- name: Ensure Nginx site configuration is up to date
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/catalogage.conf
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+  notify: reload nginx
+
+- name: Ensure Nginx site is default
+  file:
+    src: /etc/nginx/sites-available/catalogage.conf
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+  become: true
+  notify: reload nginx
