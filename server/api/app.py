@@ -12,11 +12,6 @@ origins = [
 ]
 
 
-origins = [
-    "http://localhost:3000",
-]
-
-
 def create_app() -> FastAPI:
     db = resolve(Database)
     settings = resolve(Settings)
