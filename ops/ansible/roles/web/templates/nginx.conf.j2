@@ -1,0 +1,18 @@
+upstream api {
+    server 127.0.0.1:3579;
+}
+
+server {
+    listen 80;
+    server_name {{ inventory_hostname }};
+
+    location /favicon.ico {
+        access_log off;
+        log_not_found off;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://api;
+    }
+}
