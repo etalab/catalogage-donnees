@@ -8,4 +8,4 @@ Dans tous les cas, vous pouvez commencer ici : [Guide des contributions](./CONTR
 
 ## Licence
 
-MIT
+AGPL 3.0
