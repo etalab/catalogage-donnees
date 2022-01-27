@@ -7,13 +7,21 @@ python = ${bin}python
 pip = ${bin}pip
 pysources = server/ tools/ tests/
 
-install: #- Install dependencies
+install: install-server install-client #- Install all dependencies (server and client)
+
+install-server: #- Install client dependencies
 	python3 -m venv ${venv}
 	${pip} install -U pip wheel setuptools
 	${pip} install -r requirements.txt
 
-serve: #- Run API server
+install-client: #- Install client dependencies
+	cd client && npm ci
+
+serve-server: #- Run API server
 	${bin}uvicorn server.main:app --port 3579 --reload --reload-dir server
+
+serve-client: #- Run the client
+	cd client && npm run dev
 
 migrate: #- Apply pending migrations
 	${bin}alembic upgrade head
@@ -28,18 +36,28 @@ dbdiagram: #- Generate database diagram image
 	${bin}python -m tools.erd docs/db.erd.json -o docs/db.dot
 	dot docs/db.dot -T png -o docs/db.png
 
-test: #- Run the test suite
+test: #- Run the server test suite
 	${bin}pytest
 
-format: #- Run code formatting
+format: format-server format-client #- Run code formatting on all sources
+
+format-server: #- Run code formatting on the server sources
 	${bin}black ${pysources}
 	${bin}isort ${pysources}
 
-check: #- Run code checks
+format-client: #- Run code formatting on the client sources
+	cd client && npm run format
+
+check: check-server check-client #- Run all code checks
+
+check-server: #- Run server code checks
 	${bin}black --check ${pysources}
 	${bin}flake8 ${pysources}
 	${bin}mypy ${pysources}
 	${bin}isort --check --diff ${pysources}
+
+check-client: #- Run client code checks
+	cd client && npm run lint && npm run check
 
 install-ops: #- Install ops dependencies
 	cd ops && make install
