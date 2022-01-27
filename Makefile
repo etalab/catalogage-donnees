@@ -40,3 +40,12 @@ check: #- Run code checks
 	${bin}flake8 ${pysources}
 	${bin}mypy ${pysources}
 	${bin}isort --check --diff ${pysources}
+
+install-ops: #- Install ops dependencies
+	cd ops && make install
+
+provision-staging: #- Provision staging server
+	cd ops && make provision-staging
+
+deploy-staging: #- Deploy to staging server
+	cd ops && make deploy-staging

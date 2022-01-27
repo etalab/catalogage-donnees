@@ -16,7 +16,15 @@ settings = resolve(Settings)
 # access to the values within the .ini file in use.
 config = context.config
 
-config.set_main_option("sqlalchemy.url", settings.env_database_url)
+database_url = (
+    settings.env_database_url
+    # Production password may contain URL-escaped characters, eg %2F
+    # Alembic requires % to be doubled as %%
+    # See: https://github.com/sqlalchemy/alembic/issues/700
+    .replace("%", "%%")
+)
+
+config.set_main_option("sqlalchemy.url", database_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
