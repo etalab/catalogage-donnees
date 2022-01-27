@@ -31,7 +31,7 @@ async def test_create_dataset_invalid(
 
 
 @pytest.mark.asyncio
-async def test_dataset_create(client: httpx.AsyncClient) -> None:
+async def test_create_dataset(client: httpx.AsyncClient) -> None:
     response = await client.post(
         "/datasets/",
         json={
