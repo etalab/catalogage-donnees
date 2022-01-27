@@ -5,7 +5,8 @@ from ..common.types import ID
 
 class Dataset(Entity):
     id: ID
-    name: str
+    title: str
+    description: str
 
     class Config:
         orm_mode = True

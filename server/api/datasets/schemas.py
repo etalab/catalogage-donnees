@@ -5,8 +5,10 @@ from server.domain.common.types import ID
 
 class DatasetRead(BaseModel):
     id: ID
-    name: str
+    title: str
+    description: str
 
 
 class DatasetCreate(BaseModel):
-    name: str
+    title: str
+    description: str
