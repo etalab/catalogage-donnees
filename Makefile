@@ -17,11 +17,14 @@ install-server: #- Install client dependencies
 install-client: #- Install client dependencies
 	cd client && npm ci
 
+serve:
+	make -j 2 serve-server serve-client
+
 serve-server: #- Run API server
-	${bin}uvicorn server.main:app --port 3579 --reload --reload-dir server
+	./tools/colorize_prefix.sh [server] 4 "${bin}uvicorn server.main:app --port 3579 --reload --reload-dir server"
 
 serve-client: #- Run the client
-	cd client && npm run dev
+	./tools/colorize_prefix.sh [client] 3 "cd client && npm run dev"
 
 migrate: #- Apply pending migrations
 	${bin}alembic upgrade head
