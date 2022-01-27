@@ -17,7 +17,7 @@ install-server: #- Install client dependencies
 install-client: #- Install client dependencies
 	cd client && npm ci
 
-serve:
+serve: #- Serve both the server and the client in parallel
 	make -j 2 serve-server serve-client
 
 serve-server: #- Run API server
@@ -39,10 +39,15 @@ dbdiagram: #- Generate database diagram image
 	${bin}python -m tools.erd docs/db.erd.json -o docs/db.dot
 	dot docs/db.dot -T png -o docs/db.png
 
-test: #- Run the server test suite
+test: test-server test-client #- Run the server and client test suite
+
+test-server: #- Run the server test suite
 	${bin}pytest
 
-format: format-server format-client #- Run code formatting on all sources
+test-client: #- Run the client test suite
+	cd client && npm run test && npm run test:coverage
+
+format: format-server format-client #- Run code formatting on server and client sources
 
 format-server: #- Run code formatting on the server sources
 	${bin}black ${pysources}
@@ -51,7 +56,7 @@ format-server: #- Run code formatting on the server sources
 format-client: #- Run code formatting on the client sources
 	cd client && npm run format
 
-check: check-server check-client #- Run all code checks
+check: check-server check-client #- Run server and client code checks
 
 check-server: #- Run server code checks
 	${bin}black --check ${pysources}
