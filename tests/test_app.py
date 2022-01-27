@@ -21,6 +21,7 @@ async def test_cors(client: httpx.AsyncClient, origin: str) -> None:
     assert response.status_code == 200
     assert response.headers["Access-Control-Allow-Origin"] == origin
     assert "POST" in response.headers["Access-Control-Allow-Methods"]
+    assert response.headers["Access-Control-Allow-Credentials"]
     assert response.headers["Access-Control-Allow-Headers"] == "Content-Type"
 
 
