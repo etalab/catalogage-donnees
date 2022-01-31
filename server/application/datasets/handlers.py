@@ -11,7 +11,11 @@ from .queries import GetAllDatasets, GetDatasetByID
 
 async def create_dataset(command: CreateDataset) -> int:
     repository = resolve(DatasetRepository)
-    dataset = Dataset(id=repository.make_id(), name=command.name)
+    dataset = Dataset(
+        id=repository.make_id(),
+        title=command.title,
+        description=command.description,
+    )
     return await repository.insert(dataset)
 
 

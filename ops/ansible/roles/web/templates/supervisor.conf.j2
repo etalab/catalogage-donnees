@@ -1,0 +1,7 @@
+[program:server]
+directory={{ workdir }}
+command={{ workdir }}/venv/bin/gunicorn -w 2 --bind 127.0.0.1:3579 -k uvicorn.workers.UvicornWorker server.main:app
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/server.err.log
+stdout_logfile=/var/log/server.out.log

@@ -1,7 +1,12 @@
 import httpx
 import pytest
 
+from server.application.auth.commands import CreateUser
+from server.application.auth.queries import GetUserByEmail
+from server.config.di import resolve
 from server.domain.auth.entities import User
+from server.domain.auth.exceptions import UserDoesNotExist
+from server.seedwork.application.messages import MessageBus
 
 from ..utils import authenticate
 
@@ -13,7 +18,7 @@ async def test_create_user_user_role_denied(client: httpx.AsyncClient) -> None:
     response = await client.send(request)
     assert response.status_code == 403
 
-
+    
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "payload, expected_error_attrs",
@@ -141,3 +146,30 @@ async def test_check_auth(
 
     if status_code == 200:
         assert response.json() == {"is_authenticated": True}
+
+
+@pytest.mark.asyncio
+async def test_delete_user(client: httpx.AsyncClient) -> None:
+    bus = resolve(MessageBus)
+    email = "temp@example.org"
+
+    command = CreateUser(email=email)
+    user_id = await bus.execute(command)
+
+    response = await client.delete(f"/auth/users/{user_id}/")
+    assert response.status_code == 204
+
+    query = GetUserByEmail(email=email)
+    with pytest.raises(UserDoesNotExist):
+        await bus.execute(query)
+
+
+@pytest.mark.asyncio
+async def test_delete_user_idempotent(client: httpx.AsyncClient) -> None:
+    # Represents a non-existing user, or a user previously deleted.
+    # These should be handled the same way as existing users by
+    # this endpoint (idempotency).
+    user_id = 4242
+
+    response = await client.delete(f"/auth/users/{user_id}/")
+    assert response.status_code == 204
