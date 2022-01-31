@@ -21,10 +21,10 @@ serve: #- Serve both the server and the client in parallel
 	make -j 2 serve-server serve-client
 
 serve-server: #- Run API server
-	./tools/colorize_prefix.sh [server] 4 "${bin}uvicorn server.main:app --port 3579 --reload --reload-dir server"
+	./tools/colorize_prefix.sh [server] 34 "${bin}uvicorn server.main:app --port 3579 --reload --reload-dir server"
 
 serve-client: #- Run the client
-	./tools/colorize_prefix.sh [client] 3 "cd client && npm run dev"
+	./tools/colorize_prefix.sh [client] 33 "cd client && npm run dev"
 
 migrate: #- Apply pending migrations
 	${bin}alembic upgrade head
