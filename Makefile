@@ -9,7 +9,7 @@ pysources = server/ tools/ tests/
 
 install: install-server install-client #- Install all dependencies (server and client)
 
-install-server: #- Install client dependencies
+install-server: #- Install server dependencies
 	python3 -m venv ${venv}
 	${pip} install -U pip wheel setuptools
 	${pip} install -r requirements.txt
