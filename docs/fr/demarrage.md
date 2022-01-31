@@ -6,15 +6,15 @@ Cette page indique les quelques étapes qui vous permettront d'avoir un projet f
 
 Selon que vous vouliez contribuer au serveur ou au client, vous allez avoir besoin de :
 
-### Pour le server
+### Pour le serveur
 
 - Python 3.8+
 - PostgreSQL 12
 
 ### Pour le client
 
-- une version récente de node (testé avec 16.3.0)
-- une version récente de npm (testé avec 8.1.3)
+- Une version récente de node (testé avec 16.3.0)
+- Une version récente de npm (testé avec 8.1.3)
 
 ## Base de données
 
@@ -59,25 +59,23 @@ Ensuite, exécutez les migrations de la base de données :
 make migrate
 ```
 
-Démarrez le serveur d'API (_backend_) :
+Démarrez le serveur d'API (_backend_) sur http://localhost:3579 :
 
 ```
 make serve-server
 ```
 
-Démarrez le client (_frontend_) :
+Démarrez le client (_frontend_) sur http://localhost:3000 :
 
 ```
 make serve-client
 ```
 
-Lancer les deux en parallèle dans le même shell :
+Pour lancer les deux en parallèle dans le même shell :
 
 ```
 make serve
 ```
-
-Vérifiez sa bonne exécution avec un `$ curl localhost:3579`.
 
 Pour lancer les tests :
 
