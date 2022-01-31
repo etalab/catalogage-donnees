@@ -4,10 +4,17 @@ Cette page indique les quelques étapes qui vous permettront d'avoir un projet f
 
 ## Prérequis
 
-Vous allez avoir besoin de :
+Selon que vous vouliez contribuer au serveur ou au client, vous allez avoir besoin de :
+
+### Pour le serveur
 
 - Python 3.8+
 - PostgreSQL 12
+
+### Pour le client
+
+- Une version récente de node (testé avec 16.3.0)
+- Une version récente de npm (testé avec 8.1.3)
 
 ## Base de données
 
@@ -33,6 +40,11 @@ La façon principale d'interagir avec le projet est via des commandes `make`. El
 
 Vous pouvez à tout moment en consulter l'aide grace à `make help`.
 
+Pour la plupart des commandes, il y a une déclinaison pour le serveur et pour le client.
+Par exemple : `make install` est l'équivalent de `make install-server install-client`.
+Vous pouvez ainsi soit installer toutes les dépendances pour le serveur ainsi que pour le client,
+soit spécifier explicitement ce qui vous intéresse.
+
 Voici la suite de commandes à exécuter pour démarrer.
 
 Installez les dépendances :
@@ -47,13 +59,23 @@ Ensuite, exécutez les migrations de la base de données :
 make migrate
 ```
 
-Démarrez le serveur d'API (_backend_) :
+Démarrez le serveur d'API (_backend_) sur http://localhost:3579 :
+
+```
+make serve-server
+```
+
+Démarrez le client (_frontend_) sur http://localhost:3000 :
+
+```
+make serve-client
+```
+
+Pour lancer les deux en parallèle dans le même shell :
 
 ```
 make serve
 ```
-
-Vérifiez sa bonne exécution avec un `$ curl localhost:3579`.
 
 Pour lancer les tests :
 
