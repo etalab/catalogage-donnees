@@ -18,7 +18,7 @@ async def test_create_user_user_role_denied(client: httpx.AsyncClient) -> None:
     response = await client.send(request)
     assert response.status_code == 403
 
-    
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "payload, expected_error_attrs",
@@ -149,14 +149,16 @@ async def test_check_auth(
 
 
 @pytest.mark.asyncio
-async def test_delete_user(client: httpx.AsyncClient) -> None:
+async def test_delete_user(client: httpx.AsyncClient, admin_user: User) -> None:
     bus = resolve(MessageBus)
     email = "temp@example.org"
 
     command = CreateUser(email=email)
     user_id = await bus.execute(command)
 
-    response = await client.delete(f"/auth/users/{user_id}/")
+    request = client.build_request("DELETE", f"/auth/users/{user_id}/")
+    authenticate(request, admin_user)
+    response = await client.send(request)
     assert response.status_code == 204
 
     query = GetUserByEmail(email=email)
@@ -165,11 +167,15 @@ async def test_delete_user(client: httpx.AsyncClient) -> None:
 
 
 @pytest.mark.asyncio
-async def test_delete_user_idempotent(client: httpx.AsyncClient) -> None:
+async def test_delete_user_idempotent(
+    client: httpx.AsyncClient, admin_user: User
+) -> None:
     # Represents a non-existing user, or a user previously deleted.
     # These should be handled the same way as existing users by
     # this endpoint (idempotency).
     user_id = 4242
 
-    response = await client.delete(f"/auth/users/{user_id}/")
+    request = client.build_request("DELETE", f"/auth/users/{user_id}/")
+    authenticate(request, admin_user)
+    response = await client.send(request)
     assert response.status_code == 204
