@@ -51,7 +51,8 @@ async def test_create_dataset(client: httpx.AsyncClient) -> None:
         "description": "Some example items",
     }
 
-    response = await client.get(f"/datasets/{id_factory()}/")
+    non_existing_id = id_factory()
+    response = await client.get(f"/datasets/{non_existing_id}/")
     assert response.status_code == 404
 
     response = await client.get(f"/datasets/{pk}/")
