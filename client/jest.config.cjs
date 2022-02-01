@@ -10,10 +10,7 @@ module.exports = {
   moduleFileExtensions: ["js", "ts", "svelte"],
   moduleNameMapper: {
     "^\\$lib(.*)$": "<rootDir>/src/lib$1",
-    "^\\$app(.*)$": [
-      "<rootDir>/.svelte-kit/dev/runtime/app$1",
-      "<rootDir>/.svelte-kit/build/runtime/app$1",
-    ],
+    "^\\$app(.*)$": "<rootDir>/src/__tests__/appMock.cjs",
   },
   setupFilesAfterEnv: ["<rootDir>/jest-setup.ts"],
   collectCoverageFrom: ["src/**/*.{ts,tsx,svelte,js,jsx}"],
