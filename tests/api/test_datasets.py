@@ -1,6 +1,8 @@
 import httpx
 import pytest
 
+from server.domain.common.types import id_factory
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
@@ -42,14 +44,15 @@ async def test_create_dataset(client: httpx.AsyncClient) -> None:
     assert response.status_code == 201
     data = response.json()
     pk = data["id"]
-    assert isinstance(pk, int)
+    assert isinstance(pk, str)
     assert data == {
         "id": pk,
         "title": "Example",
         "description": "Some example items",
     }
 
-    response = await client.get("/datasets/4242/")
+    non_existing_id = id_factory()
+    response = await client.get(f"/datasets/{non_existing_id}/")
     assert response.status_code == 404
 
     response = await client.get(f"/datasets/{pk}/")

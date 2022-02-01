@@ -2,11 +2,14 @@ from typing import Optional
 
 from server.seedwork.domain.repositories import Repository
 
-from ..common.types import ID
+from ..common.types import ID, id_factory
 from .entities import User
 
 
 class UserRepository(Repository):
+    def make_id(self) -> ID:
+        return id_factory()
+
     async def get_by_email(self, email: str) -> Optional[User]:
         raise NotImplementedError  # pragma: no cover
 
