@@ -2,11 +2,14 @@ from typing import List, Optional
 
 from server.seedwork.domain.repositories import Repository
 
-from ..common.types import ID
+from ..common.types import ID, id_factory
 from .entities import Dataset
 
 
 class DatasetRepository(Repository):
+    def make_id(self) -> ID:
+        return id_factory()
+
     async def get_all(self) -> List[Dataset]:
         raise NotImplementedError  # pragma: no cover
 

@@ -5,6 +5,7 @@ from server.application.auth.commands import CreateUser
 from server.application.auth.queries import GetUserByEmail
 from server.config.di import resolve
 from server.domain.auth.exceptions import UserDoesNotExist
+from server.domain.common.types import id_factory
 from server.seedwork.application.messages import MessageBus
 
 
@@ -62,7 +63,7 @@ async def test_create_user(client: httpx.AsyncClient) -> None:
     response = await client.post("/auth/users/", json={"email": "john@doe.com"})
     assert response.status_code == 201
     data = response.json()
-    assert isinstance(data.pop("id"), int)
+    assert isinstance(data.pop("id"), str)
     assert data == {"email": "john@doe.com"}
 
 
@@ -140,7 +141,7 @@ async def test_delete_user_idempotent(client: httpx.AsyncClient) -> None:
     # Represents a non-existing user, or a user previously deleted.
     # These should be handled the same way as existing users by
     # this endpoint (idempotency).
-    user_id = 4242
+    user_id = id_factory()
 
     response = await client.delete(f"/auth/users/{user_id}/")
     assert response.status_code == 204
