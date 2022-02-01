@@ -1,9 +1,13 @@
+upstream client {
+    server 127.0.0.1:{{ client_port }};
+}
+
 upstream api {
-    server 127.0.0.1:3579;
+    server 127.0.0.1:{{ api_port }};
 }
 
 server {
-    listen 80;
+    listen {{ web_port }};
     server_name {{ inventory_hostname }};
 
     location /favicon.ico {
@@ -13,6 +17,13 @@ server {
 
     location / {
         include proxy_params;
-        proxy_pass http://api;
+        proxy_pass http://client;
+    }
+
+    location /api/ {
+        include proxy_params;
+        {# NOTE: trailing / is important. Ensures /api/foo becomes /foo. #}
+        {# See: http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass #}
+        proxy_pass http://api/;
     }
 }

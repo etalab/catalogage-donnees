@@ -9,6 +9,11 @@
   # Config or dependencies may have changed, so restart the server.
   notify: reload supervisor
 
+- name: Ensure client is running
+  supervisorctl: name=client state=present
+  become: true
+  notify: reload nginx
+
 - name: Ensure server is running
   supervisorctl: name=server state=present
   become: true
