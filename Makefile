@@ -32,7 +32,7 @@ serve-client: #- Run the client
 serve-prod: #- Serve both the server and the production client in parallel
 	make -j 2 serve-server serve-prod-client
 
-serve-prod-client: #- Run the productionclient 
+serve-prod-client: #- Run the production client 
 	./tools/colorize_prefix.sh [client] 33 "cd client && npm start"
 
 migrate: #- Apply pending migrations
