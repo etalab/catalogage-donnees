@@ -24,13 +24,16 @@ serve: #- Serve both the server and the client in parallel
 	make -j 2 serve-server serve-client
 
 serve-server: #- Run API server
-	./tools/colorize_prefix.sh [server] 34 "${bin}uvicorn server.main:app --port 3579 --reload --reload-dir server"
+	./tools/colorize_prefix.sh [server] 34 "${python} -m server.main"
 
 serve-client: #- Run the client
 	./tools/colorize_prefix.sh [client] 33 "cd client && npm run dev"
 
 serve-prod: #- Serve both the server and the production client in parallel
-	make -j 2 serve-server serve-prod-client
+	make -j 2 serve-prod-server serve-prod-client
+
+serve-prod-server: #- Run API server in production mode
+	APP_DEBUG=False make serve-server
 
 serve-prod-client: #- Run the production client 
 	./tools/colorize_prefix.sh [client] 33 "cd client && npm start"
