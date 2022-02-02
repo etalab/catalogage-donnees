@@ -8,9 +8,15 @@ import Home from "../routes/index.svelte";
 import { fireEvent, render } from "@testing-library/svelte";
 
 describe("Test the form", () => {
-  test('The "Name" field is present', () => {
+  test('The "title" field is present', () => {
     const { getByLabelText } = render(Home);
-    expect(getByLabelText("Name")).toBeInTheDocument();
+    expect(getByLabelText("Nom", { exact: false })).toBeInTheDocument();
+  });
+  test('The "description" field is present', () => {
+    const { getByLabelText } = render(Home);
+    expect(
+      getByLabelText("Présentation", { exact: false })
+    ).toBeInTheDocument();
   });
   test("The submit button is present", () => {
     const { getByRole } = render(Home);
