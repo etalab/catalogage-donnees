@@ -101,6 +101,7 @@ Le serveur de développement est configurable à l'aide des variables d'environn
 
 | Variable | Description | Valeur par défaut |
 |---|---|---|
+| `APP_DEBUG` | Lance le serveur en mode développement (_hot reload_, etc) | `False` |
 | `APP_DATABASE_URL` | URL vers la base de données PostgreSQL | `postgresql+asyncpg://localhost:5432/catalogage` |
 
 Définissez les valeurs spécifiques à votre situation dans un fichier `.env` placé à la racine du projet, que vous pouvez créer à partir du modèle `.env.example`.
