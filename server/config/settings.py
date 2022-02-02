@@ -5,7 +5,6 @@ from sqlalchemy.engine.url import make_url
 class Settings(BaseSettings):
     # For usage, see: https://pydantic-docs.helpmanual.io/usage/settings/
 
-    debug: bool = False
     database_url: str = "postgresql+asyncpg://localhost:5432/catalogage"
     docs_url: str = "/docs"
     testing: bool = False

@@ -9,7 +9,7 @@ stdout_logfile=/var/log/client.out.log
 
 [program:server]
 directory={{ workdir }}
-command={{ workdir }}/venv/bin/python -m server.main
+command={{ workdir }}/venv/bin/gunicorn -w 2 --bind 127.0.0.1:{{ api_port }} -k uvicorn.workers.UvicornWorker server.main:app
 autostart=true
 autorestart=true
 stderr_logfile=/var/log/server.err.log

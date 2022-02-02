@@ -221,26 +221,6 @@ Il y a probablement soit un problème de configuration de la connexion entre Ngi
 ~/catalogage $ git log
 ```
 
-### Nginx pas mis à jour malgré un changement de configuration
-
-Dans ce cas de figure, la configuration Nginx a été modifiée mais une fois le déploiement effectué, vous constatez qu'elle n'a pas pris effet. C'est peut-être que Nginx n'a pas réussi à charger la nouvelle configuration, car celle-ci contient des erreurs.
-
-Sur le serveur, regardez les erreurs ou alertes de Nginx avec :
-
-```
-~/ $ sudo nginx -t
-```
-
-Exemple de résultat :
-
-```
-nginx: [warn] conflicting server name "web1-staging" on 0.0.0.0:80, ignored
-nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
-nginx: configuration file /etc/nginx/nginx.conf test is successful
-```
-
-Rechercher ensuite d'où pourraient provenir les problèmes ainsi identifiés.
-
 ## Secrets
 
 La gestion des secrets s'appuie sur Ansible Vault.
