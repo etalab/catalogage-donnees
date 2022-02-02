@@ -44,8 +44,13 @@ test: test-server test-client #- Run the server and client test suite
 test-server: #- Run the server test suite
 	${bin}pytest
 
-test-client: #- Run the client test suite
+test-client: test-client-unit test-client-integration #- Run the client's unit and integration tests
+
+test-client-unit: #- Run the client test suite
 	cd client && npm run test && npm run test:coverage
+
+test-client-integration : #- Run the client integration test suite
+	cd client && npm run test-integration
 
 format: format-server format-client #- Run code formatting on server and client sources
 

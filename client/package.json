@@ -11,6 +11,8 @@
     "lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint --ignore-path .gitignore .",
     "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. .",
     "test": "jest",
+    "test-integration": "cypress run",
+    "test-integration:dev": "cypress open",
     "test:watch": "npm run test -- --watchAll",
     "test:coverage": "npm run test -- --coverage"
   },
@@ -22,6 +24,7 @@
     "@types/jest": "^27.4.0",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
+    "cypress": "^9.4.1",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^3.2.1",
