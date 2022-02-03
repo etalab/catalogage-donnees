@@ -11,8 +11,8 @@ server {
         log_not_found off;
     }
 
-    location / {
+    location /api/ {
         include proxy_params;
-        proxy_pass http://api;
+        proxy_pass http://api/;
     }
 }

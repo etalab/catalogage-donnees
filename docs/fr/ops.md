@@ -9,21 +9,21 @@ Le déploiement et la gestion des serveurs distants est gérée à l'aide de [An
 L'architecture du service déployé est la suivante :
 
 ```
-          ┌----------------------------------------┐
-WWW <--(tcp/80)--> nginx <--(tcp/3579)--> gunicorn |
-          └---------------------------------^------┘
-                                            |
-                                      ┌ - - v - - -┐
-                                        PostgreSQL 
-                                      └ - - - - - -┘
+          ┌---------------------------------------┐
+WWW <--(tcp/80)--> nginx <--(tcp/3579)--> uvicorn |
+          └----------------------------------^----┘
+                                             |
+                                       ┌ - - v - - -┐
+                                         PostgreSQL 
+                                       └ - - - - - -┘
 ```
 
-Autrement dit, un Nginx sert de frontale web et transmet les requêtes à un serveur applicatif Gunicorn, qui communique avec la base de données (BDD) PosgreSQL;
+Autrement dit, un Nginx sert de frontale web et transmet les requêtes à un serveur applicatif Uvicorn, qui communique avec la base de données (BDD) PosgreSQL;
 
 Par ailleurs :
 
-* Gunicorn est géré par le _process manager_ `supervisor`, ce qui permet notamment d'assurer son redémarrage en cas d'arrêt inopiné.
-* Le lien entre Gunicorn et la base de données PostgreSQL est paramétrable (_database URL_). Cette dernier ne vit donc pas nécessairement sur la même machine que le serveur applicatif (voir [Environnements](#environnements)).
+* Uvicorn est géré par le _process manager_ `supervisor`, ce qui permet notamment d'assurer son redémarrage en cas d'arrêt inopiné.
+* Le lien entre Uvicorn et la base de données PostgreSQL est paramétrable (_database URL_). Cette dernier ne vit donc pas nécessairement sur la même machine que le serveur applicatif (voir [Environnements](#environnements)).
 
 ## Démarrage rapide
 
@@ -187,7 +187,7 @@ Une bonne pratique pour limiter les risques : déployer la migration d'abord, pu
 
 ### Nginx renvoie une "502 Bad Gateway"
 
-Il y a probablement soit un problème de configuration de la connexion entre Nginx et Gunicorn (ex : mauvais port), soit le serveur Gunicorn n'est pas _up_ (ex : il crashe ou ne démarre pas pour une raison à déterminer).
+Il y a probablement soit un problème de configuration de la connexion entre Nginx et Uvicorn (ex : mauvais port), soit le serveur Uvicorn n'est pas _up_ (ex : il crashe ou ne démarre pas pour une raison à déterminer).
 
 * Vérifier l'état de Nginx :
 
