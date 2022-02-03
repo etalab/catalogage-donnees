@@ -1,13 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr" data-fr-scheme="system">
   <head>
     <meta charset="utf-8" />
-    <meta name="description" content="Svelte demo app" />
-    <link rel="icon" href="%svelte.assets%/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <meta name="theme-color" content="#000091" />
+    <!-- Défini la couleur de thème du navigateur (Safari/Android) -->
+    <link
+      rel="apple-touch-icon"
+      href="../node_modules/@gouvfr/dsfr/dist/favicon/apple-touch-icon.png"
+    />
+    <!-- 180×180 -->
+    <link
+      rel="icon"
+      href="../node_modules/@gouvfr/dsfr/dist/favicon/favicon.svg"
+      type="image/svg+xml"
+    />
+    <link
+      rel="shortcut icon"
+      href="../node_modules/@gouvfr/dsfr/dist/favicon/favicon.ico"
+      type="image/x-icon"
+    />
+    <!-- 32×32 -->
+    <link
+      rel="manifest"
+      href="../node_modules/@gouvfr/dsfr/dist/favicon/manifest.webmanifest"
+      crossorigin="use-credentials"
+    />
+
+    <meta name="description" content="Catalogage des données" />
     %svelte.head%
   </head>
+
   <body>
     <div id="svelte">%svelte.body%</div>
   </body>
+
+  <script
+    type="text/javascript"
+    nomodule
+    src="../node_modules/@gouvfr/dsfr/dsfr.nomodule.min.js"
+  ></script>
+  <script>
+    // Options disponibles à l'initialisation du DSFR
+    window.dsfr = {
+      verbose: false,
+      mode: "loaded",
+    };
+  </script>
 </html>
