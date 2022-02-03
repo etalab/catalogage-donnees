@@ -51,7 +51,7 @@ test-client: test-client-unit test-client-e2e #- Run the client's unit and e2e t
 test-client-ci: test-client-unit test-client-e2e-ci #- Run the client's unit and e2e tests in CI mode
 
 test-client-unit: #- Run the client test suite
-	cd client && npm run test && npm run test:coverage
+	cd client && npm run test:coverage
 
 test-client-e2e: #- Run the client e2e test suite
 	cd client && npm run test-e2e
