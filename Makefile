@@ -46,18 +46,18 @@ test-ci: test-server test-client-ci #- Run the server and client test suite in C
 test-server: #- Run the server test suite
 	${bin}pytest
 
-test-client: test-client-unit test-client-integration #- Run the client's unit and integration tests
+test-client: test-client-unit test-client-e2e #- Run the client's unit and e2e tests
 
-test-client-ci: test-client-unit test-client-integration-ci #- Run the client's unit and integration tests in CI mode
+test-client-ci: test-client-unit test-client-e2e-ci #- Run the client's unit and e2e tests in CI mode
 
 test-client-unit: #- Run the client test suite
 	cd client && npm run test && npm run test:coverage
 
-test-client-integration : #- Run the client integration test suite
-	cd client && npm run test-integration
+test-client-e2e: #- Run the client e2e test suite
+	cd client && npm run test-e2e
 
-test-client-integration-ci : #- Run the client integration test suite in a CI mode
-	cd client && npm run test-integration:ci
+test-client-e2e-ci: #- Run the client e2e test suite in a CI mode
+	cd client && npm run test-e2e:ci
 
 format: format-server format-client #- Run code formatting on server and client sources
 
