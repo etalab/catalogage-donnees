@@ -209,7 +209,7 @@ Il y a probablement soit un problème de configuration de la connexion entre Ngi
 ~/catalogage $ systemctl status supervisor
 ```
 
-* Vérifier l'état du processus serveur (`server` pour Gunicorn, `client` pour le frontend Node) au sein de Supervisor :
+* Vérifier l'état du processus serveur (`server` pour Uvicorn, `client` pour le frontend Node) au sein de Supervisor :
 
 ```
 ~/catalogage $ sudo supervisorctl status server

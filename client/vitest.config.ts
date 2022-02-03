@@ -1,8 +1,10 @@
+/// <reference types="vitest" />
 import path from "path";
+import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { config as baseConfig } from "./vite.config";
 
-const config = {
+export default defineConfig({
   ...baseConfig,
   resolve: {
     alias: {
@@ -21,6 +23,4 @@ const config = {
     globals: true,
     environment: "jsdom",
   },
-};
-
-export default config;
+});
