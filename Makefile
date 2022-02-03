@@ -24,7 +24,7 @@ serve: #- Serve both the server and the client in parallel
 	make -j 2 serve-server serve-client
 
 serve-server: #- Run API server
-	./tools/colorize_prefix.sh [server] 34 "${bin}uvicorn server.main:app --port 3579 --reload --reload-dir server"
+	./tools/colorize_prefix.sh [server] 34 "${python} -m server.main"
 
 serve-client: #- Run the client
 	./tools/colorize_prefix.sh [client] 33 "cd client && npm run dev"
@@ -50,11 +50,23 @@ dbdiagram: #- Generate database diagram image
 
 test: test-server test-client #- Run the server and client test suite
 
+test-ci: test-server test-client-ci #- Run the server and client test suite in CI mode
+
 test-server: #- Run the server test suite
 	${bin}pytest
 
-test-client: #- Run the client test suite
-	cd client && npm run test && npm run test:coverage
+test-client: test-client-unit test-client-e2e #- Run the client's unit and e2e tests
+
+test-client-ci: test-client-unit test-client-e2e-ci #- Run the client's unit and e2e tests in CI mode
+
+test-client-unit: #- Run the client test suite
+	cd client && npm run test:coverage
+
+test-client-e2e: #- Run the client e2e test suite
+	cd client && npm run test-e2e
+
+test-client-e2e-ci: #- Run the client e2e test suite in a CI mode
+	cd client && npm run test-e2e:ci
 
 format: format-server format-client #- Run code formatting on server and client sources
 

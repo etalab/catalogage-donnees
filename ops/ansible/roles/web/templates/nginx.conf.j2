@@ -17,13 +17,10 @@ server {
 
     location / {
         include proxy_params;
-        proxy_pass http://client;
-    }
+        proxy_pass http://client/;
 
     location /api/ {
         include proxy_params;
-        {# NOTE: trailing / is important. Ensures /api/foo becomes /foo. #}
-        {# See: http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass #}
         proxy_pass http://api/;
     }
 }

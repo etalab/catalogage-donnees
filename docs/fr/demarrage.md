@@ -77,7 +77,7 @@ Pour lancer les deux en parallèle dans le même shell :
 make serve
 ```
 
-Pour lancer les tests :
+Pour lancer l'ensemble des tests unitaires sur le client et le serveur, ainsi que les tests end-to-end (nécessite un `make serve` au préalable pour que les tests end-to-end fonctionnent) :
 
 ```
 make test
@@ -97,10 +97,11 @@ make check
 
 ## Configuration
 
-Le serveur de développement est configurable à l'aide des variables d'environnement suivantes.
+Le serveur d'API est configurable à l'aide des variables d'environnement suivantes.
 
 | Variable | Description | Valeur par défaut |
 |---|---|---|
+| `APP_SERVER_MODE` | Un mode d'opération qui configure Uvicorn en conséquence : <br> - `local` : pour le développement local (_hot reload_ activé, etc) <br> - `live` : pour tout déploiement tel que défini via Ansible (voir [Opérations](./ops.md)) | `local` |
 | `APP_DATABASE_URL` | URL vers la base de données PostgreSQL | `postgresql+asyncpg://localhost:5432/catalogage` |
 
 Définissez les valeurs spécifiques à votre situation dans un fichier `.env` placé à la racine du projet, que vous pouvez créer à partir du modèle `.env.example`.

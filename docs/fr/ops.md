@@ -12,7 +12,7 @@ L'architecture du service déployé est la suivante :
         ┌---------------------------------┐
 WWW ------- nginx (:80) ---- node (:3000) |
         |      |               |          |
-        |      └-------- gunicorn (:3579) |
+        |      └--------- uvicorn (:3579) |
         └----------------------|----------┘
                                |
                          ┌ - - ┴ - - -┐
@@ -20,12 +20,12 @@ WWW ------- nginx (:80) ---- node (:3000) |
                          └ - - - - - -┘
 ```
 
-Autrement dit, un Nginx sert de frontale web et transmet les requêtes à un serveur applicatif Gunicorn qui communique avec la base de données (BDD) PosgreSQL (pour les requêtes d'API), ou à un serveur Node (pour les requêtes client).
+Autrement dit, un Nginx sert de frontale web, et transmet les requêtes à un serveur applicatif Uvicorn qui communique avec la base de données (BDD) PosgreSQL (pour les requêtes d'API), ou à un serveur Node (pour les requêtes client).
 
 Par ailleurs :
 
-* Gunicorn et Node sont gérés par le _process manager_ `supervisor`, ce qui permet notamment d'assurer leur redémarrage en cas d'arrêt inopiné.
-* Le lien entre Gunicorn et la base de données PostgreSQL est paramétrable (_database URL_). Cette dernier ne vit donc pas nécessairement sur la même machine que le serveur applicatif (voir [Environnements](#environnements)).
+* Uvicorn et Node sont gérés par le _process manager_ `supervisor`, ce qui permet notamment d'assurer leur redémarrage en cas d'arrêt inopiné.
+* Le lien entre Uvicorn et la base de données PostgreSQL est paramétrable (_database URL_). Cette dernier ne vit donc pas nécessairement sur la même machine que le serveur applicatif (voir [Environnements](#environnements)).
 
 ## Démarrage rapide
 
@@ -195,7 +195,7 @@ Une bonne pratique pour limiter les risques : déployer la migration d'abord, pu
 
 ### Nginx renvoie une "502 Bad Gateway"
 
-Il y a probablement soit un problème de configuration de la connexion entre Nginx et Node / Gunicorn (ex : mauvais port), soit le serveur Node / Gunicorn n'est pas _up_ (ex : il crashe ou ne démarre pas pour une raison à déterminer).
+Il y a probablement soit un problème de configuration de la connexion entre Nginx et Node / Uvicorn (ex : mauvais port), soit le serveur Node / Uvicorn n'est pas _up_ (ex : il crashe ou ne démarre pas pour une raison à déterminer).
 
 * Vérifier l'état de Nginx :
 
