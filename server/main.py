@@ -18,13 +18,13 @@ if __name__ == "__main__":
         "port": 3579,
     }
 
-    if settings.debug:
+    if settings.server_mode == "local":
         kwargs.update(
-            # Enable hot reload in development.
+            # Enable hot reload.
             reload=True,
             reload_dirs=["server"],
         )
-    else:
+    elif settings.server_mode == "live":
         kwargs.update(
             # Pass any proxy headers, so that Uvicorn sees information about the
             # connecting client, rather than the connecting Nginx proxy.

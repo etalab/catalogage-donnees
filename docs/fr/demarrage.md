@@ -97,11 +97,11 @@ make check
 
 ## Configuration
 
-Le serveur de développement est configurable à l'aide des variables d'environnement suivantes.
+Le serveur d'API est configurable à l'aide des variables d'environnement suivantes.
 
 | Variable | Description | Valeur par défaut |
 |---|---|---|
-| `APP_DEBUG` | Lance le serveur en mode développement (_hot reload_, etc) | `False` |
+| `APP_SERVER_MODE` | Un mode d'opération qui configure Uvicorn en conséquence : <br> - `local` : pour le développement local (_hot reload_ activé, etc) <br> - `live` : pour tout déploiement tel que défini via Ansible (voir [Opérations](./ops.md)) | `local` |
 | `APP_DATABASE_URL` | URL vers la base de données PostgreSQL | `postgresql+asyncpg://localhost:5432/catalogage` |
 
 Définissez les valeurs spécifiques à votre situation dans un fichier `.env` placé à la racine du projet, que vous pouvez créer à partir du modèle `.env.example`.
