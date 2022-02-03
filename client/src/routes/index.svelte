@@ -20,10 +20,12 @@
   const { form, errors, handleChange, handleSubmit, isSubmitting } = createForm(
     {
       initialValues: {
-        name: "",
+        title: "",
+        description: "",
       },
       validationSchema: yup.object().shape({
-        name: yup.string().required(),
+        title: yup.string().required(),
+        description: yup.string().required(),
       }),
       onSubmit: (values) => {
         const result = postData(values);
@@ -36,16 +38,38 @@
 
 <section>
   <form on:submit={handleSubmit}>
-    <label for="name">Name</label>
+    <label for="title">
+      Nom du jeu de données. Exemple : "Arbres vivants inventoriés en forêt"
+    </label>
     <input
-      id="name"
-      name="name"
+      id="title"
+      name="title"
       on:change={handleChange}
       on:blur={handleChange}
-      bind:value={$form.name}
+      bind:value={$form.title}
     />
-    {#if $errors.name}
-      <small>{$errors.name}</small>
+    {#if $errors.title}
+      <small>{$errors.title}</small>
+    {/if}
+
+    <label for="description">
+      Présentation du jeu de données. Exemple : "Données brutes de l'inventaire
+      forestier correspondant à l'ensemble des données collectées en forêt sur
+      le territoire métropolitain par les agents forestiers de terrain de l'IGN.
+      Ces données portent sur les caractéristiques des placettes d'inventaire,
+      les mesures et observations sur les arbres et les données
+      éco-floristiques. Les coordonnées géographiques des placettes sont
+      fournies au kilomètre près."
+    </label>
+    <textarea
+      id="description"
+      name="description"
+      on:change={handleChange}
+      on:blur={handleChange}
+      bind:value={$form.description}
+    />
+    {#if $errors.description}
+      <small>{$errors.description}</small>
     {/if}
 
     <button type="submit">

@@ -41,11 +41,23 @@ dbdiagram: #- Generate database diagram image
 
 test: test-server test-client #- Run the server and client test suite
 
+test-ci: test-server test-client-ci #- Run the server and client test suite in CI mode
+
 test-server: #- Run the server test suite
 	${bin}pytest
 
-test-client: #- Run the client test suite
+test-client: test-client-unit test-client-e2e #- Run the client's unit and e2e tests
+
+test-client-ci: test-client-unit test-client-e2e-ci #- Run the client's unit and e2e tests in CI mode
+
+test-client-unit: #- Run the client test suite
 	cd client && npm run test && npm run test:coverage
+
+test-client-e2e: #- Run the client e2e test suite
+	cd client && npm run test-e2e
+
+test-client-e2e-ci: #- Run the client e2e test suite in a CI mode
+	cd client && npm run test-e2e:ci
 
 format: format-server format-client #- Run code formatting on server and client sources
 
