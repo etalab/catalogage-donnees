@@ -9,9 +9,24 @@ dotenv.config({
   path: path.resolve("..", ".env"),
 });
 
-const API_PORT = process.env.VITE_API_PORT || "3579";
+function getProxy() {
+  const API_PORT = process.env.VITE_API_PORT || "3579";
+  const shouldProxy = Boolean(API_PORT);
 
-const shouldProxy = process.env.NODE_ENV === "development" && Boolean(API_PORT);
+  if (!shouldProxy) {
+    return {};
+  }
+
+  return {
+    // Proxy requests to /api to the local API server.
+    // We need this in development to match the live configuration
+    // which exposes the API on /api on the web server.
+    "/api": {
+      target: `http://localhost:${API_PORT}`,
+      rewrite: (path) => path.replace(/^\/api/, ""), // "/api/..." -> "/..."
+    },
+  };
+}
 
 export const config = {
   envDir: path.resolve(".."),
@@ -22,15 +37,7 @@ export const config = {
     },
   },
   server: {
-    proxy: shouldProxy
-      ? {
-          // Proxy requests to /api to the local API server.
-          "/api": {
-            target: `http://localhost:${API_PORT}`,
-            rewrite: (path) => path.replace(/^\/api/, ""), // "/api/..." -> "/..."
-          },
-        }
-      : null,
+    proxy: getProxy(),
   },
 };
 

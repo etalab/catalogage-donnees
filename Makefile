@@ -29,10 +29,10 @@ serve-server: #- Run API server
 serve-client: #- Run the client
 	./tools/colorize_prefix.sh [client] 33 "cd client && npm run dev"
 
-serve-prod: #- Serve both the server and the production client in parallel
-	make -j 2 serve-server serve-prod-client
+serve-dist: #- Serve both the server and the built client in parallel
+	make -j 2 serve-server serve-dist-client
 
-serve-prod-client: #- Run the production client 
+serve-dist-client: #- Run the built client 
 	./tools/colorize_prefix.sh [client] 33 "cd client && npm start"
 
 migrate: #- Apply pending migrations
