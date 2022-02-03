@@ -33,3 +33,7 @@ ops/ansible/hosts_test
 
 # IDE - VSCode
 .vscode
+
+# Cypress integration tests
+client/cypress/screenshots
+client/cypress/videos

@@ -77,7 +77,7 @@ Pour lancer les deux en parallèle dans le même shell :
 make serve
 ```
 
-Pour lancer les tests :
+Pour lancer l'ensemble des tests unitaires sur le client et le serveur, ainsi que les tests end-to-end (nécessite un `make serve` au préalable pour que les tests end-to-end fonctionnent) :
 
 ```
 make test
