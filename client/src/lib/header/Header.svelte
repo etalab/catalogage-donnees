@@ -70,18 +70,18 @@
           <li class="fr-nav__item" data-fr-js-navigation-item="true">
             <a
               class="fr-nav__link"
-              href="/components"
+              href="/contribuer"
               target="_self"
               aria-current="page">Contribuer</a
             >
           </li>
           <li class="fr-nav__item" data-fr-js-navigation-item="true">
-            <a class="fr-nav__link" href="/formulaire" target="_self"
+            <a class="fr-nav__link" href="/rechercher" target="_self"
               >Rechercher</a
             >
           </li>
           <li class="fr-nav__item" data-fr-js-navigation-item="true">
-            <a class="fr-nav__link" href="/typography" target="_self"
+            <a class="fr-nav__link" href="/mon-espace" target="_self"
               >Mon espace</a
             >
           </li>

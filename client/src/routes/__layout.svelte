@@ -1,6 +1,8 @@
 <script lang="ts">
+  import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
   import Header from "$lib/header/Header.svelte";
   import Footer from "$lib/footer/Footer.svelte";
+  import { page } from "$app/stores";
   import "../app.css";
 </script>
 
@@ -14,9 +16,6 @@
         <a class="fr-nav__link" href="#header-navigation">Menu</a>
       </li>
       <li>
-        <a class="fr-nav__link" href="#header-search">Recherche</a>
-      </li>
-      <li>
         <a class="fr-nav__link" href="#footer">Pied de page</a>
       </li>
     </ul>
@@ -27,6 +26,7 @@
 
 <main id="contenu" role="main">
   <div class="fr-container fr-mb-8w">
+    <Breadcrumbs url={$page.url} />
     <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters">
       <slot />
     </div>
