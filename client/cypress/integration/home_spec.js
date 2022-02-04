@@ -8,7 +8,7 @@ describe("Basic form submission", () => {
     cy.get("#description").type(description).should("have.value", description);
 
     cy.intercept("POST", `/api/datasets/`).as("new-dataset");
-    cy.get("button").click().contains("loading...");
+    cy.get("button[type='submit']").click().contains("Contribution");
     cy.wait("@new-dataset").should(({ request, response }) => {
       expect(request.method).to.equal("POST");
       expect(response.statusCode).to.equal(201);
