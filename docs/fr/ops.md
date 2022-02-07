@@ -9,20 +9,22 @@ Le déploiement et la gestion des serveurs distants est gérée à l'aide de [An
 L'architecture du service déployé est la suivante :
 
 ```
-          ┌---------------------------------------┐
-WWW <--(tcp/80)--> nginx <--(tcp/3579)--> uvicorn |
-          └----------------------------------^----┘
-                                             |
-                                       ┌ - - v - - -┐
-                                         PostgreSQL 
-                                       └ - - - - - -┘
+        ┌---------------------------------┐
+WWW ------- nginx (:80) ---- node (:3000) |
+        |      |               |          |
+        |      └--------- uvicorn (:3579) |
+        └----------------------|----------┘
+                               |
+                         ┌ - - ┴ - - -┐
+                           PostgreSQL 
+                         └ - - - - - -┘
 ```
 
-Autrement dit, un Nginx sert de frontale web et transmet les requêtes à un serveur applicatif Uvicorn, qui communique avec la base de données (BDD) PosgreSQL;
+Autrement dit, un Nginx sert de frontale web, et transmet les requêtes à un serveur applicatif Uvicorn qui communique avec la base de données (BDD) PosgreSQL (pour les requêtes d'API), ou à un serveur Node (pour les requêtes client).
 
 Par ailleurs :
 
-* Uvicorn est géré par le _process manager_ `supervisor`, ce qui permet notamment d'assurer son redémarrage en cas d'arrêt inopiné.
+* Uvicorn et Node sont gérés par le _process manager_ `supervisor`, ce qui permet notamment d'assurer leur redémarrage en cas d'arrêt inopiné.
 * Le lien entre Uvicorn et la base de données PostgreSQL est paramétrable (_database URL_). Cette dernier ne vit donc pas nécessairement sur la même machine que le serveur applicatif (voir [Environnements](#environnements)).
 
 ## Démarrage rapide
@@ -149,6 +151,10 @@ $ pyenv --version
 pyenv 2.2.3
 $ python -V
 Python 3.8.9
+$ nvm --version
+0.39.1
+$ node -v
+v16.13.2
 $ systemctl status nginx
 ● nginx.service - A high performance web server and a reverse proxy serv>
      Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor >
@@ -168,10 +174,12 @@ cd ops
 make deploy-test
 ```
 
-Vérifiez le bon déploiement en accédant à l'API depuis la VM Vagrant :
+Vérifiez le bon déploiement en accédant au site ou à l'API depuis la VM Vagrant :
 
 ```console
-$ curl localhost/datasets/
+$ curl localhost
+<!-- Du HTML ... -->
+$ curl localhost/api/datasets/
 []
 ```
 
@@ -187,7 +195,7 @@ Une bonne pratique pour limiter les risques : déployer la migration d'abord, pu
 
 ### Nginx renvoie une "502 Bad Gateway"
 
-Il y a probablement soit un problème de configuration de la connexion entre Nginx et Uvicorn (ex : mauvais port), soit le serveur Uvicorn n'est pas _up_ (ex : il crashe ou ne démarre pas pour une raison à déterminer).
+Il y a probablement soit un problème de configuration de la connexion entre Nginx et Node / Uvicorn (ex : mauvais port), soit le serveur Node / Uvicorn n'est pas _up_ (ex : il crashe ou ne démarre pas pour une raison à déterminer).
 
 * Vérifier l'état de Nginx :
 
@@ -201,7 +209,7 @@ Il y a probablement soit un problème de configuration de la connexion entre Ngi
 ~/catalogage $ systemctl status supervisor
 ```
 
-* Vérifier l'état du processus serveur au sein de Supervisor :
+* Vérifier l'état du processus serveur (`server` pour Uvicorn, `client` pour le frontend Node) au sein de Supervisor :
 
 ```
 ~/catalogage $ sudo supervisorctl status server
@@ -237,3 +245,9 @@ N.B. : cette commande demandera le mot de passe Vault associé à l'environnemen
 On utilise [pyenv](https://github.com/pyenv/pyenv) pour installer Python sur les serveurs distants.
 
 La configuration est aussi gérée par Ansible (rôle `pyenv`), notamment au moyen de la variable `pyenv_python_version`. En la modifiant, on peut ainsi mettre Python à jour. Il sera bien sûr préférable de s'assurer de retirer toute ancienne version de Python après une telle opération.
+
+### Version de Node
+
+De la même façon, on utilise [nvm](https://github.com/nvm-sh/nvm) pour installer Node.
+
+La version est paramétrée par la variable `nvm_node_version`.

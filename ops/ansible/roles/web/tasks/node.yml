@@ -1,0 +1,5 @@
+- name: Ensure Node dependencies are installed
+  npm:
+    path: "{{ workdir }}/client"
+    ci: true
+    state: present

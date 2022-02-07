@@ -17,6 +17,9 @@ install-server: #- Install server dependencies
 install-client: #- Install client dependencies
 	cd client && npm ci
 
+build: #- Build production assets
+	cd client && npm run build
+
 serve: #- Serve both the server and the client in parallel
 	make -j 2 serve-server serve-client
 
@@ -25,6 +28,12 @@ serve-server: #- Run API server
 
 serve-client: #- Run the client
 	./tools/colorize_prefix.sh [client] 33 "cd client && npm run dev"
+
+serve-dist: #- Serve both the server and the built client in parallel
+	make -j 2 serve-server serve-dist-client
+
+serve-dist-client: #- Run the built client 
+	./tools/colorize_prefix.sh [client] 33 "cd client && npm start"
 
 migrate: #- Apply pending migrations
 	${bin}alembic upgrade head

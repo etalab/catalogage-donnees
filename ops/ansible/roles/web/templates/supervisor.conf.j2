@@ -1,3 +1,12 @@
+[program:client]
+directory={{ workdir }}/client
+command=node ./build  {# (1) #}
+environment=HOST=127.0.0.1,PORT="{{ client_port }}"
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/client.err.log
+stdout_logfile=/var/log/client.out.log
+
 [program:server]
 directory={{ workdir }}
 command={{ workdir }}/venv/bin/python -m server.main
@@ -5,3 +14,8 @@ autostart=true
 autorestart=true
 stderr_logfile=/var/log/server.err.log
 stdout_logfile=/var/log/server.out.log
+
+{# (1) NOTE: avoid running through npm, as it runs the target command
+in a detached child process, whereas Supervisor requires commands to run in the foreground.
+See: https://stackoverflow.com/questions/46800198/how-can-supervisord-restart-the-npm-start-command-successfully
+See: http://supervisord.org/subprocess.html #}

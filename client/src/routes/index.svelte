@@ -5,10 +5,12 @@
 <script lang="ts">
   import { createForm } from "svelte-forms-lib";
   import * as yup from "yup";
+  import { getApiUrl } from "$lib/fetch";
 
   const postData = async (values) => {
     const data = JSON.stringify(values);
-    const response = await fetch("http://127.0.0.1:3579/datasets/", {
+    const url = `${getApiUrl()}/datasets/`;
+    const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: data,

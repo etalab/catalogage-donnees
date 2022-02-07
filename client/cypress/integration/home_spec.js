@@ -1,5 +1,3 @@
-const server = "http://127.0.0.1:3579";
-
 describe("Basic form submission", () => {
   it("Visits the home page", () => {
     const title = "Un nom de jeu de données";
@@ -9,7 +7,7 @@ describe("Basic form submission", () => {
     cy.get("#title").type(title).should("have.value", title);
     cy.get("#description").type(description).should("have.value", description);
 
-    cy.intercept("POST", `${server}/datasets/`).as("new-dataset");
+    cy.intercept("POST", `/api/datasets/`).as("new-dataset");
     cy.get("button").click().contains("loading...");
     cy.wait("@new-dataset").should(({ request, response }) => {
       expect(request.method).to.equal("POST");

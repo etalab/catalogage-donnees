@@ -1,6 +1,8 @@
 import adapter from "@sveltejs/adapter-node";
 import preprocess from "svelte-preprocess";
 
+import vite from "./vite.config.js";
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   // Consult https://github.com/sveltejs/svelte-preprocess
@@ -14,6 +16,8 @@ const config = {
     methodOverride: {
       allowed: ["PATCH", "DELETE"],
     },
+
+    vite,
   },
 };
 

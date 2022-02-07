@@ -103,6 +103,8 @@ Le serveur d'API est configurable à l'aide des variables d'environnement suivan
 |---|---|---|
 | `APP_SERVER_MODE` | Un mode d'opération qui configure Uvicorn en conséquence : <br> - `local` : pour le développement local (_hot reload_ activé, etc) <br> - `live` : pour tout déploiement tel que défini via Ansible (voir [Opérations](./ops.md)) | `local` |
 | `APP_DATABASE_URL` | URL vers la base de données PostgreSQL | `postgresql+asyncpg://localhost:5432/catalogage` |
+| `APP_PORT` | Port du server d'API | `3579` |
+| `VITE_API_PORT` | Doit être égal à `APP_PORT` si jamais ce dernier diffère de sa valeur par défaut, afin de permettre la communication directe entre le frontend et le serveur d'API le cas échéant (SSR, proxy local...). Pour plus de contexte, voir [#48](https://github.com/etalab/catalogage-donnees/pull/48) | `3579` |
 
 Définissez les valeurs spécifiques à votre situation dans un fichier `.env` placé à la racine du projet, que vous pouvez créer à partir du modèle `.env.example`.
 

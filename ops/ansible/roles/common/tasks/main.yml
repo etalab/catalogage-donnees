@@ -13,6 +13,11 @@
     import_role:
       name: pyenv
 
+  - name: Setup Node
+    # Use nvm to be able to install a specific Node version too.
+    import_role:
+      name: nvm
+
   - name: Ensure nginx is installed and up to date
     apt: name=nginx state=latest
     become: true
