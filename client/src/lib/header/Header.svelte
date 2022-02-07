@@ -11,6 +11,18 @@
                 <br />données
               </p>
             </div>
+            <div class="fr-header__navbar">
+              <button
+                class="fr-btn--menu fr-btn"
+                data-fr-opened="false"
+                aria-controls="modal-menu"
+                aria-haspopup="menu"
+                title="Menu"
+                id="fr-btn-menu-mobile"
+              >
+                Menu
+              </button>
+            </div>
           </div>
           <div class="fr-header__service">
             <a href="/" title="Accueil - Catalogage des données">
@@ -37,27 +49,6 @@
         aria-controls="modal-menu"
         data-fr-js-modal-button="true">Fermer</button
       >
-      <div class="fr-header__menu-links">
-        <ul class="fr-links-group" data-fr-js-header-links="true">
-          <li>
-            <a
-              class="fr-link fr-fi-external-link-line fr-link--icon-right"
-              href="https://gouvfr.atlassian.net/wiki/spaces/DB/"
-              title="documentation officielle - nouvelle fenêtre"
-              target="_blank"
-              rel="noopener">Documentation officielle</a
-            >
-          </li>
-          <li>
-            <button
-              class="fr-link fr-fi-sun-fill-line fr-link--icon-left"
-              aria-controls="fr-theme-modal"
-              data-fr-opened="false"
-              data-fr-js-modal-button="true">Paramètres d'affichage</button
-            >
-          </li>
-        </ul>
-      </div>
 
       <nav
         class="fr-nav"
