@@ -40,7 +40,7 @@
   <div class="fr-collapse" id="breadcrumb" data-fr-js-collapse="true">
     <ol class="fr-breadcrumb__list">
       <!-- Display the parent pages, except current page -->
-      {#each crumbs.slice(0, -1) as { label, href }, i}
+      {#each crumbs.slice(0, -1) as { label, href }}
         <li class="fr-breadcrumb__item">
           <a {href} class="fr-breadcrumb__link">{label}</a>
         </li>

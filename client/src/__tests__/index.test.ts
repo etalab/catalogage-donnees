@@ -24,9 +24,9 @@ describe("Test the form", () => {
     const { getByRole } = render(Home);
     const submitButton = getByRole("button");
 
-    expect(submitButton).toHaveTextContent("Contribuer", { exact: false });
+    expect(submitButton).toHaveTextContent("Contribuer");
 
     await fireEvent.click(submitButton);
-    expect(submitButton).toHaveTextContent("Contribution", { exact: false });
+    expect(submitButton).toHaveTextContent("Contribution");
   });
 });
