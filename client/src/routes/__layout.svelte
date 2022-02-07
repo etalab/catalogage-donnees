@@ -1,47 +1,36 @@
 <script lang="ts">
+  import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
   import Header from "$lib/header/Header.svelte";
+  import Footer from "$lib/footer/Footer.svelte";
+  import { page } from "$app/stores";
   import "../app.css";
 </script>
 
+<div class="fr-skiplinks">
+  <nav class="fr-container" role="navigation" aria-label="Accès rapide">
+    <ul class="fr-skiplinks__list">
+      <li>
+        <a class="fr-nav__link" href="#contenu">Contenu</a>
+      </li>
+      <li>
+        <a class="fr-nav__link" href="#header-navigation">Menu</a>
+      </li>
+      <li>
+        <a class="fr-nav__link" href="#footer">Pied de page</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
 <Header />
 
-<main>
-  <slot />
+<main id="contenu" role="main">
+  <div class="fr-container fr-mb-8w">
+    <Breadcrumbs url={$page.url} />
+    <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters">
+      <slot />
+    </div>
+  </div>
 </main>
 
-<footer>
-  <p>
-    visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit
-  </p>
-</footer>
-
-<style>
-  main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    width: 100%;
-    max-width: 1024px;
-    margin: 0 auto;
-    box-sizing: border-box;
-  }
-
-  footer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 40px;
-  }
-
-  footer a {
-    font-weight: bold;
-  }
-
-  @media (min-width: 480px) {
-    footer {
-      padding: 40px 0;
-    }
-  }
-</style>
+<Footer />

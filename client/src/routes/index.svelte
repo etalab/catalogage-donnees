@@ -19,63 +19,108 @@
     return await response.json();
   };
 
-  const { form, errors, handleChange, handleSubmit, isSubmitting } = createForm(
-    {
+  const { form, errors, handleChange, handleSubmit, isSubmitting, isValid } =
+    createForm({
       initialValues: {
         title: "",
         description: "",
       },
       validationSchema: yup.object().shape({
-        title: yup.string().required(),
-        description: yup.string().required(),
+        title: yup.string().required("Le titre ne peut être vide"),
+        description: yup.string().required("La description ne peut être vide"),
       }),
       onSubmit: (values) => {
         const result = postData(values);
-        console.log(result);
         return result;
       },
-    }
-  );
+    });
+  const errorClassname = (error: string, className: string) =>
+    error ? className : "";
 </script>
 
-<section>
-  <form on:submit={handleSubmit}>
-    <label for="title">
-      Nom du jeu de données. Exemple : "Arbres vivants inventoriés en forêt"
-    </label>
-    <input
-      id="title"
-      name="title"
-      on:change={handleChange}
-      on:blur={handleChange}
-      bind:value={$form.title}
-    />
-    {#if $errors.title}
-      <small>{$errors.title}</small>
-    {/if}
+<h1>Informations générales</h1>
+<div class="fr-col fr-col-lg-8">
+  <form on:submit={handleSubmit} data-bitwarden-watching="1">
+    <fieldset class="fr-fieldset fr-my-4w">
+      <div
+        class="fr-input-group {errorClassname(
+          $errors.title,
+          'fr-input-group--error'
+        )}"
+      >
+        <label class="fr-label mandatory" for="title">
+          Nom de la donnée
+          <span class="fr-hint-text" id="select-hint-desc-hint">
+            Ce nom doit aller à l’essentiel et permettre d’indiquer en quelques
+            mots les informations que l’on peut y trouver.
+          </span>
+        </label>
+        <input
+          class="fr-input {errorClassname($errors.title, 'fr-input--error')}"
+          aria-describedby={$errors.title ? "title-desc-error" : null}
+          type="text"
+          id="title"
+          name="title"
+          on:change={handleChange}
+          on:blur={handleChange}
+          bind:value={$form.title}
+        />
+        {#if $errors.title}
+          <p id="title-desc-error" class="fr-error-text">
+            {$errors.title}
+          </p>
+        {/if}
+      </div>
 
-    <label for="description">
-      Présentation du jeu de données. Exemple : "Données brutes de l'inventaire
-      forestier correspondant à l'ensemble des données collectées en forêt sur
-      le territoire métropolitain par les agents forestiers de terrain de l'IGN.
-      Ces données portent sur les caractéristiques des placettes d'inventaire,
-      les mesures et observations sur les arbres et les données
-      éco-floristiques. Les coordonnées géographiques des placettes sont
-      fournies au kilomètre près."
-    </label>
-    <textarea
-      id="description"
-      name="description"
-      on:change={handleChange}
-      on:blur={handleChange}
-      bind:value={$form.description}
-    />
-    {#if $errors.description}
-      <small>{$errors.description}</small>
-    {/if}
+      <div
+        class="fr-input-group {errorClassname(
+          $errors.description,
+          'fr-input-group--error'
+        )}"
+      >
+        <label class="fr-label mandatory" for="description">
+          Description des données
+          <span class="fr-hint-text" id="select-hint-desc-hint">
+            Quel type de données sont contenues dans ce jeu de données ? Les
+            informations saisies ici seront utilisées par le moteur de
+            recherche.
+          </span>
+        </label>
+        <textarea
+          class="fr-input {errorClassname(
+            $errors.description,
+            'fr-input--error'
+          )}"
+          aria-describedby={$errors.description
+            ? "description-desc-error"
+            : null}
+          id="description"
+          name="description"
+          on:change={handleChange}
+          on:blur={handleChange}
+          bind:value={$form.description}
+        />
+        {#if $errors.description}
+          <p id="description-desc-error" class="fr-error-text">
+            {$errors.description}
+          </p>
+        {/if}
+      </div>
+    </fieldset>
 
-    <button type="submit">
-      {#if $isSubmitting}loading...{:else}submit{/if}
-    </button>
+    <div class="fr-input-group fr-my-4w">
+      <button
+        type="submit"
+        disabled={!$isValid}
+        class="fr-btn"
+        title="Contribuer ce jeu de données"
+      >
+        {#if $isSubmitting}
+          Contribution en cours...
+        {:else}
+          Contribuer ce jeu de données
+        {/if}
+      </button>
+    </div>
   </form>
-</section>
+</div>

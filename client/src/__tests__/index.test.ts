@@ -14,9 +14,7 @@ describe("Test the form", () => {
   });
   test('The "description" field is present', () => {
     const { getByLabelText } = render(Home);
-    expect(
-      getByLabelText("Présentation", { exact: false })
-    ).toBeInTheDocument();
+    expect(getByLabelText("Description", { exact: false })).toBeInTheDocument();
   });
   test("The submit button is present", () => {
     const { getByRole } = render(Home);
@@ -26,9 +24,9 @@ describe("Test the form", () => {
     const { getByRole } = render(Home);
     const submitButton = getByRole("button");
 
-    expect(submitButton).toHaveTextContent("submit");
+    expect(submitButton).toHaveTextContent("Contribuer");
 
     await fireEvent.click(submitButton);
-    expect(submitButton).toHaveTextContent("loading...");
+    expect(submitButton).toHaveTextContent("Contribution");
   });
 });

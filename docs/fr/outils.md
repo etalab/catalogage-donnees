@@ -54,3 +54,13 @@ interactive (en dev).
 En mode interactif avec `cd client && npm run test-e2e:watch`, une fenêtre
 cypress s'ouvre qui permet de lancer les tests dans différents navigateurs, et
 de pouvoir remonter dans le déroulé de chaque test.
+
+## DSFR
+
+Le site utilise le [Design System de
+l'État](https://gouvfr.atlassian.net/wiki/spaces/DB/overview) (aussi appelé
+*DSFR*).
+
+Il existe aussi le site très pratique de [Démo du design système
+de l'état](https://template.incubateur.net/) pour la mise en œuvre et
+l'utilisation de ce DSFR.
