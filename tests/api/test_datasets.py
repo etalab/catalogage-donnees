@@ -1,7 +1,12 @@
 import httpx
 import pytest
 
+from server.application.datasets.commands import CreateDataset
+from server.application.datasets.queries import GetDatasetByID
+from server.config.di import resolve
 from server.domain.common.types import id_factory
+from server.domain.datasets.exceptions import DatasetDoesNotExist
+from server.seedwork.application.messages import MessageBus
 
 
 @pytest.mark.asyncio
@@ -72,3 +77,93 @@ async def test_create_dataset(client: httpx.AsyncClient) -> None:
     response = await client.get("/datasets/")
     assert response.status_code == 200
     assert response.json() == []
+
+
+CREATE_EXAMPLE_DATASET = CreateDataset(
+    title="Example title", description="Example description"
+)
+
+
+@pytest.mark.asyncio
+class TestDatasetUpdate:
+    async def test_not_found(self, client: httpx.AsyncClient) -> None:
+        response = await client.put(
+            f"/datasets/{id_factory()}/",
+            json={"title": "Title", "description": "Description"},
+        )
+        assert response.status_code == 404
+
+    async def test_full_entity_expected(self, client: httpx.AsyncClient) -> None:
+        bus = resolve(MessageBus)
+        dataset_id = await bus.execute(CREATE_EXAMPLE_DATASET)
+
+        # Apply PUT semantics, which expect a full entity.
+        response = await client.put(f"/datasets/{dataset_id}/", json={})
+        assert response.status_code == 422
+        err_title, err_description = response.json()["detail"]
+        assert err_title["loc"] == ["body", "title"]
+        assert err_title["type"] == "value_error.missing"
+        assert err_description["loc"] == ["body", "description"]
+        assert err_description["type"] == "value_error.missing"
+
+    async def test_fields_empty_invalid(self, client: httpx.AsyncClient) -> None:
+        bus = resolve(MessageBus)
+        dataset_id = await bus.execute(CREATE_EXAMPLE_DATASET)
+
+        response = await client.put(
+            f"/datasets/{dataset_id}/", json={"title": "", "description": ""}
+        )
+        assert response.status_code == 422
+
+        err_title, err_description = response.json()["detail"]
+
+        assert err_title["loc"] == ["body", "title"]
+        assert "empty" in err_title["msg"]
+
+        assert err_description["loc"] == ["body", "description"]
+        assert "empty" in err_description["msg"]
+
+    async def test_update(self, client: httpx.AsyncClient) -> None:
+        bus = resolve(MessageBus)
+        dataset_id = await bus.execute(CREATE_EXAMPLE_DATASET)
+
+        response = await client.put(
+            f"/datasets/{dataset_id}/",
+            json={"title": "Other title", "description": "Other description"},
+        )
+        assert response.status_code == 200
+
+        # API returns updated representation
+        assert response.json() == {
+            "id": str(dataset_id),
+            "title": "Other title",
+            "description": "Other description",
+        }
+
+        # Entity was indeed updated
+        query = GetDatasetByID(id=dataset_id)
+        dataset = await bus.execute(query)
+        assert dataset.title == "Other title"
+        assert dataset.description == "Other description"
+
+
+@pytest.mark.asyncio
+class TestDeleteDataset:
+    async def test_delete(self, client: httpx.AsyncClient) -> None:
+        bus = resolve(MessageBus)
+
+        command = CREATE_EXAMPLE_DATASET
+        dataset_id = await bus.execute(command)
+
+        response = await client.delete(f"/datasets/{dataset_id}/")
+        assert response.status_code == 204
+
+        query = GetDatasetByID(id=dataset_id)
+        with pytest.raises(DatasetDoesNotExist):
+            await bus.execute(query)
+
+    async def test_idempotent(self, client: httpx.AsyncClient) -> None:
+        # Repeated calls on a deleted (or non-existing) resource should be fine.
+        dataset_id = id_factory()
+        response = await client.delete(f"/datasets/{dataset_id}/")
+        assert response.status_code == 204
