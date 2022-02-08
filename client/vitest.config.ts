@@ -11,7 +11,7 @@ export default defineConfig({
       ...baseConfig.resolve.alias,
       // Add any alias resolutions that should be mocked, because
       // they are not available unless SvelteKit runs.
-      "$app/env": path.resolve("./src/__tests__/app.env.mock.ts"),
+      "$app/env": path.resolve("./src/tests/app.env.mock.ts"),
     },
   },
   plugins: [
@@ -22,5 +22,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
+    exclude: [
+      "**/e2e/**",
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/cypress/**",
+      "**/.{idea,git,cache,output,temp}/**",
+    ],
   },
 });
