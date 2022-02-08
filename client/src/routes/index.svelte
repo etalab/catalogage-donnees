@@ -1,126 +1,240 @@
 <script context="module" lang="ts">
-  export const prerender = true;
+  import { enhance } from "$lib/form";
+  import type { Load } from "@sveltejs/kit";
+
+  // see https://kit.svelte.dev/docs#loading
+  export const load: Load = async ({ fetch }) => {
+    const res = await fetch("/datasets");
+
+    if (res.ok) {
+      const datasets = await res.json();
+
+      return {
+        props: { datasets },
+      };
+    }
+
+    const { message } = await res.json();
+
+    return {
+      error: new Error(message),
+    };
+  };
 </script>
 
 <script lang="ts">
-  import { createForm } from "svelte-forms-lib";
-  import * as yup from "yup";
-  import { getApiUrl } from "$lib/fetch";
+  import { scale } from "svelte/transition";
+  import { flip } from "svelte/animate";
 
-  const postData = async (values) => {
-    const data = JSON.stringify(values);
-    const url = `${getApiUrl()}/datasets/`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: data,
-    });
-    await new Promise((r) => setTimeout(r, 1000)); // TODO: remove, just for debugging purposes
-    return await response.json();
+  type Dataset = {
+    id: string;
+    title: string;
+    description: string;
   };
 
-  const { form, errors, handleChange, handleSubmit, isSubmitting, isValid } =
-    createForm({
-      initialValues: {
-        title: "",
-        description: "",
-      },
-      validationSchema: yup.object().shape({
-        title: yup.string().required("Le titre ne peut être vide"),
-        description: yup.string().required("La description ne peut être vide"),
-      }),
-      onSubmit: (values) => {
-        const result = postData(values);
-        return result;
-      },
+  export let datasets: Dataset[];
+
+  const isDone = (dataset: Dataset) => dataset.title === "done";
+  const flipDone = (dataset: Dataset) =>
+    (dataset.title = isDone(dataset) ? "Title" : "done");
+
+  async function put({ response }: { response: Response }) {
+    const dataset = await response.json();
+
+    datasets = datasets.map((d) => {
+      if (d.id === dataset.id) return dataset;
+      return d;
     });
-  const errorClassname = (error: string, className: string) =>
-    error ? className : "";
+  }
 </script>
 
-<h1>Informations générales</h1>
-<div class="fr-col fr-col-lg-8">
-  <form on:submit={handleSubmit} data-bitwarden-watching="1">
-    <fieldset class="fr-fieldset fr-my-4w">
-      <div
-        class="fr-input-group {errorClassname(
-          $errors.title,
-          'fr-input-group--error'
-        )}"
-      >
-        <label class="fr-label mandatory" for="title">
-          Nom de la donnée
-          <span class="fr-hint-text" id="select-hint-desc-hint">
-            Ce nom doit aller à l’essentiel et permettre d’indiquer en quelques
-            mots les informations que l’on peut y trouver.
-          </span>
-        </label>
-        <input
-          class="fr-input {errorClassname($errors.title, 'fr-input--error')}"
-          aria-describedby={$errors.title ? "title-desc-error" : null}
-          type="text"
-          id="title"
-          name="title"
-          on:change={handleChange}
-          on:blur={handleChange}
-          bind:value={$form.title}
-        />
-        {#if $errors.title}
-          <p id="title-desc-error" class="fr-error-text">
-            {$errors.title}
-          </p>
-        {/if}
-      </div>
+<svelte:head>
+  <title>Datasets</title>
+</svelte:head>
 
-      <div
-        class="fr-input-group {errorClassname(
-          $errors.description,
-          'fr-input-group--error'
-        )}"
-      >
-        <label class="fr-label mandatory" for="description">
-          Description des données
-          <span class="fr-hint-text" id="select-hint-desc-hint">
-            Quel type de données sont contenues dans ce jeu de données ? Les
-            informations saisies ici seront utilisées par le moteur de
-            recherche.
-          </span>
-        </label>
-        <textarea
-          class="fr-input {errorClassname(
-            $errors.description,
-            'fr-input--error'
-          )}"
-          aria-describedby={$errors.description
-            ? "description-desc-error"
-            : null}
-          id="description"
-          name="description"
-          on:change={handleChange}
-          on:blur={handleChange}
-          bind:value={$form.description}
-        />
-        {#if $errors.description}
-          <p id="description-desc-error" class="fr-error-text">
-            {$errors.description}
-          </p>
-        {/if}
-      </div>
-    </fieldset>
+<div class="todos">
+  <h1>Datasets</h1>
 
-    <div class="fr-input-group fr-my-4w">
-      <button
-        type="submit"
-        disabled={!$isValid}
-        class="fr-btn"
-        title="Contribuer ce jeu de données"
-      >
-        {#if $isSubmitting}
-          Contribution en cours...
-        {:else}
-          Contribuer ce jeu de données
-        {/if}
-      </button>
-    </div>
+  <form
+    class="new"
+    action="/datasets"
+    method="post"
+    use:enhance={{
+      result: async ({ response, form }) => {
+        const created = await response.json();
+        datasets = [...datasets, created];
+
+        form.reset();
+      },
+    }}
+  >
+    <input name="text" placeholder="+ tap to add a dataset" />
   </form>
+
+  {#each datasets as dataset (dataset.id)}
+    <div
+      class="todo"
+      class:done={isDone(dataset)}
+      transition:scale|local={{ start: 0.7 }}
+      animate:flip={{ duration: 200 }}
+    >
+      <form
+        action="/datasets?_method=put"
+        method="post"
+        use:enhance={{
+          pending: ({ data }) => {
+            flipDone(dataset);
+          },
+          result: put,
+        }}
+      >
+        <input type="hidden" name="id" value={dataset.id} />
+        <input
+          type="hidden"
+          name="title"
+          value={isDone(dataset) ? "Title" : "done"}
+        />
+        <input type="hidden" name="description" value={dataset.description} />
+        <button
+          class="toggle"
+          aria-label="Mark todo as {isDone(dataset) ? 'not done' : 'done'}"
+        />
+      </form>
+
+      <form
+        class="text"
+        action="/datasets?_method=put"
+        method="post"
+        use:enhance={{
+          result: put,
+        }}
+      >
+        <input type="hidden" name="id" value={dataset.id} />
+        <input type="text" name="title" value={dataset.title} />
+        <input type="hidden" name="description" value={dataset.description} />
+        <button class="save" aria-label="Save dataset" />
+      </form>
+
+      <form
+        action="/datasets?_method=delete"
+        method="post"
+        use:enhance={{
+          result: () => {
+            datasets = datasets.filter((t) => t.id !== dataset.id);
+          },
+        }}
+      >
+        <input type="hidden" name="id" value={dataset.id} />
+        <button class="delete" aria-label="Delete dataset" />
+      </form>
+    </div>
+  {/each}
 </div>
+
+<style>
+  .todos {
+    width: 100%;
+    max-width: var(--column-width);
+    margin: var(--column-margin-top) auto 0 auto;
+    line-height: 1;
+  }
+
+  .new {
+    margin: 0 0 0.5rem 0;
+  }
+
+  input {
+    border: 1px solid transparent;
+  }
+
+  input:focus-visible {
+    box-shadow: inset 1px 1px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ff3e00 !important;
+    outline: none;
+  }
+
+  .new input {
+    font-size: 28px;
+    width: 100%;
+    padding: 0.5em 1em 0.3em 1em;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  .todo {
+    display: grid;
+    grid-template-columns: 2rem 1fr 2rem;
+    grid-gap: 0.5rem;
+    align-items: center;
+    margin: 0 0 0.5rem 0;
+    padding: 0.5rem;
+    background-color: white;
+    border-radius: 8px;
+    filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.1));
+    transform: translate(-1px, -1px);
+    transition: filter 0.2s, transform 0.2s;
+  }
+
+  .done {
+    transform: none;
+    opacity: 0.4;
+    filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.1));
+  }
+
+  form.text {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .todo input {
+    flex: 1;
+    padding: 0.5em 2em 0.5em 0.8em;
+    border-radius: 3px;
+  }
+
+  .todo button {
+    width: 2em;
+    height: 2em;
+    border: none;
+    background-color: transparent;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+  }
+
+  button.toggle {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    box-sizing: border-box;
+    background-size: 1em auto;
+  }
+
+  .done .toggle {
+    background-image: url("data:image/svg+xml,%3Csvg width='22' height='16' viewBox='0 0 22 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20.5 1.5L7.4375 14.5L1.5 8.5909' stroke='%23676778' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  .delete {
+    background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.5 5V22H19.5V5H4.5Z' fill='%23676778' stroke='%23676778' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M10 10V16.5' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M14 10V16.5' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M2 5H22' stroke='%23676778' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M8 5L9.6445 2H14.3885L16 5H8Z' fill='%23676778' stroke='%23676778' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E%0A");
+    opacity: 0.2;
+  }
+
+  .delete:hover {
+    transition: opacity 0.2s;
+    opacity: 1;
+  }
+
+  .save {
+    position: absolute;
+    right: 0;
+    opacity: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20.5 2H3.5C2.67158 2 2 2.67157 2 3.5V20.5C2 21.3284 2.67158 22 3.5 22H20.5C21.3284 22 22 21.3284 22 20.5V3.5C22 2.67157 21.3284 2 20.5 2Z' fill='%23676778' stroke='%23676778' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M17 2V11H7.5V2H17Z' fill='white' stroke='white' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M13.5 5.5V7.5' stroke='%23676778' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M5.99844 2H18.4992' stroke='%23676778' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E%0A");
+  }
+
+  .todo input:focus + .save {
+    transition: opacity 0.2s;
+    opacity: 1;
+  }
+</style>
