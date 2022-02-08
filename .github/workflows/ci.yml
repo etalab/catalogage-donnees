@@ -39,3 +39,10 @@ jobs:
 
       - name: "Run tests"
         run: make test-ci
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: playwright-results
+          path: client/test-results
