@@ -10,3 +10,7 @@ class Dataset(Entity):
 
     class Config:
         orm_mode = True
+
+    def update(self, title: str, description: str) -> None:
+        self.title = title
+        self.description = description

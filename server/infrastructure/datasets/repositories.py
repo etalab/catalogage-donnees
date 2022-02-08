@@ -1,7 +1,7 @@
 import uuid
 from typing import List, Optional
 
-from sqlalchemy import Column, String, delete, insert, select
+from sqlalchemy import Column, String, delete, insert, select, update
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import NoResultFound
 
@@ -50,6 +50,16 @@ class SqlDatasetRepository(DatasetRepository):
             result = await session.execute(stmt)
             await session.commit()
             return result.scalar_one()
+
+    async def update(self, entity: Dataset) -> None:
+        async with self._db.session() as session:
+            stmt = (
+                update(DatasetModel)
+                .where(DatasetModel.id == entity.id)
+                .values(**entity.dict(exclude={"id"}))
+            )
+            await session.execute(stmt)
+            await session.commit()
 
     async def delete(self, id: ID) -> None:
         async with self._db.session() as session:

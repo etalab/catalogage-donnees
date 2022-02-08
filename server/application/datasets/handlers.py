@@ -6,7 +6,7 @@ from server.domain.datasets.entities import Dataset
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.domain.datasets.repositories import DatasetRepository
 
-from .commands import CreateDataset, DeleteDataset
+from .commands import CreateDataset, DeleteDataset, UpdateDataset
 from .queries import GetAllDatasets, GetDatasetByID
 
 
@@ -18,6 +18,19 @@ async def create_dataset(command: CreateDataset) -> ID:
         description=command.description,
     )
     return await repository.insert(dataset)
+
+
+async def update_dataset(command: UpdateDataset) -> None:
+    repository = resolve(DatasetRepository)
+
+    pk = command.id
+    dataset = await repository.get_by_id(pk)
+    if dataset is None:
+        raise DatasetDoesNotExist(pk)
+
+    dataset.update(title=command.title, description=command.description)
+
+    await repository.update(dataset)
 
 
 async def delete_dataset(command: DeleteDataset) -> None:

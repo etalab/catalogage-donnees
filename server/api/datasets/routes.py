@@ -3,7 +3,11 @@ from typing import List
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 
-from server.application.datasets.commands import CreateDataset, DeleteDataset
+from server.application.datasets.commands import (
+    CreateDataset,
+    DeleteDataset,
+    UpdateDataset,
+)
 from server.application.datasets.queries import GetAllDatasets, GetDatasetByID
 from server.config.di import resolve
 from server.domain.common.types import ID
@@ -11,7 +15,7 @@ from server.domain.datasets.entities import Dataset
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
-from .schemas import DatasetCreate, DatasetRead
+from .schemas import DatasetCreate, DatasetRead, DatasetUpdate
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
@@ -45,6 +49,24 @@ async def create_dataset(data: DatasetCreate) -> Dataset:
     )
 
     id = await bus.execute(command)
+
+    query = GetDatasetByID(id=id)
+    return await bus.execute(query)
+
+
+@router.put("/{id}/", response_model=DatasetRead, responses={404: {}})
+async def update_dataset(id: ID, data: DatasetUpdate) -> Dataset:
+    bus = resolve(MessageBus)
+
+    command = UpdateDataset(
+        id=id,
+        title=data.title,
+        description=data.description,
+    )
+    try:
+        await bus.execute(command)
+    except DatasetDoesNotExist:
+        raise HTTPException(404)
 
     query = GetDatasetByID(id=id)
     return await bus.execute(query)

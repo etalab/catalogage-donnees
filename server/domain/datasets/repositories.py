@@ -19,5 +19,8 @@ class DatasetRepository(Repository):
     async def insert(self, entity: Dataset) -> ID:
         raise NotImplementedError  # pragma: no cover
 
+    async def update(self, entity: Dataset) -> None:
+        raise NotImplementedError  # pragma: no cover
+
     async def delete(self, id: ID) -> None:
         raise NotImplementedError  # pragma: no cover

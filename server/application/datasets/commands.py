@@ -7,5 +7,11 @@ class CreateDataset(Command[ID]):
     description: str
 
 
+class UpdateDataset(Command[None]):
+    id: ID
+    title: str
+    description: str
+
+
 class DeleteDataset(Command[None]):
     id: ID

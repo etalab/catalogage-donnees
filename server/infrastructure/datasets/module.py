@@ -1,9 +1,14 @@
-from server.application.datasets.commands import CreateDataset, DeleteDataset
+from server.application.datasets.commands import (
+    CreateDataset,
+    DeleteDataset,
+    UpdateDataset,
+)
 from server.application.datasets.handlers import (
     create_dataset,
     delete_dataset,
     get_all_datasets,
     get_dataset_by_id,
+    update_dataset,
 )
 from server.application.datasets.queries import GetAllDatasets, GetDatasetByID
 from server.seedwork.application.modules import Module
@@ -12,6 +17,7 @@ from server.seedwork.application.modules import Module
 class DatasetsModule(Module):
     command_handlers = {
         CreateDataset: create_dataset,
+        UpdateDataset: update_dataset,
         DeleteDataset: delete_dataset,
     }
 
