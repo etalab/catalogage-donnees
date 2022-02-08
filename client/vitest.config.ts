@@ -26,7 +26,6 @@ export default defineConfig({
       "**/e2e/**",
       "**/node_modules/**",
       "**/dist/**",
-      "**/cypress/**",
       "**/.{idea,git,cache,output,temp}/**",
     ],
   },
