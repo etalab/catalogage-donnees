@@ -1,7 +1,3 @@
-<script context="module" lang="ts">
-  export const prerender = true;
-</script>
-
 <script lang="ts">
   import { createForm } from "svelte-forms-lib";
   import * as yup from "yup";

@@ -1,0 +1,16 @@
+/*!
+ * DSFR v1.2.1 | SPDX-License-Identifier: MIT | License-Filename: LICENSE.md | restricted use (see terms and conditions)
+ */
+@charset "UTF-8";
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  /**
+  * Reset liste à puce
+  */
+  .fr-links-group > li {
+    list-style: none;
+  }
+
+  .fr-link {
+    color: #000091;
+  }
+}
