@@ -1,28 +1,31 @@
 <script lang="ts">
-  export let url;
+  export let url: URL;
 
   const capitalize = (str: string) => str[0].toUpperCase() + str.substring(1);
 
   type Crumb = { label: string; href: string };
-  let crumbs: Crumb[];
 
-  // Remove zero-length tokens.
-  const tokens = url.pathname
-    .split("/")
-    .filter((token: string) => token !== "");
+  const makeCrumbs = (url: URL): Crumb[] => {
+    // Remove zero-length tokens.
+    const tokens = url.pathname.split("/").filter((token: string) => token !== "");
 
-  // Create { label, href } pairs for each token.
-  let tokenPath = "";
-  crumbs = tokens.map((token: string) => {
-    tokenPath += "/" + token;
-    return {
-      label: capitalize(token),
-      href: tokenPath,
-    };
-  });
+    // Create { label, href } pairs for each token.
+    let tokenPath = "";
+    const crumbs: Crumb[] = tokens.map((token: string) => {
+      tokenPath += "/" + token;
+      return {
+        label: capitalize(token),
+        href: tokenPath,
+      };
+    });
 
-  // Add a way to get home too.
-  crumbs.unshift({ label: "Accueil", href: "/" });
+    // Add a way to get home too.
+    crumbs.unshift({ label: "Accueil", href: "/" });
+
+    return crumbs;
+  };
+
+  $: crumbs = makeCrumbs(url);
 </script>
 
 <nav
