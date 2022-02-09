@@ -15,7 +15,7 @@ install-server: #- Install server dependencies
 	${pip} install -r requirements.txt
 
 install-client: #- Install client dependencies
-	cd client && npm ci
+	cd client && npm ci && npx playwright install
 
 build: #- Build production assets
 	cd client && npm run build
@@ -66,7 +66,7 @@ test-client-e2e: #- Run the client e2e test suite
 	cd client && npm run test-e2e
 
 test-client-e2e-ci: #- Run the client e2e test suite in a CI mode
-	cd client && npx playwright install && npm run test-e2e:ci
+	cd client && npm run test-e2e:ci
 
 format: format-server format-client #- Run code formatting on server and client sources
 
