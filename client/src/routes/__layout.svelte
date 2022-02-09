@@ -12,6 +12,8 @@
   import icoFavicon from "@gouvfr/dsfr/dist/favicon/favicon.ico";
   import manifest from "@gouvfr/dsfr/dist/favicon/manifest.webmanifest";
 
+  $: url = $page.url;
+
   onMount(async () => {
     // Load the DSFR asynchronously, and only on the browser (not in SSR).
     await import("@gouvfr/dsfr/dist/dsfr/dsfr.module.min.js");
@@ -47,10 +49,8 @@
 
 <main id="contenu" role="main">
   <div class="fr-container fr-mb-8w">
-    <Breadcrumbs url={$page.url} />
-    <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters">
-      <slot />
-    </div>
+    <Breadcrumbs {url} />
+    <slot />
   </div>
 </main>
 
