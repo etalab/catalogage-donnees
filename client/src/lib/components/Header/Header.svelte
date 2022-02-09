@@ -1,3 +1,9 @@
+<script lang="ts">
+  import { navigationItems } from "src/lib/helpers/navigation";
+
+  import HeaderNav from "../HeaderNav/HeaderNav.svelte";
+</script>
+
 <header role="banner" class="fr-header">
   <div class="fr-header__body">
     <div class="fr-container">
@@ -50,34 +56,7 @@
         data-fr-js-modal-button="true">Fermer</button
       >
 
-      <nav
-        class="fr-nav"
-        role="navigation"
-        aria-label="Menu principal"
-        id="header-navigation"
-        data-fr-js-navigation="true"
-      >
-        <ul class="fr-nav__list">
-          <li class="fr-nav__item" data-fr-js-navigation-item="true">
-            <a
-              class="fr-nav__link"
-              href="/contribuer"
-              target="_self"
-              aria-current="page">Contribuer</a
-            >
-          </li>
-          <li class="fr-nav__item" data-fr-js-navigation-item="true">
-            <a class="fr-nav__link" href="/rechercher" target="_self"
-              >Rechercher</a
-            >
-          </li>
-          <li class="fr-nav__item" data-fr-js-navigation-item="true">
-            <a class="fr-nav__link" href="/mon-espace" target="_self"
-              >Mon espace</a
-            >
-          </li>
-        </ul>
-      </nav>
+      <HeaderNav items={navigationItems} />
     </div>
   </div>
 </header>
