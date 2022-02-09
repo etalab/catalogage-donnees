@@ -7,7 +7,9 @@
 
   const makeCrumbs = (url: URL): Crumb[] => {
     // Remove zero-length tokens.
-    const tokens = url.pathname.split("/").filter((token: string) => token !== "");
+    const tokens = url.pathname
+      .split("/")
+      .filter((token: string) => token !== "");
 
     // Create { label, href } pairs for each token.
     let tokenPath = "";

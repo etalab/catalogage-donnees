@@ -1,11 +1,7 @@
 <script lang="ts">
-  import Breadcrumbs from "$lib/components/Breadcrumbs/Breadcrumbs.svelte";
   import Header from "$lib/components/Header/Header.svelte";
   import Footer from "$lib/components/Footer/Footer.svelte";
-  import { page } from "$app/stores";
   import "../app.css";
-
-  $: url = $page.url;
 </script>
 
 <div class="fr-skiplinks">
@@ -28,7 +24,6 @@
 
 <main id="contenu" role="main">
   <div class="fr-container fr-mb-8w">
-    <Breadcrumbs {url} />
     <slot />
   </div>
 </main>

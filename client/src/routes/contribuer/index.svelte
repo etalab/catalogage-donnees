@@ -5,6 +5,8 @@
 <script lang="ts">
   import { createForm } from "svelte-forms-lib";
   import * as yup from "yup";
+  import { page } from "$app/stores";
+  import Breadcrumbs from "$lib/components/Breadcrumbs/Breadcrumbs.svelte";
   import { getApiUrl } from "$lib/fetch";
 
   const postData = async (values) => {
@@ -36,11 +38,15 @@
     });
   const errorClassname = (error: string, className: string) =>
     error ? className : "";
+
+  $: url = $page.url;
 </script>
 
 <svelte:head>
   <title>Contribuer</title>
 </svelte:head>
+
+<Breadcrumbs {url} />
 
 <h1>Informations générales</h1>
 <div class="fr-col-lg-8">

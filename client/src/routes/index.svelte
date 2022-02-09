@@ -23,7 +23,7 @@
   <title>Catalogue</title>
 </svelte:head>
 
-<h2>Dernières contributions</h2>
+<h2 class="fr-mt-9w fr-mb-3w">Dernières contributions</h2>
 
 <section>
   <DatasetList {datasets} />
