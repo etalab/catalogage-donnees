@@ -28,6 +28,16 @@ jobs:
           python-version: "3.10"
           cache: "pip"
 
+      - uses: actions/setup-node@v2
+        with:
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-node-${{ hashFiles('**/client/package-lock.json') }}
+
       - name: "Install dependencies"
         run: make install
 
@@ -39,3 +49,10 @@ jobs:
 
       - name: "Run tests"
         run: make test-ci
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: playwright-results
+          path: client/test-results
