@@ -44,16 +44,12 @@ Ce projet est équipé du _type checking_ avec [`mypy`](https://mypy.readthedocs
 
 La vérification se fait avec une exécution standard de `$ mypy` lors de `make check`.
 
-## Cypress
+## Playwright
 
-Les tests _end-to-end_ sont lancés avec [`cypress`](https://www.cypress.io/).
+Les tests _end-to-end_ sont lancés avec [`Playwright`](https://playwright.dev/).
 Il sont soit exécutés en mode _ci_ (continuous integration, par exemple dans
 notre cas avec github actions), et donc en _headless_, soit de manière
 interactive (en dev).
-
-En mode interactif avec `cd client && npm run test-e2e:watch`, une fenêtre
-cypress s'ouvre qui permet de lancer les tests dans différents navigateurs, et
-de pouvoir remonter dans le déroulé de chaque test.
 
 ## DSFR
 
