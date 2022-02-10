@@ -5,7 +5,6 @@ module.exports = {
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "prettier",
-    "plugin:cypress/recommended",
   ],
   plugins: ["svelte3", "@typescript-eslint"],
   ignorePatterns: ["*.cjs"],

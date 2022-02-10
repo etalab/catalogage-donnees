@@ -9,3 +9,6 @@ node_modules
 .vercel
 .output
 /coverage
+
+# End-to-end tests with Playwright
+/test-results

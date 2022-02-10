@@ -25,6 +25,9 @@ function getProxy() {
   };
 }
 
+/**
+ * @type {import('vite').UserConfig}
+ */
 export const config = {
   envDir: path.resolve(".."),
   resolve: {

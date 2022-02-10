@@ -15,7 +15,7 @@ install-server: #- Install server dependencies
 	${pip} install -r requirements.txt
 
 install-client: #- Install client dependencies
-	cd client && npm ci
+	cd client && npm ci && npx playwright install firefox
 
 build: #- Build production assets
 	cd client && npm run build
