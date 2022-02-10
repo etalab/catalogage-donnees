@@ -1,7 +1,27 @@
 <script lang="ts">
-  import { navigationItems } from "src/lib/helpers/navigation";
+  import { page } from "$app/stores";
 
-  import HeaderNav from "../HeaderNav/HeaderNav.svelte";
+  type NavItem = {
+    label: string;
+    href: string;
+  };
+
+  const navigationItems: NavItem[] = [
+    {
+      label: "Rechercher",
+      href: "/",
+    },
+    {
+      label: "Contribuer",
+      href: "#",
+    },
+    {
+      label: "Mon espace",
+      href: "#",
+    },
+  ];
+
+  $: path = $page.url.pathname;
 </script>
 
 <header role="banner" class="fr-header">
@@ -56,7 +76,28 @@
         data-fr-js-modal-button="true">Fermer</button
       >
 
-      <HeaderNav items={navigationItems} />
+      <nav
+        class="fr-nav"
+        role="navigation"
+        aria-label="Menu principal"
+        id="header-navigation"
+        data-fr-js-navigation="true"
+      >
+        <ul class="fr-nav__list">
+          {#each navigationItems as { label, href }}
+            <li class="fr-nav__item" data-fr-js-navigaton-item="true">
+              <a
+                {href}
+                class="fr-nav__link"
+                target="_self"
+                aria-current={href === path ? "page" : undefined}
+              >
+                {label}
+              </a>
+            </li>
+          {/each}
+        </ul>
+      </nav>
     </div>
   </div>
 </header>
