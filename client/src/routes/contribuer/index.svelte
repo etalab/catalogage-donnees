@@ -36,7 +36,6 @@
     });
   const errorClassname = (error: string, className: string) =>
     error ? className : "";
-
 </script>
 
 <svelte:head>

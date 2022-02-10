@@ -113,3 +113,14 @@ Les variables peuvent aussi être passées en arguments, elles sont alors utilis
 ```bash
 APP_DATABASE_URL="..." make serve
 ```
+
+## Tests
+
+### Tests unitaires - Client
+
+Les tests unitaires côté client utilisent [`svelte-testing-library`](https://github.com/testing-library/svelte-testing-library).
+
+Autres ressources pour démarrer :
+
+- [Svelte Testing Library: Example](https://testing-library.com/docs/svelte-testing-library/example)
+- [Unit Testing Svelte Components](https://sveltesociety.dev/recipes/testing-and-debugging/unit-testing-svelte-component/)
