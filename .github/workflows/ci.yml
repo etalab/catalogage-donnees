@@ -41,6 +41,9 @@ jobs:
       - name: "Install dependencies"
         run: make install
 
+      - name: "Build"
+        run: make build
+
       - name: "Run migrations"
         run: make migrate
 

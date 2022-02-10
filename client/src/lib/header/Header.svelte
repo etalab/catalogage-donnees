@@ -59,22 +59,15 @@
       >
         <ul class="fr-nav__list">
           <li class="fr-nav__item" data-fr-js-navigation-item="true">
-            <a
-              class="fr-nav__link"
-              href="/contribuer"
-              target="_self"
-              aria-current="page">Contribuer</a
+            <a class="fr-nav__link" href="#" target="_self" aria-current="page"
+              >Contribuer</a
             >
           </li>
           <li class="fr-nav__item" data-fr-js-navigation-item="true">
-            <a class="fr-nav__link" href="/rechercher" target="_self"
-              >Rechercher</a
-            >
+            <a class="fr-nav__link" href="#" target="_self">Rechercher</a>
           </li>
           <li class="fr-nav__item" data-fr-js-navigation-item="true">
-            <a class="fr-nav__link" href="/mon-espace" target="_self"
-              >Mon espace</a
-            >
+            <a class="fr-nav__link" href="#" target="_self">Mon espace</a>
           </li>
         </ul>
       </nav>
