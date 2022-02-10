@@ -1,3 +1,29 @@
+<script lang="ts">
+  import { page } from "$app/stores";
+
+  type NavItem = {
+    label: string;
+    href: string;
+  };
+
+  const navigationItems: NavItem[] = [
+    {
+      label: "Rechercher",
+      href: "/",
+    },
+    {
+      label: "Contribuer",
+      href: "#",
+    },
+    {
+      label: "Mon espace",
+      href: "#",
+    },
+  ];
+
+  $: path = $page.url.pathname;
+</script>
+
 <header role="banner" class="fr-header">
   <div class="fr-header__body">
     <div class="fr-container">
@@ -58,17 +84,18 @@
         data-fr-js-navigation="true"
       >
         <ul class="fr-nav__list">
-          <li class="fr-nav__item" data-fr-js-navigation-item="true">
-            <a class="fr-nav__link" href="#" target="_self" aria-current="page"
-              >Contribuer</a
-            >
-          </li>
-          <li class="fr-nav__item" data-fr-js-navigation-item="true">
-            <a class="fr-nav__link" href="#" target="_self">Rechercher</a>
-          </li>
-          <li class="fr-nav__item" data-fr-js-navigation-item="true">
-            <a class="fr-nav__link" href="#" target="_self">Mon espace</a>
-          </li>
+          {#each navigationItems as { label, href }}
+            <li class="fr-nav__item" data-fr-js-navigaton-item="true">
+              <a
+                {href}
+                class="fr-nav__link"
+                target="_self"
+                aria-current={href === path ? "page" : undefined}
+              >
+                {label}
+              </a>
+            </li>
+          {/each}
         </ul>
       </nav>
     </div>

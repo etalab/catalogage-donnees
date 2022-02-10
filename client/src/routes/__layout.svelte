@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
-  import Header from "$lib/header/Header.svelte";
-  import Footer from "$lib/footer/Footer.svelte";
+  import Breadcrumbs from "$lib/components/Breadcrumbs/Breadcrumbs.svelte";
+  import Header from "$lib/components/Header/Header.svelte";
+  import Footer from "$lib/components/Footer/Footer.svelte";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import "../app.css";
@@ -11,6 +11,8 @@
   import svgFavicon from "@gouvfr/dsfr/dist/favicon/favicon.svg";
   import icoFavicon from "@gouvfr/dsfr/dist/favicon/favicon.ico";
   import manifest from "@gouvfr/dsfr/dist/favicon/manifest.webmanifest";
+
+  $: url = $page.url;
 
   onMount(async () => {
     // Load the DSFR asynchronously, and only on the browser (not in SSR).
@@ -47,10 +49,8 @@
 
 <main id="contenu" role="main">
   <div class="fr-container fr-mb-8w">
-    <Breadcrumbs url={$page.url} />
-    <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters">
-      <slot />
-    </div>
+    <Breadcrumbs {url} />
+    <slot />
   </div>
 </main>
 
