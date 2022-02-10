@@ -7,10 +7,10 @@ export const navigationItems: NavItem[] = [
   },
   {
     label: "Contribuer",
-    href: "/contribuer",
+    href: "#",
   },
   {
     label: "Mon espace",
-    href: "/mon-espace",
+    href: "#",
   },
 ];
