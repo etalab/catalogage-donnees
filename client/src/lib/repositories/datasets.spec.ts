@@ -1,10 +1,5 @@
-/**
- * @jest-environment jsdom
- */
-
-import "@testing-library/jest-dom";
-
 import type { Dataset } from "src/definitions/datasets";
+import { API_PORT } from "src/env";
 import { getDatasets } from "./datasets";
 
 test("The datasets endpoint behaves as expected", async () => {
@@ -17,10 +12,11 @@ test("The datasets endpoint behaves as expected", async () => {
   ];
 
   const fetch = async (req: Request) => {
-    expect(req.url).toBe("/api/datasets/");
+    expect(req.url).toEqual(`http://localhost:${API_PORT}/datasets/`);
     const body = JSON.stringify(datasetsMock);
-    return new Response(body, { headers: { "Content-Type": "application/json" } });
-  }
+    const headers = { "Content-Type": "application/json" };
+    return new Response(body, { headers });
+  };
 
   expect(await getDatasets({ fetch })).toEqual(datasetsMock);
 });

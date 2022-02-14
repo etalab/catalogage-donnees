@@ -5,7 +5,7 @@ test.describe("Basic form submission", () => {
     const titleText = "Un nom de jeu de données";
     const descriptionText = "Une longue\ndescription de jeu\nde données";
 
-    await page.goto("/");
+    await page.goto("/contribuer");
 
     const title = page.locator("form [name=title]");
     await title.fill(titleText);

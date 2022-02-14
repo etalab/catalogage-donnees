@@ -28,5 +28,6 @@ export default defineConfig({
       "**/dist/**",
       "**/.{idea,git,cache,output,temp}/**",
     ],
+    setupFiles: [path.resolve("./src/tests/setup.ts")],
   },
 });
