@@ -13,7 +13,9 @@ test("The datasets endpoint behaves as expected", async () => {
   ];
 
   const fakeFetch: Fetch = async (request) => {
-    expect(request.url).toEqual(`http://localhost:${API_PORT}/datasets/`);
+    expect(request.method).toBe("GET");
+    expect(request.url).toBe(`http://localhost:${API_PORT}/datasets/`);
+
     const body = JSON.stringify(fakeDatasets);
     const headers = { "Content-Type": "application/json" };
     return new Response(body, { headers });

@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Basic form submission", () => {
-  test("Visits the home page", async ({ page }) => {
+  test("Visits the contribution page", async ({ page }) => {
     const titleText = "Un nom de jeu de données";
     const descriptionText = "Une longue\ndescription de jeu\nde données";
 
