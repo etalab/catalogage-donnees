@@ -1,15 +1,11 @@
-/**
- * @jest-environment jsdom
- */
-
 import "@testing-library/jest-dom";
+import { render } from "@testing-library/svelte";
 
 import DatasetList from "./DatasetList.svelte";
-import { render } from "@testing-library/svelte";
 import type { Dataset } from "src/definitions/datasets";
 
 describe("Test the dataset list", () => {
-  const datasets: Dataset[] = [
+  const fakeDatasets: Dataset[] = [
     {
       id: "uuid1",
       title: "Inventaire des arbres et forêts",
@@ -30,12 +26,16 @@ describe("Test the dataset list", () => {
   ];
 
   test("The list has the expected number of items", () => {
-    const { getAllByRole } = render(DatasetList, { props: { datasets } });
+    const { getAllByRole } = render(DatasetList, {
+      props: { datasets: fakeDatasets },
+    });
     expect(getAllByRole("listitem")).toHaveLength(3);
   });
 
   test("Items are separated by rulers", () => {
-    const { getAllByRole } = render(DatasetList, { props: { datasets } });
+    const { getAllByRole } = render(DatasetList, {
+      props: { datasets: fakeDatasets },
+    });
     expect(getAllByRole("separator")).toHaveLength(2);
   });
 });
