@@ -113,10 +113,10 @@ Démarrez la VM :
 vagrant up
 ```
 
-Accédez-y en SSH, en transmettant le port où se trouve votre base de données (BDD) de développement (ici 5435 sur l'hôte est transmis vers 5432 dans l'invité) ([crédit pour cette astuce](https://stackoverflow.com/a/28506841)) :
+Accédez-y en SSH, en transmettant le port où se trouve votre base de données (BDD) de développement (ici 5432 sur l'hôte est transmis vers 5432 dans l'invité) ([crédit pour cette astuce](https://stackoverflow.com/a/28506841)) :
 
 ```bash
-vagrant ssh -- -R 5432:localhost:5435
+vagrant ssh -- -R 5432:localhost:5432
 ```
 
 Sur l'hôte, ajoutez ensuite un fichier `ops/ansible/hosts_test` avec le contenu suivant (N.B. : modifiez `database_url` au besoin pour faire correspondre les identifiants et le nom de la BDD à votre BDD de développement) :
@@ -177,11 +177,20 @@ make deploy-test
 Vérifiez le bon déploiement en accédant au site ou à l'API depuis la VM Vagrant :
 
 ```console
-$ curl localhost
+$ vagrant ssh -- -R 5432:localhost:5432
+vagrant@bullseye:~# curl localhost
 <!-- Du HTML ... -->
-$ curl localhost/api/datasets/
+vagrant@bullseye:~# curl localhost/api/datasets/
 []
 ```
+
+Vous pouvez aussi accéder au site depuis votre machine hôte en transmettant le port 80, par exemple :
+
+```
+vagrant ssh -- -R 5432:localhost:5432 -L 8082:localhost:80
+```
+
+Puis accéder au site sur http://localhost:8082.
 
 ## Débogage
 
