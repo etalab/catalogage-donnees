@@ -8,7 +8,7 @@ from server.infrastructure.database import Database
 from .routes import router
 
 origins = [
-    "http://localhost:3000",
+    "http://localhost",
 ]
 
 
