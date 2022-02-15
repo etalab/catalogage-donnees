@@ -4,9 +4,9 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_index(client: httpx.AsyncClient) -> None:
-    response = await client.get("/")
+    response = await client.get("http://testserver/")
     assert response.status_code == 307
-    assert response.headers["Location"] == "http://testserver/docs"
+    assert response.headers["Location"] == "http://testserver/api/docs"
 
 
 @pytest.mark.parametrize("origin", ["http://localhost:3000"])

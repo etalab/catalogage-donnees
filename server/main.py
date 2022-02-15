@@ -30,8 +30,6 @@ if __name__ == "__main__":
             # connecting client, rather than the connecting Nginx proxy.
             # See: https://www.uvicorn.org/deployment/#running-behind-nginx
             proxy_headers=True,
-            # Match Nginx mount path.
-            root_path="/api",
         )
 
     uvicorn.run("server.main:app", **kwargs)

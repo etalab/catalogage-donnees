@@ -11,7 +11,7 @@ from server.seedwork.application.messages import MessageBus
 from .dependencies import get_current_user
 from .schemas import CheckAuthResponse, UserCreate, UserRead
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 @router.post("/users/", response_model=UserRead, status_code=201)

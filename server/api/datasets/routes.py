@@ -17,7 +17,7 @@ from server.seedwork.application.messages import MessageBus
 
 from .schemas import DatasetCreate, DatasetRead, DatasetUpdate
 
-router = APIRouter(prefix="/datasets", tags=["datasets"])
+router = APIRouter(prefix="/api/datasets", tags=["datasets"])
 
 
 @router.get("/", response_model=List[DatasetRead])

@@ -49,7 +49,8 @@ async def client() -> AsyncIterator[httpx.AsyncClient]:
     from server.api.app import create_app
 
     app = create_app()
+    base_url = "http://testserver/api"
 
     async with LifespanManager(app):
-        async with httpx.AsyncClient(app=app, base_url="http://testserver") as client:
+        async with httpx.AsyncClient(app=app, base_url=base_url) as client:
             yield client
