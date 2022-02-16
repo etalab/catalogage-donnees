@@ -1,7 +1,14 @@
 <script lang="ts">
   import type { Dataset } from "src/definitions/datasets";
+  import { DATA_FORMAT_SHORT_NAMES } from "src/constants";
 
   export let dataset: Dataset;
+
+  const formatFormats = (dataset: Dataset) => {
+    return dataset.formats
+      .map((format) => DATA_FORMAT_SHORT_NAMES[format])
+      .join(", ");
+  };
 </script>
 
 <li class="fr-pb-2w">
@@ -23,7 +30,7 @@
           <div class="fr-grid-row">
             <span class="fr-col"> France </span>
             <span class="fr-col"> 2010-2018 </span>
-            <span class="fr-col"> CSV, API, BDD </span>
+            <span class="fr-col"> {formatFormats(dataset)} </span>
             <span class="fr-col"> Qualité : haute </span>
             <span class="fr-col"> Open data </span>
           </div>
