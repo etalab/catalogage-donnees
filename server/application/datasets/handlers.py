@@ -16,6 +16,7 @@ async def create_dataset(command: CreateDataset) -> ID:
         id=repository.make_id(),
         title=command.title,
         description=command.description,
+        formats=command.formats,
     )
     return await repository.insert(dataset)
 
@@ -28,7 +29,11 @@ async def update_dataset(command: UpdateDataset) -> None:
     if dataset is None:
         raise DatasetDoesNotExist(pk)
 
-    dataset.update(title=command.title, description=command.description)
+    dataset.update(
+        title=command.title,
+        description=command.description,
+        formats=command.formats,
+    )
 
     await repository.update(dataset)
 
