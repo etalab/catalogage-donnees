@@ -1,6 +1,5 @@
 import type { Dataset } from "src/definitions/datasets";
 import type { Fetch } from "src/definitions/fetch";
-import { API_PORT } from "src/env";
 import { getDatasets } from "./datasets";
 
 test("The datasets endpoint behaves as expected", async () => {
@@ -14,7 +13,7 @@ test("The datasets endpoint behaves as expected", async () => {
 
   const fakeFetch: Fetch = async (request) => {
     expect(request.method).toBe("GET");
-    expect(request.url).toBe(`http://localhost:${API_PORT}/datasets/`);
+    expect(new URL(request.url).pathname).toBe("/datasets/");
 
     const body = JSON.stringify(fakeDatasets);
     const headers = { "Content-Type": "application/json" };

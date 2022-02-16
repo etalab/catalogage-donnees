@@ -17,8 +17,8 @@ test.describe("Basic form submission", () => {
 
     const button = page.locator("button[type='submit']");
     const [request, response, _] = await Promise.all([
-      page.waitForRequest("**/api/datasets/"),
-      page.waitForResponse("**/api/datasets/"),
+      page.waitForRequest("**/datasets/"),
+      page.waitForResponse("**/datasets/"),
       button.click(),
     ]);
     expect(await button.textContent()).toContain("Contribution");
