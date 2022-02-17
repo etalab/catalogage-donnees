@@ -5,7 +5,7 @@ services:
     image: postgres:12
     container_name: catalogage-db
     ports:
-      - "5432:5432"
+      - "6432:5432"
     environment:
       - POSTGRES_DB=catalogage
       - POSTGRES_USER=user
