@@ -7,8 +7,8 @@ from ..common.types import ID
 
 
 class DataFormat(enum.Enum):
-    TABULAR_FILE = "file_tabular"
-    GIS_FILE = "file_gis"
+    FILE_TABULAR = "file_tabular"
+    FILE_GIS = "file_gis"
     API = "api"
     DATABASE = "database"
     WEBSITE = "website"

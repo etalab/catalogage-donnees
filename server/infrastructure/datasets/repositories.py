@@ -85,13 +85,6 @@ class SqlDatasetRepository(DatasetRepository):
             instances = result.scalars().all()
             return [make_entity(instance) for instance in instances]
 
-    async def _get_format_instances(
-        self, session: AsyncSession, formats: List[DataFormat]
-    ) -> List[DataFormatModel]:
-        stmt = select(DataFormatModel).where(DataFormatModel.name.in_(formats))
-        result = await session.execute(stmt)
-        return result.scalars().all()
-
     async def _maybe_get_by_id(
         self, session: AsyncSession, id: ID
     ) -> Optional[DatasetModel]:
@@ -116,9 +109,16 @@ class SqlDatasetRepository(DatasetRepository):
 
             return make_entity(instance)
 
+    async def _get_formats(
+        self, session: AsyncSession, formats: List[DataFormat]
+    ) -> List[DataFormatModel]:
+        stmt = select(DataFormatModel).where(DataFormatModel.name.in_(formats))
+        result = await session.execute(stmt)
+        return result.scalars().all()
+
     async def insert(self, entity: Dataset) -> ID:
         async with self._db.session() as session:
-            formats = await self._get_format_instances(session, entity.formats)
+            formats = await self._get_formats(session, entity.formats)
             instance = make_instance(entity, formats)
 
             session.add(instance)
@@ -135,7 +135,7 @@ class SqlDatasetRepository(DatasetRepository):
             if instance is None:
                 return
 
-            formats = await self._get_format_instances(session, entity.formats)
+            formats = await self._get_formats(session, entity.formats)
             update_instance(instance, entity, formats)
 
             await session.commit()

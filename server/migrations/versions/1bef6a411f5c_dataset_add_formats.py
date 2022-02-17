@@ -16,8 +16,8 @@ branch_labels = None
 depends_on = None
 
 dataformat_values = (
-    "TABULAR_FILE",
-    "GIS_FILE",
+    "FILE_TABULAR",
+    "FILE_GIS",
     "API",
     "DATABASE",
     "WEBSITE",

@@ -156,7 +156,7 @@
       </legend>
       <div class="fr-fieldset__content">
         {#each dataFormatChoices as { value, label }, index (value)}
-          {@const id = `dataformats-${index}`}
+          {@const id = `dataformats-${value}`}
           <div class="fr-checkbox-group">
             <input
               type="checkbox"

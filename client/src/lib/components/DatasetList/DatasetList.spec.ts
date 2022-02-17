@@ -24,7 +24,7 @@ describe("Test the dataset list", () => {
       title: "Masse salariale du secteur privé",
       description:
         "Masse salariale telle que calculée par l'Urssaf et publiée dans le Baromètre économique.",
-      formats: ["file_tabular"]
+      formats: ["file_tabular"],
     },
   ];
 
