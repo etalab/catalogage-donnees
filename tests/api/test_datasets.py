@@ -23,6 +23,16 @@ from server.seedwork.application.messages import MessageBus
             ],
             id="missing-fields",
         ),
+        pytest.param(
+            {"title": "Title", "description": "Description", "formats": []},
+            [
+                {
+                    "loc": ["body", "formats"],
+                    "msg": "formats must contain at least one item",
+                }
+            ],
+            id="formats-empty",
+        ),
     ],
 )
 async def test_create_dataset_invalid(

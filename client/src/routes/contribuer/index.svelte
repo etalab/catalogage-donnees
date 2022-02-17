@@ -155,7 +155,10 @@
         : null}
       role="group"
     >
-      <legend class="fr-fieldset__legend fr-text--regular" id="dataformats-hint-legend">
+      <legend
+        class="fr-fieldset__legend fr-text--regular"
+        id="dataformats-hint-legend"
+      >
         Format(s) des données
         <span class="fr-hint-text" id="select-hint-dataformats-hint">
           Sélectionnez ici les différents formats de données qu'un réutilisateur

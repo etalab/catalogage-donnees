@@ -14,6 +14,6 @@ export const DATA_FORMAT_SHORT_NAMES: { [K in DataFormat]: string } = {
   file_gis: "SIG",
   api: "API",
   database: "BDD",
-  website: "WWW",
-  other: "AUTRE",
+  website: "Web",
+  other: "Autre",
 };
