@@ -21,7 +21,6 @@ test.describe("Basic form submission", () => {
       page.waitForResponse("**/datasets/"),
       button.click(),
     ]);
-    expect(await button.textContent()).toContain("Contribution");
     expect(request.method()).toBe("POST");
     expect(response.status()).toBe(201);
     const json = await response.json();

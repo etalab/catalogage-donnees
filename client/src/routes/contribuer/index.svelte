@@ -5,19 +5,7 @@
 <script lang="ts">
   import { createForm } from "svelte-forms-lib";
   import * as yup from "yup";
-  import { getApiUrl } from "$lib/fetch";
-
-  const postData = async (values) => {
-    const data = JSON.stringify(values);
-    const url = `${getApiUrl()}/datasets/`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: data,
-    });
-    await new Promise((r) => setTimeout(r, 1000)); // TODO: remove, just for debugging purposes
-    return await response.json();
-  };
+  import { createDataset } from "$lib/repositories/datasets";
 
   const { form, errors, handleChange, handleSubmit, isSubmitting, isValid } =
     createForm({
@@ -29,9 +17,9 @@
         title: yup.string().required("Le titre ne peut être vide"),
         description: yup.string().required("La description ne peut être vide"),
       }),
-      onSubmit: (values) => {
-        const result = postData(values);
-        return result;
+      onSubmit: async (values) => {
+        const body = JSON.stringify(values);
+        return await createDataset({ fetch, body });
       },
     });
   const errorClassname = (error: string, className: string) =>
