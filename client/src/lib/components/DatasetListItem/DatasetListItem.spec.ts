@@ -9,6 +9,7 @@ describe("Test the dataset list item", () => {
     id: "uuid1",
     title: "Inventaire des arbres et forêts",
     description: "Fichier de l'ensemble des arbres et forêts de France.",
+    formats: ["database"],
   };
 
   test("The title is present", () => {

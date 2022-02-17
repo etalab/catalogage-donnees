@@ -15,6 +15,10 @@ test.describe("Basic form submission", () => {
     await description.fill(descriptionText);
     expect(await description.inputValue()).toBe(descriptionText);
 
+    const apiFormat = page.locator("label[for=dataformats-api]");
+    await apiFormat.check();
+    expect(await page.isChecked("input[value=api]")).toBeTruthy();
+
     const button = page.locator("button[type='submit']");
     const [request, response, _] = await Promise.all([
       page.waitForRequest("**/datasets/"),
@@ -26,6 +30,7 @@ test.describe("Basic form submission", () => {
     const json = await response.json();
     expect(json.title).toBe(titleText);
     expect(json.description).toBe(descriptionText);
+    expect(json.formats).toStrictEqual(["api"]);
     expect(json).toHaveProperty("id");
   });
 });

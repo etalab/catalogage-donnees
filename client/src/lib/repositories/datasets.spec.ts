@@ -8,6 +8,7 @@ test("The datasets endpoint behaves as expected", async () => {
       id: "uuid1",
       title: "Inventaire des arbres et forêts",
       description: "Fichier de l'ensemble des arbres et forêts de France.",
+      formats: ["database"],
     },
   ];
 
