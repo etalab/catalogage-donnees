@@ -14,7 +14,7 @@ if __name__ == "__main__":
     settings = resolve(Settings)
 
     kwargs: dict = {
-        "host": "127.0.0.1",
+        "host": settings.host,
         "port": settings.port,
     }
 

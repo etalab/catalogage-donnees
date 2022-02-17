@@ -2,6 +2,47 @@
 
 Cette page indique les quelques étapes qui vous permettront d'avoir un projet fonctionnel à partir duquel travailler.
 
+* 👉 Je suis une personne non-technique et je souhaite rapidement lancer le projet : jetez un oeil à [Raccourci : usage Docker](#raccourci--usage-docker)
+* 👉 Je suis une personne technique et je souhaite participer au développement détaillé : suivez le guide !
+
+**Table des matières**
+
+* [Usage Docker](#raccourci--usage-docker)
+* [Prérequis](#pr%C3%A9requis)
+* [Interagir avec le projet](#interagir-avec-le-projet)
+* [Configuration](#configuration)
+
+---
+
+## Usage Docker
+
+Pour faciliter un démarrage rapide du projet, une configuration `docker-compose` est disponible, comprenant le serveur, le client, et une base de données.
+
+Installez d'abord les outils nécessaires :
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+Puis lancez :
+
+```
+make up
+```
+
+Le client (application web) sera alors disponible sur http://localhost:3000.
+
+Le client se rechargera automatiquement après des modifications dans le dossier `client/src/`, ce qui vous permettra d'y faire des modifications et de voir rapidement le résultat.
+
+Pour toute autre modification, il faudra relancer Docker Compose : `make down` puis `make up`.
+
+Pour arrêter le Docker Compose :
+
+```
+make down
+```
+
+---
+
 ## Prérequis
 
 Selon que vous vouliez contribuer au serveur ou au client, vous allez avoir besoin de :
@@ -26,13 +67,22 @@ Si vous avez un [serveur PostgreSQL](https://www.postgresql.org/download/linux/)
 createdb catalogage
 ```
 
-Sinon, vous pouvez utiliser [Docker Compose](https://docs.docker.com/compose/install/) :
+Sinon, vous pouvez utiliser la configuration `docker-compose` (voir [Raccourci : usage Docker](#raccourci--usage-docker)) :
 
 ```bash
-docker-compose up
+docker-compose up -d -- db
 ```
 
-Assurez-vous de [configurer](#configuration) votre `APP_DATABASE_URL` en conséquence.
+[Configurez](#configuration) ensuite votre `APP_DATABASE_URL` :
+
+```
+cp .env.example .env
+```
+
+```bash
+# .env
+APP_DATABASE_URL="postgresql+asyncpg://user:pass@localhost:5432/${DB:-catalogage}"
+```
 
 ## Interagir avec le projet
 
@@ -97,35 +147,29 @@ make check
 
 ## Configuration
 
-Le serveur d'API est configurable à l'aide des variables d'environnement suivantes.
+Le projet est configurable à l'aide des variables d'environnement suivantes.
 
 | Variable | Description | Valeur par défaut |
 |---|---|---|
-| `APP_SERVER_MODE` | Un mode d'opération qui configure Uvicorn en conséquence : <br> - `local` : pour le développement local (_hot reload_ activé, etc) <br> - `live` : pour tout déploiement tel que défini via Ansible (voir [Opérations](./ops.md)) | `local` |
 | `APP_DATABASE_URL` | URL vers la base de données PostgreSQL | `postgresql+asyncpg://localhost:5432/catalogage` |
-| `APP_PORT` | Port du server d'API | `3579` |
-| `VITE_API_BROWSER_URL` | (1) URL utilisée par le navigateur lors de requêtes d'API | `http://localhost:3579` |
-| `VITE_API_SSR_URL` | (1) URL utilisée par le serveur frontend lors de requêtes d'API | `http://localhost:3579` |
 
-> Notes : 
->
-> * (1) Ces options n'existent que pour la configuration de production, où le service est déployé via Nginx. Elles ne doivent typiquement pas être modifiées lors du développement local.
+Définissez les valeurs spécifiques à votre situation dans un fichier `.env` placé à la racine du projet, que vous pouvez créer à partir du modèle `.env.example` :
 
-Définissez les valeurs spécifiques à votre situation dans un fichier `.env` placé à la racine du projet, que vous pouvez créer à partir du modèle `.env.example`.
+```
+cp .env .env.example
+```
 
 Les variables peuvent aussi être passées en arguments, elles sont alors utilisées en priorité par rapport au `.env`. Par exemple :
 
 ```bash
-APP_DATABASE_URL="..." make serve
+APP_DATABASE_URL="postgresql+asyncpg://..." make serve
 ```
 
-## Tests
+Des paramètres avancés (principalement dédiés au déploiement - voir [Opérations](./ops.md)) sont également disponibles :
 
-### Tests unitaires - Client
-
-Les tests unitaires côté client utilisent [`svelte-testing-library`](https://github.com/testing-library/svelte-testing-library).
-
-Autres ressources pour démarrer :
-
-- [Svelte Testing Library: Example](https://testing-library.com/docs/svelte-testing-library/example)
-- [Unit Testing Svelte Components](https://sveltesociety.dev/recipes/testing-and-debugging/unit-testing-svelte-component/)
+| Variable | Description | Valeur par défaut |
+|---|---|---|
+| `APP_SERVER_MODE` | Un mode d'opération qui configure Uvicorn en conséquence : <br> - `local` : pour le développement local (_hot reload_ activé, etc) <br> - `live` : pour tout déploiement tel que défini via Ansible | `local` |
+| `APP_PORT` | Port du server d'API | `3579` |
+| `VITE_API_BROWSER_URL` | URL utilisée par le navigateur lors de requêtes d'API. En mode `live`, indiquer le chemin vers l'API configuré sur Nginx : `/api`. | `http://localhost:3579` |
+| `VITE_API_SSR_URL` | URL utilisée par le serveur frontend lors de requêtes d'API | `http://localhost:3579` |

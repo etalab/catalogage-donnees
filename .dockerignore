@@ -1,0 +1,8 @@
+.git/
+venv/
+.mypy_cache/
+.pytest_cache/
+**/node_modules/
+**/.vagrant/
+.vscode/
+.coverage

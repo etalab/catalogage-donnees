@@ -1,10 +1,9 @@
-version: '3'
-
+version: "3"
 
 services:
-  postgresql:
+  db:
     image: postgres:12
-    container_name: catalogage-pg
+    container_name: catalogage-db
     ports:
       - "5432:5432"
     environment:
@@ -12,7 +11,33 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=pass
     volumes:
-      - pgdata:/var/lib/postgresql/data/ # persist data even if container shuts down
+      - pgdata:/var/lib/postgresql/data/
+
+  client:
+    build:
+      context: .
+      dockerfile: ./docker/client.Dockerfile
+    container_name: catalogage-client
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_BROWSER_URL: "http://localhost:3000"
+      VITE_API_SSR_URL: "http://server:3579"
+    volumes:
+      - "./client/src:/app/client/src"
+    restart: always
+
+  server:
+    build:
+      context: .
+      dockerfile: ./docker/server.Dockerfile
+    container_name: catalogage-server
+    ports:
+      - "3579:3579"
+    environment:
+      APP_HOST: "0.0.0.0"
+      APP_DATABASE_URL: "postgresql+asyncpg://user:pass@db/catalogage"
+    restart: always
 
 volumes:
   pgdata:

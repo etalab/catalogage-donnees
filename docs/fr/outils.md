@@ -44,12 +44,23 @@ Ce projet est équipé du _type checking_ avec [`mypy`](https://mypy.readthedocs
 
 La vérification se fait avec une exécution standard de `$ mypy` lors de `make check`.
 
-## Playwright
+## Tests
+
+### Tests E2E
 
 Les tests _end-to-end_ sont lancés avec [`Playwright`](https://playwright.dev/).
 Il sont soit exécutés en mode _ci_ (continuous integration, par exemple dans
 notre cas avec github actions), et donc en _headless_, soit de manière
 interactive (en dev).
+
+### Tests unitaires - Client
+
+Les tests unitaires côté client utilisent [`svelte-testing-library`](https://github.com/testing-library/svelte-testing-library).
+
+Autres ressources pour démarrer :
+
+- [Svelte Testing Library: Example](https://testing-library.com/docs/svelte-testing-library/example)
+- [Unit Testing Svelte Components](https://sveltesociety.dev/recipes/testing-and-debugging/unit-testing-svelte-component/)
 
 ## DSFR
 
