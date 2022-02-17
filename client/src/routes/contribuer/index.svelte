@@ -26,7 +26,7 @@
     initialValues: {
       title: "",
       description: "",
-      dataFormats: [] as boolean[],
+      dataFormats: dataFormatSelected,
     },
     validationSchema: yup.object().shape({
       title: yup.string().required("Le titre ne peut être vide"),
