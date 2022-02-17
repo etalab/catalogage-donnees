@@ -11,7 +11,7 @@
   };
 </script>
 
-<li class="fr-pb-2w">
+<li class="fr-p-2w">
   <div class="fr-container">
     <div class="fr-grid-row">
       <div class="fr-col-2">
@@ -51,3 +51,9 @@
     </div>
   </div>
 </li>
+
+<style>
+  li:not(:last-child) {
+    border-bottom: 1px solid var(--border-default-grey);
+  }
+</style>

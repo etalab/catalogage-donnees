@@ -10,3 +10,16 @@ export const getDatasets: GetDatasets = async ({ fetch }) => {
   const response = await fetch(request);
   return await response.json();
 };
+
+type CreateDataset = (opts: { fetch: Fetch; body: string }) => Promise<Dataset>;
+
+export const createDataset: CreateDataset = async ({ fetch, body }) => {
+  const url = `${getApiUrl()}/datasets/`;
+  const request = new Request(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body,
+  });
+  const response = await fetch(request);
+  return await response.json();
+};

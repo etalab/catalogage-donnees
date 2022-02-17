@@ -5,20 +5,8 @@
 <script lang="ts">
   import { createForm } from "svelte-forms-lib";
   import * as yup from "yup";
-  import { getApiUrl } from "$lib/fetch";
+  import { createDataset } from "$lib/repositories/datasets";
   import { DATA_FORMAT_LABELS } from "src/constants";
-
-  const postData = async (values) => {
-    const data = JSON.stringify(values);
-    const url = `${getApiUrl()}/datasets/`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: data,
-    });
-    await new Promise((r) => setTimeout(r, 1000)); // TODO: remove, just for debugging purposes
-    return await response.json();
-  };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
     ([value, label]) => ({ value, label })
@@ -64,7 +52,8 @@
         description: values.description,
         formats,
       };
-      return await postData(payload);
+      const body = JSON.stringify(payload);
+      return await createDataset({ fetch, body });
     },
   });
 

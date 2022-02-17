@@ -5,20 +5,8 @@
   export let datasets: Dataset[];
 </script>
 
-<ul>
-  {#each datasets as dataset, index (dataset.id)}
-    {@const lastChild = index === datasets.length - 1}
+<ul class="fr-raw-list">
+  {#each datasets as dataset (dataset.id)}
     <DatasetListItem {dataset} />
-    {#if !lastChild}
-      <hr />
-    {/if}
   {/each}
 </ul>
-
-<style>
-  ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
-</style>
