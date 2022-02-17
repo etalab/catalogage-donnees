@@ -11,6 +11,7 @@ class Settings(BaseSettings):
 
     server_mode: ServerMode = "local"
     database_url: str = "postgresql+asyncpg://localhost:5432/catalogage"
+    host: str = "localhost"
     port: int = 3579
     docs_url: str = "/docs"
     testing: bool = False

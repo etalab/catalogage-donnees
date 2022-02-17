@@ -13,9 +13,5 @@ class Database:
             self._engine, autocommit=False, autoflush=False, class_=AsyncSession
         )
 
-    async def create_all(self) -> None:
-        async with self._engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-
     def session(self) -> AsyncSession:
         return self._session_cls()
