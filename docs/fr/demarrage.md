@@ -2,12 +2,12 @@
 
 Cette page indique les quelques étapes qui vous permettront d'avoir un projet fonctionnel à partir duquel travailler.
 
-* 👉 Je suis une personne non-technique et je souhaite rapidement lancer le projet : jetez un oeil à [Raccourci : usage Docker](#raccourci--usage-docker)
+* 👉 Je suis une personne non-technique et je souhaite rapidement lancer le projet : jetez un oeil à [Usage Docker](#usage-docker)
 * 👉 Je suis une personne technique et je souhaite participer au développement détaillé : suivez le guide !
 
 **Table des matières**
 
-* [Usage Docker](#raccourci--usage-docker)
+* [Usage Docker](#usage-docker)
 * [Prérequis](#pr%C3%A9requis)
 * [Interagir avec le projet](#interagir-avec-le-projet)
 * [Configuration](#configuration)
@@ -67,7 +67,7 @@ Si vous avez un [serveur PostgreSQL](https://www.postgresql.org/download/linux/)
 createdb catalogage
 ```
 
-Sinon, vous pouvez utiliser la configuration `docker-compose` (voir [Raccourci : usage Docker](#raccourci--usage-docker)) :
+Sinon, vous pouvez utiliser la configuration `docker-compose` (voir [Usage Docker](#usage-docker)) :
 
 ```bash
 docker-compose up -d -- db
