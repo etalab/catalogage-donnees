@@ -31,11 +31,4 @@ describe("Test the dataset list", () => {
     });
     expect(getAllByRole("listitem")).toHaveLength(3);
   });
-
-  test("Items are separated by rulers", () => {
-    const { getAllByRole } = render(DatasetList, {
-      props: { datasets: fakeDatasets },
-    });
-    expect(getAllByRole("separator")).toHaveLength(2);
-  });
 });
