@@ -35,10 +35,10 @@ serve-dist: #- Serve both the server and the built client in parallel
 serve-dist-client: #- Run the built client 
 	./tools/colorize_prefix.sh [client] 33 "cd client && npm start"
 
-up: #- Start Docker Compose setup
+compose-up: #- Start Docker Compose setup
 	docker-compose up --build -d
 
-down: #- Stop and teardown Docker Compose setup
+compose-down: #- Stop and teardown Docker Compose setup
 	docker-compose down
 
 migrate: #- Apply pending migrations

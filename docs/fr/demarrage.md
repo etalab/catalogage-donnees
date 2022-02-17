@@ -26,19 +26,19 @@ Installez d'abord les outils nécessaires :
 Puis lancez :
 
 ```
-make up
+make compose-up
 ```
 
 Le client (application web) sera alors disponible sur http://localhost:3000.
 
 Le client se rechargera automatiquement après des modifications dans le dossier `client/src/`, ce qui vous permettra d'y faire des modifications et de voir rapidement le résultat.
 
-Pour toute autre modification, il faudra relancer Docker Compose : `make down` puis `make up`.
+Pour toute autre modification, il faudra relancer Docker Compose : `make compose-down` puis `make compose-up`.
 
 Pour arrêter le Docker Compose :
 
 ```
-make down
+make compose-down
 ```
 
 ---
