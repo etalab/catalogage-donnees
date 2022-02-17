@@ -37,6 +37,7 @@ serve-dist-client: #- Run the built client
 
 compose-up: #- Start Docker Compose setup
 	docker-compose up --build -d
+	docker-compose run migrate
 
 compose-down: #- Stop and teardown Docker Compose setup
 	docker-compose down

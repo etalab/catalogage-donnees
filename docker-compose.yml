@@ -21,7 +21,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      VITE_API_BROWSER_URL: "http://localhost:3000"
+      VITE_API_BROWSER_URL: "http://localhost:3579"
       VITE_API_SSR_URL: "http://server:3579"
     volumes:
       - "./client/src:/app/client/src"
@@ -31,13 +31,21 @@ services:
     build:
       context: .
       dockerfile: ./docker/server.Dockerfile
+    image: catalogage-server
     container_name: catalogage-server
     ports:
       - "3579:3579"
     environment:
       APP_HOST: "0.0.0.0"
-      APP_DATABASE_URL: "postgresql+asyncpg://user:pass@db/catalogage"
+      APP_DATABASE_URL: "postgresql+asyncpg://user:pass@db:5432/catalogage"
     restart: always
+
+  migrate:
+    image: catalogage-server
+    profiles: ["cli"]
+    command: ./tools/wait-for-it.sh db:5432 -- make migrate
+    environment:
+      APP_DATABASE_URL: "postgresql+asyncpg://user:pass@db:5432/catalogage"
 
 volumes:
   pgdata:
