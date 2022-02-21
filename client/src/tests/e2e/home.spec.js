@@ -1,4 +1,5 @@
-import { test, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "./fixtures.js";
 
 test.describe("Catalog list", () => {
   test("Visits the home page", async ({ page }) => {

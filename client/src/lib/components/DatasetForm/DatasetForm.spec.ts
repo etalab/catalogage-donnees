@@ -39,7 +39,7 @@ describe("Test the dataset form", () => {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
-    }
+    };
     const props = { initial };
 
     const { getByLabelText, container } = render(DatasetForm, { props });
@@ -47,10 +47,13 @@ describe("Test the dataset form", () => {
     const title = getByLabelText("Nom", { exact: false }) as HTMLInputElement;
     expect(title.value).toBe("Titre initial");
 
-    const description = getByLabelText("Description", { exact: false }) as HTMLInputElement;
+    const description = getByLabelText("Description", {
+      exact: false,
+    }) as HTMLInputElement;
     expect(description.value).toBe("Description initiale");
 
-    const getFormatCheckbox = ((value: DataFormat) => container.querySelector(`input[value='${value}']`));
+    const getFormatCheckbox = (value: DataFormat) =>
+      container.querySelector(`input[value='${value}']`);
     expect(getFormatCheckbox("file_tabular")).not.toBeChecked();
     expect(getFormatCheckbox("file_gis")).not.toBeChecked();
     expect(getFormatCheckbox("api")).not.toBeChecked();
