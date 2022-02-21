@@ -7,13 +7,48 @@
 
   export let loading = false;
 
+  export let initial: DatasetFormData = {
+    title: "",
+    description: "",
+    formats: [],
+  };
+
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
+
+  type DatasetFormValues = {
+    title: string;
+    description: string;
+    dataFormats: boolean[];
+  };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
     ([value, label]) => ({ value, label })
   );
 
-  const dataFormatSelected = dataFormatChoices.map(() => false);
+  const initialValues: DatasetFormValues = {
+    title: initial.title,
+    description: initial.description,
+    dataFormats: dataFormatChoices.map(
+      ({ value }) => !!initial.formats.find((v) => v === value)
+    ),
+  };
+
+  // Handle this value manually.
+  const dataFormatsValue = initialValues.dataFormats;
+
+  const toFormData = (values: DatasetFormValues): DatasetFormData => {
+    const formats = [];
+    values.dataFormats.forEach((checked, index) => {
+      if (checked) {
+        formats.push(dataFormatChoices[index].value);
+      }
+    });
+    return {
+      title: values.title,
+      description: values.description,
+      formats,
+    };
+  };
 
   const {
     form,
@@ -23,36 +58,21 @@
     updateValidateField,
     isValid,
   } = createForm({
-    initialValues: {
-      title: "",
-      description: "",
-      dataFormats: dataFormatSelected,
-    },
+    initialValues,
     validationSchema: yup.object().shape({
       title: yup.string().required("Le titre ne peut être vide"),
       description: yup.string().required("La description ne peut être vide"),
       dataFormats: yup
         .array(yup.boolean())
-        .length(dataFormatSelected.length)
+        .length(dataFormatsValue.length)
         .test(
           "dataformats-some-checked",
           "Au moins un format de donnée doit être renseigné",
           (value) => value.some((checked) => !!checked)
         ),
     }),
-    onSubmit: async (values) => {
-      const formats = [];
-      values.dataFormats.forEach((checked, index) => {
-        if (checked) {
-          formats.push(dataFormatChoices[index].value);
-        }
-      });
-      const data: DatasetFormData = {
-        title: values.title,
-        description: values.description,
-        formats,
-      };
-      dispatch("save", data);
+    onSubmit: (values) => {
+      dispatch("save", toFormData(values));
     },
   });
 
@@ -62,8 +82,8 @@
 
   const handleDataformatChange = (event, index: number) => {
     const { checked } = event.target;
-    dataFormatSelected[index] = checked;
-    updateValidateField("dataFormats", dataFormatSelected);
+    dataFormatsValue[index] = checked;
+    updateValidateField("dataFormats", dataFormatsValue);
   };
 </script>
 
@@ -150,6 +170,7 @@
             type="checkbox"
             {id}
             name="dataformats"
+            checked={dataFormatsValue[index]}
             {value}
             on:blur={(event) => handleDataformatChange(event, index)}
             on:change={(event) => handleDataformatChange(event, index)}

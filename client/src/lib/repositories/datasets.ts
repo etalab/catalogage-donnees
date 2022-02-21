@@ -2,6 +2,15 @@ import type { Dataset, DatasetCreateData } from "src/definitions/datasets";
 import type { Fetch } from "src/definitions/fetch";
 import { getApiUrl } from "$lib/fetch";
 
+type GetDatasetByID = (opts: { fetch: Fetch, id: string }) => Promise<Dataset>;
+
+export const getDatasetByID: GetDatasetByID = async ({ fetch, id }) => {
+  const url = `${getApiUrl()}/datasets/${id}/`;
+  const request = new Request(url);
+  const response = await fetch(request);
+  return await response.json();
+}
+
 type GetDatasets = (opts: { fetch: Fetch }) => Promise<Dataset[]>;
 
 export const getDatasets: GetDatasets = async ({ fetch }) => {
