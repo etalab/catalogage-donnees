@@ -23,12 +23,14 @@ describe("Test the dataset form", () => {
     expect(getByRole("button")).toBeInTheDocument();
   });
   test("The submit button displays a loading text when loading", async () => {
-    const { getByRole, rerender } = render(DatasetForm);
-    let submitButton = getByRole("button");
-    expect(submitButton).toHaveTextContent("Contribuer");
+    const props = { submitLabel: "Envoyer", loadingLabel: "Ça charge..." };
 
-    rerender({ props: { loading: true } });
+    const { getByRole, rerender } = render(DatasetForm, { props });
+    let submitButton = getByRole("button");
+    expect(submitButton).toHaveTextContent("Envoyer");
+
+    rerender({ props: { ...props, loading: true } });
     submitButton = getByRole("button");
-    expect(submitButton).toHaveTextContent("Contribution");
+    expect(submitButton).toHaveTextContent("Ça charge...");
   });
 });
