@@ -5,6 +5,8 @@
   import type { DatasetFormData } from "src/definitions/datasets";
   import { DATA_FORMAT_LABELS } from "src/constants";
 
+  export let submitLabel: string;
+  export let loadingLabel: string;
   export let loading = false;
 
   export let initial: DatasetFormData = {
@@ -196,9 +198,9 @@
       title="Contribuer ce jeu de données"
     >
       {#if loading}
-        Contribution en cours...
+        {loadingLabel}
       {:else}
-        Contribuer ce jeu de données
+        {submitLabel}
       {/if}
     </button>
   </div>
