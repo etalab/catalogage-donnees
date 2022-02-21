@@ -13,3 +13,15 @@ export interface Dataset {
   description: string;
   formats: DataFormat[];
 }
+
+export interface DatasetFormData {
+  title: string;
+  description: string;
+  formats: DataFormat[];
+}
+
+export interface DatasetCreateData {
+  title: string;
+  description: string;
+  formats: DataFormat[];
+}
