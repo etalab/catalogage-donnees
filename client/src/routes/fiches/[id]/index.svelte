@@ -1,7 +1,9 @@
 <script lang="ts">
   import { page } from "$app/stores";
 
-  $: editUrl = `/fiches/${$page.params.id}/edit`;
+  const id = $page.params.id;
+
+  const editUrl = `/fiches/${id}/edit`;
 </script>
 
 <h2>Fiche de données</h2>

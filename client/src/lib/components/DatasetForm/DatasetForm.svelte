@@ -38,20 +38,6 @@
   // Handle this value manually.
   const dataFormatsValue = initialValues.dataFormats;
 
-  const toFormData = (values: DatasetFormValues): DatasetFormData => {
-    const formats = [];
-    values.dataFormats.forEach((checked, index) => {
-      if (checked) {
-        formats.push(dataFormatChoices[index].value);
-      }
-    });
-    return {
-      title: values.title,
-      description: values.description,
-      formats,
-    };
-  };
-
   const {
     form,
     errors,
@@ -74,7 +60,18 @@
         ),
     }),
     onSubmit: (values) => {
-      dispatch("save", toFormData(values));
+      const formats = [];
+      values.dataFormats.forEach((checked, index) => {
+        if (checked) {
+          formats.push(dataFormatChoices[index].value);
+        }
+      });
+      const data: DatasetFormData = {
+        title: values.title,
+        description: values.description,
+        formats,
+      };
+      dispatch("save", data);
     },
   });
 
@@ -172,8 +169,8 @@
             type="checkbox"
             {id}
             name="dataformats"
-            checked={dataFormatsValue[index]}
             {value}
+            checked={dataFormatsValue[index]}
             on:blur={(event) => handleDataformatChange(event, index)}
             on:change={(event) => handleDataformatChange(event, index)}
           />

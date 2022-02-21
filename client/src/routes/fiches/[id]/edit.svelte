@@ -21,7 +21,6 @@
   export let dataset: Dataset;
 
   const id = $page.params.id;
-
   let loading = false;
 
   const onSave = async (event: CustomEvent<DatasetFormData>) => {
