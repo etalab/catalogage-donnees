@@ -1,4 +1,4 @@
-import type { Dataset } from "src/definitions/datasets";
+import type { Dataset, DatasetCreateData } from "src/definitions/datasets";
 import type { Fetch } from "src/definitions/fetch";
 import { getApiUrl } from "$lib/fetch";
 
@@ -11,9 +11,13 @@ export const getDatasets: GetDatasets = async ({ fetch }) => {
   return await response.json();
 };
 
-type CreateDataset = (opts: { fetch: Fetch; body: string }) => Promise<Dataset>;
+type CreateDataset = (opts: {
+  fetch: Fetch;
+  data: DatasetCreateData;
+}) => Promise<Dataset>;
 
-export const createDataset: CreateDataset = async ({ fetch, body }) => {
+export const createDataset: CreateDataset = async ({ fetch, data }) => {
+  const body = JSON.stringify(data);
   const url = `${getApiUrl()}/datasets/`;
   const request = new Request(url, {
     method: "POST",
