@@ -25,10 +25,5 @@
 
 <h1>Informations générales</h1>
 <div class="fr-col-lg-8">
-  <DatasetForm
-    submitLabel="Contribuer ce jeu de données"
-    loadingLabel="Contribution en cours..."
-    {loading}
-    on:save={onSave}
-  />
+  <DatasetForm {loading} on:save={onSave} />
 </div>

@@ -5,8 +5,8 @@
   import type { DatasetFormData } from "src/definitions/datasets";
   import { DATA_FORMAT_LABELS } from "src/constants";
 
-  export let submitLabel: string;
-  export let loadingLabel: string;
+  export let submitLabel = "Contribuer ce jeu de données";
+  export let loadingLabel = "Contribution en cours...";
   export let loading = false;
 
   export let initial: DatasetFormData = {
