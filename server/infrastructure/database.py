@@ -7,8 +7,8 @@ Base = declarative_base()
 
 
 class Database:
-    def __init__(self, url: str) -> None:
-        self._engine = create_async_engine(url, echo=True, json_serializer=json.dumps)
+    def __init__(self, url: str, debug: bool = False) -> None:
+        self._engine = create_async_engine(url, echo=debug, json_serializer=json.dumps)
         self._session_cls = sessionmaker(
             self._engine, autocommit=False, autoflush=False, class_=AsyncSession
         )

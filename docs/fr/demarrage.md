@@ -152,6 +152,7 @@ Le projet est configurable à l'aide des variables d'environnement suivantes.
 | Variable | Description | Valeur par défaut |
 |---|---|---|
 | `APP_DATABASE_URL` | URL vers la base de données PostgreSQL | `postgresql+asyncpg://localhost:5432/catalogage` |
+| `APP_SQL_DEBUG` | Active les journeaux de débogage (_debug logs_) des requêtes SQL effectuées par le serveur | `False` |
 
 Définissez les valeurs spécifiques à votre situation dans un fichier `.env` placé à la racine du projet, que vous pouvez créer à partir du modèle `.env.example` :
 
@@ -159,10 +160,12 @@ Définissez les valeurs spécifiques à votre situation dans un fichier `.env` p
 cp .env .env.example
 ```
 
-Les variables peuvent aussi être passées en arguments, elles sont alors utilisées en priorité par rapport au `.env`. Par exemple :
+Les variables peuvent aussi être passées en arguments, elles sont alors utilisées en priorité par rapport au `.env`.
+
+Par exemple :
 
 ```bash
-APP_DATABASE_URL="postgresql+asyncpg://..." make serve
+APP_SQL_DEBUG=1 make serve
 ```
 
 Des paramètres avancés (principalement dédiés au déploiement - voir [Opérations](./ops.md)) sont également disponibles :
