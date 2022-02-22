@@ -2,12 +2,7 @@ import { expect } from "@playwright/test";
 import { test } from "./fixtures.js";
 
 test.describe("Edit dataset", () => {
-  test("Visits the edit page", async ({ page, sampleDataset }) => {
-    /**
-     * @type {import('src/definitions/datasets').Dataset}
-     */
-    const dataset = sampleDataset;
-
+  test("Visits the edit page", async ({ page, dataset }) => {
     await page.goto(`/fiches/${dataset.id}/edit`);
 
     // Check initial data
