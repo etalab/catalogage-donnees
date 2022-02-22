@@ -1,17 +1,28 @@
 import uuid
-from typing import List, Optional
+from typing import Any, List, Optional
 
-from sqlalchemy import Column, Enum, ForeignKey, Integer, String, Table, select
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import (
+    Column,
+    Computed,
+    Enum,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Table,
+    select,
+)
+from sqlalchemy.dialects.postgresql import TSVECTOR, UUID
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import relationship, selectinload
+from sqlalchemy.orm import Mapped, relationship, selectinload
 
 from server.domain.common.types import ID
 from server.domain.datasets.entities import DataFormat, Dataset
 from server.domain.datasets.repositories import DatasetRepository
 
 from ..database import Base, Database
+from ..utils.sql import to_tsvector
 
 # Association table
 # See: https://docs.sqlalchemy.org/en/14/orm/basic_relationships.html#many-to-many
@@ -45,6 +56,18 @@ class DatasetModel(Base):
         "DataFormatModel",
         back_populates="datasets",
         secondary=dataset_dataformat,
+    )
+    search_tsv: Mapped[Any] = Column(
+        TSVECTOR,
+        Computed(to_tsvector("title", "description", lang="french"), persisted=True),
+    )
+
+    __table_args__ = (
+        Index(
+            "ix_dataset_search_tsv",
+            search_tsv,
+            postgresql_using="GIN",
+        ),
     )
 
 
@@ -81,6 +104,17 @@ class SqlDatasetRepository(DatasetRepository):
     async def get_all(self) -> List[Dataset]:
         async with self._db.session() as session:
             stmt = select(DatasetModel).options(selectinload(DatasetModel.formats))
+            result = await session.execute(stmt)
+            instances = result.scalars().all()
+            return [make_entity(instance) for instance in instances]
+
+    async def search(self, q: str) -> List[Dataset]:
+        async with self._db.session() as session:
+            stmt = (
+                select(DatasetModel)
+                .options(selectinload(DatasetModel.formats))
+                .where(DatasetModel.search_tsv.match(q, postgresql_regconfig="french"))
+            )
             result = await session.execute(stmt)
             instances = result.scalars().all()
             return [make_entity(instance) for instance in instances]

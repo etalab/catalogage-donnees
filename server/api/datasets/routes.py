@@ -8,7 +8,11 @@ from server.application.datasets.commands import (
     DeleteDataset,
     UpdateDataset,
 )
-from server.application.datasets.queries import GetAllDatasets, GetDatasetByID
+from server.application.datasets.queries import (
+    GetAllDatasets,
+    GetDatasetByID,
+    SearchDatasets,
+)
 from server.config.di import resolve
 from server.domain.common.types import ID
 from server.domain.datasets.entities import Dataset
@@ -21,8 +25,12 @@ router = APIRouter(prefix="/datasets", tags=["datasets"])
 
 
 @router.get("/", response_model=List[DatasetRead])
-async def list_datasets() -> List[Dataset]:
+async def list_datasets(q: str = None) -> List[Dataset]:
     bus = resolve(MessageBus)
+
+    if q is not None:
+        query = SearchDatasets(q=q)
+        return await bus.execute(query)
 
     query = GetAllDatasets()
     return await bus.execute(query)

@@ -11,3 +11,7 @@ class GetAllDatasets(Query[List[Dataset]]):
 
 class GetDatasetByID(Query[Dataset]):
     id: ID
+
+
+class SearchDatasets(Query[List[Dataset]]):
+    q: str

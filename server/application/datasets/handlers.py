@@ -7,7 +7,7 @@ from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.domain.datasets.repositories import DatasetRepository
 
 from .commands import CreateDataset, DeleteDataset, UpdateDataset
-from .queries import GetAllDatasets, GetDatasetByID
+from .queries import GetAllDatasets, GetDatasetByID, SearchDatasets
 
 
 async def create_dataset(command: CreateDataset) -> ID:
@@ -58,3 +58,8 @@ async def get_dataset_by_id(query: GetDatasetByID) -> Dataset:
         raise DatasetDoesNotExist(id)
 
     return dataset
+
+
+async def search_datasets(query: SearchDatasets) -> List[Dataset]:
+    repository = resolve(DatasetRepository)
+    return await repository.search(q=query.q)
