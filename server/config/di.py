@@ -133,7 +133,10 @@ def create_container() -> punq.Container:
 
     # Databases
 
-    container.register(Database, instance=Database(url=settings.env_database_url))
+    container.register(
+        Database,
+        instance=Database(url=settings.env_database_url, debug=settings.sql_debug),
+    )
 
     # Repositories
 
