@@ -5,15 +5,38 @@
   import type { DatasetFormData } from "src/definitions/datasets";
   import { DATA_FORMAT_LABELS } from "src/constants";
 
+  export let submitLabel = "Contribuer ce jeu de données";
+  export let loadingLabel = "Contribution en cours...";
   export let loading = false;
 
+  export let initial: DatasetFormData = {
+    title: "",
+    description: "",
+    formats: [],
+  };
+
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
+
+  type DatasetFormValues = {
+    title: string;
+    description: string;
+    dataFormats: boolean[];
+  };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
     ([value, label]) => ({ value, label })
   );
 
-  const dataFormatSelected = dataFormatChoices.map(() => false);
+  const initialValues: DatasetFormValues = {
+    title: initial.title,
+    description: initial.description,
+    dataFormats: dataFormatChoices.map(
+      ({ value }) => !!initial.formats.find((v) => v === value)
+    ),
+  };
+
+  // Handle this value manually.
+  const dataFormatsValue = initialValues.dataFormats;
 
   const {
     form,
@@ -23,24 +46,20 @@
     updateValidateField,
     isValid,
   } = createForm({
-    initialValues: {
-      title: "",
-      description: "",
-      dataFormats: dataFormatSelected,
-    },
+    initialValues,
     validationSchema: yup.object().shape({
       title: yup.string().required("Le titre ne peut être vide"),
       description: yup.string().required("La description ne peut être vide"),
       dataFormats: yup
         .array(yup.boolean())
-        .length(dataFormatSelected.length)
+        .length(dataFormatsValue.length)
         .test(
           "dataformats-some-checked",
           "Au moins un format de donnée doit être renseigné",
           (value) => value.some((checked) => !!checked)
         ),
     }),
-    onSubmit: async (values) => {
+    onSubmit: (values) => {
       const formats = [];
       values.dataFormats.forEach((checked, index) => {
         if (checked) {
@@ -62,8 +81,8 @@
 
   const handleDataformatChange = (event, index: number) => {
     const { checked } = event.target;
-    dataFormatSelected[index] = checked;
-    updateValidateField("dataFormats", dataFormatSelected);
+    dataFormatsValue[index] = checked;
+    updateValidateField("dataFormats", dataFormatsValue);
   };
 </script>
 
@@ -151,6 +170,7 @@
             {id}
             name="dataformats"
             {value}
+            checked={dataFormatsValue[index]}
             on:blur={(event) => handleDataformatChange(event, index)}
             on:change={(event) => handleDataformatChange(event, index)}
           />
@@ -175,9 +195,9 @@
       title="Contribuer ce jeu de données"
     >
       {#if loading}
-        Contribution en cours...
+        {loadingLabel}
       {:else}
-        Contribuer ce jeu de données
+        {submitLabel}
       {/if}
     </button>
   </div>

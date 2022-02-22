@@ -25,5 +25,5 @@
 
 <h1>Informations générales</h1>
 <div class="fr-col-lg-8">
-  <DatasetForm on:save={onSave} {loading} />
+  <DatasetForm {loading} on:save={onSave} />
 </div>

@@ -20,8 +20,5 @@ export interface DatasetFormData {
   formats: DataFormat[];
 }
 
-export interface DatasetCreateData {
-  title: string;
-  description: string;
-  formats: DataFormat[];
-}
+export type DatasetCreateData = DatasetFormData;
+export type DatasetUpdateData = DatasetCreateData;
