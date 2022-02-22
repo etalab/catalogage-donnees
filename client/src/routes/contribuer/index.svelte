@@ -23,7 +23,8 @@
   <title>Contribuer</title>
 </svelte:head>
 
-<h1>Informations générales</h1>
+<h1 class="fr-mt-9w">Informations générales</h1>
+
 <div class="fr-col-lg-8">
   <DatasetForm {loading} on:save={onSave} />
 </div>
