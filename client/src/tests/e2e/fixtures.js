@@ -1,15 +1,34 @@
 import { test as base, expect } from "@playwright/test";
 
 /**
- * @type {import("@playwright/test").Fixtures<
- *  {
- *    apiContext: import("@playwright/test").APIRequestContext,
- *    dataset: import("src/definitions/datasets").Dataset
- *  },
- *  {},
- *  import("@playwright/test").PlaywrightTestArgs,
- *  import("@playwright/test").PlaywrightWorkerArgs
- * >}
+ * These fixtures allow simplifying setup/teardown logic in tests,
+ * especially for preparing server-side state.
+ * See: https://playwright.dev/docs/test-fixtures
+ * See: https://playwright.dev/docs/test-api-testing#sending-api-requests-from-ui-tests
+ */
+
+/**
+ * This is JSDoc annotations. We use them while waiting for Playwright TS setup to land.
+ * See: https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html
+ * See: https://github.com/etalab/catalogage-donnees/issues/87
+ *
+ * @typedef {{
+ *  apiContext: import("@playwright/test").APIRequestContext,
+ *  dataset: import("src/definitions/datasets").Dataset,
+ * }} AppTestArgs
+ *
+ * @typedef {{}} AppWorkerArgs
+ *
+ * @typedef {import("@playwright/test").PlaywrightTestArgs} PlaywrightTestArgs
+ * @typedef {import("@playwright/test").PlaywrightWorkerArgs} PlaywrightWorkerArgs
+ *
+ * @typedef {import("@playwright/test").Fixtures<
+ *  AppTestArgs, AppWorkerArgs, PlaywrightTestArgs, PlaywrightWorkerArgs
+ * >} AppFixtures
+ */
+
+/**
+ * @type AppFixtures
  */
 const fixtures = {
   apiContext: async ({ playwright }, use) => {
@@ -18,6 +37,7 @@ const fixtures = {
     await use(apiContext);
     await apiContext.dispose();
   },
+
   dataset: async ({ apiContext }, use) => {
     /** @type {import("src/definitions/datasets").DatasetCreateData} */
     const data = {
