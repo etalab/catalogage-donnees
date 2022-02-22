@@ -2,7 +2,7 @@ import { expect } from "@playwright/test";
 import { test } from "./fixtures.js";
 
 test.describe("Catalog list", () => {
-  test("Visits the home page", async ({ page }) => {
+  test("Visits the home page", async ({ page, sampleDataset }) => {
     await page.goto("/");
 
     await expect(page).toHaveTitle("Catalogue");
