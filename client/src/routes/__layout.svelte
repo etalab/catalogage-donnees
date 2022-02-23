@@ -44,7 +44,7 @@
 <Header />
 
 <main id="contenu" role="main">
-  <div class="fr-container fr-mb-8w">
+  <div class="fr-mb-8w">
     <slot />
   </div>
 </main>

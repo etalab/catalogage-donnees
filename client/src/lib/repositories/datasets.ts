@@ -5,6 +5,7 @@ import type {
 } from "src/definitions/datasets";
 import type { Fetch } from "src/definitions/fetch";
 import { getApiUrl } from "$lib/fetch";
+import { toQueryString } from "$lib/util";
 
 type GetDatasetByID = (opts: { fetch: Fetch; id: string }) => Promise<Dataset>;
 
@@ -15,11 +16,12 @@ export const getDatasetByID: GetDatasetByID = async ({ fetch, id }) => {
   return await response.json();
 };
 
-type GetDatasets = (opts: { fetch: Fetch }) => Promise<Dataset[]>;
+type GetDatasets = (opts: { fetch: Fetch; q?: string }) => Promise<Dataset[]>;
 
-export const getDatasets: GetDatasets = async ({ fetch }) => {
-  const url = `${getApiUrl()}/datasets/`;
-  const request = new Request(url);
+export const getDatasets: GetDatasets = async ({ fetch, q }) => {
+  const url = new URL(`${getApiUrl()}/datasets/`);
+  url.search = toQueryString([["q", q]]);
+  const request = new Request(url.toString());
   const response = await fetch(request);
   return await response.json();
 };
