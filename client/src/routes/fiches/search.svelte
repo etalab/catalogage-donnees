@@ -14,12 +14,6 @@
   };
 </script>
 
-<svelte:head>
-  <title>
-    Rechercher un jeu de données
-  </title>
-</svelte:head>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import type { Dataset } from "src/definitions/datasets";
@@ -35,6 +29,10 @@
     goto(href);
   };
 </script>
+
+<svelte:head>
+  <title>Rechercher un jeu de données</title>
+</svelte:head>
 
 <section class="fr-container fr-mt-9w">
   <div class="fr-col-6">

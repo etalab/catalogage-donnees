@@ -27,7 +27,10 @@ test.describe("Search", () => {
     await page.locator(`text='${dataset.title}'`).first().waitFor();
   });
 
-  test("Vists the search page and performs two searches", async ({ page, dataset }) => {
+  test("Vists the search page and performs two searches", async ({
+    page,
+    dataset,
+  }) => {
     await page.goto("/");
 
     const link = page.locator("a >> text='Rechercher'");
