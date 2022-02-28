@@ -3,7 +3,11 @@ from typing import AsyncIterator, List
 import httpx
 import pytest
 
-from server.application.datasets.commands import CreateDataset, DeleteDataset
+from server.application.datasets.commands import (
+    CreateDataset,
+    DeleteDataset,
+    UpdateDataset,
+)
 from server.application.datasets.queries import GetDatasetByID
 from server.config.di import resolve
 from server.domain.datasets.entities import DataFormat, Dataset
@@ -110,12 +114,6 @@ async def test_search(
             id="lexemes",
         ),
         pytest.param(
-            "forêt",
-            "foret",
-            id="accents-insensitive",
-            marks=[pytest.mark.xfail(reason="Need unaccent extension")],
-        ),
-        pytest.param(
             "base",
             "BaSe",
             id="case-insensitive",
@@ -137,3 +135,64 @@ async def test_search_robustness(
     other_titles = [item["title"] for item in data]
 
     assert reference_titles == other_titles
+
+
+@pytest.mark.asyncio
+async def test_search_results_change_when_data_changes(
+    client: httpx.AsyncClient,
+) -> None:
+    bus = resolve(MessageBus)
+
+    # No results initially
+    response = await client.get("/datasets/", params={"q": "titre"})
+    assert response.status_code == 200
+    data = response.json()
+    assert not data
+
+    # Add new dataset
+    command = CreateDataset(
+        title="Titre",
+        description="Description",
+        formats=[DataFormat.OTHER],
+    )
+    pk = await bus.execute(command)
+    # New dataset is returned in search results
+    response = await client.get("/datasets/", params={"q": "titre"})
+    assert response.status_code == 200
+    (dataset,) = response.json()
+    assert dataset["id"] == str(pk)
+
+    # Update dataset
+    command = UpdateDataset(
+        id=pk,
+        title="Modifié",
+        description="Description",
+        formats=[DataFormat.OTHER],
+    )
+    await bus.execute(command)
+    # Updated dataset is returned in search results targeting updated data
+    response = await client.get("/datasets/", params={"q": "modifié"})
+    assert response.status_code == 200
+    (dataset,) = response.json()
+    assert dataset["id"] == str(pk)
+
+    # Same on description
+    command = UpdateDataset(
+        id=pk,
+        title="Modifié",
+        description="Jeu de données spécial",
+        formats=[DataFormat.OTHER],
+    )
+    await bus.execute(command)
+    response = await client.get("/datasets/", params={"q": "spécial"})
+    assert response.status_code == 200
+    (dataset,) = response.json()
+    assert dataset["id"] == str(pk)
+
+    # Deleted dataset is not returned in search results anymore
+    command = DeleteDataset(id=pk)
+    await bus.execute(command)
+    response = await client.get("/datasets/", params={"q": "modifié"})
+    assert response.status_code == 200
+    data = response.json()
+    assert not data
