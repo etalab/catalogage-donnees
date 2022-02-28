@@ -1,5 +1,5 @@
 import uuid
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from sqlalchemy import (
     Column,
@@ -15,14 +15,13 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import TSVECTOR, UUID
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Mapped, relationship, selectinload
+from sqlalchemy.orm import relationship, selectinload, Mapped
 
 from server.domain.common.types import ID
 from server.domain.datasets.entities import DataFormat, Dataset
 from server.domain.datasets.repositories import DatasetRepository
 
 from ..database import Base, Database
-from ..utils.sql import to_tsvector
 
 # Association table
 # See: https://docs.sqlalchemy.org/en/14/orm/basic_relationships.html#many-to-many
@@ -57,9 +56,9 @@ class DatasetModel(Base):
         back_populates="datasets",
         secondary=dataset_dataformat,
     )
-    search_tsv: Mapped[Any] = Column(
+    search_tsv: Mapped[str] = Column(
         TSVECTOR,
-        Computed(to_tsvector("title", "description", lang="french"), persisted=True),
+        Computed("to_tsvector('french', title || ' ' || description)", persisted=True),
     )
 
     __table_args__ = (
