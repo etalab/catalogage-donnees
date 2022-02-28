@@ -13,6 +13,9 @@ class DatasetRepository(Repository):
     async def get_all(self) -> List[Dataset]:
         raise NotImplementedError  # pragma: no cover
 
+    async def search(self, q: str) -> List[Dataset]:
+        raise NotImplementedError  # pragma: no cover
+
     async def get_by_id(self, id: ID) -> Optional[Dataset]:
         raise NotImplementedError  # pragma: no cover
 

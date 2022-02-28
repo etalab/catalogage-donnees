@@ -1,11 +1,23 @@
 import uuid
 from typing import List, Optional
 
-from sqlalchemy import Column, Enum, ForeignKey, Integer, String, Table, select
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import (
+    Column,
+    Computed,
+    Enum,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Table,
+    func,
+    select,
+    text,
+)
+from sqlalchemy.dialects.postgresql import TSVECTOR, UUID
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import relationship, selectinload
+from sqlalchemy.orm import Mapped, relationship, selectinload
 
 from server.domain.common.types import ID
 from server.domain.datasets.entities import DataFormat, Dataset
@@ -46,6 +58,18 @@ class DatasetModel(Base):
         back_populates="datasets",
         secondary=dataset_dataformat,
     )
+    search_tsv: Mapped[str] = Column(
+        TSVECTOR,
+        Computed("to_tsvector('french', title || ' ' || description)", persisted=True),
+    )
+
+    __table_args__ = (
+        Index(
+            "ix_dataset_search_tsv",
+            search_tsv,
+            postgresql_using="GIN",
+        ),
+    )
 
 
 def make_entity(instance: DatasetModel) -> Dataset:
@@ -81,6 +105,28 @@ class SqlDatasetRepository(DatasetRepository):
     async def get_all(self) -> List[Dataset]:
         async with self._db.session() as session:
             stmt = select(DatasetModel).options(selectinload(DatasetModel.formats))
+            result = await session.execute(stmt)
+            instances = result.scalars().all()
+            return [make_entity(instance) for instance in instances]
+
+    async def search(self, q: str) -> List[Dataset]:
+        async with self._db.session() as session:
+            stmt = (
+                select(DatasetModel)
+                .options(selectinload(DatasetModel.formats))
+                .where(
+                    # NOTE: SQLAlchemy has `.match(...)` that uses `to_tsquery()`.
+                    # But we use this `.op()` advanced syntax because we need
+                    # `plainto_tsquery()` to perform pre-processing and sanitization of
+                    # the `q` user input for us (e.g. 'The Fat Rat' -> 'fat & rat').
+                    # See:
+                    # https://www.postgresql.org/docs/current/textsearch-controls.html
+                    # https://docs.sqlalchemy.org/en/14/dialects/postgresql.html#full-text-search
+                    DatasetModel.search_tsv.op("@@")(
+                        func.plainto_tsquery(text("'french'"), q)
+                    )
+                )
+            )
             result = await session.execute(stmt)
             instances = result.scalars().all()
             return [make_entity(instance) for instance in instances]
