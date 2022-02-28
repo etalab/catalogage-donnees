@@ -43,36 +43,54 @@ async def corpus() -> AsyncIterator[None]:
 @pytest.mark.parametrize(
     "q, expected_titles",
     [
-        pytest.param("", [], id="empty-search"),
-        pytest.param("tototitu", [], id="no-results"),
+        pytest.param(
+            "",
+            [],
+            id="terms:none",
+        ),
+        pytest.param(
+            "hello!? hm?m & || specia| ch@rs'); \"quote",
+            [],
+            id="terms:garbage",
+        ),
+        pytest.param(
+            "tototitu",
+            [],
+            id="terms:single-results:none",
+        ),
         pytest.param(
             "carbone",
             ["Base Carbone"],
-            id="single-result-title",
+            id="terms:single-result:single-title",
         ),
         pytest.param(
             "forêt",
             ["Inventaire national forestier"],
-            id="single-result-description",
+            id="terms:single-result:single-description",
         ),
         pytest.param(
             "national",
             ["Inventaire national forestier", "Cadastre national"],
-            id="many-results-title",
+            id="terms:single-results:multiple-title",
         ),
         pytest.param(
             "France",
             ["Inventaire national forestier", "Cadastre national"],
-            id="many-results-description",
+            id="terms:single-results:multiple-description",
         ),
         pytest.param(
             "base",
             ["Base Carbone", "Cadastre national"],
-            id="many-results-title-description",
+            id="terms:single-results:multiple-title-description",
+        ),
+        pytest.param(
+            "données cadastre",
+            ["Cadastre national"],
+            id="terms:multiple-results:single",
         ),
     ],
 )
-async def test_search_empty(
+async def test_search(
     client: httpx.AsyncClient, q: str, expected_titles: List[str]
 ) -> None:
     response = await client.get("/datasets/", params={"q": q})
@@ -80,3 +98,42 @@ async def test_search_empty(
     data = response.json()
     titles = [item["title"] for item in data]
     assert titles == expected_titles
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "q_ref, q_other",
+    [
+        pytest.param(
+            "forêt",
+            "forestier",
+            id="lexemes",
+        ),
+        pytest.param(
+            "forêt",
+            "foret",
+            id="accents-insensitive",
+            marks=[pytest.mark.xfail(reason="Need unaccent extension")],
+        ),
+        pytest.param(
+            "base",
+            "BaSe",
+            id="case-insensitive",
+        ),
+    ],
+)
+async def test_search_robustness(
+    client: httpx.AsyncClient, q_ref: str, q_other: str
+) -> None:
+    response = await client.get("/datasets/", params={"q": q_ref})
+    assert response.status_code == 200
+    data = response.json()
+    reference_titles = [item["title"] for item in data]
+    assert reference_titles
+
+    response = await client.get("/datasets/", params={"q": q_other})
+    assert response.status_code == 200
+    data = response.json()
+    other_titles = [item["title"] for item in data]
+
+    assert reference_titles == other_titles

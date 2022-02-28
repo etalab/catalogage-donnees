@@ -10,12 +10,14 @@ from sqlalchemy import (
     Integer,
     String,
     Table,
+    func,
     select,
+    text,
 )
 from sqlalchemy.dialects.postgresql import TSVECTOR, UUID
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import relationship, selectinload, Mapped
+from sqlalchemy.orm import Mapped, relationship, selectinload
 
 from server.domain.common.types import ID
 from server.domain.datasets.entities import DataFormat, Dataset
@@ -112,7 +114,18 @@ class SqlDatasetRepository(DatasetRepository):
             stmt = (
                 select(DatasetModel)
                 .options(selectinload(DatasetModel.formats))
-                .where(DatasetModel.search_tsv.match(q, postgresql_regconfig="french"))
+                .where(
+                    # NOTE: SQLAlchemy has `.match(...)` that uses `to_tsquery()`.
+                    # But we use this `.op()` advanced syntax because we need
+                    # `plainto_tsquery()` to perform pre-processing and sanitization of
+                    # the `q` user input for us (e.g. 'The Fat Rat' -> 'fat & rat').
+                    # See:
+                    # https://www.postgresql.org/docs/current/textsearch-controls.html
+                    # https://docs.sqlalchemy.org/en/14/dialects/postgresql.html#full-text-search
+                    DatasetModel.search_tsv.op("@@")(
+                        func.plainto_tsquery(text("'french'"), q)
+                    )
+                )
             )
             result = await session.execute(stmt)
             instances = result.scalars().all()
