@@ -46,9 +46,7 @@ async def login(query: Login) -> User:
     repository = resolve(UserRepository)
     password_encoder = resolve(PasswordEncoder)
 
-    email = query.email
-
-    user = await repository.get_by_email(email)
+    user = await repository.get_by_email(query.email)
 
     if user is None:
         password_encoder.hash(query.password)  # Mitigate timing attacks.

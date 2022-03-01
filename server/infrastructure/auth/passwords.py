@@ -13,5 +13,7 @@ class Argon2PasswordEncoder(PasswordEncoder):
     def verify(self, password: str, hash: str) -> bool:
         try:
             return self._hasher.verify(hash, password)
-        except (argon2.exceptions.VerificationError, argon2.exceptions.InvalidHash):
+        except argon2.exceptions.VerificationError:
+            return False
+        except argon2.exceptions.InvalidHash:
             return False

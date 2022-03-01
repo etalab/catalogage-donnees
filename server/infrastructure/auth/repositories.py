@@ -50,7 +50,6 @@ class SqlUserRepository(UserRepository):
 
     async def insert(self, entity: User) -> ID:
         async with self._db.session() as session:
-
             instance = UserModel(
                 id=entity.id,
                 email=entity.email,

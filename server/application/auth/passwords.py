@@ -1,7 +1,5 @@
 import secrets
 
-API_TOKEN_LENGTH = 64
-
 
 class PasswordEncoder:
     def hash(self, value: str) -> str:
@@ -11,7 +9,9 @@ class PasswordEncoder:
         raise NotADirectoryError  # pragma: no cover
 
 
+API_TOKEN_LENGTH = 64
+
+
 def generate_api_token() -> str:
-    assert API_TOKEN_LENGTH % 2 == 0
     nbytes = API_TOKEN_LENGTH // 2
     return secrets.token_hex(nbytes)
