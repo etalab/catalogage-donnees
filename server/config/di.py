@@ -67,9 +67,11 @@ from typing import Iterator, List, Type, TypeVar
 
 import punq
 
+from server.application.auth.passwords import PasswordEncoder
 from server.domain.auth.repositories import UserRepository
 from server.domain.datasets.repositories import DatasetRepository
 from server.infrastructure.adapters.messages import MessageBusAdapter
+from server.infrastructure.auth.passwords import Argon2PasswordEncoder
 from server.infrastructure.auth.repositories import SqlUserRepository
 from server.infrastructure.database import Database
 from server.infrastructure.datasets.repositories import SqlDatasetRepository
@@ -110,6 +112,10 @@ def create_container() -> punq.Container:
 
     settings = Settings()
     container.register(Settings, instance=settings)
+
+    # Common services
+
+    container.register(PasswordEncoder, instance=Argon2PasswordEncoder())
 
     # Event handling (Commands, queries, and the message bus)
 

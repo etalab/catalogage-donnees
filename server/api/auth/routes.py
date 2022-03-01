@@ -1,15 +1,21 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from server.application.auth.commands import CreateUser, DeleteUser
-from server.application.auth.queries import GetUserByEmail
+from server.application.auth.queries import GetUserByEmail, Login
 from server.config.di import resolve
 from server.domain.auth.entities import User
-from server.domain.auth.exceptions import EmailAlreadyExists
+from server.domain.auth.exceptions import EmailAlreadyExists, LoginFailed
 from server.domain.common.types import ID
 from server.seedwork.application.messages import MessageBus
 
-from .dependencies import get_current_user
-from .schemas import CheckAuthResponse, UserCreate, UserRead
+from .dependencies import current_user
+from .schemas import (
+    CheckAuthResponse,
+    UserAuthenticatedRead,
+    UserCreate,
+    UserLogin,
+    UserRead,
+)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -18,7 +24,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def create_user(data: UserCreate) -> User:
     bus = resolve(MessageBus)
 
-    command = CreateUser(email=data.email)
+    command = CreateUser(email=data.email, password=data.password)
 
     try:
         await bus.execute(command)
@@ -27,6 +33,18 @@ async def create_user(data: UserCreate) -> User:
 
     query = GetUserByEmail(email=data.email)
     return await bus.execute(query)
+
+
+@router.post("/login/", response_model=UserAuthenticatedRead)
+async def login(data: UserLogin) -> None:
+    bus = resolve(MessageBus)
+
+    query = Login(email=data.email, password=data.password)
+
+    try:
+        return await bus.execute(query)
+    except LoginFailed as exc:
+        raise HTTPException(401, detail=str(exc))
 
 
 @router.delete("/users/{id}/", status_code=204)
@@ -38,5 +56,5 @@ async def delete_user(id: ID) -> None:
 
 
 @router.get("/check/")
-async def check_auth(_: User = Depends(get_current_user)) -> CheckAuthResponse:
+async def check_auth(_: User = Depends(current_user)) -> CheckAuthResponse:
     return CheckAuthResponse()

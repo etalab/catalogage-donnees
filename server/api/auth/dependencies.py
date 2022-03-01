@@ -1,20 +1,28 @@
-from fastapi import Depends, HTTPException
+from typing import Optional
 
-from server.application.auth.queries import GetUserByEmail
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials
+
+from server.application.auth.queries import GetUserByAPIToken
 from server.config.di import resolve
 from server.domain.auth.entities import User
 from server.domain.auth.exceptions import UserDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
-from ..security import email_security
+from ..security import bearer_security
 
 
-async def get_current_user(email: str = Depends(email_security)) -> User:
+async def current_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_security),
+) -> User:
+    if credentials is None:
+        raise HTTPException(401, detail="Invalid credentials")
+
     bus = resolve(MessageBus)
 
-    query = GetUserByEmail(email=email)
+    query = GetUserByAPIToken(api_token=credentials.credentials)
 
     try:
         return await bus.execute(query)
     except UserDoesNotExist:
-        raise HTTPException(403, detail="Invalid credentials")
+        raise HTTPException(401, detail="Invalid credentials")
