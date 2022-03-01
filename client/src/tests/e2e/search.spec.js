@@ -27,7 +27,7 @@ test.describe("Search", () => {
     await page.locator(`text='${dataset.title}'`).first().waitFor();
   });
 
-  test("Vists the search page and performs two searches", async ({
+  test("Visits the search page and performs two searches", async ({
     page,
     dataset,
   }) => {
