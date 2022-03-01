@@ -18,12 +18,14 @@
   import { goto } from "$app/navigation";
   import type { Dataset } from "src/definitions/datasets";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
+  import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import { pluralize, toQueryString } from "$lib/util";
 
   export let q: string;
   export let datasets: Dataset[];
 
-  const updateSearch = () => {
+  const updateSearch = (event: CustomEvent<string>) => {
+    const q = event.detail;
     const queryString = toQueryString([["q", q]]);
     const href = `?${queryString}`;
     goto(href);
@@ -38,21 +40,7 @@
   <div class="fr-col-6">
     <h2>Rechercher un jeu de données</h2>
 
-    <form
-      class="fr-search-bar"
-      role="search"
-      on:submit|preventDefault={updateSearch}
-    >
-      <label for="q" class="fr-label"> Votre recherche </label>
-      <input
-        type="search"
-        class="fr-input"
-        name="q"
-        bind:value={q}
-        placeholder="Rechercher"
-      />
-      <button type="submit" class="fr-btn"> Rechercher </button>
-    </form>
+    <SearchForm value={q} on:submit={updateSearch} />
   </div>
 
   <h4 class="fr-mt-6w">
