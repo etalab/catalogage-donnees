@@ -9,7 +9,7 @@
   const navigationItems: NavItem[] = [
     {
       label: "Rechercher",
-      href: "/",
+      href: "/fiches/search",
     },
     {
       label: "Contribuer",
