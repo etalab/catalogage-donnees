@@ -71,17 +71,48 @@
   <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-4">
       <div class="aside-entry">
-        <span class="icon icon-xl icon-bank-line" />
+        <span class="fr-fi--lg fr-fi-bank-line" aria-hidden="true" />
         <p>
           <span class="fr-text--xs">Producteur :</span><br />
           <span>DRAC Bretagne</span>
         </p>
       </div>
       <div class="aside-entry">
-        <span class="icon icon-xl icon-map-2-line" />
+        <span class="fr-fi--lg fr-fi-map-2-line" aria-hidden="true" />
         <p>
           <span class="fr-text--xs">Couverture géographique :</span><br />
           <span>France métropolitaine</span>
+        </p>
+      </div>
+      <div class="aside-entry">
+        <span class="fr-fi--lg fr-fi-calendar-line" aria-hidden="true" />
+        <p>
+          <span class="fr-text--xs">Couverture temporelle :</span><br />
+          <span>2015-2022</span>
+        </p>
+      </div>
+
+      <h6>Temporalité</h6>
+
+      <div class="aside-entry">
+        <span class="fr-fi--lg fr-fi-calendar-check-line" aria-hidden="true" />
+        <p>
+          <span class="fr-text--xs">Date de dernière mise à jour :</span><br />
+          <span>13 septembre 2021</span>
+        </p>
+      </div>
+      <div class="aside-entry">
+        <span class="fr-fi--lg fr-fi-refresh-line" aria-hidden="true" />
+        <p>
+          <span class="fr-text--xs">Fréquence de mise à jour</span><br />
+          <span>Mensuelle ou plusieurs fois par an</span>
+        </p>
+      </div>
+      <div class="aside-entry">
+        <span class="fr-fi--lg fr-fi-cake-2-line" aria-hidden="true" />
+        <p>
+          <span class="fr-text--xs">Date de première publication</span><br />
+          <span>15 décembre 2019</span>
         </p>
       </div>
     </div>

@@ -1,29 +1,26 @@
 @import url("@gouvfr/dsfr/dist/dsfr/dsfr.min.css");
 
 /* icons straight from http://remixicon.com/ (not included in the DSFR) */
-.icon {
-  height: 16px;
-  width: 16px;
-  display: inline-block;
+/* The following are downloaded from http://remixicon.com/, and modified to
+ * remove their width and height attributes so they're customizable through css */
+.fr-fi-bank-line {
   background-color: var(--text-action-high-blue-france);
-}
-
-.icon-lg {
-  height: 24px;
-  width: 24px;
-}
-
-.icon-xl {
-  height: 32px;
-  width: 32px;
-}
-
-.icon-bank-line {
   mask: url(../icons/bank-line.svg);
 }
 
-.icon-map-2-line {
+.fr-fi-map-2-line {
+  background-color: var(--text-action-high-blue-france);
   mask: url(../icons/map-2-line.svg);
+}
+
+.fr-fi-calendar-check-line {
+  background-color: var(--text-action-high-blue-france);
+  mask: url(../icons/calendar-check-line.svg);
+}
+
+.fr-fi-cake-2-line {
+  background-color: var(--text-action-high-blue-france);
+  mask: url(../icons/cake-2-line.svg);
 }
 
 /* aside on the "fiche de données" page */
@@ -32,6 +29,14 @@
   display: flex;
   gap: 10px;
   margin-bottom: 2em;
+}
+
+.aside-entry [class*="fr-fi"],
+.aside-entry [class*="fr-icon"] {
+  color: var(--text-action-high-blue-france);
+  display: inline-block;
+  height: 32px;
+  width: 32px;
 }
 
 .aside-entry p {
