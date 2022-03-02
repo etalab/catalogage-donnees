@@ -81,48 +81,48 @@
       >
         <li role="presentation">
           <button
-            id="tabpanel-404"
+            id="tabpanel-resume"
             class="fr-tabs__tab"
             tabindex="0"
             role="tab"
             aria-selected="true"
-            aria-controls="tabpanel-404-panel"
+            aria-controls="tabpanel-resume-panel"
           >
             Résumé
           </button>
         </li>
         <li role="presentation">
           <button
-            id="tabpanel-405"
+            id="tabpanel-sources"
             class="fr-tabs__tab"
             tabindex="-1"
             role="tab"
             aria-selected="false"
-            aria-controls="tabpanel-405-panel"
+            aria-controls="tabpanel-sources-panel"
           >
             Sources
           </button>
         </li>
         <li role="presentation">
           <button
-            id="tabpanel-406"
+            id="tabpanel-contenu"
             class="fr-tabs__tab"
             tabindex="-1"
             role="tab"
             aria-selected="false"
-            aria-controls="tabpanel-406-panel"
+            aria-controls="tabpanel-contenu-panel"
           >
             Contenu
           </button>
         </li>
         <li role="presentation">
           <button
-            id="tabpanel-407"
+            id="tabpanel-discussions"
             class="fr-tabs__tab"
             tabindex="-1"
             role="tab"
             aria-selected="false"
-            aria-controls="tabpanel-407-panel"
+            aria-controls="tabpanel-discussions-panel"
           >
             Discussion (9)
           </button>
@@ -130,10 +130,10 @@
       </ul>
 
       <div
-        id="tabpanel-404-panel"
+        id="tabpanel-resume-panel"
         class="fr-tabs__panel fr-tabs__panel--selected"
         role="tabpanel"
-        aria-labelledby="tabpanel-404"
+        aria-labelledby="tabpanel-resume"
         tabindex="0"
       >
         <p>
@@ -146,30 +146,30 @@
       </div>
 
       <div
-        id="tabpanel-405-panel"
+        id="tabpanel-sources-panel"
         class="fr-tabs__panel"
         role="tabpanel"
-        aria-labelledby="tabpanel-405"
+        aria-labelledby="tabpanel-sources"
         tabindex="0"
       >
         Sources !
       </div>
 
       <div
-        id="tabpanel-406-panel"
+        id="tabpanel-contenu-panel"
         class="fr-tabs__panel"
         role="tabpanel"
-        aria-labelledby="tabpanel-406"
+        aria-labelledby="tabpanel-contenu"
         tabindex="0"
       >
         Contenu !
       </div>
 
       <div
-        id="tabpanel-407-panel"
+        id="tabpanel-discussions-panel"
         class="fr-tabs__panel"
         role="tabpanel"
-        aria-labelledby="tabpanel-407"
+        aria-labelledby="tabpanel-discussions"
         tabindex="0"
       >
         Discussions !
