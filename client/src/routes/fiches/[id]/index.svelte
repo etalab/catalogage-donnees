@@ -70,8 +70,20 @@
 <section class="fr-container">
   <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-4">
-      <p>Producteur : DRAC Bretagne</p>
-      <p>Couverture géographique : France métropolitaine</p>
+      <div class="aside-entry">
+        <span class="icon icon-xl icon-bank-line" />
+        <p>
+          <span class="fr-text--xs">Producteur :</span><br />
+          <span>DRAC Bretagne</span>
+        </p>
+      </div>
+      <div class="aside-entry">
+        <span class="icon icon-xl icon-map-2-line" />
+        <p>
+          <span class="fr-text--xs">Couverture géographique :</span><br />
+          <span>France métropolitaine</span>
+        </p>
+      </div>
     </div>
     <div class="fr-col fr-tabs">
       <ul
