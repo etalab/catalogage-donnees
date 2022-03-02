@@ -42,7 +42,7 @@
     <li>
       <a
         href={editUrl}
-        class="fr-btn fr-btn--secondary fr-fi-edit-fill"
+        class="fr-btn fr-btn--secondary fr-fi-edit-fill fr-icon-edit-fill"
         title="Proposer une modification pour cette fiche de données"
       >
         Proposer une modification
@@ -50,7 +50,7 @@
     </li>
     <li>
       <button
-        class="fr-btn fr-btn--secondary fr-fi-mail-fill"
+        class="fr-btn fr-btn--secondary fr-fi-mail-fill fr-icon-mail-fill"
         title="Contacter le producter du jeu de données"
       >
         Contacter le producteur
@@ -58,7 +58,7 @@
     </li>
     <li>
       <button
-        class="fr-btn fr-btn--secondary fr-fi-eye-fill"
+        class="fr-btn fr-btn--secondary fr-fi-eye-fill fr-icon-eye-fill"
         title="Recevoir des alertes lors d'une modification à cette fiche de données"
       >
         Suivre
