@@ -136,13 +136,7 @@
         aria-labelledby="tabpanel-resume"
         tabindex="0"
       >
-        <p>
-          <strong> Propos liminaires </strong>
-        </p>
-        <p>
-          Conformément au décret n° AAAA-BBBB du DD mm YYYY relatif à la
-          publication de...
-        </p>
+        {dataset.description}
       </div>
 
       <div
