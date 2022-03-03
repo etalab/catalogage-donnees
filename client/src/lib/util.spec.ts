@@ -7,7 +7,14 @@ describe("toQueryString", () => {
     [[["q", null]], ""],
     [[["q", ""]], "?q="],
     [[["q", "value"]], "?q=value"],
-    [[["a", "1"], ["b", "2"]], "?a=1&b=2"],
+    [
+      [
+        ["q", "value"],
+        ["limit", "100"],
+        ["sort", "+date"],
+      ],
+      "?q=value&limit=100&sort=%2Bdate",
+    ],
   ];
 
   test.each(cases)("When items is '%s'", (items, expected) => {
