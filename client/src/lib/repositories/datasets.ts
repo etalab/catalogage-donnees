@@ -19,9 +19,9 @@ export const getDatasetByID: GetDatasetByID = async ({ fetch, id }) => {
 type GetDatasets = (opts: { fetch: Fetch; q?: string }) => Promise<Dataset[]>;
 
 export const getDatasets: GetDatasets = async ({ fetch, q }) => {
-  const url = new URL(`${getApiUrl()}/datasets/`);
-  url.search = toQueryString([["q", q]]);
-  const request = new Request(url.toString());
+  const queryString = toQueryString([["q", q]]);
+  const url = `${getApiUrl()}/datasets/${queryString}`;
+  const request = new Request(url);
   const response = await fetch(request);
   return await response.json();
 };
