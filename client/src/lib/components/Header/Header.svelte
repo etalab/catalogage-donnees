@@ -89,7 +89,6 @@
               <a
                 {href}
                 class="fr-nav__link"
-                target="_self"
                 aria-current={href === path ? "page" : undefined}
               >
                 {label}
