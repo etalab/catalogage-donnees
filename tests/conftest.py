@@ -12,6 +12,8 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 from server.config import Settings
 from server.config.di import bootstrap, resolve
 
+from .helpers import TestUser, temp_user
+
 os.environ["APP_TESTING"] = "True"
 
 bootstrap()
@@ -53,3 +55,9 @@ async def client() -> AsyncIterator[httpx.AsyncClient]:
     async with LifespanManager(app):
         async with httpx.AsyncClient(app=app, base_url="http://testserver") as client:
             yield client
+
+
+@pytest.fixture(name="temp_user")
+async def fixture_temp_user() -> AsyncIterator[TestUser]:
+    async with temp_user() as user:
+        yield user

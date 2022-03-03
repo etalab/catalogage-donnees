@@ -1,137 +1,164 @@
+from typing import List
+
 import httpx
 import pytest
 
-from server.application.auth.commands import CreateUser
 from server.application.auth.queries import GetUserByEmail
 from server.config.di import resolve
 from server.domain.auth.exceptions import UserDoesNotExist
 from server.domain.common.types import id_factory
 from server.seedwork.application.messages import MessageBus
 
+from ..helpers import TestUser
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "payload, expected_error_attrs",
+    "payload, expected_errors_attrs",
     [
         pytest.param(
             {},
-            {"loc": ["body", "email"], "type": "value_error.missing"},
+            [
+                {"loc": ["body", "email"], "type": "value_error.missing"},
+                {"loc": ["body", "password"], "type": "value_error.missing"},
+            ],
             id="empty",
         ),
         pytest.param(
-            {"email": "john"},
-            {"type": "value_error.email"},
+            {"email": "john", "password": "s3kr3t"},
+            [{"type": "value_error.email"}],
             id="invalid-email-no-domain",
         ),
         pytest.param(
-            {"email": "john@doe"},
-            {"type": "value_error.email"},
+            {"email": "john@doe", "password": "s3kr3t"},
+            [{"type": "value_error.email"}],
             id="invalid-email-no-domain-extension",
         ),
         pytest.param(
-            {"email": "johndoe.com"},
-            {"type": "value_error.email"},
+            {"email": "johndoe.com", "password": "s3kr3t"},
+            [{"type": "value_error.email"}],
             id="invalid-email-no-@",
         ),
         pytest.param(
-            {"email": "john@"},
-            {"type": "value_error.email"},
+            {"email": "john@", "password": "s3kr3t"},
+            [{"type": "value_error.email"}],
             id="invalid-email-no-suffix",
         ),
         pytest.param(
-            {"email": "@doe.com"},
-            {"type": "value_error.email"},
+            {"email": "@doe.com", "password": "s3kr3t"},
+            [{"type": "value_error.email"}],
             id="invalid-email-no-prefix",
         ),
     ],
 )
 async def test_create_user_invalid(
-    client: httpx.AsyncClient, payload: dict, expected_error_attrs: dict
+    client: httpx.AsyncClient, payload: dict, expected_errors_attrs: List[dict]
 ) -> None:
     response = await client.post("/auth/users/", json=payload)
     assert response.status_code == 422
 
     data = response.json()
-    assert len(data["detail"]) == 1
+    assert len(data["detail"]) == len(expected_errors_attrs)
 
-    error_attrs = {key: data["detail"][0][key] for key in expected_error_attrs}
-    assert error_attrs == expected_error_attrs
+    for error, expected_error_attrs in zip(data["detail"], expected_errors_attrs):
+        error_attrs = {key: error[key] for key in expected_error_attrs}
+        assert error_attrs == expected_error_attrs
 
 
 @pytest.mark.asyncio
 async def test_create_user(client: httpx.AsyncClient) -> None:
-    response = await client.post("/auth/users/", json={"email": "john@doe.com"})
+    payload = {"email": "john@doe.com", "password": "s3kr3t"}
+    response = await client.post("/auth/users/", json=payload)
     assert response.status_code == 201
-    data = response.json()
-    assert isinstance(data.pop("id"), str)
-    assert data == {"email": "john@doe.com"}
+    user = response.json()
+    pk = user.pop("id")
+    assert isinstance(pk, str)
+    assert user == {"email": "john@doe.com"}
 
 
 @pytest.mark.asyncio
-async def test_create_user_already_exists(client: httpx.AsyncClient) -> None:
-    response = await client.post("/auth/users/", json={"email": "john@doe.com"})
+async def test_create_user_already_exists(
+    client: httpx.AsyncClient, temp_user: TestUser
+) -> None:
+    payload = {"email": temp_user.email, "password": "somethingelse"}
+    response = await client.post("/auth/users/", json=payload)
     assert response.status_code == 400
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "headers, status_code",
-    [
-        pytest.param(
-            {},
-            403,
-            id="empty",
-        ),
-        pytest.param(
-            {"X-Email": "gibberish"},
-            403,
-            id="invalid-email",
-        ),
-        pytest.param(
-            {"X-Email": "doesnotexist@example.com"},
-            403,
-            id="user-does-not-exist",
-        ),
-        pytest.param(
-            {"X-Email-Other": "john@doe.com"},
-            403,
-            id="wrong-scheme",
-        ),
-        pytest.param(
-            {"X-Email": "john@doe.com"},
-            200,
-            id="valid",
-        ),
-        pytest.param(
-            {"x-email": "john@doe.com"},
-            200,
-            id="valid-case-insensitive",
-        ),
-    ],
-)
-async def test_check_auth(
-    client: httpx.AsyncClient, headers: dict, status_code: int
-) -> None:
-    response = await client.get("/auth/check/", headers=headers)
-
-    assert response.status_code == status_code
-
-    if status_code == 200:
-        assert response.json() == {"is_authenticated": True}
+async def test_login(client: httpx.AsyncClient, temp_user: TestUser) -> None:
+    payload = {"email": temp_user.email, "password": temp_user.password}
+    response = await client.post("/auth/login/", json=payload)
+    assert response.status_code == 200
+    user = response.json()
+    assert user == {
+        "id": str(temp_user.id),
+        "email": temp_user.email,
+        "api_token": temp_user.api_token,
+    }
 
 
 @pytest.mark.asyncio
-async def test_delete_user(client: httpx.AsyncClient) -> None:
+@pytest.mark.parametrize(
+    "email, password",
+    [
+        pytest.param("bad@example.org", "{password}", id="bad-email"),
+        pytest.param("{email}", "badpass", id="bad-password"),
+    ],
+)
+async def test_login_failed(
+    client: httpx.AsyncClient, email: str, password: str, temp_user: TestUser
+) -> None:
+    payload = {
+        "email": email.format(email=temp_user.email),
+        "password": password.format(password=temp_user.password),
+    }
+    response = await client.post("/auth/login/", json=payload)
+    assert response.status_code == 401
+    data = response.json()
+    assert data["detail"] == "Invalid credentials"
+
+
+@pytest.mark.asyncio
+async def test_check(client: httpx.AsyncClient, temp_user: TestUser) -> None:
+    headers = {"Authorization": f"Bearer {temp_user.api_token}"}
+    response = await client.get("/auth/check/", headers=headers)
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "headers",
+    [
+        pytest.param({}, id="missing-header"),
+        pytest.param({"Authorization": ""}, id="empty-header"),
+        pytest.param({"Authorization": "{api_token}"}, id="missing-scheme"),
+        pytest.param({"Authorization": "NotBearer {api_token}"}, id="bad-scheme"),
+        pytest.param({"Authorization": "Bearer badtoken"}, id="bad-token"),
+    ],
+)
+async def test_check_failed(
+    client: httpx.AsyncClient, temp_user: TestUser, headers: dict
+) -> None:
+    if "Authorization" in headers:
+        headers["Authorization"] = headers["Authorization"].format(
+            api_token=temp_user.api_token
+        )
+
+    response = await client.get("/auth/check/", headers=headers)
+    assert response.status_code == 401
+    data = response.json()
+    assert data["detail"] == "Invalid credentials"
+
+
+@pytest.mark.asyncio
+async def test_delete_user(client: httpx.AsyncClient, temp_user: TestUser) -> None:
     bus = resolve(MessageBus)
-    email = "temp@example.org"
 
-    command = CreateUser(email=email)
-    user_id = await bus.execute(command)
-
-    response = await client.delete(f"/auth/users/{user_id}/")
+    response = await client.delete(f"/auth/users/{temp_user.id}/")
     assert response.status_code == 204
 
-    query = GetUserByEmail(email=email)
+    query = GetUserByEmail(email=temp_user.email)
     with pytest.raises(UserDoesNotExist):
         await bus.execute(query)
 
