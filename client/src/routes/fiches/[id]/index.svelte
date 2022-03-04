@@ -67,7 +67,11 @@
   </ul>
 </section>
 
-<section class="fr-container">
+<aside
+  role="contentinfo"
+  aria-label="méta-données sur ce jeu de données"
+  class="fr-container"
+>
   <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-4">
       <div class="aside-entry">
@@ -213,4 +217,4 @@
       </div>
     </div>
   </div>
-</section>
+</aside>
