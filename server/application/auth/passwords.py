@@ -6,7 +6,7 @@ class PasswordEncoder:
         raise NotImplementedError  # pragma: no cover
 
     def verify(self, password: str, hash: str) -> bool:
-        raise NotADirectoryError  # pragma: no cover
+        raise NotImplementedError  # pragma: no cover
 
 
 API_TOKEN_LENGTH = 64

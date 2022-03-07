@@ -24,7 +24,7 @@
   const submitSearch = (event: CustomEvent<string>) => {
     const q = event.detail;
     const queryString = toQueryString([["q", q]]);
-    const href = `/fiches/search?${queryString}`;
+    const href = `/fiches/search${queryString}`;
     goto(href);
   };
 </script>

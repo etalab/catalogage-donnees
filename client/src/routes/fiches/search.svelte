@@ -27,7 +27,7 @@
   const updateSearch = (event: CustomEvent<string>) => {
     const q = event.detail;
     const queryString = toQueryString([["q", q]]);
-    const href = `?${queryString}`;
+    const href = `${queryString}`; // Same page, update query string only
     goto(href);
   };
 </script>

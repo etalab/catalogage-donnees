@@ -10,7 +10,7 @@ def test_generate_api_token() -> None:
 
 def test_argon2_password_encoder() -> None:
     encoder = Argon2PasswordEncoder()
-    hsh = encoder.hash("s3kr3t")
-    assert encoder.verify("s3kr3t", hsh)
-    assert not encoder.verify("other", hsh)
+    hash_ = encoder.hash("s3kr3t")
+    assert encoder.verify("s3kr3t", hash_)
+    assert not encoder.verify("other", hash_)
     assert not encoder.verify("s3kr3t", "invalidhash")
