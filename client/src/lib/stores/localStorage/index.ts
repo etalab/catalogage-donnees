@@ -1,5 +1,5 @@
-import { writable } from "svelte/store";
-import type { Writable } from "svelte/store";
+import { writable, get } from "svelte/store";
+import type { Writable, Updater } from "svelte/store";
 
 const hasLocalStorage = typeof localStorage !== "undefined";
 
@@ -32,21 +32,29 @@ const persistToLocalStorage = <T = unknown>(key: string, value: T) => {
  */
 export const storable = <T = unknown>(
   key: string,
-  initialValue: T
+  initialValue: T,
+  validateExisting: (value: T) => boolean = (value) => true,
 ): Writable<T> => {
   const store = writable(initialValue);
 
   const existingValue = getFromLocalStorage<T>(key);
 
-  if (existingValue) {
+  if (existingValue && validateExisting(existingValue)) {
     store.set(existingValue);
   } else {
     persistToLocalStorage(key, initialValue);
   }
 
-  store.subscribe((value) => {
-    persistToLocalStorage(key, value);
-  });
+  const wrappedStore = {
+    set(value: T) {
+      persistToLocalStorage(key, value);
+      store.set(value);
+    },
+    update(updater: Updater<T>) {
+      this.set(updater(get(store)));
+    },
+    subscribe: store.subscribe.bind(store),
+  };
 
-  return store;
+  return wrappedStore;
 };

@@ -4,11 +4,12 @@
 
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import type { User } from "src/definitions/auth";
   import LoginForm from "$lib/components/LoginForm/LoginForm.svelte";
   import { login } from "$lib/stores/auth";
 
-  const onLogin = async () => {
-    login();
+  const onLogin = async (event: CustomEvent<User>) => {
+    login(event.detail);
     await goto("/");
   };
 </script>

@@ -2,13 +2,13 @@
   import * as yup from "yup";
   import { createEventDispatcher } from "svelte";
   import { createForm } from "svelte-forms-lib";
-  import type { LoginFormData } from "src/definitions/auth";
+  import type { LoginFormData, User } from "src/definitions/auth";
   import { login } from "$lib/repositories/auth";
 
   let loading = false;
   let loginFailed = false;
 
-  const dispatch = createEventDispatcher<{ login: void }>();
+  const dispatch = createEventDispatcher<{ login: User }>();
 
   const onSubmit = async (data: LoginFormData) => {
     try {
@@ -22,7 +22,12 @@
         return;
       }
 
-      dispatch("login");
+      const user: User = {
+        email: response.data.email,
+        apiToken: response.data.apiToken,
+      };
+
+      dispatch("login", user);
     } finally {
       loading = false;
     }

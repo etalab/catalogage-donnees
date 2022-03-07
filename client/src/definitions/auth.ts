@@ -9,9 +9,16 @@ export interface LoginApiRequestData {
 }
 
 export interface LoginApiResponseData {
+  email: string;
+  apiToken: string;
+}
+
+export interface User {
+  email: string;
   apiToken: string;
 }
 
 export interface UserInfo {
   loggedIn: boolean;
+  user: User | null;
 }

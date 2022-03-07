@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { isLoggedIn, logout } from "$lib/stores/auth";
+  import { isLoggedIn, logout, user } from "$lib/stores/auth";
 
   type NavItem = {
     label: string;
@@ -69,24 +69,31 @@
         </div>
         <div class="fr-header__tools">
           <div class="fr-header__tools-links">
-            <ul class="fr-links-group">
-              <li>
-                <a href="/" class="fr-link" title="Accéder aux réglages">
-                  Réglages
-                </a>
-              </li>
-              <li>
-                {#if $isLoggedIn}
+            {#if $isLoggedIn}
+              <p>
+                {$user.email}
+              </p>
+              <ul class="fr-links-group">
+                <li>
+                  <a href="/" class="fr-link" title="Accéder aux réglages">
+                    Réglages
+                  </a>
+                </li>
+                <li>
                   <button class="fr-link" on:click={onClickLogout}>
                     Déconnexion
                   </button>
-                {:else}
+                </li>
+              </ul>
+            {:else}
+              <ul class="fr-links-group">
+                <li>
                   <a href="/login" class="fr-link" title="Se connecter">
                     Se connecter
                   </a>
-                {/if}
-              </li>
-            </ul>
+                </li>
+              </ul>
+            {/if}
           </div>
         </div>
       </div>
