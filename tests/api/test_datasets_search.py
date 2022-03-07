@@ -216,17 +216,15 @@ async def test_search_ranking(client: httpx.AsyncClient) -> None:
         ("B", "Forêt nouvelle"),
         ("C", "Historique des forêts anciennes"),
         ("D", "Ancien historique des forêts"),
-        ("E", "Historique des forêts anciennes reste du document"),
     ]
 
     random.shuffle(items)  # Ensure DB insert order is irrelevant.
 
-    q = "Forêt ancienne"
+    q = "Forêt ancienne"  # Lexemes: forêt, ancien
 
     expected_titles = [
-        "E",  # Both lexemes match, in the same order, earlier in the document
-        "C",  # Both lexemes match, in the same order
-        "D",  # Both lexemes match, but in different order
+        "C",  # Both lexemes match, close to each other
+        "D",  # Both lexemes match, further away from each other
     ]
 
     async with set_corpus(items):
