@@ -1,4 +1,6 @@
-from typing import AsyncIterator, List
+import random
+from contextlib import asynccontextmanager
+from typing import AsyncIterator, List, Tuple
 
 import httpx
 import pytest
@@ -20,13 +22,13 @@ CORPUS_ITEMS = [
 ]
 
 
-@pytest.fixture(autouse=True, scope="module")
-async def corpus() -> AsyncIterator[None]:
+@asynccontextmanager
+async def set_corpus(items: List[Tuple[str, str]]) -> AsyncIterator[None]:
     bus = resolve(MessageBus)
 
     datasets: List[Dataset] = []
 
-    for title, description in CORPUS_ITEMS:
+    for title, description in items:
         command = CreateDataset(
             title=title, description=description, formats=[DataFormat.FILE_TABULAR]
         )
@@ -43,7 +45,14 @@ async def corpus() -> AsyncIterator[None]:
             await bus.execute(command)
 
 
+@pytest.fixture
+async def default_corpus() -> AsyncIterator[None]:
+    async with set_corpus(CORPUS_ITEMS):
+        yield
+
+
 @pytest.mark.asyncio
+@pytest.mark.usefixtures("default_corpus")
 @pytest.mark.parametrize(
     "q, expected_titles",
     [
@@ -105,6 +114,7 @@ async def test_search(
 
 
 @pytest.mark.asyncio
+@pytest.mark.usefixtures("default_corpus")
 @pytest.mark.parametrize(
     "q_ref, q_other",
     [
@@ -138,6 +148,7 @@ async def test_search_robustness(
 
 
 @pytest.mark.asyncio
+@pytest.mark.usefixtures("default_corpus")
 async def test_search_results_change_when_data_changes(
     client: httpx.AsyncClient,
 ) -> None:
@@ -196,3 +207,31 @@ async def test_search_results_change_when_data_changes(
     assert response.status_code == 200
     data = response.json()
     assert not data
+
+
+@pytest.mark.asyncio
+async def test_search_ranking(client: httpx.AsyncClient) -> None:
+    items = [
+        ("A", "..."),
+        ("B", "Forêt nouvelle"),
+        ("C", "Historique des forêts anciennes"),
+        ("D", "Ancien historique des forêts"),
+        ("E", "Historique des forêts anciennes reste du document"),
+    ]
+
+    random.shuffle(items)  # Ensure DB insert order is irrelevant.
+
+    q = "Forêt ancienne"
+
+    expected_titles = [
+        "E",  # Both lexemes match, in the same order, earlier in the document
+        "C",  # Both lexemes match, in the same order
+        "D",  # Both lexemes match, but in different order
+    ]
+
+    async with set_corpus(items):
+        response = await client.get("/datasets/", params={"q": q})
+        assert response.status_code == 200
+        data = response.json()
+        titles = [item["title"] for item in data]
+        assert titles == expected_titles
