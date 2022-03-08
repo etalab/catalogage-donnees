@@ -1,9 +1,10 @@
 <script lang="ts">
   import { page } from "$app/stores";
+  import paths from "$lib/paths";
 
   const id = $page.params.id;
 
-  const editUrl = `/fiches/${id}/edit`;
+  const editUrl = paths.datasetEdit({ id });
 </script>
 
 <section class="fr-container fr-mt-9w">
