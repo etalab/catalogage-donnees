@@ -1,4 +1,4 @@
-from typing import Awaitable, Callable, Dict, Type, TypeVar, Union
+from typing import Any, Awaitable, Callable, Dict, Type, TypeVar, Union
 
 from server.seedwork.application.commands import Command
 from server.seedwork.application.messages import MessageBus
@@ -17,7 +17,7 @@ class MessageBusAdapter(MessageBus):
         self.command_handlers = command_handlers
         self.query_handlers = query_handlers
 
-    async def execute(self, message: Union[Command[T], Query[T]]) -> T:
+    async def execute(self, message: Union[Command[T], Query[T]], **kwargs: Any) -> T:
         try:
             if isinstance(message, Command):
                 handler = self.command_handlers[type(message)]
@@ -26,4 +26,4 @@ class MessageBusAdapter(MessageBus):
         except KeyError:
             raise NotImplementedError(f"No handler for {type(message)}")
 
-        return await handler(message)
+        return await handler(message, **kwargs)
