@@ -18,13 +18,14 @@
   import { toQueryString } from "$lib/util";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
+  import paths from "$lib/paths";
 
   export let datasets: Dataset[];
 
   const submitSearch = (event: CustomEvent<string>) => {
     const q = event.detail;
     const queryString = toQueryString([["q", q]]);
-    const href = `/fiches/search${queryString}`;
+    const href = `${paths.datasetSearch}${queryString}`;
     goto(href);
   };
 </script>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Dataset } from "src/definitions/datasets";
   import { DATA_FORMAT_SHORT_NAMES } from "src/constants";
+  import paths from "$lib/paths";
 
   export let dataset: Dataset;
 
@@ -40,7 +41,7 @@
         <div class="fr-grid-row fr-grid-row--right">
           <p class="fr-text--sm fr-text-mention--grey">Il y a 3 jours</p>
           <a
-            href={`/fiches/${dataset.id}`}
+            href={paths.datasetDetail({ id: dataset.id })}
             class="fr-link fr-fi-arrow-right-line fr-link--icon-right"
             title="Consulter cette fiche de données"
           >
