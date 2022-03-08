@@ -10,6 +10,7 @@ from sqlalchemy import (
     Integer,
     String,
     Table,
+    desc,
     func,
     select,
     text,
@@ -111,8 +112,23 @@ class SqlDatasetRepository(DatasetRepository):
 
     async def search(self, q: str) -> List[Dataset]:
         async with self._db.session() as session:
+            query_col = func.plainto_tsquery(text("'french'"), q)
+
+            # 0 = (the default) ignores the document length
+            # This is defined for the sake of being explicit:
+            # * No need to normalize the `rank` value as we don't need it.
+            # * Some normalization options allow penalizing longer documents, but this
+            #   is irrelevant for our use cases (users may enter titles or descriptions
+            #   as long as is necessary).
+            # https://www.postgresql.org/docs/12/textsearch-controls.html#TEXTSEARCH-RANKING
+            rank_normalization = 0
+
+            rank_col = func.ts_rank_cd(
+                DatasetModel.search_tsv, query_col, rank_normalization
+            )
+
             stmt = (
-                select(DatasetModel)
+                select(DatasetModel, rank_col.label("rank"))
                 .options(selectinload(DatasetModel.formats))
                 .where(
                     # NOTE: SQLAlchemy has `.match(...)` that uses `to_tsquery()`.
@@ -122,14 +138,14 @@ class SqlDatasetRepository(DatasetRepository):
                     # See:
                     # https://www.postgresql.org/docs/current/textsearch-controls.html
                     # https://docs.sqlalchemy.org/en/14/dialects/postgresql.html#full-text-search
-                    DatasetModel.search_tsv.op("@@")(
-                        func.plainto_tsquery(text("'french'"), q)
-                    )
+                    DatasetModel.search_tsv.op("@@")(query_col)
                 )
+                .order_by(desc(text("rank")))
             )
+
             result = await session.execute(stmt)
-            instances = result.scalars().all()
-            return [make_entity(instance) for instance in instances]
+
+            return [make_entity(instance) for (instance, _) in result]
 
     async def _maybe_get_by_id(
         self, session: AsyncSession, id: ID
