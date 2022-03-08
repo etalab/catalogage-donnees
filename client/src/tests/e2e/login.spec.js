@@ -16,12 +16,10 @@ test.describe("Login", () => {
     await expect(page).toHaveTitle("Connexion");
 
     const email = page.locator("form [name=email]");
-    await expect(email).toHaveAttribute("type", "email");
     await email.fill("demo@catalogue.data.gouv.fr");
     expect(await email.inputValue()).toBe("demo@catalogue.data.gouv.fr");
 
     const password = page.locator("form [name=password]");
-    await expect(password).toHaveAttribute("type", "password");
     await password.fill("demo");
     expect(await password.inputValue()).toBe("demo");
 

@@ -2,36 +2,12 @@
   import * as yup from "yup";
   import { createEventDispatcher } from "svelte";
   import { createForm } from "svelte-forms-lib";
-  import type { LoginFormData, User } from "src/definitions/auth";
-  import { login } from "$lib/repositories/auth";
+  import type { LoginFormData } from "src/definitions/auth";
 
-  let loading = false;
-  let loginFailed = false;
+  export let loading = false;
+  export let loginFailed = false;
 
-  const dispatch = createEventDispatcher<{ login: User }>();
-
-  const onSubmit = async (data: LoginFormData) => {
-    try {
-      loading = true;
-      loginFailed = false;
-
-      const response = await login({ fetch, data });
-      loginFailed = response.status === 401;
-
-      if (loginFailed) {
-        return;
-      }
-
-      const user: User = {
-        email: response.data.email,
-        apiToken: response.data.apiToken,
-      };
-
-      dispatch("login", user);
-    } finally {
-      loading = false;
-    }
-  };
+  const dispatch = createEventDispatcher<{ submit: LoginFormData }>();
 
   const { form, errors, handleChange, handleSubmit, isValid } =
     createForm<LoginFormData>({
@@ -46,9 +22,8 @@
           .required("Ce champ est obligatoire"),
         password: yup.string().required("Ce champ est obligatoire"),
       }),
-      onSubmit: async (values) => {
-        const data = { ...values };
-        await onSubmit(data);
+      onSubmit: (values) => {
+        dispatch("submit", values);
       },
     });
 

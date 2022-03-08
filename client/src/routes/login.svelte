@@ -4,13 +4,36 @@
 
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import type { User } from "src/definitions/auth";
-  import LoginForm from "$lib/components/LoginForm/LoginForm.svelte";
+  import type { LoginFormData, User } from "src/definitions/auth";
   import { login } from "$lib/stores/auth";
+  import { login as sendLoginRequest } from "$lib/repositories/auth";
+  import LoginForm from "$lib/components/LoginForm/LoginForm.svelte";
 
-  const onLogin = async (event: CustomEvent<User>) => {
-    login(event.detail);
-    await goto("/");
+  let loading = false;
+  let loginFailed = false;
+
+  const onSubmit = async (event: CustomEvent<LoginFormData>) => {
+    try {
+      loading = true;
+      loginFailed = false;
+
+      const response = await sendLoginRequest({ fetch, data: event.detail });
+      loginFailed = response.status === 401;
+
+      if (loginFailed) {
+        return;
+      }
+
+      const user: User = {
+        email: response.data.email,
+        apiToken: response.data.apiToken,
+      };
+
+      login(user);
+      await goto("/");
+    } finally {
+      loading = false;
+    }
   };
 </script>
 
@@ -29,7 +52,7 @@
 
   <div class="fr-grid-row fr-grid-row--center">
     <div class="fr-col-12 fr-col-md-6">
-      <LoginForm on:login={onLogin} />
+      <LoginForm {loading} {loginFailed} on:submit={onSubmit} />
     </div>
   </div>
 </section>
