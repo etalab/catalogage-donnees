@@ -1,8 +1,12 @@
+<script lang="ts">
+  import paths from "$lib/paths";
+</script>
+
 <footer class="fr-footer" role="contentinfo" id="footer">
   <div class="fr-container">
     <div class="fr-footer__body">
       <div class="fr-footer__brand fr-enlarge-link">
-        <a href="/" title="Retour à l’accueil">
+        <a href={paths.home} title="Retour à l’accueil">
           <p class="fr-logo" title="république française">
             Catalogage
             <br />des

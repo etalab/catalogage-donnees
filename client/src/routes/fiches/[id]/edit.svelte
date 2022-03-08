@@ -17,6 +17,7 @@
   import { page } from "$app/stores";
   import type { Dataset, DatasetFormData } from "src/definitions/datasets";
   import DatasetForm from "$lib/components/DatasetForm/DatasetForm.svelte";
+  import paths from "$lib/paths";
 
   export let dataset: Dataset;
 
@@ -27,7 +28,7 @@
     try {
       loading = true;
       await updateDataset({ fetch, id, data: event.detail });
-      await goto(`/fiches/${id}`);
+      await goto(paths.datasetDetail({ id }));
     } finally {
       loading = false;
     }

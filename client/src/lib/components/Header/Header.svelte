@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { isLoggedIn, logout, user } from "$lib/stores/auth";
+  import paths from "$lib/paths";
 
   type NavItem = {
     label: string;
@@ -11,11 +12,11 @@
   const navigationItems: NavItem[] = [
     {
       label: "Rechercher",
-      href: "/fiches/search",
+      href: paths.datasetSearch,
     },
     {
       label: "Contribuer",
-      href: "/contribuer",
+      href: paths.contribute,
     },
     {
       label: "Mon espace",
@@ -58,7 +59,7 @@
             </div>
           </div>
           <div class="fr-header__service">
-            <a href="/" title="Accueil - Catalogage des données">
+            <a href={paths.home} title="Accueil - Catalogage des données">
               <p class="fr-header__service-title">Catalogage des données</p>
             </a>
             <p class="fr-header__service-tagline">
@@ -75,7 +76,11 @@
               </p>
               <ul class="fr-links-group">
                 <li>
-                  <a href="/" class="fr-link" title="Accéder aux réglages">
+                  <a
+                    href={paths.home}
+                    class="fr-link"
+                    title="Accéder aux réglages"
+                  >
                     Réglages
                   </a>
                 </li>
@@ -88,7 +93,7 @@
             {:else}
               <ul class="fr-links-group">
                 <li>
-                  <a href="/login" class="fr-link" title="Se connecter">
+                  <a href={paths.login} class="fr-link" title="Se connecter">
                     Se connecter
                   </a>
                 </li>
