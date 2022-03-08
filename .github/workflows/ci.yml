@@ -47,6 +47,9 @@ jobs:
       - name: "Run migrations"
         run: make migrate
 
+      - name: "Initialize data"
+        run: make initdata
+
       - name: "Run checks"
         run: make check
 

@@ -1,0 +1,34 @@
+users:
+  - id: "b80b614c-30d1-48cf-8acf-9f1056f8eb0f"
+    params:
+      email: demo@catalogue.data.gouv.fr
+      password: demo
+
+datasets:
+  - # Mimicks: https://www.data.gouv.fr/fr/datasets/donnees-brutes-de-l-inventaire-forestier/
+    id: "16b398af-f8c7-48b9-898a-18ad3404f528"
+    params:
+      title: Données brutes de l'inventaire forestier
+      description: |
+        Les données brutes de l'inventaire forestier correspondent à l'ensemble des données collectées en forêt (y compris en peupleraie) sur le territoire métropolitain par les agents forestiers de terrain de l'IGN. Ces données portent sur les caractéristiques des placettes d'inventaire (6000 par an), les mesures et observations sur les arbres (60 000 par an), les données éco-floristiques.
+        Les coordonnées géographiques des placettes sont fournies au kilomètre près.
+      formats:
+        - website
+
+  -  # Mimicks: https://www.data.gouv.fr/fr/datasets/ensemble-des-lieux-de-restauration-des-crous-france-entiere-1/
+    id: "4370d027-1447-4e1b-9452-781233be7f5a"
+    params:
+      title: Ensemble des lieux de restauration des CROUS
+      description: |
+        Les ressources ci-dessous recensent les restaurants, brasseries et cafétérias dans le réseau des CROUS.
+      formats:
+        - file_tabular
+
+  - # Mimicks: https://www.data.gouv.fr/fr/datasets/catalogue-des-enquetes-realisees-par-la-dares-2012-572205/
+    id: "40abb40f-af83-4a3b-b926-78428402688f"
+    params:
+      title: Catalogue des enquêtes réalisées par la DARES
+      description: |
+        Présentation sous forme de fiches répertoriées par thèmes des enquêtes menées par la DARES avec reprise des objectifs, de la périodicité, de la taille de l'échantillon, des publications.
+      formats:
+        - other

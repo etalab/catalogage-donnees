@@ -38,6 +38,7 @@ serve-dist-client: #- Run the built client
 compose-up: #- Start Docker Compose setup
 	docker-compose up --build -d
 	docker-compose run migrate
+	docker-compose run initdata
 
 compose-down: #- Stop and teardown Docker Compose setup
 	docker-compose down
@@ -50,6 +51,15 @@ migration: #- Create a migration
 
 currentmigration: #- Show current migraiton
 	${bin}alembic show current
+
+initdata: #- Initialize data
+	${bin}python -m tools.initdata tools/initdata.yml
+
+initdatareset: #- Initialize data, resetting any changed target entities
+	${bin}python -m tools.initdata --reset tools/initdata.yml
+
+id: #- Generate an ID suitable for use in database entities
+	${bin}python -m tools.makeid
 
 dbdiagram: #- Generate database diagram image
 	${bin}python -m tools.erd docs/db.erd.json -o docs/db.dot

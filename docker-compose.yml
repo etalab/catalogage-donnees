@@ -47,5 +47,12 @@ services:
     environment:
       APP_DATABASE_URL: "postgresql+asyncpg://user:pass@db:5432/catalogage"
 
+  initdata:
+    image: catalogage-server
+    profiles: ["cli"]
+    command: ./tools/wait-for-it.sh db:5432 -- make initdata
+    environment:
+      APP_DATABASE_URL: "postgresql+asyncpg://user:pass@db:5432/catalogage"
+
 volumes:
   pgdata:
