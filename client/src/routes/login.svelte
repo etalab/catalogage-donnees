@@ -14,6 +14,10 @@
   };
 </script>
 
+<svelte:head>
+  <title>Connexion</title>
+</svelte:head>
+
 <section class="fr-container">
   <h1 class="fr-grid-row fr-grid-row--center fr-mt-6w">
     Bienvenue sur votre outil de catalogage de données
