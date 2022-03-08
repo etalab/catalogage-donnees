@@ -3,7 +3,9 @@
 </script>
 
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import type { DatasetFormData } from "src/definitions/datasets";
+  import paths from "$lib/paths";
   import DatasetForm from "$lib/components/DatasetForm/DatasetForm.svelte";
   import { createDataset } from "$lib/repositories/datasets";
 
@@ -12,7 +14,8 @@
   const onSave = async (event: CustomEvent<DatasetFormData>) => {
     try {
       loading = true;
-      await createDataset({ fetch, data: event.detail });
+      const dataset = await createDataset({ fetch, data: event.detail });
+      await goto(paths.datasetDetail({ id: dataset.id }));
     } finally {
       loading = false;
     }
