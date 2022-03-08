@@ -1,7 +1,10 @@
 import { expect } from "@playwright/test";
+import { STATE_AUTHENTICATED } from "./constants.js";
 import { test } from "./fixtures.js";
 
 test.describe("Catalog list", () => {
+  test.use({ storageState: STATE_AUTHENTICATED });
+
   test("Visits the home page", async ({ page, dataset }) => {
     await page.goto("/");
 

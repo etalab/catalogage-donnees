@@ -1,7 +1,10 @@
 import { expect } from "@playwright/test";
+import { STATE_AUTHENTICATED } from "./constants.js";
 import { test } from "./fixtures.js";
 
 test.describe("Search", () => {
+  test.use({ storageState: STATE_AUTHENTICATED });
+
   test("Performs a search from the home page", async ({ page, dataset }) => {
     await page.goto("/");
 

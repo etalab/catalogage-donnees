@@ -1,7 +1,10 @@
 import { expect } from "@playwright/test";
+import { STATE_AUTHENTICATED } from "./constants.js";
 import { test } from "./fixtures.js";
 
 test.describe("Edit dataset", () => {
+  test.use({ storageState: STATE_AUTHENTICATED });
+
   test("Visits the edit page", async ({ page, dataset }) => {
     await page.goto(`/fiches/${dataset.id}/edit`);
 

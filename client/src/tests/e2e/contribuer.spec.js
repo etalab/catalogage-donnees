@@ -1,6 +1,9 @@
 import { test, expect } from "@playwright/test";
+import { STATE_AUTHENTICATED } from "./constants.js";
 
 test.describe("Basic form submission", () => {
+  test.use({ storageState: STATE_AUTHENTICATED });
+
   test("Visits the contribution page", async ({ page }) => {
     const titleText = "Un nom de jeu de données";
     const descriptionText = "Une longue\ndescription de jeu\nde données";
