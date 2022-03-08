@@ -53,10 +53,10 @@ currentmigration: #- Show current migraiton
 	${bin}alembic show current
 
 initdata: #- Initialize data
-	${bin}python -m tools.initdata
+	${bin}python -m tools.initdata tools/initdata.yml
 
 initdatareset: #- Initialize data, resetting any changed target entities
-	${bin}python -m tools.initdata --reset
+	${bin}python -m tools.initdata --reset tools/initdata.yml
 
 id: #- Generate an ID suitable for use in database entities
 	${bin}python -m tools.makeid
