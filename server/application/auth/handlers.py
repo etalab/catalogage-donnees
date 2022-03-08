@@ -13,9 +13,12 @@ from .passwords import PasswordEncoder, generate_api_token
 from .queries import GetUserByAPIToken, GetUserByEmail, Login
 
 
-async def create_user(command: CreateUser) -> ID:
+async def create_user(command: CreateUser, *, id_: ID = None) -> ID:
     repository = resolve(UserRepository)
     password_encoder = resolve(PasswordEncoder)
+
+    if id_ is None:
+        id_ = repository.make_id()
 
     email = command.email
 
@@ -28,7 +31,7 @@ async def create_user(command: CreateUser) -> ID:
     api_token = generate_api_token()
 
     user = User(
-        id=repository.make_id(),
+        id=id_,
         email=email,
         password_hash=password_hash,
         api_token=api_token,

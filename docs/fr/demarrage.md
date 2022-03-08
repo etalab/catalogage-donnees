@@ -109,6 +109,12 @@ Ensuite, exécutez les migrations de la base de données :
 make migrate
 ```
 
+Puis remplissez le système avec quelques données initiales :
+
+```
+make initdata
+```
+
 Démarrez le serveur d'API (_backend_) sur http://localhost:3579 :
 
 ```

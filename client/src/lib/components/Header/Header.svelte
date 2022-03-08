@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { page } from "$app/stores";
+  import { isLoggedIn, logout, user } from "$lib/stores/auth";
 
   type NavItem = {
     label: string;
@@ -22,6 +24,11 @@
   ];
 
   $: path = $page.url.pathname;
+
+  const onClickLogout = async () => {
+    logout();
+    await goto("/login");
+  };
 </script>
 
 <header role="banner" class="fr-header">
@@ -60,6 +67,35 @@
             </p>
           </div>
         </div>
+        <div class="fr-header__tools">
+          <div class="fr-header__tools-links">
+            {#if $isLoggedIn}
+              <p>
+                {$user.email}
+              </p>
+              <ul class="fr-links-group">
+                <li>
+                  <a href="/" class="fr-link" title="Accéder aux réglages">
+                    Réglages
+                  </a>
+                </li>
+                <li>
+                  <button class="fr-link" on:click={onClickLogout}>
+                    Déconnexion
+                  </button>
+                </li>
+              </ul>
+            {:else}
+              <ul class="fr-links-group">
+                <li>
+                  <a href="/login" class="fr-link" title="Se connecter">
+                    Se connecter
+                  </a>
+                </li>
+              </ul>
+            {/if}
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -76,27 +112,31 @@
         data-fr-js-modal-button="true">Fermer</button
       >
 
-      <nav
-        class="fr-nav"
-        role="navigation"
-        aria-label="Menu principal"
-        id="header-navigation"
-        data-fr-js-navigation="true"
-      >
-        <ul class="fr-nav__list">
-          {#each navigationItems as { label, href }}
-            <li class="fr-nav__item" data-fr-js-navigaton-item="true">
-              <a
-                {href}
-                class="fr-nav__link"
-                aria-current={href === path ? "page" : undefined}
-              >
-                {label}
-              </a>
-            </li>
-          {/each}
-        </ul>
-      </nav>
+      <div class="fr-header__menu-links" />
+
+      {#if $isLoggedIn}
+        <nav
+          class="fr-nav"
+          role="navigation"
+          aria-label="Menu principal"
+          id="header-navigation"
+          data-fr-js-navigation="true"
+        >
+          <ul class="fr-nav__list">
+            {#each navigationItems as { label, href }}
+              <li class="fr-nav__item" data-fr-js-navigaton-item="true">
+                <a
+                  {href}
+                  class="fr-nav__link"
+                  aria-current={href === path ? "page" : undefined}
+                >
+                  {label}
+                </a>
+              </li>
+            {/each}
+          </ul>
+        </nav>
+      {/if}
     </div>
   </div>
 </header>

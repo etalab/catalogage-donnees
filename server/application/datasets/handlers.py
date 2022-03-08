@@ -10,14 +10,19 @@ from .commands import CreateDataset, DeleteDataset, UpdateDataset
 from .queries import GetAllDatasets, GetDatasetByID, SearchDatasets
 
 
-async def create_dataset(command: CreateDataset) -> ID:
+async def create_dataset(command: CreateDataset, *, id_: ID = None) -> ID:
     repository = resolve(DatasetRepository)
+
+    if id_ is None:
+        id_ = repository.make_id()
+
     dataset = Dataset(
-        id=repository.make_id(),
+        id=id_,
         title=command.title,
         description=command.description,
         formats=command.formats,
     )
+
     return await repository.insert(dataset)
 
 

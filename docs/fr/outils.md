@@ -22,6 +22,62 @@ Pour voir l'état actuel des migrations :
 make currentmigration
 ```
 
+## Données initiales
+
+Le script `tools/initdata.py` permet de définir des données initiales à charger en base.
+
+Il peut être lancé comme suit :
+
+```
+make initdata
+```
+
+Des entités seront ainsi chargées en base de données.
+
+Si celles-ci ont changé (suite à des manipulations manuelles dans le frontend, par exemple) et que vous souhaitez les remettre dans leur état initial, lancer :
+
+```
+make initdatareset
+```
+
+Les données à charger sont définies dans le fichier YAML `tools/initdata.yml`. Sa structure est ad-hoc. Elle est fortement corrélée au traitement réalisé par le script.
+
+```yaml
+users:
+  - id: "<UUID>"
+    params:
+      email: "<email>"
+      password: "<password>"
+  - # ...
+  
+datasets:
+  - id: "<UUID>"
+    params:
+      title: "<title>"
+      description: "<description>"
+      formats:
+        - "<format>"
+  - # ...
+```
+
+Avant de créer chaque entité, le script s'assure qu'elle n'existe pas déjà en base.
+
+(Lire le code source pour les détails.)
+
+## Générer un ID
+
+Pour générer un ID d'entité, lancer :
+
+```
+make id
+```
+
+Exemple de sortie :
+
+```
+9355b423-4417-4153-8fd6-524697f8c88f
+```
+
 ## Diagramme de la base de données
 
 Le fichier `docs/db.erd.json` permet de générer un diagramme du schéma de la base de données.

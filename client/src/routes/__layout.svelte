@@ -1,3 +1,12 @@
+<script lang="ts" context="module">
+  import type { Load } from "@sveltejs/kit";
+  import { authGuard } from "$lib/auth/guard";
+
+  export const load: Load = async ({ url }) => {
+    return authGuard(url);
+  };
+</script>
+
 <script lang="ts">
   import Header from "$lib/components/Header/Header.svelte";
   import Footer from "$lib/components/Footer/Footer.svelte";
