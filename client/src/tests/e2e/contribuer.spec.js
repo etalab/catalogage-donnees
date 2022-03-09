@@ -36,6 +36,6 @@ test.describe("Basic form submission", () => {
     expect(json.formats).toStrictEqual(["api"]);
     expect(json).toHaveProperty("id");
 
-    await page.locator("text='Fiche de données'").waitFor();
+    await page.locator("text='Proposer une modification'").waitFor();
   });
 });

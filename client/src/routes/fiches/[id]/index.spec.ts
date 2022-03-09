@@ -1,23 +1,24 @@
 import "@testing-library/jest-dom";
 
+import { render } from "@testing-library/svelte";
 import index from "./index.svelte";
-import { render, fireEvent } from "@testing-library/svelte";
+import type { Dataset } from "src/definitions/datasets";
 
-const dataset = {
+const dataset: Dataset = {
   id: "d4765f06-ccdf-4bae-b237-2bced67e6dc2",
   title: "foo",
   description: "bar baz crux",
   formats: ["other"],
 };
 
-describe("Test the dataset detail page header", () => {
+describe("Dataset detail page header", () => {
   test("The dataset title is present", () => {
     const { getByRole } = render(index, { dataset });
     expect(getByRole("heading", { level: 1 })).toHaveTextContent(dataset.title);
   });
 });
 
-describe("Test the dataset detail page action buttons", () => {
+describe("Dataset detail page action buttons", () => {
   test("The button to modify the dataset is present", () => {
     const { getByText } = render(index, { dataset });
     const modifyButton = getByText("Proposer une modification");
@@ -34,7 +35,7 @@ describe("Test the dataset detail page action buttons", () => {
   });
 });
 
-describe("Test the dataset detail page tabs", () => {
+describe("Dataset detail page tabs", () => {
   test("The tabs are present", () => {
     const { getAllByRole } = render(index, { dataset });
     const tabs = getAllByRole("tab");

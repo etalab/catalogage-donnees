@@ -65,7 +65,7 @@ dbdiagram: #- Generate database diagram image
 	${bin}python -m tools.erd docs/db.erd.json -o docs/db.dot
 	dot docs/db.dot -T png -o docs/db.png
 
-dsfr-icon-extras:
+dsfr-icon-extras: #- Generate CSS for extra DSFR icons
 	${bin}python -m tools.iconfont \
 		--name dsfr-icon-extras \
 		--prefix fr-fi-x- \

@@ -21,8 +21,8 @@
   const editUrl = paths.datasetEdit({ id: dataset.id });
 </script>
 
-<section class="fr-container fr-mt-9w">
-  <div class="fr-grid-row fr-grid-row--middle fr-mb-3w">
+<section class="fr-container fr-mt-6w">
+  <div class="fr-grid-row fr-grid-row--middle">
     <div class="fr-col-2">
       <p class="fr-logo" title="république française">
         {@html "Ministère<br />de la culture"}
@@ -37,12 +37,12 @@
   </div>
 
   <ul
-    class="fr-grid-row fr-grid-row--right fr-btns-group fr-btns-group--inline fr-btns-group--icon-right"
+    class="fr-grid-row fr-grid-row--right fr-btns-group fr-btns-group--inline fr-btns-group--icon-right fr-mb-3w"
   >
     <li>
       <a
         href={editUrl}
-        class="fr-btn fr-btn--secondary fr-fi-edit-fill fr-icon-edit-fill"
+        class="fr-btn fr-btn--secondary fr-fi-edit-fill"
         title="Proposer une modification pour cette fiche de données"
       >
         Proposer une modification
@@ -50,7 +50,7 @@
     </li>
     <li>
       <button
-        class="fr-btn fr-btn--secondary fr-fi-mail-fill fr-icon-mail-fill"
+        class="fr-btn fr-btn--secondary fr-fi-mail-fill"
         title="Contacter le producter du jeu de données"
       >
         Contacter le producteur
@@ -58,7 +58,7 @@
     </li>
     <li>
       <button
-        class="fr-btn fr-btn--secondary fr-fi-eye-fill fr-icon-eye-fill"
+        class="fr-btn fr-btn--secondary fr-fi-x-heart-line"
         title="Recevoir des alertes lors d'une modification à cette fiche de données"
       >
         Suivre
@@ -69,29 +69,29 @@
 
 <aside
   role="contentinfo"
-  aria-label="méta-données sur ce jeu de données"
+  aria-label="Métadonnées sur ce jeu de données"
   class="fr-container"
 >
   <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-4">
       <div class="aside-entry">
-        <span class="fr-fi--lg fr-fi-bank-line" aria-hidden="true" />
+        <span class="fr-fi--lg fr-fi-x-bank-line" aria-hidden="true" />
         <p>
-          <span class="fr-text--xs">Producteur :</span><br />
+          <span class="fr-text--xs">Producteur</span><br />
           <span>DRAC Bretagne</span>
         </p>
       </div>
       <div class="aside-entry">
-        <span class="fr-fi--lg fr-fi-map-2-line" aria-hidden="true" />
+        <span class="fr-fi--lg fr-fi-x-map-2-line" aria-hidden="true" />
         <p>
-          <span class="fr-text--xs">Couverture géographique :</span><br />
+          <span class="fr-text--xs">Couverture géographique</span><br />
           <span>France métropolitaine</span>
         </p>
       </div>
       <div class="aside-entry">
         <span class="fr-fi--lg fr-fi-calendar-line" aria-hidden="true" />
         <p>
-          <span class="fr-text--xs">Couverture temporelle :</span><br />
+          <span class="fr-text--xs">Couverture temporelle</span><br />
           <span>2015-2022</span>
         </p>
       </div>
@@ -99,9 +99,12 @@
       <h6>Temporalité</h6>
 
       <div class="aside-entry">
-        <span class="fr-fi--lg fr-fi-calendar-check-line" aria-hidden="true" />
+        <span
+          class="fr-fi--lg fr-fi-x-calendar-check-line"
+          aria-hidden="true"
+        />
         <p>
-          <span class="fr-text--xs">Date de dernière mise à jour :</span><br />
+          <span class="fr-text--xs">Date de dernière mise à jour</span><br />
           <span>13 septembre 2021</span>
         </p>
       </div>
@@ -113,13 +116,14 @@
         </p>
       </div>
       <div class="aside-entry">
-        <span class="fr-fi--lg fr-fi-cake-2-line" aria-hidden="true" />
+        <span class="fr-fi--lg fr-fi-x-cake-2-line" aria-hidden="true" />
         <p>
           <span class="fr-text--xs">Date de première publication</span><br />
           <span>15 décembre 2019</span>
         </p>
       </div>
     </div>
+
     <div class="fr-col fr-tabs">
       <ul
         class="fr-tabs__list"
@@ -171,7 +175,7 @@
             aria-selected="false"
             aria-controls="tabpanel-discussions-panel"
           >
-            Discussion (9)
+            Discussion
           </button>
         </li>
       </ul>
@@ -193,7 +197,7 @@
         aria-labelledby="tabpanel-sources"
         tabindex="0"
       >
-        Sources !
+        À venir
       </div>
 
       <div
@@ -203,7 +207,7 @@
         aria-labelledby="tabpanel-contenu"
         tabindex="0"
       >
-        Contenu !
+        À venir
       </div>
 
       <div
@@ -213,8 +217,28 @@
         aria-labelledby="tabpanel-discussions"
         tabindex="0"
       >
-        Discussions !
+        À venir
       </div>
     </div>
   </div>
 </aside>
+
+<style>
+  .aside-entry {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 2em;
+  }
+
+  .aside-entry [class*="fr-fi"] {
+    color: var(--text-action-high-blue-france);
+    display: inline-block;
+    height: 32px;
+    width: 32px;
+  }
+
+  .aside-entry p {
+    margin-bottom: 0;
+  }
+</style>
