@@ -65,6 +65,13 @@ dbdiagram: #- Generate database diagram image
 	${bin}python -m tools.erd docs/db.erd.json -o docs/db.dot
 	dot docs/db.dot -T png -o docs/db.png
 
+dsfr-icon-extras:
+	${bin}python -m tools.iconfont \
+		--name dsfr-icon-extras \
+		--prefix fr-fi-x- \
+		--icons-dir client/src/assets/icons/dsfr-icon-extras \
+		--output client/src/styles/dsfr-icon-extras.css
+
 test: test-server test-client #- Run the server and client test suite
 
 test-ci: test-server test-client-ci #- Run the server and client test suite in CI mode
