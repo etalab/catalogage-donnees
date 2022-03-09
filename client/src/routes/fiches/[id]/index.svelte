@@ -18,7 +18,7 @@
 
   export let dataset: Dataset;
 
-  const editUrl = paths.datasetEdit({ id : dataset.id});
+  const editUrl = paths.datasetEdit({ id: dataset.id });
 </script>
 
 <section class="fr-container fr-mt-9w">
