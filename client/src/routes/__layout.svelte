@@ -12,6 +12,7 @@
   import Footer from "$lib/components/Footer/Footer.svelte";
   import { onMount } from "svelte";
   import "../app.css";
+  import "../styles/dsfr-icon-extras.css";
 
   // DSFR Assets
   import appleTouchFavicon from "@gouvfr/dsfr/dist/favicon/apple-touch-icon.png";
