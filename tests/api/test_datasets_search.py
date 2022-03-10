@@ -1,6 +1,5 @@
 import random
-from contextlib import asynccontextmanager
-from typing import AsyncIterator, List, Tuple
+from typing import List, Tuple
 
 import httpx
 import pytest
@@ -12,21 +11,21 @@ from server.application.datasets.commands import (
 )
 from server.application.datasets.queries import GetDatasetByID
 from server.config.di import resolve
-from server.domain.datasets.entities import DataFormat, Dataset
+from server.domain.datasets.entities import DataFormat
 from server.seedwork.application.messages import MessageBus
 
-CORPUS_ITEMS = [
+DEFAULT_CORPUS_ITEMS = [
     ("Inventaire national forestier", "Ensemble des forêts de France"),
     ("Base Carbone", "Inventaire des données climat de l'ADEME"),
     ("Cadastre national", "Base de données du cadastre de la France"),
 ]
 
 
-@asynccontextmanager
-async def set_corpus(items: List[Tuple[str, str]]) -> AsyncIterator[None]:
-    bus = resolve(MessageBus)
+async def add_corpus(items: List[Tuple[str, str]] = None) -> None:
+    if items is None:
+        items = DEFAULT_CORPUS_ITEMS
 
-    datasets: List[Dataset] = []
+    bus = resolve(MessageBus)
 
     for title, description in items:
         command = CreateDataset(
@@ -34,25 +33,10 @@ async def set_corpus(items: List[Tuple[str, str]]) -> AsyncIterator[None]:
         )
         pk = await bus.execute(command)
         query = GetDatasetByID(id=pk)
-        dataset = await bus.execute(query)
-        datasets.append(dataset)
-
-    try:
-        yield
-    finally:
-        for dataset in datasets:
-            command = DeleteDataset(id=dataset.id)
-            await bus.execute(command)
-
-
-@pytest.fixture
-async def default_corpus() -> AsyncIterator[None]:
-    async with set_corpus(CORPUS_ITEMS):
-        yield
+        await bus.execute(query)
 
 
 @pytest.mark.asyncio
-@pytest.mark.usefixtures("default_corpus")
 @pytest.mark.parametrize(
     "q, expected_titles",
     [
@@ -106,6 +90,8 @@ async def default_corpus() -> AsyncIterator[None]:
 async def test_search(
     client: httpx.AsyncClient, q: str, expected_titles: List[str]
 ) -> None:
+    await add_corpus()
+
     response = await client.get("/datasets/", params={"q": q})
     assert response.status_code == 200
     data = response.json()
@@ -114,7 +100,6 @@ async def test_search(
 
 
 @pytest.mark.asyncio
-@pytest.mark.usefixtures("default_corpus")
 @pytest.mark.parametrize(
     "q_ref, q_other",
     [
@@ -133,6 +118,8 @@ async def test_search(
 async def test_search_robustness(
     client: httpx.AsyncClient, q_ref: str, q_other: str
 ) -> None:
+    await add_corpus()
+
     response = await client.get("/datasets/", params={"q": q_ref})
     assert response.status_code == 200
     data = response.json()
@@ -148,10 +135,11 @@ async def test_search_robustness(
 
 
 @pytest.mark.asyncio
-@pytest.mark.usefixtures("default_corpus")
 async def test_search_results_change_when_data_changes(
     client: httpx.AsyncClient,
 ) -> None:
+    await add_corpus()
+
     bus = resolve(MessageBus)
 
     # No results initially
@@ -220,6 +208,8 @@ async def test_search_ranking(client: httpx.AsyncClient) -> None:
 
     random.shuffle(items)  # Ensure DB insert order is irrelevant.
 
+    await add_corpus(items)
+
     q = "Forêt ancienne"  # Lexemes: forêt, ancien
 
     expected_titles = [
@@ -227,9 +217,8 @@ async def test_search_ranking(client: httpx.AsyncClient) -> None:
         "D",  # Both lexemes match, further away from each other
     ]
 
-    async with set_corpus(items):
-        response = await client.get("/datasets/", params={"q": q})
-        assert response.status_code == 200
-        data = response.json()
-        titles = [item["title"] for item in data]
-        assert titles == expected_titles
+    response = await client.get("/datasets/", params={"q": q})
+    assert response.status_code == 200
+    data = response.json()
+    titles = [item["title"] for item in data]
+    assert titles == expected_titles

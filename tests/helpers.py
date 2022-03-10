@@ -1,7 +1,4 @@
-from contextlib import asynccontextmanager
-from typing import AsyncIterator
-
-from server.application.auth.commands import CreateUser, DeleteUser
+from server.application.auth.commands import CreateUser
 from server.application.auth.queries import GetUserByEmail
 from server.config.di import resolve
 from server.domain.auth.entities import User
@@ -26,8 +23,7 @@ class TestUser(_DisablePytestCollectionMixin, User):
     password: str
 
 
-@asynccontextmanager
-async def temp_user() -> AsyncIterator[TestUser]:
+async def temp_user() -> TestUser:
     bus = resolve(MessageBus)
 
     email = "temp@example.org"
@@ -39,8 +35,4 @@ async def temp_user() -> AsyncIterator[TestUser]:
     query = GetUserByEmail(email=email)
     user = await bus.execute(query)
 
-    try:
-        yield TestUser(**user.dict(), password=password)
-    finally:
-        command = DeleteUser(id=user.id)
-        await bus.execute(command)
+    return TestUser(**user.dict(), password=password)
