@@ -18,6 +18,7 @@ Les différents déploiements sont organisés en _environnements_ (copies de l'i
 
 | Nom | Description |
 |---|---|
+| demo | Environnement de démo |
 | staging | Environnement de staging |
 
 Il y a un seul _groupe_ Ansible : `web`.

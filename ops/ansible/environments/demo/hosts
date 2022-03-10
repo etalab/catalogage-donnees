@@ -1,0 +1,2 @@
+[web]
+web-demo ansible_host="{{ host }}" ansible_user=root
