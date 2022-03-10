@@ -68,6 +68,5 @@ async def client() -> AsyncIterator[httpx.AsyncClient]:
 
 
 @pytest.fixture(name="temp_user")
-async def fixture_temp_user() -> AsyncIterator[TestUser]:
-    async with temp_user() as user:
-        yield user
+async def fixture_temp_user() -> TestUser:
+    return await temp_user()
