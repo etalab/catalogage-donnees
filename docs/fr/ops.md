@@ -1,8 +1,26 @@
 # Opérations
 
+**Table des matières**
+
+- [Généralités](#généralités)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Tests](#tests)
+- [Débogage](#débogage)
+- [Versions](#versions)
+
 ## Généralités
 
-Le déploiement et la gestion des serveurs distants est gérée à l'aide de [Ansible](https://docs.ansible.com/ansible/latest/user_guide/index.html).
+Le déploiement et la gestion des serveurs distants est réalisée à l'aide de [Ansible](https://docs.ansible.com/ansible/latest/user_guide/index.html).
+
+Les différents déploiements sont organisés en _environnements_ (copies de l'infrastructure) :
+
+| Nom | Description |
+|---|---|
+| staging | Environnement de staging |
+
+Il y a un seul _groupe_ Ansible : `web`.
 
 ## Architecture
 
@@ -20,67 +38,78 @@ WWW ------- nginx (:80) ---- node (:3000) |
                          └ - - - - - -┘
 ```
 
-Autrement dit, un Nginx sert de frontale web, et transmet les requêtes à un serveur applicatif Uvicorn qui communique avec la base de données (BDD) PosgreSQL (pour les requêtes d'API), ou à un serveur Node (pour les requêtes client).
+Description : un Nginx sert de frontale web, et transmet les requêtes à un serveur applicatif Uvicorn qui communique avec la base de données PostgreSQL (pour les requêtes d'API), ou à un serveur Node (pour les requêtes client).
 
 Par ailleurs :
 
 * Uvicorn et Node sont gérés par le _process manager_ `supervisor`, ce qui permet notamment d'assurer leur redémarrage en cas d'arrêt inopiné.
-* Le lien entre Uvicorn et la base de données PostgreSQL est paramétrable (_database URL_). Cette dernier ne vit donc pas nécessairement sur la même machine que le serveur applicatif (voir [Environnements](#environnements)).
+* Le lien entre Uvicorn et la base de données PostgreSQL est paramétrable (_database URL_). Cette dernier ne vit donc pas nécessairement sur la même machine que le serveur applicatif.
 
-## Démarrage rapide
+## Installation
 
-Avant toute chose, il y a quelques dépendances supplémentaires à installer pour interagir avec les outils d'infrastructure.
-
-Lancez donc :
+Installez les dépendances supplémentaires pour interagir avec les outils d'infrastructure :
 
 ```
 make install-ops
 ```
 
-## Environnements
-
-### staging
-
-Cet environnement déploie la branche `master` sur une machine de _staging_ hébergée chez Scaleway.
-
-**Spécifications attendues** :
-
-- OS : debian/bullseye64
-- Base de données : PostgreSQL 12, dont la _database URL_ est stockée dans `ops/ansible/secrets/staging.enc` (voir [Secrets](#secrets)).
-
-**Démarrage rapide** :
-
-- Procurez-vous le mot de passe de déploiement vers staging, puis placez-le dans le fichier suivant :
+Munissez-vous également du mot de passe de déploiement, puis placez-le dans :
 
 ```
-ops/ansible/secrets/staging.vault-password
+ops/ansible/vault-password
 ```
 
-- (Déploiement initial ou mises à jour système seulement) Lancez le _provisioning_ (installation de Python, Nginx, etc) avec :
+## Usage
 
-```bash
-make provision-staging
+### Déployer
+
+Pour déployer l'environnement `<ENV>`, lancez :
+
+```
+make deploy env=<ENV>
 ```
 
-- Pour déployer, lancez alors :
+Exemple :
 
-```bash
-make deploy-staging
+```
+make deploy env=staging
 ```
 
-- Pour déployer depuis une branche donnée, lancez :
+En cas de problème, voir [Débogage](#débogage).
 
-```bash
-EXTRA_OPTS="-e env_branch=mybranch" make deploy-staging
+### Ajouter un nouvel environnement
+
+Créez le dossier de l'environnement dans `ops/ansible/environments/`, sur le modèle de ceux qui existent déjà.
+
+Les fichiers suivants sont attendus :
+
+- `hosts` : _inventory_ Ansible.
+- `secrets` : fichier de variables secrètes - voir [Secrets](#secrets) pour comment le modifier.
+- `group_vars/web.yml` : variables spécifiques à l'environnement.
+
+Quand tout semble prêt, initialisez l'environnement `<ENV>` :
+
+```
+make provision env=<ENV>
 ```
 
-En cas de problème, se référer à [Débogage](#débogage).
+Vous pouvez ensuite [déployer](#déployer).
 
-### test
+### Secrets
 
-Cet environnement informel vous permet de tester la configuration Ansible sur une VM locale.
+La gestion des secrets s'appuie sur [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html).
 
-En pratique, vous pouvez par exemple utiliser [Vagrant](https://www.vagrantup.com/docs/installation) comme suit :
+Pour modifier le fichier de secrets d'un environnement, lancez :
+
+```
+cd ops && make secrets env=<ENV>
+```
+
+## Tests
+
+Il est possible de tester la configuration Ansible sur une VM locale.
+
+Vous pouvez par exemple configurer une box [Vagrant](https://www.vagrantup.com/docs/installation) comme suit :
 
 ```ruby
 # -*- mode: ruby -*-
@@ -113,35 +142,50 @@ Démarrez la VM :
 vagrant up
 ```
 
-Accédez-y en SSH, en transmettant le port où se trouve votre base de données (BDD) de développement (ici 5432 sur l'hôte est transmis vers 5432 dans l'invité) ([crédit pour cette astuce](https://stackoverflow.com/a/28506841)) :
+Accédez-y en SSH, en transmettant le port où se trouve votre base de données (BDD) de développement (ici 5432 sur l'hôte est transmis vers 5432 dans l'invité) ainsi que le port du serveur Nginx (ici 80 dans l'invité est transmis sur 3080 sur l'hôte) ([crédit pour cette astuce](https://stackoverflow.com/a/28506841)) :
 
 ```bash
-vagrant ssh -- -R 5432:localhost:5432
+vagrant ssh -- -R 5432:localhost:5432 -L 3080:localhost:80
 ```
 
-Sur l'hôte, ajoutez ensuite un fichier `ops/ansible/hosts_test` avec le contenu suivant (N.B. : modifiez `database_url` au besoin pour faire correspondre les identifiants et le nom de la BDD à votre BDD de développement) :
+Sur l'hôte, [ajoutez un environnement](#ajouter-un-nouvel-environnement) nommé `test` :
 
-```ini
-[web]
-web1-test ansible_host=192.168.56.10 ansible_user=vagrant env_branch=master database_url=postgresql+asyncpg://user:pass@localhost:5432/catalogage
-```
+- `hosts` :
+
+    ```
+    [web]
+    web-test ansible_host=192.168.56.10 ansible_user=vagrant
+    ```
+
+- `secrets` :
+    ```yaml
+    {}  # Rien de secret
+    ```
+
+- `group_vars/web.yml` :
+
+    _(Modifiez `database_url` au besoin)_
+
+    ```yaml
+    git_version: master
+    database_url: database_url: postgresql+asyncpg://user:pass@localhost:5432/catalogage
+    ```
 
 Vérifiez la bonne configuration avec un `ping` :
 
-```bash
+```
 cd ops
-make ping-test
+make ping env=test
 ```
 
-```console
-web1-test | SUCCESS => { ... }
+```
+web-test | SUCCESS => { ... }
 ```
 
 Lancez le _provisioning_ :
 
-```bash
-cd ops
-make provision-test
+```
+make provision env=test
 ```
 
 Vérifier la bonne exécution en inspectant dans la VM les différents outils et services attendus :
@@ -149,17 +193,32 @@ Vérifier la bonne exécution en inspectant dans la VM les différents outils et
 ```console
 $ pyenv --version
 pyenv 2.2.3
+```
+
+```console
 $ python -V
 Python 3.8.9
+```
+
+```console
 $ nvm --version
 0.39.1
+```
+
+```console
 $ node -v
 v16.13.2
+```
+
+```console
 $ systemctl status nginx
 ● nginx.service - A high performance web server and a reverse proxy serv>
      Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor >
      Active: active (running) since Wed 2022-01-26 10:48:11 UTC; 48s ago
 ...
+```
+
+```console
 $ systemctl status supervisor
 ● supervisor.service - Supervisor process control system for UNIX
      Loaded: loaded (/lib/systemd/system/supervisor.service; enabled; ve>
@@ -167,30 +226,13 @@ $ systemctl status supervisor
 ...
 ```
 
-Et déployez :
-
-```bash
-cd ops
-make deploy-test
-```
-
-Vérifiez le bon déploiement en accédant au site ou à l'API depuis la VM Vagrant :
-
-```console
-$ vagrant ssh -- -R 5432:localhost:5432
-vagrant@bullseye:~# curl localhost
-<!-- Du HTML ... -->
-vagrant@bullseye:~# curl localhost/api/datasets/
-[]
-```
-
-Vous pouvez aussi accéder au site depuis votre machine hôte en transmettant le port 80, par exemple :
+Puis déployez :
 
 ```
-vagrant ssh -- -R 5432:localhost:5432 -L 8082:localhost:80
+make deploy env=test
 ```
 
-Puis accéder au site sur http://localhost:8082.
+Vérifiez le bon déploiement en accédant au site sur http://localhost:3080.
 
 ## Débogage
 
@@ -230,32 +272,27 @@ Il y a probablement soit un problème de configuration de la connexion entre Ngi
 ~/catalogage $ git log
 ```
 
-## Secrets
+## Versions
 
-La gestion des secrets s'appuie sur Ansible Vault.
+## OS
 
-Voir aussi :
+**Version** : debian/bullseye64
 
-- [Encrypting content with Ansible Vault (Ansible docs)](https://docs.ansible.com/ansible/latest/user_guide/vault.html)
-- [Handling secrets in your Ansible playbooks (RedHat)](https://www.redhat.com/sysadmin/ansible-playbooks-secrets)
+## PostgreSQL
 
-Pour modifier un fichier de secrets d'un environnement donné, lancez par exemple :
+**Version** : PostgreSQL 12
 
-```bash
-cd ops && make secrets-edit-staging
-```
+### Python
 
-N.B. : cette commande demandera le mot de passe Vault associé à l'environnement.
-
-## Autres
-
-### Version de Python
+**Version** : Python 3.8.x
 
 On utilise [pyenv](https://github.com/pyenv/pyenv) pour installer Python sur les serveurs distants.
 
 La configuration est aussi gérée par Ansible (rôle `pyenv`), notamment au moyen de la variable `pyenv_python_version`. En la modifiant, on peut ainsi mettre Python à jour. Il sera bien sûr préférable de s'assurer de retirer toute ancienne version de Python après une telle opération.
 
-### Version de Node
+### Node
+
+**Version** : Node v16.x
 
 De la même façon, on utilise [nvm](https://github.com/nvm-sh/nvm) pour installer Node.
 

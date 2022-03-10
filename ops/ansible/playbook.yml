@@ -1,16 +1,6 @@
 ---
 - hosts: web
 
-  vars:
-    workdir: "{{ ansible_env.HOME }}/catalogage"
-    pyenv_python_version: "3.8.9"
-    nvm_node_version: "v16.13.2"
-    git_repo: "https://github.com/etalab/catalogage-donnees.git"
-    git_version: "{{ env_branch }}"
-    web_port: 80
-    api_port: 3579
-    client_port: 3000
-
   roles:
     - common
     - web

@@ -1,2 +1,0 @@
-[web]
-web1-staging ansible_host="{{ host }}" ansible_user=root env_branch=master
