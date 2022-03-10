@@ -11,6 +11,7 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from server.config import Settings
 from server.config.di import bootstrap, resolve
+from server.infrastructure.database import Database
 
 from .helpers import TestUser, temp_user
 
@@ -34,6 +35,15 @@ def test_database() -> Iterator[None]:
         yield
     finally:
         drop_database(url)
+
+
+@pytest.fixture(autouse=True)
+async def transaction() -> AsyncIterator[None]:
+    db = resolve(Database)
+
+    async with db.transaction() as tx:
+        yield
+        await tx.rollback()
 
 
 @pytest.fixture(scope="session")
