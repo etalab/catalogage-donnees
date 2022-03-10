@@ -115,8 +115,8 @@ check-client: #- Run client code checks
 install-ops: #- Install ops dependencies
 	cd ops && make install
 
-provision-staging: #- Provision staging server
-	cd ops && make provision-staging
+provision: #- Provision environment
+	cd ops && make provision env=$(env)
 
-deploy-staging: #- Deploy to staging server
-	cd ops && make deploy-staging
+deploy: #- Deploy environment
+	cd ops && make deploy env=$(env)

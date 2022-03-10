@@ -1,0 +1,2 @@
+[web]
+web-staging ansible_host="{{ host }}" ansible_user=root

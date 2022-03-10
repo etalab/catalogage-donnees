@@ -1,42 +1,24 @@
 venv = ../venv
 bin = ${venv}/bin/
 
-staging-opts = -e @ansible/secrets/staging.enc --vault-password-file ansible/secrets/staging.vault-password
-
-ansible = ${bin}ansible
-ansible-vault = ${bin}ansible-vault
-ansible-staging = ${ansible} -i ansible/hosts_staging ${staging-opts}
-ansible-playbook = ${bin}ansible-playbook
-ansible-playbook-test = ${ansible-playbook} -i ansible/hosts_test
-ansible-playbook-staging = ${ansible-playbook} -i ansible/hosts_staging ${staging-opts}
+vault-password=--vault-password-file ansible/vault-password
+env-opts=-i ansible/environments/$(env)/hosts -e @ansible/environments/$(env)/secrets
 
 export ANSIBLE_CONFIG = ansible/ansible.cfg
 
 install:
 	${bin}pip install -U pip wheel
 	${bin}pip install ansible
-	${ansible} --version
+	${bin}ansible --version
 
-run-staging:
-	${ansible-staging} web -m "$(m)" -a "$(a)"
+ping:
+	${bin}ansible ${vault-password} ${env-opts} web -m ping
 
-ping-test:
-	${ansible} -i ansible/hosts_test web -m ping
+secrets:
+	${bin}ansible-vault edit ${vault-password} ansible/environments/$(env)/secrets
 
-ping-staging:
-	make run-staging m=ping
+provision:
+	${bin}ansible-playbook ${vault-password} ${env-opts} -t provision ansible/playbook.yml $(extra_opts)
 
-secrets-edit-staging:
-	${ansible-vault} edit ansible/secrets/staging.enc --vault-password-file ansible/secrets/staging.vault-password
-
-provision-test:
-	${ansible-playbook-test} -t provision ansible/playbook.yml $(EXTRA_OPTS)
-
-provision-staging:
-	${ansible-playbook-staging} -t provision ansible/playbook.yml $(EXTRA_OPTS)
-
-deploy-test:
-	${ansible-playbook-test} -t deploy ansible/playbook.yml $(EXTRA_OPTS)
-
-deploy-staging:
-	${ansible-playbook-staging} -t deploy ansible/playbook.yml $(EXTRA_OPTS)
+deploy:
+	${bin}ansible-playbook ${vault-password} ${env-opts} -t deploy ansible/playbook.yml $(extra_opts)
