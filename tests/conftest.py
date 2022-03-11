@@ -11,6 +11,7 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from server.config import Settings
 from server.config.di import bootstrap, resolve
+from server.infrastructure.database import Database
 
 from .helpers import TestUser, temp_user
 
@@ -36,6 +37,15 @@ def test_database() -> Iterator[None]:
         drop_database(url)
 
 
+@pytest.fixture(autouse=True)
+async def transaction() -> AsyncIterator[None]:
+    db = resolve(Database)
+
+    async with db.transaction() as tx:
+        yield
+        await tx.rollback()
+
+
 @pytest.fixture(scope="session")
 def event_loop() -> Iterator[asyncio.AbstractEventLoop]:
     loop = asyncio.new_event_loop()
@@ -58,6 +68,5 @@ async def client() -> AsyncIterator[httpx.AsyncClient]:
 
 
 @pytest.fixture(name="temp_user")
-async def fixture_temp_user() -> AsyncIterator[TestUser]:
-    async with temp_user() as user:
-        yield user
+async def fixture_temp_user() -> TestUser:
+    return await temp_user()

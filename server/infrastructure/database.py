@@ -1,4 +1,7 @@
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from contextlib import asynccontextmanager
+from typing import AsyncIterator
+
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncTransaction, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from .adapters import json
@@ -15,3 +18,13 @@ class Database:
 
     def session(self) -> AsyncSession:
         return self._session_cls()
+
+    @asynccontextmanager
+    async def transaction(self) -> AsyncIterator[AsyncTransaction]:
+        async with self._engine.connect() as conn:
+            self._session_cls.configure(bind=conn)
+            try:
+                async with conn.begin() as tx:
+                    yield tx
+            finally:
+                self._session_cls.configure(bind=self._engine)
