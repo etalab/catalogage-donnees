@@ -1,0 +1,32 @@
+upstream client {
+    server 127.0.0.1:{{ client_port }};
+}
+
+upstream api {
+    server 127.0.0.1:{{ api_port }};
+}
+
+server {
+    listen 80 default_server;
+    server_name {{ domain_name }};
+
+    location /.well-known/acme-challenge {
+        root /var/www/html;
+        try_files $uri $uri/ =404;
+    }
+
+    location /favicon.ico {
+        access_log off;
+        log_not_found off;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://client/;
+    }
+
+    location /api/ {
+        include proxy_params;
+        proxy_pass http://api/;
+    }
+}
