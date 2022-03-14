@@ -29,7 +29,7 @@ L'architecture du service déployé est la suivante :
 
 ```
         ┌---------------------------------┐
-WWW ------- nginx (:80) ---- node (:3000) |
+WWW ------- nginx (:443) --- node (:3000) |
         |      |               |          |
         |      └--------- uvicorn (:3579) |
         └----------------------|----------┘
@@ -45,6 +45,7 @@ Par ailleurs :
 
 * Uvicorn et Node sont gérés par le _process manager_ `supervisor`, ce qui permet notamment d'assurer leur redémarrage en cas d'arrêt inopiné.
 * Le lien entre Uvicorn et la base de données PostgreSQL est paramétrable (_database URL_). Cette dernier ne vit donc pas nécessairement sur la même machine que le serveur applicatif.
+* Nginx fait la terminaison TLS avec des certificats gérés avec [Certbot](https://eff-certbot.readthedocs.io) (LetsEncrypt).
 
 ## Installation
 
