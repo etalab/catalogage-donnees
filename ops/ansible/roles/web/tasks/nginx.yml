@@ -33,3 +33,11 @@
   become: true
   when: tls_enabled
   notify: reload nginx
+
+- name: Ensure certs get renewed
+  cron:
+    name: certs_renewal
+    special_time: weekly
+    job: "certbot renew -q"
+    state: present
+  when: tls_enabled
