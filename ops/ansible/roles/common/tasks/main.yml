@@ -22,6 +22,10 @@
     apt: name=nginx state=latest
     become: true
 
+  - name: Setup certbot
+    import_role:
+      name: certbot
+
   - name: Ensure supervisor is installed
     apt: name=supervisor state=present
     become: true
