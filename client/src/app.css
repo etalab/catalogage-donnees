@@ -1,5 +1,9 @@
 @import url("@gouvfr/dsfr/dist/dsfr/dsfr.min.css");
 
+mark {
+  background-color: var(--background-action-low-yellow-tournesol);
+}
+
 /* icons straight from http://remixicon.com/ (not included in the DSFR) */
 /* The following are downloaded from http://remixicon.com/, and modified to
  * remove their width and height attributes so they're customizable through css */

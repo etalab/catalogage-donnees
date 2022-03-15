@@ -1,5 +1,5 @@
 import random
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import httpx
 import pytest
@@ -222,3 +222,37 @@ async def test_search_ranking(client: httpx.AsyncClient) -> None:
     data = response.json()
     titles = [item["title"] for item in data]
     assert titles == expected_titles
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "highlight, expected_headlines",
+    [
+        pytest.param(
+            False,
+            None,
+            id="off",
+        ),
+        pytest.param(
+            True,
+            {
+                "title": "<mark>Restaurants</mark> CROUS",
+                "description": "Lieux de <mark>restauration</mark> du CROUS",
+            },
+            id="on",
+        ),
+    ],
+)
+async def test_search_highlight(
+    client: httpx.AsyncClient, highlight: bool, expected_headlines: Optional[dict]
+) -> None:
+    await add_corpus([("Restaurants CROUS", "Lieux de restauration du CROUS")])
+
+    q = "restaurant"
+
+    response = await client.get("/datasets/", params={"q": q, "highlight": highlight})
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+
+    assert data[0]["headlines"] == expected_headlines

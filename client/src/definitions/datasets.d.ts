@@ -12,6 +12,7 @@ export interface Dataset {
   title: string;
   description: string;
   formats: DataFormat[];
+  headlines?: { title: string; description: string };
 }
 
 export interface DatasetFormData {

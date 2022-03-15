@@ -1,7 +1,9 @@
-from typing import List
+from typing import List, Union
 
 from fastapi import APIRouter
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException
+from fastapi.responses import JSONResponse
 
 from server.application.datasets.commands import (
     CreateDataset,
@@ -25,12 +27,15 @@ router = APIRouter(prefix="/datasets", tags=["datasets"])
 
 
 @router.get("/", response_model=List[DatasetRead])
-async def list_datasets(q: str = None) -> List[Dataset]:
+async def list_datasets(
+    q: str = None, highlight: bool = False
+) -> Union[JSONResponse, List[Dataset]]:
     bus = resolve(MessageBus)
 
     if q is not None:
-        query = SearchDatasets(q=q)
-        return await bus.execute(query)
+        query = SearchDatasets(q=q, highlight=highlight)
+        items = await bus.execute(query)
+        return JSONResponse(jsonable_encoder(items))
 
     query = GetAllDatasets()
     return await bus.execute(query)

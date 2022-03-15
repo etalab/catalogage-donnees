@@ -1,9 +1,16 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
+
+from typing_extensions import TypedDict
 
 from server.seedwork.domain.repositories import Repository
 
 from ..common.types import ID, id_factory
 from .entities import Dataset
+
+
+class DatasetHeadlines(TypedDict):
+    title: str
+    description: str
 
 
 class DatasetRepository(Repository):
@@ -13,7 +20,9 @@ class DatasetRepository(Repository):
     async def get_all(self) -> List[Dataset]:
         raise NotImplementedError  # pragma: no cover
 
-    async def search(self, q: str) -> List[Dataset]:
+    async def search(
+        self, q: str, highlight: bool = False
+    ) -> List[Tuple[Dataset, Optional[DatasetHeadlines]]]:
         raise NotImplementedError  # pragma: no cover
 
     async def get_by_id(self, id: ID) -> Optional[Dataset]:

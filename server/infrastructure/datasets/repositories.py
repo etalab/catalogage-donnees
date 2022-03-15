@@ -1,5 +1,5 @@
 import uuid
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from sqlalchemy import (
     Column,
@@ -22,7 +22,7 @@ from sqlalchemy.orm import Mapped, relationship, selectinload
 
 from server.domain.common.types import ID
 from server.domain.datasets.entities import DataFormat, Dataset
-from server.domain.datasets.repositories import DatasetRepository
+from server.domain.datasets.repositories import DatasetHeadlines, DatasetRepository
 
 from ..database import Base, Database
 
@@ -110,7 +110,9 @@ class SqlDatasetRepository(DatasetRepository):
             instances = result.scalars().all()
             return [make_entity(instance) for instance in instances]
 
-    async def search(self, q: str) -> List[Dataset]:
+    async def search(
+        self, q: str, highlight: bool = False
+    ) -> List[Tuple[Dataset, Optional[DatasetHeadlines]]]:
         async with self._db.session() as session:
             query_col = func.plainto_tsquery(text("'french'"), q)
 
@@ -127,8 +129,30 @@ class SqlDatasetRepository(DatasetRepository):
                 DatasetModel.search_tsv, query_col, rank_normalization
             )
 
+            title_headline_col = func.ts_headline(
+                text("'french'"),
+                DatasetModel.title,
+                query_col,
+                text("'StartSel=<mark>, StopSel=</mark>, HighlightAll=1'"),
+            )
+
+            description_headline_col = func.ts_headline(
+                text("'french'"),
+                DatasetModel.description,
+                query_col,
+                text("'StartSel=<mark>, StopSel=</mark>, MaxFragments=10'"),
+            )
+
+            headline_cols = (
+                (title_headline_col, description_headline_col) if highlight else ()
+            )
+
             stmt = (
-                select(DatasetModel, rank_col.label("rank"))
+                select(
+                    DatasetModel,
+                    rank_col.label("rank"),
+                    *headline_cols,
+                )
                 .options(selectinload(DatasetModel.formats))
                 .where(
                     # NOTE: SQLAlchemy has `.match(...)` that uses `to_tsquery()`.
@@ -145,7 +169,15 @@ class SqlDatasetRepository(DatasetRepository):
 
             result = await session.execute(stmt)
 
-            return [make_entity(instance) for (instance, _) in result]
+            return [
+                (
+                    make_entity(instance),
+                    {"title": headlines[0], "description": headlines[1]}
+                    if headlines
+                    else None,
+                )
+                for (instance, _, *headlines) in result
+            ]
 
     async def _maybe_get_by_id(
         self, session: AsyncSession, id: ID

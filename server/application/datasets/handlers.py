@@ -8,6 +8,7 @@ from server.domain.datasets.repositories import DatasetRepository
 
 from .commands import CreateDataset, DeleteDataset, UpdateDataset
 from .queries import GetAllDatasets, GetDatasetByID, SearchDatasets
+from .views import DatasetSearchView
 
 
 async def create_dataset(command: CreateDataset, *, id_: ID = None) -> ID:
@@ -65,6 +66,15 @@ async def get_dataset_by_id(query: GetDatasetByID) -> Dataset:
     return dataset
 
 
-async def search_datasets(query: SearchDatasets) -> List[Dataset]:
+async def search_datasets(query: SearchDatasets) -> List[DatasetSearchView]:
     repository = resolve(DatasetRepository)
-    return await repository.search(q=query.q)
+
+    items = await repository.search(q=query.q, highlight=query.highlight)
+
+    return [
+        DatasetSearchView(
+            **dataset.dict(),
+            headlines=headlines,
+        )
+        for dataset, headlines in items
+    ]

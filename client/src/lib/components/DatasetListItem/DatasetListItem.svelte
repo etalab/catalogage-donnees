@@ -22,7 +22,11 @@
         <div class="fr-container">
           <p class="fr-grid-row">
             <strong>
-              {dataset.title}
+              {#if dataset.headlines}
+                {@html dataset.headlines.title}
+              {:else}
+                {dataset.title}
+              {/if}
             </strong>
           </p>
           <p class="fr-grid-row fr-text--sm fr-text-mention--grey">
@@ -35,6 +39,13 @@
             <span class="fr-col"> Qualité : haute </span>
             <span class="fr-col"> Open data </span>
           </div>
+          {#if dataset.headlines}
+            <div class="fr-grid-row fr-mt-1w">
+              <p class="fr-text--sm fr-text-mention--grey">
+                <em>... {@html dataset.headlines.description} ...</em>
+              </p>
+            </div>
+          {/if}
         </div>
       </div>
       <div class="fr-col-2 fr-container fr-container--fluid">

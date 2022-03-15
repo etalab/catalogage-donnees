@@ -23,7 +23,7 @@ const config = {
       ? undefined
       : {
           directives: {
-            "default-src": ["self"],
+            "default-src": ["self", "localhost:3579"],
             "font-src": [
               "self",
               "data:", // E.g. inline icon fonts (us or DSFR)
