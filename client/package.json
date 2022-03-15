@@ -13,8 +13,8 @@
     "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. .",
     "test": "vitest run",
     "start-server": "cd .. && make serve",
-    "test-e2e": "E2E=1 playwright test",
-    "test-e2e:ci": "E2E=1 start-server-and-test start-server '3579/docs|3000' test-e2e",
+    "test-e2e": "playwright test",
+    "test-e2e:ci": "start-server-and-test start-server '3579/docs|3000' test-e2e",
     "test:watch": "vitest watch",
     "test:coverage": "npm run test -- --coverage"
   },
