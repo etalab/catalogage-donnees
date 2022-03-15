@@ -17,6 +17,20 @@ const config = {
       allowed: ["PATCH", "DELETE"],
     },
 
+    csp: {
+      directives: {
+        "default-src": ["self"],
+        "font-src": [
+          "self",
+          "data:", // E.g. inline icon fonts (us or DSFR)
+        ],
+        "img-src": [
+          "self",
+          "data:", // E.g. DSFR inline images
+        ],
+      },
+    },
+
     vite,
   },
   onwarn: (warning, handler) => {
