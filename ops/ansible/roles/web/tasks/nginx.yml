@@ -1,4 +1,10 @@
-- name: Add Nginx config
+- name: Ensure default Nginx site is removed
+  file:
+    name: /etc/nginx/sites-enabled/default
+    state: absent
+  become: true
+
+- name: Ensure Nginx config is present and up to date
   template:
     src: nginx.conf.j2
     dest: /etc/nginx/nginx.conf
@@ -8,36 +14,64 @@
   become: true
   notify: reload nginx
 
-- name: Add Nginx site
+- name: Configure certificates
+  when: tls_enabled
+  block:
+  - name: Ensure LetsEncrypt webroot is present
+    file:
+      name: /var/www/letsencrypt
+      state: directory
+    become: true
+
+  - name: Ensure LetsEncrypt Nginx site is configured
+    template:
+      src: nginx-letsencrypt.conf.j2
+      dest: /etc/nginx/sites-enabled/letsencrypt.conf
+      owner: root
+      group: root
+      mode: 0644
+    become: true
+    register: letsencrypt_site
+
+  - name: Ensure LetsEncrypt site is active
+    service: name=nginx state=reloaded
+    when: letsencrypt_site is changed
+
+  - name: Configure dhparams
+    shell: curl https://ssl-config.mozilla.org/ffdhe2048.txt > /etc/nginx/dhparams.pem
+    args:
+      creates: /etc/nginx/dhparams.pem
+    become: true
+    notify: reload nginx
+
+  - name: Create certificates
+    shell: certbot certonly -n --webroot -w /var/www/letsencrypt --must-staple --agree-tos --email "{{ letsencrypt_email }}" -d "{{ domain_name }}"
+    args:
+      creates: "/etc/letsencrypt/live/{{ domain_name }}"
+    become: true
+    notify: reload nginx
+
+  - name: Ensure certs get renewed
+    cron:
+      name: certs_renewal
+      special_time: weekly
+      job: "certbot renew -q"
+      state: present
+
+- name: Ensure LetsEncrypt is disabled
+  when: not tls_enabled
+  file:
+    name: /etc/nginx/sites-enabled/letsencrypt.conf
+    state: absent
+  become: true
+  notify: reload nginx
+
+- name: Ensure Nginx site is configured and up to date
   template:
     src: nginx-catalogage.conf.j2
-    dest: /etc/nginx/sites-available/catalogage.conf
+    dest: /etc/nginx/sites-enabled/catalogage.conf
     owner: root
     group: root
     mode: 0644
   become: true
   notify: reload nginx
-
-- name: Ensure Nginx site is default
-  file:
-    src: /etc/nginx/sites-available/catalogage.conf
-    dest: /etc/nginx/sites-enabled/default
-    state: link
-  become: true
-  notify: reload nginx
-
-- name: Create and install certificates
-  shell: certbot run -n --nginx --agree-tos --redirect --staple-ocsp --must-staple -d "{{ domain_name }}" --email "{{ letsencrypt_email }}"
-  args:
-    creates: "/etc/letsencrypt/live/{{ domain_name }}"
-  become: true
-  when: tls_enabled
-  notify: reload nginx
-
-- name: Ensure certs get renewed
-  cron:
-    name: certs_renewal
-    special_time: weekly
-    job: "certbot renew -q"
-    state: present
-  when: tls_enabled
