@@ -3,7 +3,7 @@ import preprocess from "svelte-preprocess";
 
 import vite from "./vite.config.js";
 
-const isE2E = !!process.env.E2E;
+const VITE_SERVER_MODE = process.env.VITE_SERVER_MODE;
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -19,21 +19,22 @@ const config = {
       allowed: ["PATCH", "DELETE"],
     },
 
-    csp: isE2E
-      ? undefined
-      : {
-          directives: {
-            "default-src": ["self"],
-            "font-src": [
-              "self",
-              "data:", // E.g. inline icon fonts (us or DSFR)
-            ],
-            "img-src": [
-              "self",
-              "data:", // E.g. DSFR inline images
-            ],
-          },
-        },
+    csp: {
+      directives: {
+        "default-src": ["self"],
+        "connect-src":
+          // Allow XHR requests to API during local development
+          VITE_SERVER_MODE === "live" ? undefined : ["self", "localhost:3579"],
+        "font-src": [
+          "self",
+          "data:", // E.g. inline icon fonts (us or DSFR)
+        ],
+        "img-src": [
+          "self",
+          "data:", // E.g. DSFR inline images
+        ],
+      },
+    },
 
     vite,
   },
