@@ -3,6 +3,8 @@ import preprocess from "svelte-preprocess";
 
 import vite from "./vite.config.js";
 
+const isE2E = !!process.env.E2E;
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   // Consult https://github.com/sveltejs/svelte-preprocess
@@ -16,6 +18,22 @@ const config = {
     methodOverride: {
       allowed: ["PATCH", "DELETE"],
     },
+
+    csp: isE2E
+      ? undefined
+      : {
+          directives: {
+            "default-src": ["self"],
+            "font-src": [
+              "self",
+              "data:", // E.g. inline icon fonts (us or DSFR)
+            ],
+            "img-src": [
+              "self",
+              "data:", // E.g. DSFR inline images
+            ],
+          },
+        },
 
     vite,
   },
