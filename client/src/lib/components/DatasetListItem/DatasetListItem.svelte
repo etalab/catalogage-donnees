@@ -21,9 +21,15 @@
       <div class="fr-col">
         <div class="fr-container">
           <p class="fr-grid-row">
-            <strong>
-              {dataset.title}
-            </strong>
+            {#if dataset.headlines}
+              <strong data-testid="headlines-title">
+                {@html dataset.headlines.title}
+              </strong>
+            {:else}
+              <strong>
+                {dataset.title}
+              </strong>
+            {/if}
           </p>
           <p class="fr-grid-row fr-text--sm fr-text-mention--grey">
             Bibliothèque nationale de France
@@ -35,6 +41,15 @@
             <span class="fr-col"> Qualité : haute </span>
             <span class="fr-col"> Open data </span>
           </div>
+          {#if dataset.headlines}
+            <div class="fr-grid-row fr-mt-1w">
+              <p class="fr-text--sm fr-text-mention--grey">
+                <em data-testid="headlines-description"
+                  >... {@html dataset.headlines.description} ...</em
+                >
+              </p>
+            </div>
+          {/if}
         </div>
       </div>
       <div class="fr-col-2 fr-container fr-container--fluid">

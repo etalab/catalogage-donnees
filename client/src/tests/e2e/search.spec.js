@@ -14,8 +14,8 @@ test.describe("Search", () => {
 
     const button = page.locator("button[type='submit']");
     const [request, response, _] = await Promise.all([
-      page.waitForRequest("**/datasets/?q=title"),
-      page.waitForResponse("**/datasets/?q=title"),
+      page.waitForRequest("**/datasets/?q=title&highlight=true"),
+      page.waitForResponse("**/datasets/?q=title&highlight=true"),
       button.click(),
     ]);
     expect(request.method()).toBe("GET");
@@ -27,7 +27,7 @@ test.describe("Search", () => {
     await expect(page).toHaveTitle("Rechercher un jeu de données");
     await expect(page).toHaveURL("/fiches/search?q=title");
     await page.locator(`text=/${json.length} résultat(s)?/i`).waitFor();
-    await page.locator(`text='${dataset.title}'`).first().waitFor();
+    await page.locator(`:has-text('${dataset.title}')`).first().waitFor();
   });
 
   test("Visits the search page and performs two searches", async ({
@@ -51,8 +51,8 @@ test.describe("Search", () => {
 
     const button = page.locator("button[type='submit']");
     let [request, response, _] = await Promise.all([
-      page.waitForRequest("**/datasets/?q=title"),
-      page.waitForResponse("**/datasets/?q=title"),
+      page.waitForRequest("**/datasets/?q=title&highlight=true"),
+      page.waitForResponse("**/datasets/?q=title&highlight=true"),
       button.click(),
     ]);
     expect(request.method()).toBe("GET");
@@ -63,7 +63,7 @@ test.describe("Search", () => {
 
     await expect(page).toHaveURL("/fiches/search?q=title");
     await page.locator(`text=/${json.length} résultat(s)?/i`).waitFor();
-    await page.locator(`text='${dataset.title}'`).first().waitFor();
+    await page.locator(`:has-text('${dataset.title}')`).first().waitFor();
 
     // Second search. Aim at getting no results.
 
@@ -72,8 +72,8 @@ test.describe("Search", () => {
     expect(await search.inputValue()).toBe("noresultsexpected");
 
     [request, response, _] = await Promise.all([
-      page.waitForRequest("**/datasets/?q=noresultsexpected"),
-      page.waitForResponse("**/datasets/?q=noresultsexpected"),
+      page.waitForRequest("**/datasets/?q=noresultsexpected&highlight=true"),
+      page.waitForResponse("**/datasets/?q=noresultsexpected&highlight=true"),
       button.click(),
     ]);
     expect(request.method()).toBe("GET");
