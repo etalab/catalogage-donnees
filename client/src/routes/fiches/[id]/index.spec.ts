@@ -6,6 +6,7 @@ import type { Dataset } from "src/definitions/datasets";
 
 const dataset: Dataset = {
   id: "d4765f06-ccdf-4bae-b237-2bced67e6dc2",
+  createdAt: new Date(),
   title: "foo",
   description: "bar baz crux",
   formats: ["other"],

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Dataset } from "src/definitions/datasets";
   import { DATA_FORMAT_SHORT_NAMES } from "src/constants";
+  import { capitalize, formatToNow } from "$lib/util/format";
   import paths from "$lib/paths";
 
   export let dataset: Dataset;
@@ -54,7 +55,9 @@
       </div>
       <div class="fr-col-2 fr-container fr-container--fluid">
         <div class="fr-grid-row fr-grid-row--right">
-          <p class="fr-text--sm fr-text-mention--grey">Il y a 3 jours</p>
+          <p class="dataset-created-at fr-text--sm fr-text-mention--grey">
+            {capitalize(formatToNow(dataset.createdAt))}
+          </p>
           <a
             href={paths.datasetDetail({ id: dataset.id })}
             class="fr-link fr-fi-arrow-right-line fr-link--icon-right"
@@ -71,5 +74,9 @@
 <style>
   li:not(:last-child) {
     border-bottom: 1px solid var(--border-default-grey);
+  }
+
+  .dataset-created-at {
+    text-align: right;
   }
 </style>

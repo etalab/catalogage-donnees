@@ -14,6 +14,7 @@ export interface DatasetHeadlines {
 
 export interface Dataset {
   id: string;
+  createdAt: Date;
   title: string;
   description: string;
   formats: DataFormat[];

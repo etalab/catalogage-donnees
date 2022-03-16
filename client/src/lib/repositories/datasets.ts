@@ -7,13 +7,21 @@ import type { Fetch } from "src/definitions/fetch";
 import { getApiUrl } from "$lib/fetch";
 import { toQueryString } from "$lib/util";
 
+const marshallDataset = (item: any): Dataset => {
+  const { created_at, ...rest } = item;
+  return {
+    ...rest,
+    createdAt: new Date(created_at),
+  };
+};
+
 type GetDatasetByID = (opts: { fetch: Fetch; id: string }) => Promise<Dataset>;
 
 export const getDatasetByID: GetDatasetByID = async ({ fetch, id }) => {
   const url = `${getApiUrl()}/datasets/${id}/`;
   const request = new Request(url);
   const response = await fetch(request);
-  return await response.json();
+  return marshallDataset(await response.json());
 };
 
 type GetDatasets = (opts: { fetch: Fetch; q?: string }) => Promise<Dataset[]>;
@@ -27,7 +35,8 @@ export const getDatasets: GetDatasets = async ({ fetch, q }) => {
   const url = `${getApiUrl()}/datasets/${queryString}`;
   const request = new Request(url);
   const response = await fetch(request);
-  return await response.json();
+  const items: any[] = await response.json();
+  return items.map((item) => marshallDataset(item));
 };
 
 type CreateDataset = (opts: {
@@ -44,7 +53,7 @@ export const createDataset: CreateDataset = async ({ fetch, data }) => {
     body,
   });
   const response = await fetch(request);
-  return await response.json();
+  return marshallDataset(await response.json());
 };
 
 type UpdateDataset = (opts: {
@@ -62,5 +71,5 @@ export const updateDataset: UpdateDataset = async ({ fetch, id, data }) => {
     body,
   });
   const response = await fetch(request);
-  return await response.json();
+  return marshallDataset(await response.json());
 };

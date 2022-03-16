@@ -1,13 +1,18 @@
+import datetime as dt
+
 import httpx
 import pytest
 
 from server.application.datasets.commands import CreateDataset
 from server.application.datasets.queries import GetDatasetByID
 from server.config.di import resolve
+from server.domain.common import datetime as dtutil
 from server.domain.common.types import id_factory
 from server.domain.datasets.entities import DataFormat
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
+
+from ..helpers import approx_datetime
 
 
 @pytest.mark.asyncio
@@ -61,10 +66,18 @@ async def test_dataset_crud(client: httpx.AsyncClient) -> None:
     )
     assert response.status_code == 201
     data = response.json()
+
     pk = data["id"]
     assert isinstance(pk, str)
+
+    created_at = data["created_at"]
+    assert dtutil.parse(created_at) == approx_datetime(
+        dtutil.now(), abs=dt.timedelta(seconds=0.1)
+    )
+
     assert data == {
         "id": pk,
+        "created_at": created_at,
         "title": "Example",
         "description": "Some example items",
         "formats": ["website"],
@@ -98,6 +111,21 @@ CREATE_EXAMPLE_DATASET = CreateDataset(
     description="Example description",
     formats=["website", "api"],
 )
+
+
+@pytest.mark.asyncio
+async def test_dataset_get_all_uses_reverse_chronological_order(
+    client: httpx.AsyncClient,
+) -> None:
+    bus = resolve(MessageBus)
+    await bus.execute(CREATE_EXAMPLE_DATASET.copy(update={"title": "Oldest"}))
+    await bus.execute(CREATE_EXAMPLE_DATASET.copy(update={"title": "Intermediate"}))
+    await bus.execute(CREATE_EXAMPLE_DATASET.copy(update={"title": "Newest"}))
+
+    response = await client.get("/datasets/")
+    assert response.status_code == 200
+    titles = [dataset["title"] for dataset in response.json()]
+    assert titles == ["Newest", "Intermediate", "Oldest"]
 
 
 @pytest.mark.asyncio
@@ -164,8 +192,10 @@ class TestDatasetUpdate:
         assert response.status_code == 200
 
         # API returns updated representation
-        assert response.json() == {
+        data = response.json()
+        assert data == {
             "id": str(dataset_id),
+            "created_at": data["created_at"],
             "title": "Other title",
             "description": "Other description",
             "formats": ["database"],

@@ -4,6 +4,7 @@ from typing import List, Optional, Tuple
 from sqlalchemy import (
     Column,
     Computed,
+    DateTime,
     Enum,
     ForeignKey,
     Index,
@@ -52,6 +53,9 @@ class DatasetModel(Base):
     __tablename__ = "dataset"
 
     id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True)
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.clock_timestamp(), nullable=False
+    )
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
     formats: List[DataFormatModel] = relationship(
@@ -76,6 +80,7 @@ class DatasetModel(Base):
 def make_entity(instance: DatasetModel) -> Dataset:
     return Dataset(
         id=instance.id,
+        created_at=instance.created_at,
         title=instance.title,
         description=instance.description,
         formats=[fmt.name for fmt in instance.formats],
@@ -85,6 +90,7 @@ def make_entity(instance: DatasetModel) -> Dataset:
 def make_instance(entity: Dataset, formats: List[DataFormatModel]) -> DatasetModel:
     return DatasetModel(
         id=entity.id,
+        # created_at: managed by DB for better time consistency
         title=entity.title,
         description=entity.description,
         formats=formats,
@@ -105,7 +111,11 @@ class SqlDatasetRepository(DatasetRepository):
 
     async def get_all(self) -> List[Dataset]:
         async with self._db.session() as session:
-            stmt = select(DatasetModel).options(selectinload(DatasetModel.formats))
+            stmt = (
+                select(DatasetModel)
+                .options(selectinload(DatasetModel.formats))
+                .order_by(DatasetModel.created_at.desc())
+            )
             result = await session.execute(stmt)
             instances = result.scalars().all()
             return [make_entity(instance) for instance in instances]
