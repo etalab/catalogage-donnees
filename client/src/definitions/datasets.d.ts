@@ -7,12 +7,17 @@ type DataFormat =
   | "website"
   | "other";
 
+export interface DatasetHeadlines {
+  title: string;
+  description: string;
+}
+
 export interface Dataset {
   id: string;
   title: string;
   description: string;
   formats: DataFormat[];
-  headlines?: { title: string; description: string };
+  headlines?: DatasetHeadlines;
 }
 
 export interface DatasetFormData {

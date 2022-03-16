@@ -21,13 +21,15 @@
       <div class="fr-col">
         <div class="fr-container">
           <p class="fr-grid-row">
-            <strong>
-              {#if dataset.headlines}
+            {#if dataset.headlines}
+              <strong data-testid="headlines-title">
                 {@html dataset.headlines.title}
-              {:else}
+              </strong>
+            {:else}
+              <strong>
                 {dataset.title}
-              {/if}
-            </strong>
+              </strong>
+            {/if}
           </p>
           <p class="fr-grid-row fr-text--sm fr-text-mention--grey">
             Bibliothèque nationale de France
@@ -42,7 +44,9 @@
           {#if dataset.headlines}
             <div class="fr-grid-row fr-mt-1w">
               <p class="fr-text--sm fr-text-mention--grey">
-                <em>... {@html dataset.headlines.description} ...</em>
+                <em data-testid="headlines-description"
+                  >... {@html dataset.headlines.description} ...</em
+                >
               </p>
             </div>
           {/if}
