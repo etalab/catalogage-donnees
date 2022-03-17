@@ -7,6 +7,7 @@ import type { Dataset, DatasetHeadlines } from "src/definitions/datasets";
 describe("Test the dataset list item", () => {
   const dataset: Dataset = {
     id: "uuid1",
+    createdAt: new Date(),
     title: "Inventaire des arbres et forêts",
     description: "Fichier de l'ensemble des arbres et forêts de France.",
     formats: ["database"],

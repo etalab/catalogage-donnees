@@ -6,6 +6,7 @@ test("The datasets endpoint behaves as expected", async () => {
   const fakeDatasets: Dataset[] = [
     {
       id: "uuid1",
+      createdAt: new Date(),
       title: "Inventaire des arbres et forêts",
       description: "Fichier de l'ensemble des arbres et forêts de France.",
       formats: ["database"],
@@ -16,7 +17,11 @@ test("The datasets endpoint behaves as expected", async () => {
     expect(request.method).toBe("GET");
     expect(new URL(request.url, "http://test").pathname).toBe("/datasets/");
 
-    const body = JSON.stringify(fakeDatasets);
+    const items = fakeDatasets.map(({ createdAt, ...rest }) => ({
+      created_at: createdAt.toISOString(),
+      ...rest,
+    }));
+    const body = JSON.stringify(items);
     const headers = { "Content-Type": "application/json" };
     return new Response(body, { headers });
   };

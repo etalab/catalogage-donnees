@@ -1,3 +1,4 @@
+import datetime as dt
 from typing import List
 
 from pydantic import BaseModel, validator
@@ -8,6 +9,7 @@ from server.domain.datasets.entities import DataFormat
 
 class DatasetRead(BaseModel):
     id: ID
+    created_at: dt.datetime
     title: str
     description: str
     formats: List[DataFormat]
