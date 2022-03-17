@@ -1,4 +1,4 @@
-import { toQueryString } from "./util";
+import { toQueryString } from "./urls";
 
 describe("toQueryString", () => {
   const cases: [[string, string][], string][] = [

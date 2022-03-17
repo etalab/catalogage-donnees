@@ -19,7 +19,8 @@
   import type { Dataset } from "src/definitions/datasets";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
-  import { pluralize, toQueryString } from "$lib/util";
+  import { pluralize } from "$lib/util/format";
+  import { toQueryString } from "$lib/util/urls";
 
   export let q: string;
   export let datasets: Dataset[];
