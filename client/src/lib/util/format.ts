@@ -1,5 +1,15 @@
 import * as datefns from "date-fns";
-import { pluralize } from "../util";
+
+export const pluralize = (
+  amount: number,
+  singleText: string,
+  pluralText: string
+) => {
+  if (amount === 1) {
+    return singleText;
+  }
+  return pluralText;
+};
 
 export const capitalize = (text: string) => {
   return text.charAt(0).toUpperCase() + text.slice(1);

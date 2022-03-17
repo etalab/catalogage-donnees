@@ -5,7 +5,7 @@ import type {
 } from "src/definitions/datasets";
 import type { Fetch } from "src/definitions/fetch";
 import { getApiUrl } from "$lib/fetch";
-import { toQueryString } from "$lib/util";
+import { toQueryString } from "$lib/util/urls";
 
 const marshallDataset = (item: any): Dataset => {
   const { created_at, ...rest } = item;

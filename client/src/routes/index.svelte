@@ -15,7 +15,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import type { Dataset } from "src/definitions/datasets";
-  import { toQueryString } from "$lib/util";
+  import { toQueryString } from "$lib/util/urls";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import paths from "$lib/paths";
