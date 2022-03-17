@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
-import { STATE_AUTHENTICATED } from "./constants.js";
-import { test } from "./fixtures.js";
+import { STATE_AUTHENTICATED } from "./constants";
+import { test } from "./fixtures";
 
 test.describe("Edit dataset", () => {
   test.use({ storageState: STATE_AUTHENTICATED });

@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { STATE_AUTHENTICATED } from "./constants.js";
+import { STATE_AUTHENTICATED } from "./constants";
 
 test.describe("Basic form submission", () => {
   test.use({ storageState: STATE_AUTHENTICATED });

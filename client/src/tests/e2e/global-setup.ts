@@ -1,5 +1,5 @@
 import { expect, firefox } from "@playwright/test";
-import { STATE_AUTHENTICATED, TEST_EMAIL, TEST_PASSWORD } from "./constants.js";
+import { STATE_AUTHENTICATED, TEST_EMAIL, TEST_PASSWORD } from "./constants";
 
 /**
  * @param {import('@playwright/test').FullConfig} config
