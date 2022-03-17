@@ -86,10 +86,17 @@ test-client-ci: test-client-unit test-client-e2e-ci #- Run the client's unit and
 test-client-unit: #- Run the client test suite
 	cd client && npm run test:coverage
 
+_client-e2e-ts-fix:
+	# Required as of Playwright v1.20.0 to use TypeScript
+	# See: https://github.com/microsoft/playwright/issues/12487#issuecomment-1064899839
+	sed -i 's/if (isModule)/if (false)/g' client/node_modules/@playwright/test/lib/loader.js
+
 test-client-e2e: #- Run the client e2e test suite
+	make _client-e2e-ts-fix
 	cd client && npm run test-e2e
 
 test-client-e2e-ci: #- Run the client e2e test suite in a CI mode
+	make _client-e2e-ts-fix
 	cd client && npm run test-e2e:ci
 
 format: format-server format-client #- Run code formatting on server and client sources

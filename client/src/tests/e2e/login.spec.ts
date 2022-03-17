@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "./fixtures.js";
+import { test } from "./fixtures";
 
 test.describe("Login", () => {
   test("Redirects unauthenticated visits to login page", async ({ page }) => {
