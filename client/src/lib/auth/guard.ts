@@ -1,6 +1,5 @@
 import { get } from "svelte/store";
 import type { LoadOutput } from "@sveltejs/kit";
-import { browser } from "$app/env";
 import { isLoggedIn } from "../stores/auth";
 
 const isPublicPage = (url: URL): boolean => {
@@ -13,10 +12,6 @@ const isPublicPage = (url: URL): boolean => {
  */
 export const authGuard = (url: URL): LoadOutput => {
   if (isPublicPage(url)) {
-    return {};
-  }
-
-  if (!browser) {
     return {};
   }
 
