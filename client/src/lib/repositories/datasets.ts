@@ -5,7 +5,7 @@ import type {
 } from "src/definitions/datasets";
 import type { Fetch } from "src/definitions/fetch";
 import { getApiUrl } from "$lib/fetch";
-import { toQueryString } from "$lib/util";
+import { toQueryString } from "$lib/util/urls";
 
 type GetDatasetByID = (opts: { fetch: Fetch; id: string }) => Promise<Dataset>;
 
