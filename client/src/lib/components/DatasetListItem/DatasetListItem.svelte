@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { Dataset } from "src/definitions/datasets";
   import { DATA_FORMAT_SHORT_NAMES } from "src/constants";
-  import { capitalize, formatToNow } from "$lib/util/format";
   import paths from "$lib/paths";
+  import { capitalize, formatDaysMonthsOrYearsToNow } from "$lib/util/format";
 
   export let dataset: Dataset;
 
@@ -54,10 +54,12 @@
         </div>
       </div>
       <div class="fr-col-2 fr-container fr-container--fluid">
+        <div
+          class="fr-grid-row fr-grid-row--right fr-text--sm fr-text-mention--grey dataset-created-at"
+        >
+          {capitalize(formatDaysMonthsOrYearsToNow(dataset.createdAt))}
+        </div>
         <div class="fr-grid-row fr-grid-row--right">
-          <p class="dataset-created-at fr-text--sm fr-text-mention--grey">
-            {capitalize(formatToNow(dataset.createdAt))}
-          </p>
           <a
             href={paths.datasetDetail({ id: dataset.id })}
             class="fr-link fr-fi-arrow-right-line fr-link--icon-right"
