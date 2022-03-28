@@ -274,6 +274,67 @@ Il y a probablement soit un problème de configuration de la connexion entre Ngi
 ~/catalogage $ git log
 ```
 
+### Nginx ne redémarre pas
+
+Il est probable que la configuration Nginx soit corrompue (ex: : accès à une ressource qui n'existe pas ou plus), y compris en raison d'une faiblesse dans le setup Ansible.
+
+* Inspecter les logs d'erreurs / avertissements de Nginx :
+
+```
+~/catalogage $ nginx -t
+```
+
+### Certificats
+
+**_(Avancé)_**
+
+Les certificats TLS sont stockés par Certbot dans `/etc/letsencrypt` sur l'instance de chaque environnement.
+
+Pour vérifier le cronjob de renouvellement des certificats :
+
+```
+crontab -l
+```
+
+Le résultat doit contenir :
+
+```
+#Ansible: certs_renewal
+@weekly certbot renew -q
+```
+
+Pour lister les certificats, se connecter en SSH puis lancer :
+
+```
+$ certbot certificates
+root@catalogage-dev:~# certbot certificates
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Found the following certs:
+  Certificate Name: staging.catalogue.multi.coop
+    Serial Number: 44fdad5f55bedd1be22e249bc9928b1977f
+    Key Type: RSA
+    Domains: staging.catalogue.multi.coop
+    Expiry Date: 2022-06-26 14:59:19+00:00 (VALID: 89 days)
+    Certificate Path: /etc/letsencrypt/live/staging.catalogue.multi.coop/fullchain.pem
+    Private Key Path: /etc/letsencrypt/live/staging.catalogue.multi.coop/privkey.pem
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+```
+
+Pour régénérer manuellement les certificats pour un environnement :
+
+1. Se connecter en SSH.
+2. Révoquer le certificat :
+
+    ```
+    certbot revoke --cert-name <env>.catalogue.multi.coop
+    ```
+
+3. Redéployer : un nouveau certificat sera créé et configuré.
+
+> N.B. : LetsEncrypt applique du _rate limiting_ à la délivrance de certificats. Voir [Let's Encrypt: Rate Limits](https://letsencrypt.org/docs/rate-limits/).
+
 ## Versions
 
 ## OS
