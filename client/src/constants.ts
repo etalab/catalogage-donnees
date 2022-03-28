@@ -1,5 +1,7 @@
 import type { DataFormat } from "./definitions/datasets";
 
+export const PUBLIC_PAGES = ["/login"];
+
 export const DATA_FORMAT_LABELS: { [K in DataFormat]: string } = {
   file_tabular: "Fichier tabulaire (XLS, XLSX, CSV, ...)",
   file_gis: "Fichier SIG (Shapefile, ...)",
