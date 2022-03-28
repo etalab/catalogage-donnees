@@ -23,6 +23,12 @@
       state: directory
     become: true
 
+  - name: Ensure app Nginx site is disabled while certs get configured
+    file:
+      name: /etc/nginx/sites-enabled/catalogage.conf
+      state: absent
+    become: true
+
   - name: Ensure LetsEncrypt Nginx site is configured
     template:
       src: nginx-letsencrypt.conf.j2
@@ -45,7 +51,7 @@
     notify: reload nginx
 
   - name: Create certificates
-    shell: certbot certonly -n --webroot -w /var/www/letsencrypt --must-staple --agree-tos --email "{{ letsencrypt_email }}" -d "{{ domain_name }}"
+    shell: certbot certonly -n --webroot -w /var/www/letsencrypt --agree-tos --email "{{ letsencrypt_email }}" -d "{{ domain_name }}"
     args:
       creates: "/etc/letsencrypt/live/{{ domain_name }}"
     become: true
