@@ -1,20 +1,13 @@
-import { expect, firefox } from "@playwright/test";
+import { Browser, expect, firefox, FullConfig } from "@playwright/test";
 import { STATE_AUTHENTICATED, TEST_EMAIL, TEST_PASSWORD } from "./constants";
 
-/**
- * @param {import('@playwright/test').FullConfig} config
- */
-export default async function globalSetup(config) {
+export default async function globalSetup(config: FullConfig) {
   const browser = await firefox.launch();
   await saveAuthenticatedState(browser, config);
   await browser.close();
 }
 
-/**
- * @param {import('@playwright/test').Browser} browser
- * @param {import('@playwright/test').FullConfig} config
- */
-async function saveAuthenticatedState(browser, config) {
+async function saveAuthenticatedState(browser: Browser, config: FullConfig) {
   const page = await browser.newPage({
     baseURL: config.projects[0].use.baseURL,
   });
