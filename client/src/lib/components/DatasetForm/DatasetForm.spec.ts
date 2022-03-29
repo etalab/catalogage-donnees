@@ -1,23 +1,37 @@
 import "@testing-library/jest-dom";
 
 import DatasetForm from "./DatasetForm.svelte";
-import { render } from "@testing-library/svelte";
+import { render, fireEvent } from "@testing-library/svelte";
 import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
 
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
     const { getByLabelText } = render(DatasetForm);
-    expect(getByLabelText("Nom", { exact: false })).toBeInTheDocument();
+    const title = getByLabelText("Nom", { exact: false });
+    expect(title).toBeInTheDocument();
+    expect(title).toBeRequired();
   });
   test('The "description" field is present', () => {
     const { getByLabelText } = render(DatasetForm);
-    expect(getByLabelText("Description", { exact: false })).toBeInTheDocument();
+    const description = getByLabelText("Description", { exact: false });
+    expect(description).toBeInTheDocument();
+    expect(description).toBeRequired();
   });
-  test('The "formats" field is present', () => {
-    const { getByText } = render(DatasetForm);
-    expect(
-      getByText("Format(s) des données", { exact: false })
-    ).toBeInTheDocument();
+  test('The "formats" field is present', async () => {
+    const { getAllByRole } = render(DatasetForm);
+    const checkboxes = getAllByRole("checkbox");
+    expect(checkboxes.length).toBeGreaterThan(0);
+  });
+  test("At least one format is required", async () => {
+    const { getAllByRole } = render(DatasetForm);
+    const checkboxes = getAllByRole("checkbox", { checked: false });
+    checkboxes.forEach((checkbox) => expect(checkbox).toBeRequired());
+    await fireEvent.click(checkboxes[0]);
+    expect(checkboxes[0]).toBeChecked();
+    checkboxes
+      .slice(1)
+      .forEach((checkbox) => expect(checkbox).not.toBeChecked());
+    checkboxes.forEach((checkbox) => expect(checkbox).not.toBeRequired());
   });
   test("The submit button is present", () => {
     const { getByRole } = render(DatasetForm);
