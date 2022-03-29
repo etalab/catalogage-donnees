@@ -4,6 +4,7 @@
   import { createForm } from "svelte-forms-lib";
   import type { DatasetFormData } from "src/definitions/datasets";
   import { DATA_FORMAT_LABELS } from "src/constants";
+  import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
 
   export let submitLabel = "Contribuer ce jeu de données";
   export let loadingLabel = "Contribution en cours...";
@@ -38,42 +39,29 @@
   // Handle this value manually.
   const dataFormatsValue = initialValues.dataFormats;
 
-  const {
-    form,
-    errors,
-    handleChange,
-    handleSubmit,
-    updateValidateField,
-    isValid,
-  } = createForm({
-    initialValues,
-    validationSchema: yup.object().shape({
-      title: yup.string().required("Le titre ne peut être vide"),
-      description: yup.string().required("La description ne peut être vide"),
-      dataFormats: yup
-        .array(yup.boolean())
-        .length(dataFormatsValue.length)
-        .test(
-          "dataformats-some-checked",
-          "Au moins un format de donnée doit être renseigné",
-          (value) => value.some((checked) => !!checked)
-        ),
-    }),
-    onSubmit: (values) => {
-      const formats = [];
-      values.dataFormats.forEach((checked, index) => {
-        if (checked) {
-          formats.push(dataFormatChoices[index].value);
-        }
-      });
-      const data: DatasetFormData = {
-        title: values.title,
-        description: values.description,
-        formats,
-      };
-      dispatch("save", data);
-    },
-  });
+  const { form, errors, handleChange, handleSubmit, updateValidateField } =
+    createForm({
+      initialValues,
+      validationSchema: yup.object().shape({
+        title: yup.string().required(""),
+        description: yup.string().required(""),
+        dataFormats: yup.array(yup.boolean()).length(dataFormatsValue.length),
+      }),
+      onSubmit: (values) => {
+        const formats = [];
+        values.dataFormats.forEach((checked, index) => {
+          if (checked) {
+            formats.push(dataFormatChoices[index].value);
+          }
+        });
+        const data: DatasetFormData = {
+          title: values.title,
+          description: values.description,
+          formats,
+        };
+        dispatch("save", data);
+      },
+    });
 
   const hasError = (error: string | string[]) => {
     return typeof error === "string" && Boolean(error);
@@ -87,60 +75,66 @@
 </script>
 
 <form on:submit={handleSubmit} data-bitwarden-watching="1">
-  <fieldset class="fr-fieldset fr-my-4w">
-    <div class="fr-input-group {$errors.title ? 'fr-input-group--error' : ''}">
-      <label class="fr-label mandatory" for="title">
-        Nom de la donnée
-        <span class="fr-hint-text" id="select-hint-desc-hint">
-          Ce nom doit aller à l’essentiel et permettre d’indiquer en quelques
-          mots les informations que l’on peut y trouver.
-        </span>
-      </label>
-      <input
-        class="fr-input {$errors.title ? 'fr-input--error' : ''}"
-        aria-describedby={$errors.title ? "title-desc-error" : null}
-        type="text"
-        id="title"
-        name="title"
-        on:change={handleChange}
-        on:blur={handleChange}
-        bind:value={$form.title}
-      />
-      {#if $errors.title}
-        <p id="title-desc-error" class="fr-error-text">
-          {$errors.title}
-        </p>
-      {/if}
-    </div>
+  <div
+    class="fr-input-group fr-my-4w {$errors.title
+      ? 'fr-input-group--error'
+      : ''}"
+  >
+    <label class="fr-label" for="title">
+      Nom de la donnée
+      <RequiredMarker />
+      <span class="fr-hint-text" id="select-hint-desc-hint">
+        Ce nom doit aller à l'essentiel et permettre d'indiquer en quelques mots
+        les informations que l'on peut y trouver.
+      </span>
+    </label>
+    <input
+      class="fr-input {$errors.title ? 'fr-input--error' : ''}"
+      aria-describedby={$errors.title ? "title-desc-error" : null}
+      type="text"
+      id="title"
+      name="title"
+      required
+      on:change={handleChange}
+      on:blur={handleChange}
+      bind:value={$form.title}
+    />
+    {#if $errors.title}
+      <p id="title-desc-error" class="fr-error-text">
+        {$errors.title}
+      </p>
+    {/if}
+  </div>
 
-    <div
-      class="fr-input-group {$errors.description
-        ? 'fr-input-group--error'
-        : ''}"
-    >
-      <label class="fr-label mandatory" for="description">
-        Description des données
-        <span class="fr-hint-text" id="select-hint-desc-hint">
-          Quel type de données sont contenues dans ce jeu de données ? Les
-          informations saisies ici seront utilisées par le moteur de recherche.
-        </span>
-      </label>
-      <textarea
-        class="fr-input {$errors.description ? 'fr-input--error' : ''}"
-        aria-describedby={$errors.description ? "description-desc-error" : null}
-        id="description"
-        name="description"
-        on:change={handleChange}
-        on:blur={handleChange}
-        bind:value={$form.description}
-      />
-      {#if $errors.description}
-        <p id="description-desc-error" class="fr-error-text">
-          {$errors.description}
-        </p>
-      {/if}
-    </div>
-  </fieldset>
+  <div
+    class="fr-input-group fr-my-4w {$errors.description
+      ? 'fr-input-group--error'
+      : ''}"
+  >
+    <label class="fr-label" for="description">
+      Description des données
+      <RequiredMarker />
+      <span class="fr-hint-text" id="select-hint-desc-hint">
+        Quel type de données sont contenues dans ce jeu de données ? Les
+        informations saisies ici seront utilisées par le moteur de recherche.
+      </span>
+    </label>
+    <textarea
+      class="fr-input {$errors.description ? 'fr-input--error' : ''}"
+      aria-describedby={$errors.description ? "description-desc-error" : null}
+      id="description"
+      name="description"
+      required
+      on:change={handleChange}
+      on:blur={handleChange}
+      bind:value={$form.description}
+    />
+    {#if $errors.description}
+      <p id="description-desc-error" class="fr-error-text">
+        {$errors.description}
+      </p>
+    {/if}
+  </div>
 
   <fieldset
     class="fr-fieldset {hasError($errors.dataFormats)
@@ -156,6 +150,7 @@
       id="dataformats-hint-legend"
     >
       Format(s) des données
+      <RequiredMarker />
       <span class="fr-hint-text" id="select-hint-dataformats-hint">
         Sélectionnez ici les différents formats de données qu'un réutilisateur
         potentiel pourrait exploiter.
@@ -170,6 +165,7 @@
             {id}
             name="dataformats"
             {value}
+            required={dataFormatsValue.every((checked) => !checked)}
             checked={dataFormatsValue[index]}
             on:blur={(event) => handleDataformatChange(event, index)}
             on:change={(event) => handleDataformatChange(event, index)}
@@ -188,12 +184,7 @@
   </fieldset>
 
   <div class="fr-input-group fr-my-4w">
-    <button
-      type="submit"
-      disabled={!$isValid}
-      class="fr-btn"
-      title="Contribuer ce jeu de données"
-    >
+    <button type="submit" class="fr-btn" title="Contribuer ce jeu de données">
       {#if loading}
         {loadingLabel}
       {:else}
