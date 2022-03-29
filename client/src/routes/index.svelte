@@ -35,7 +35,7 @@
 </svelte:head>
 
 <section class="fr-background-alt--grey fr-mb-6w">
-  <div class="fr-container fr-grid-row fr-grid-row--center fr-p-6w">
+  <div class="fr-container fr-grid-row fr-grid-row--center fr-py-6w">
     <div class="fr-col-10">
       <h1>Recherchez un jeu de données</h1>
       <SearchForm

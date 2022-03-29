@@ -3,3 +3,14 @@
 mark {
   background-color: var(--background-contrast-info);
 }
+
+:root {
+  /*
+  Breakpoints in DSFR. This is for reference only. The @media CSS spec does not
+  support using var(), so you'll need to use these values explicitly.
+  */
+  --bp-sm: 36em;
+  --bp-md: 48em;
+  --bp-lg: 62em;
+  --bp-xl: 78em;
+}
