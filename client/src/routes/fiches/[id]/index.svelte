@@ -21,15 +21,13 @@
   const editUrl = paths.datasetEdit({ id: dataset.id });
 </script>
 
-<section class="fr-container fr-mt-6w">
-  <div class="fr-grid-row fr-grid-row--middle">
-    <div class="fr-col-2">
-      <p class="fr-logo" title="république française">
-        {@html "Ministère<br />de la culture"}
-      </p>
-    </div>
-    <div class="fr-col">
-      <p class="fr-mb-0 fr-text-mention--grey">Ministère de la culture</p>
+<section class="fr-container header">
+  <div class="header-headlines">
+    <p class="fr-logo" title="république française">
+      {@html "Ministère<br />de la culture"}
+    </p>
+    <div>
+      <p class="fr-m-0 fr-text-mention--grey">Ministère de la culture</p>
       <h1>
         {dataset.title}
       </h1>
@@ -37,7 +35,7 @@
   </div>
 
   <ul
-    class="fr-grid-row fr-grid-row--right fr-btns-group fr-btns-group--inline fr-btns-group--icon-right fr-mb-3w"
+    class="header-toolbar fr-grid-row fr-btns-group fr-btns-group--inline fr-btns-group--icon-right fr-mb-3w"
   >
     <li>
       <a
@@ -67,64 +65,61 @@
   </ul>
 </section>
 
-<aside
-  role="contentinfo"
-  aria-label="Métadonnées sur ce jeu de données"
-  class="fr-container"
->
-  <div class="fr-grid-row fr-grid-row--gutters">
-    <div class="fr-col-4">
-      <div class="aside-entry">
-        <span class="fr-fi--lg fr-fi-x-bank-line" aria-hidden="true" />
-        <p>
-          <span class="fr-text--xs">Producteur</span><br />
-          <span>DRAC Bretagne</span>
-        </p>
-      </div>
-      <div class="aside-entry">
-        <span class="fr-fi--lg fr-fi-x-map-2-line" aria-hidden="true" />
-        <p>
-          <span class="fr-text--xs">Couverture géographique</span><br />
-          <span>France métropolitaine</span>
-        </p>
-      </div>
-      <div class="aside-entry">
-        <span class="fr-fi--lg fr-fi-calendar-line" aria-hidden="true" />
-        <p>
-          <span class="fr-text--xs">Couverture temporelle</span><br />
-          <span>2015-2022</span>
-        </p>
-      </div>
-
-      <h6>Temporalité</h6>
-
-      <div class="aside-entry">
-        <span
-          class="fr-fi--lg fr-fi-x-calendar-check-line"
-          aria-hidden="true"
-        />
-        <p>
-          <span class="fr-text--xs">Date de dernière mise à jour</span><br />
-          <span>13 septembre 2021</span>
-        </p>
-      </div>
-      <div class="aside-entry">
-        <span class="fr-fi--lg fr-fi-refresh-line" aria-hidden="true" />
-        <p>
-          <span class="fr-text--xs">Fréquence de mise à jour</span><br />
-          <span>Mensuelle ou plusieurs fois par an</span>
-        </p>
-      </div>
-      <div class="aside-entry">
-        <span class="fr-fi--lg fr-fi-x-cake-2-line" aria-hidden="true" />
-        <p>
-          <span class="fr-text--xs">Date de première publication</span><br />
-          <span>15 décembre 2019</span>
-        </p>
-      </div>
+<section class="layout fr-container">
+  <aside
+    role="contentinfo"
+    aria-label="Métadonnées sur ce jeu de données"
+    class="fr-container"
+  >
+    <div class="aside-entry">
+      <span class="fr-fi--lg fr-fi-x-bank-line" aria-hidden="true" />
+      <p>
+        <span class="fr-text--xs">Producteur</span><br />
+        <span>DRAC Bretagne</span>
+      </p>
+    </div>
+    <div class="aside-entry">
+      <span class="fr-fi--lg fr-fi-x-map-2-line" aria-hidden="true" />
+      <p>
+        <span class="fr-text--xs">Couverture géographique</span><br />
+        <span>France métropolitaine</span>
+      </p>
+    </div>
+    <div class="aside-entry">
+      <span class="fr-fi--lg fr-fi-calendar-line" aria-hidden="true" />
+      <p>
+        <span class="fr-text--xs">Couverture temporelle</span><br />
+        <span>2015-2022</span>
+      </p>
     </div>
 
-    <div class="fr-col fr-tabs">
+    <h6>Temporalité</h6>
+
+    <div class="aside-entry">
+      <span class="fr-fi--lg fr-fi-x-calendar-check-line" aria-hidden="true" />
+      <p>
+        <span class="fr-text--xs">Date de dernière mise à jour</span><br />
+        <span>13 septembre 2021</span>
+      </p>
+    </div>
+    <div class="aside-entry">
+      <span class="fr-fi--lg fr-fi-refresh-line" aria-hidden="true" />
+      <p>
+        <span class="fr-text--xs">Fréquence de mise à jour</span><br />
+        <span>Mensuelle ou plusieurs fois par an</span>
+      </p>
+    </div>
+    <div class="aside-entry">
+      <span class="fr-fi--lg fr-fi-x-cake-2-line" aria-hidden="true" />
+      <p>
+        <span class="fr-text--xs">Date de première publication</span><br />
+        <span>15 décembre 2019</span>
+      </p>
+    </div>
+  </aside>
+
+  <section>
+    <div class="fr-tabs">
       <ul
         class="fr-tabs__list"
         role="tablist"
@@ -220,10 +215,43 @@
         À venir
       </div>
     </div>
-  </div>
-</aside>
+  </section>
+</section>
 
 <style>
+  .header {
+    margin-top: 1.5rem;
+  }
+
+  @media (min-width: 36em /* sm */) {
+    .header {
+      margin-top: 3rem;
+    }
+
+    .header-headlines {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 1em;
+      align-items: center;
+    }
+  }
+
+  @media (min-width: 48em /* md */) {
+    .header-headlines {
+      column-gap: 3em;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 1em;
+    }
+
+    .header-toolbar {
+      justify-content: flex-end;
+    }
+  }
+
   .aside-entry {
     align-items: center;
     display: flex;
