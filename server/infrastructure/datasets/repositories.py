@@ -63,6 +63,7 @@ class DatasetModel(Base):
         back_populates="datasets",
         secondary=dataset_dataformat,
     )
+    entrypoint_email = Column(String, nullable=False)
     search_tsv: Mapped[str] = Column(
         TSVECTOR,
         Computed("to_tsvector('french', title || ' ' || description)", persisted=True),
@@ -84,6 +85,7 @@ def make_entity(instance: DatasetModel) -> Dataset:
         title=instance.title,
         description=instance.description,
         formats=[fmt.name for fmt in instance.formats],
+        entrypoint_email=instance.entrypoint_email,
     )
 
 
@@ -94,6 +96,7 @@ def make_instance(entity: Dataset, formats: List[DataFormatModel]) -> DatasetMod
         title=entity.title,
         description=entity.description,
         formats=formats,
+        entrypoint_email=entity.entrypoint_email,
     )
 
 
@@ -103,6 +106,7 @@ def update_instance(
     instance.title = entity.title
     instance.description = entity.description
     instance.formats = formats
+    instance.entrypoint_email = entity.entrypoint_email
 
 
 class SqlDatasetRepository(DatasetRepository):

@@ -33,6 +33,15 @@ describe("Test the dataset form", () => {
       .forEach((checkbox) => expect(checkbox).not.toBeChecked());
     checkboxes.forEach((checkbox) => expect(checkbox).not.toBeRequired());
   });
+  test('The "entrypoint email" field is present', () => {
+    const { getByLabelText } = render(DatasetForm);
+    const entrypointEmail = getByLabelText("Adresse e-mail fonctionnelle", {
+      exact: false,
+    });
+    expect(entrypointEmail).toBeInTheDocument();
+    expect(entrypointEmail).toBeRequired();
+    expect(entrypointEmail).toHaveAttribute("type", "email");
+  });
   test("The submit button is present", () => {
     const { getByRole } = render(DatasetForm);
     expect(getByRole("button")).toBeInTheDocument();
@@ -53,6 +62,7 @@ describe("Test the dataset form", () => {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
+      entrypointEmail: "service.initial@example.org",
     };
     const props = { initial };
 
@@ -74,5 +84,10 @@ describe("Test the dataset form", () => {
     expect(getFormatCheckbox("database")).not.toBeChecked();
     expect(getFormatCheckbox("website")).toBeChecked();
     expect(getFormatCheckbox("other")).not.toBeChecked();
+
+    const entrypointEmail = getByLabelText("Adresse e-mail fonctionnelle", {
+      exact: false,
+    }) as HTMLInputElement;
+    expect(entrypointEmail.value).toBe("service.initial@example.org");
   });
 });

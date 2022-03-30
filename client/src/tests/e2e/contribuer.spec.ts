@@ -7,6 +7,7 @@ test.describe("Basic form submission", () => {
   test("Visits the contribution page", async ({ page }) => {
     const titleText = "Un nom de jeu de données";
     const descriptionText = "Une longue\ndescription de jeu\nde données";
+    const entrypointEmailText = "un.service@exemple.gouv.fr";
 
     await page.goto("/contribuer");
 
@@ -21,6 +22,10 @@ test.describe("Basic form submission", () => {
     const apiFormat = page.locator("label[for=dataformats-api]");
     await apiFormat.check();
     expect(await page.isChecked("input[value=api]")).toBeTruthy();
+
+    const entrypointEmail = page.locator("label[for=entrypoint-email]");
+    await entrypointEmail.fill(entrypointEmailText);
+    expect(await entrypointEmail.inputValue()).toBe(entrypointEmailText);
 
     const button = page.locator("button[type='submit']");
     const [request, response, _] = await Promise.all([

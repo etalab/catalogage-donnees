@@ -13,6 +13,7 @@ describe("Test the dataset list", () => {
       title: "Inventaire des arbres et forêts",
       description: "Fichier de l'ensemble des arbres et forêts de France.",
       formats: ["database"],
+      entrypointEmail: "forets@ign.fr",
     },
     {
       id: "uuid2",
@@ -21,6 +22,7 @@ describe("Test the dataset list", () => {
       description:
         "Fichier JSON des bureaux de vote de l'ensemble des circonscriptions de la région Hauts-de-France.",
       formats: ["api"],
+      entrypointEmail: "citoyennete@hautsdefrance.fr",
     },
     {
       id: "uuid3",
@@ -29,6 +31,7 @@ describe("Test the dataset list", () => {
       description:
         "Masse salariale telle que calculée par l'Urssaf et publiée dans le Baromètre économique.",
       formats: ["file_tabular"],
+      entrypointEmail: "statistiques@urssaf.gouv.fr",
     },
   ];
 

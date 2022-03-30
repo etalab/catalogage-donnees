@@ -7,11 +7,20 @@ import type { Fetch } from "src/definitions/fetch";
 import { getApiUrl } from "$lib/fetch";
 import { toQueryString } from "$lib/util/urls";
 
-const marshallDataset = (item: any): Dataset => {
-  const { created_at, ...rest } = item;
+const toDataset = (item: any): Dataset => {
+  const { created_at, entrypoint_email, ...rest } = item;
   return {
     ...rest,
     createdAt: new Date(created_at),
+    entrypointEmail: entrypoint_email,
+  };
+};
+
+const toPayload = (data: Partial<Record<keyof Dataset, any>>) => {
+  const { entrypointEmail, ...rest } = data;
+  return {
+    ...rest,
+    entrypoint_email: entrypointEmail,
   };
 };
 
@@ -21,7 +30,7 @@ export const getDatasetByID: GetDatasetByID = async ({ fetch, id }) => {
   const url = `${getApiUrl()}/datasets/${id}/`;
   const request = new Request(url);
   const response = await fetch(request);
-  return marshallDataset(await response.json());
+  return toDataset(await response.json());
 };
 
 type GetDatasets = (opts: { fetch: Fetch; q?: string }) => Promise<Dataset[]>;
@@ -36,7 +45,7 @@ export const getDatasets: GetDatasets = async ({ fetch, q }) => {
   const request = new Request(url);
   const response = await fetch(request);
   const items: any[] = await response.json();
-  return items.map((item) => marshallDataset(item));
+  return items.map((item) => toDataset(item));
 };
 
 type CreateDataset = (opts: {
@@ -45,7 +54,7 @@ type CreateDataset = (opts: {
 }) => Promise<Dataset>;
 
 export const createDataset: CreateDataset = async ({ fetch, data }) => {
-  const body = JSON.stringify(data);
+  const body = JSON.stringify(toPayload(data));
   const url = `${getApiUrl()}/datasets/`;
   const request = new Request(url, {
     method: "POST",
@@ -53,7 +62,7 @@ export const createDataset: CreateDataset = async ({ fetch, data }) => {
     body,
   });
   const response = await fetch(request);
-  return marshallDataset(await response.json());
+  return toDataset(await response.json());
 };
 
 type UpdateDataset = (opts: {
@@ -63,7 +72,7 @@ type UpdateDataset = (opts: {
 }) => Promise<Dataset>;
 
 export const updateDataset: UpdateDataset = async ({ fetch, id, data }) => {
-  const body = JSON.stringify(data);
+  const body = JSON.stringify(toPayload(data));
   const url = `${getApiUrl()}/datasets/${id}/`;
   const request = new Request(url, {
     method: "PUT",
@@ -71,5 +80,5 @@ export const updateDataset: UpdateDataset = async ({ fetch, id, data }) => {
     body,
   });
   const response = await fetch(request);
-  return marshallDataset(await response.json());
+  return toDataset(await response.json());
 };

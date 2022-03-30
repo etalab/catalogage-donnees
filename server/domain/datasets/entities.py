@@ -1,6 +1,6 @@
 import datetime as dt
 import enum
-from typing import List
+from typing import List, Optional
 
 from pydantic import Field
 
@@ -19,17 +19,39 @@ class DataFormat(enum.Enum):
     OTHER = "other"
 
 
+class UpdateFrequency(enum.Enum):
+    NEVER = "never"
+    REALTIME = "realtime"
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
+
+
 class Dataset(Entity):
     id: ID
     created_at: dt.datetime = Field(default_factory=dtutil.now)
     title: str
     description: str
     formats: List[DataFormat]
+    producer: Optional[str] = None
+    entrypoint_email: str
+    contact_emails: List[str] = Field(default_factory=list)
+    first_published_at: Optional[dt.datetime] = None
+    update_frequency: Optional[UpdateFrequency] = None
+    last_updated_at: Optional[dt.datetime] = None
 
     class Config:
         orm_mode = True
 
-    def update(self, title: str, description: str, formats: List[DataFormat]) -> None:
+    def update(
+        self,
+        title: str,
+        description: str,
+        formats: List[DataFormat],
+        entrypoint_email: str,
+    ) -> None:
         self.title = title
         self.description = description
         self.formats = formats
+        self.entrypoint_email = entrypoint_email

@@ -9,6 +9,7 @@ class CreateDataset(Command[ID]):
     title: str
     description: str
     formats: List[DataFormat]
+    entrypoint_email: str
 
 
 class UpdateDataset(Command[None]):
@@ -16,6 +17,7 @@ class UpdateDataset(Command[None]):
     title: str
     description: str
     formats: List[DataFormat]
+    entrypoint_email: str
 
 
 class DeleteDataset(Command[None]):
