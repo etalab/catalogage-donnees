@@ -18,6 +18,7 @@ export interface Dataset {
   title: string;
   description: string;
   formats: DataFormat[];
+  entrypointEmail: string;
   headlines?: DatasetHeadlines;
 }
 
@@ -25,6 +26,7 @@ export interface DatasetFormData {
   title: string;
   description: string;
   formats: DataFormat[];
+  entrypointEmail: string;
 }
 
 export type DatasetCreateData = DatasetFormData;

@@ -6,14 +6,15 @@
   import { DATA_FORMAT_LABELS } from "src/constants";
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
 
-  export let submitLabel = "Contribuer ce jeu de données";
-  export let loadingLabel = "Contribution en cours...";
+  export let submitLabel = "Publier ce jeu de données";
+  export let loadingLabel = "Publication en cours...";
   export let loading = false;
 
   export let initial: DatasetFormData = {
     title: "",
     description: "",
     formats: [],
+    entrypointEmail: "",
   };
 
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
@@ -22,6 +23,7 @@
     title: string;
     description: string;
     dataFormats: boolean[];
+    entrypointEmail: string;
   };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
@@ -34,6 +36,7 @@
     dataFormats: dataFormatChoices.map(
       ({ value }) => !!initial.formats.find((v) => v === value)
     ),
+    entrypointEmail: initial.entrypointEmail,
   };
 
   // Handle this value manually.
@@ -43,9 +46,13 @@
     createForm({
       initialValues,
       validationSchema: yup.object().shape({
-        title: yup.string().required(""),
+        title: yup.string().required(),
         description: yup.string().required(""),
         dataFormats: yup.array(yup.boolean()).length(dataFormatsValue.length),
+        entrypointEmail: yup
+          .string()
+          .email("Ce champ doit contenir une adresse e-mail valide")
+          .required(),
       }),
       onSubmit: (values) => {
         const formats = [];
@@ -58,6 +65,7 @@
           title: values.title,
           description: values.description,
           formats,
+          entrypointEmail: values.entrypointEmail,
         };
         dispatch("save", data);
       },
@@ -75,6 +83,8 @@
 </script>
 
 <form on:submit={handleSubmit} data-bitwarden-watching="1">
+  <h2 class="fr-mt-6w">Informations générales</h2>
+
   <div
     class="fr-input-group fr-my-4w {$errors.title
       ? 'fr-input-group--error'
@@ -83,7 +93,7 @@
     <label class="fr-label" for="title">
       Nom de la donnée
       <RequiredMarker />
-      <span class="fr-hint-text" id="select-hint-desc-hint">
+      <span class="fr-hint-text" id="title-desc-hint">
         Ce nom doit aller à l'essentiel et permettre d'indiquer en quelques mots
         les informations que l'on peut y trouver.
       </span>
@@ -114,7 +124,7 @@
     <label class="fr-label" for="description">
       Description des données
       <RequiredMarker />
-      <span class="fr-hint-text" id="select-hint-desc-hint">
+      <span class="fr-hint-text" id="description-desc-hint">
         Quel type de données sont contenues dans ce jeu de données ? Les
         informations saisies ici seront utilisées par le moteur de recherche.
       </span>
@@ -183,8 +193,44 @@
     {/if}
   </fieldset>
 
-  <div class="fr-input-group fr-my-4w">
-    <button type="submit" class="fr-btn" title="Contribuer ce jeu de données">
+  <h2 class="fr-mt-6w">Contact</h2>
+
+  <div
+    class="fr-input-group fr-my-4w {$errors.entrypointEmail
+      ? 'fr-input-group--error'
+      : ''}"
+  >
+    <label class="fr-label" for="entrypoint-email">
+      Adresse e-mail fonctionnelle
+      <RequiredMarker />
+      <span class="fr-hint-text" id="entrypoint-email-desc-hint">
+        Il est fortement conseillé d'avoir une adresse e-mail accessible à
+        plusieurs personnes afin de rendre la prise de contact possible quelle
+        que soit les personnes en responsabilité.
+      </span>
+    </label>
+    <input
+      class="fr-input {$errors.entrypointEmail ? 'fr-input--error' : ''}"
+      aria-describedby={$errors.entrypointEmail
+        ? "entrypoint-email-desc-error"
+        : null}
+      type="email"
+      id="entrypoint-email"
+      name="entrypoint-email"
+      required
+      on:change={handleChange}
+      on:blur={handleChange}
+      bind:value={$form.entrypointEmail}
+    />
+    {#if $errors.entrypointEmail}
+      <p id="entrypoint-email-desc-error" class="fr-error-text">
+        {$errors.entrypointEmail}
+      </p>
+    {/if}
+  </div>
+
+  <div class="fr-input-group fr-mt-9w">
+    <button type="submit" class="fr-btn" title={submitLabel}>
       {#if loading}
         {loadingLabel}
       {:else}

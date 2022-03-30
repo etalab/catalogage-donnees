@@ -35,18 +35,14 @@
   };
 </script>
 
-<section class="fr-container">
-  <h1 class="fr-mt-9w">Modifier "{dataset.title}"</h1>
-
-  <h2>Informations générales</h2>
+<section class="fr-container fr-mt-9w">
+  <h1 class="fr-text--lg">
+    Modifier "{dataset.title}"
+  </h1>
 
   <div class="fr-col-lg-8">
     <DatasetForm
-      initial={{
-        title: dataset.title,
-        description: dataset.description,
-        formats: dataset.formats,
-      }}
+      initial={dataset}
       {loading}
       submitLabel="Modifier ce jeu de données"
       loadingLabel="Modification en cours..."

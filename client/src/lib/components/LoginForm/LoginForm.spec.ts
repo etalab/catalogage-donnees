@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import { render, fireEvent, waitFor } from "@testing-library/svelte";
-import type { LoginFormData, User } from "src/definitions/auth";
+import type { LoginFormData } from "src/definitions/auth";
 
 import LoginForm from "./LoginForm.svelte";
 

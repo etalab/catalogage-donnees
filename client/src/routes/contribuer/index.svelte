@@ -26,8 +26,8 @@
   <title>Contribuer</title>
 </svelte:head>
 
-<section class="fr-container">
-  <h1 class="fr-mt-9w">Informations générales</h1>
+<section class="fr-container fr-mt-9w">
+  <h1 class="fr-text--lg">Contribuer un jeu de données</h1>
 
   <div class="fr-col-lg-8">
     <DatasetForm {loading} on:save={onSave} />

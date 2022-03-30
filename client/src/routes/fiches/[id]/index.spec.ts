@@ -10,6 +10,7 @@ const dataset: Dataset = {
   title: "foo",
   description: "bar baz crux",
   formats: ["other"],
+  entrypointEmail: "service@example.org",
 };
 
 describe("Dataset detail page header", () => {
@@ -28,7 +29,11 @@ describe("Dataset detail page action buttons", () => {
   });
   test("The button to contact the author is present", () => {
     const { getByText } = render(index, { dataset });
-    expect(getByText("Contacter le producteur")).toBeInTheDocument();
+    const contactButton = getByText("Contacter le producteur");
+    expect(contactButton).toBeInTheDocument();
+    expect(contactButton.getAttribute("href")).toContain(
+      dataset.entrypointEmail
+    );
   });
   test("The button to follow the dataset is present", () => {
     const { getByText } = render(index, { dataset });

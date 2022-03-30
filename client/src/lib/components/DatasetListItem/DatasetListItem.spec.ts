@@ -11,6 +11,7 @@ describe("Test the dataset list item", () => {
     title: "Inventaire des arbres et forêts",
     description: "Fichier de l'ensemble des arbres et forêts de France.",
     formats: ["database"],
+    entrypointEmail: "forets@ign.fr",
   };
 
   test("The title is present", () => {

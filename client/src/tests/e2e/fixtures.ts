@@ -1,5 +1,5 @@
 import { test as base, expect, APIRequestContext } from "@playwright/test";
-import type { Dataset, DatasetCreateData } from "src/definitions/datasets";
+import type { Dataset } from "src/definitions/datasets";
 
 /**
  * These fixtures allow simplifying setup/teardown logic in tests,
@@ -22,10 +22,11 @@ export const test = base.extend<AppFixtures>({
   },
 
   dataset: async ({ apiContext }, use) => {
-    const data: DatasetCreateData = {
+    const data = {
       title: "Sample title",
       description: "Sample description",
       formats: ["api"],
+      entrypoint_email: "service@example.org",
     };
     let response = await apiContext.post("/datasets/", { data });
     expect(response.ok()).toBeTruthy();

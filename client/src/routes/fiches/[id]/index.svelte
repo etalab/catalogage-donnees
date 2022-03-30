@@ -47,12 +47,13 @@
       </a>
     </li>
     <li>
-      <button
+      <a
         class="fr-btn fr-btn--secondary fr-fi-mail-fill"
-        title="Contacter le producter du jeu de données"
+        title="Contacter le producter du jeu de données par email"
+        href="mailto:{dataset.entrypointEmail}"
       >
         Contacter le producteur
-      </button>
+      </a>
     </li>
     <li>
       <button

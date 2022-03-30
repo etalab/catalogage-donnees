@@ -53,6 +53,7 @@ describe("Test the dataset form", () => {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
+      entrypointEmail: "service.initial@example.org",
     };
     const props = { initial };
 
@@ -74,5 +75,10 @@ describe("Test the dataset form", () => {
     expect(getFormatCheckbox("database")).not.toBeChecked();
     expect(getFormatCheckbox("website")).toBeChecked();
     expect(getFormatCheckbox("other")).not.toBeChecked();
+
+    const entrypointEmail = getByLabelText("Adresse e-mail fonctionnelle", {
+      exact: false,
+    }) as HTMLInputElement;
+    expect(entrypointEmail.value).toBe("service.initial@example.org");
   });
 });
