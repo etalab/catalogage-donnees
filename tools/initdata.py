@@ -30,7 +30,7 @@ async def handle_user(item: dict) -> None:
     existing_user = await repository.get_by_email(email)
 
     if existing_user is not None:
-        print(f"{info('ok')}: User(email={email!r})")
+        print(f"{info('ok')}: User(email={email!r}, ...)")
         return
 
     command = CreateUser(**item["params"])

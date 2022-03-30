@@ -33,6 +33,15 @@ describe("Test the dataset form", () => {
       .forEach((checkbox) => expect(checkbox).not.toBeChecked());
     checkboxes.forEach((checkbox) => expect(checkbox).not.toBeRequired());
   });
+  test('The "entrypoint email" field is present', () => {
+    const { getByLabelText } = render(DatasetForm);
+    const entrypointEmail = getByLabelText("Adresse e-mail fonctionnelle", {
+      exact: false,
+    });
+    expect(entrypointEmail).toBeInTheDocument();
+    expect(entrypointEmail).toBeRequired();
+    expect(entrypointEmail).toHaveAttribute("type", "email");
+  });
   test("The submit button is present", () => {
     const { getByRole } = render(DatasetForm);
     expect(getByRole("button")).toBeInTheDocument();
