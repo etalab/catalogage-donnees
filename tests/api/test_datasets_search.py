@@ -29,7 +29,10 @@ async def add_corpus(items: List[Tuple[str, str]] = None) -> None:
 
     for title, description in items:
         command = CreateDataset(
-            title=title, description=description, formats=[DataFormat.FILE_TABULAR]
+            title=title,
+            description=description,
+            formats=[DataFormat.FILE_TABULAR],
+            entrypoint_email="service@example.org",
         )
         pk = await bus.execute(command)
         query = GetDatasetByID(id=pk)
@@ -153,6 +156,7 @@ async def test_search_results_change_when_data_changes(
         title="Titre",
         description="Description",
         formats=[DataFormat.OTHER],
+        entrypoint_email="service@example.org",
     )
     pk = await bus.execute(command)
     # New dataset is returned in search results
@@ -161,12 +165,13 @@ async def test_search_results_change_when_data_changes(
     (dataset,) = response.json()
     assert dataset["id"] == str(pk)
 
-    # Update dataset
+    # Update dataset title
     command = UpdateDataset(
         id=pk,
         title="Modifié",
         description="Description",
         formats=[DataFormat.OTHER],
+        entrypoint_email="service@example.org",
     )
     await bus.execute(command)
     # Updated dataset is returned in search results targeting updated data
@@ -181,6 +186,7 @@ async def test_search_results_change_when_data_changes(
         title="Modifié",
         description="Jeu de données spécial",
         formats=[DataFormat.OTHER],
+        entrypoint_email="service@example.org",
     )
     await bus.execute(command)
     response = await client.get("/datasets/", params={"q": "spécial"})

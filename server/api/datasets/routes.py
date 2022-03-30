@@ -60,6 +60,7 @@ async def create_dataset(data: DatasetCreate) -> Dataset:
         title=data.title,
         description=data.description,
         formats=data.formats,
+        entrypoint_email=data.entrypoint_email,
     )
 
     id = await bus.execute(command)
@@ -77,6 +78,7 @@ async def update_dataset(id: ID, data: DatasetUpdate) -> Dataset:
         title=data.title,
         description=data.description,
         formats=data.formats,
+        entrypoint_email=data.entrypoint_email,
     )
     try:
         await bus.execute(command)

@@ -22,6 +22,7 @@ async def create_dataset(command: CreateDataset, *, id_: ID = None) -> ID:
         title=command.title,
         description=command.description,
         formats=command.formats,
+        entrypoint_email=command.entrypoint_email,
     )
 
     return await repository.insert(dataset)
@@ -39,6 +40,7 @@ async def update_dataset(command: UpdateDataset) -> None:
         title=command.title,
         description=command.description,
         formats=command.formats,
+        entrypoint_email=command.entrypoint_email,
     )
 
     await repository.update(dataset)

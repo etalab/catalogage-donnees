@@ -25,11 +25,17 @@ from ..helpers import approx_datetime
                 {"loc": ["body", "title"], "type": "value_error.missing"},
                 {"loc": ["body", "description"], "type": "value_error.missing"},
                 {"loc": ["body", "formats"], "type": "value_error.missing"},
+                {"loc": ["body", "entrypoint_email"], "type": "value_error.missing"},
             ],
             id="missing-fields",
         ),
         pytest.param(
-            {"title": "Title", "description": "Description", "formats": []},
+            {
+                "title": "Title",
+                "description": "Description",
+                "formats": [],
+                "entrypoint_email": "service@example.org",
+            },
             [
                 {
                     "loc": ["body", "formats"],
@@ -62,6 +68,7 @@ async def test_dataset_crud(client: httpx.AsyncClient) -> None:
             "title": "Example",
             "description": "Some example items",
             "formats": ["website"],
+            "entrypoint_email": "example.service@example.org",
         },
     )
     assert response.status_code == 201
@@ -81,6 +88,7 @@ async def test_dataset_crud(client: httpx.AsyncClient) -> None:
         "title": "Example",
         "description": "Some example items",
         "formats": ["website"],
+        "entrypoint_email": "example.service@example.org",
     }
 
     non_existing_id = id_factory()
@@ -110,6 +118,7 @@ CREATE_EXAMPLE_DATASET = CreateDataset(
     title="Example title",
     description="Example description",
     formats=["website", "api"],
+    entrypoint_email="service@example.org",
 )
 
 
@@ -137,6 +146,7 @@ class TestDatasetUpdate:
                 "title": "Title",
                 "description": "Description",
                 "formats": ["website"],
+                "entrypoint_email": "service@example.org",
             },
         )
         assert response.status_code == 404
@@ -148,13 +158,17 @@ class TestDatasetUpdate:
         # Apply PUT semantics, which expect a full entity.
         response = await client.put(f"/datasets/{dataset_id}/", json={})
         assert response.status_code == 422
-        err_title, err_description, err_formats = response.json()["detail"]
+        err_title, err_description, err_formats, err_entrypoint_email = response.json()[
+            "detail"
+        ]
         assert err_title["loc"] == ["body", "title"]
         assert err_title["type"] == "value_error.missing"
         assert err_description["loc"] == ["body", "description"]
         assert err_description["type"] == "value_error.missing"
         assert err_formats["loc"] == ["body", "formats"]
         assert err_formats["type"] == "value_error.missing"
+        assert err_entrypoint_email["loc"] == ["body", "entrypoint_email"]
+        assert err_entrypoint_email["type"] == "value_error.missing"
 
     async def test_fields_empty_invalid(self, client: httpx.AsyncClient) -> None:
         bus = resolve(MessageBus)
@@ -162,7 +176,12 @@ class TestDatasetUpdate:
 
         response = await client.put(
             f"/datasets/{dataset_id}/",
-            json={"title": "", "description": "", "formats": []},
+            json={
+                "title": "",
+                "description": "",
+                "formats": [],
+                "entrypoint_email": "service@example.org",
+            },
         )
         assert response.status_code == 422
 
@@ -187,6 +206,7 @@ class TestDatasetUpdate:
                 "title": "Other title",
                 "description": "Other description",
                 "formats": ["database"],
+                "entrypoint_email": "other.service@example.org",
             },
         )
         assert response.status_code == 200
@@ -199,6 +219,7 @@ class TestDatasetUpdate:
             "title": "Other title",
             "description": "Other description",
             "formats": ["database"],
+            "entrypoint_email": "other.service@example.org",
         }
 
         # Entity was indeed updated
@@ -207,6 +228,7 @@ class TestDatasetUpdate:
         assert dataset.title == "Other title"
         assert dataset.description == "Other description"
         assert dataset.formats == [DataFormat.DATABASE]
+        assert dataset.entrypoint_email == "other.service@example.org"
 
 
 @pytest.mark.asyncio
