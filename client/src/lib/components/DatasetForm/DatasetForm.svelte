@@ -2,9 +2,10 @@
   import * as yup from "yup";
   import { createEventDispatcher } from "svelte";
   import { createForm } from "svelte-forms-lib";
-  import type { DatasetFormData } from "src/definitions/datasets";
+  import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
   import { DATA_FORMAT_LABELS } from "src/constants";
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
+  import About from "src/routes/about.svelte";
 
   export let submitLabel = "Publier ce jeu de données";
   export let loadingLabel = "Publication en cours...";
@@ -15,6 +16,7 @@
     description: "",
     formats: [],
     entrypointEmail: "",
+    contactEmails: [],
   };
 
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
@@ -24,10 +26,11 @@
     description: string;
     dataFormats: boolean[];
     entrypointEmail: string;
+    contactEmails: string[];
   };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
-    ([value, label]) => ({ value, label })
+    ([value, label]: [DataFormat, string]) => ({ value, label })
   );
 
   const initialValues: DatasetFormValues = {
@@ -37,6 +40,9 @@
       ({ value }) => !!initial.formats.find((v) => v === value)
     ),
     entrypointEmail: initial.entrypointEmail,
+    contactEmails:
+      // Ensure at least one row is visible, so the field is ready to fill.
+      initial.contactEmails.length > 0 ? initial.contactEmails : [""],
   };
 
   // Handle this value manually.
@@ -53,23 +59,31 @@
           .string()
           .email("Ce champ doit contenir une adresse e-mail valide")
           .required(),
+        contactEmails: yup.array(
+          yup.string().email("Ce champ doit contenir une adresse e-mail valide")
+        ),
       }),
       onSubmit: (values) => {
-        const formats = [];
-        values.dataFormats.forEach((checked, index) => {
-          if (checked) {
-            formats.push(dataFormatChoices[index].value);
-          }
-        });
+        const formats = values.dataFormats
+          .map((checked, index) =>
+            checked ? dataFormatChoices[index].value : null
+          )
+          .filter(Boolean);
+
+        const contactEmails = values.contactEmails.filter(Boolean); // Drop unfilled rows.
+
         const data: DatasetFormData = {
-          title: values.title,
-          description: values.description,
+          ...values,
           formats,
-          entrypointEmail: values.entrypointEmail,
+          contactEmails,
         };
+
         dispatch("save", data);
       },
     });
+
+  $: contactEmailErrors = $errors.contactEmails as unknown as string[]; // Type tweak
+  $: saveBtnLabel = loading ? loadingLabel : submitLabel;
 
   const hasError = (error: string | string[]) => {
     return typeof error === "string" && Boolean(error);
@@ -79,6 +93,14 @@
     const { checked } = event.target;
     dataFormatsValue[index] = checked;
     updateValidateField("dataFormats", dataFormatsValue);
+  };
+
+  const addContactEmail = () => {
+    $form.contactEmails = $form.contactEmails.concat("");
+  };
+
+  const removeContactEmail = (i: number) => {
+    $form.contactEmails = $form.contactEmails.filter((_, j) => i !== j);
   };
 </script>
 
@@ -229,13 +251,83 @@
     {/if}
   </div>
 
+  <fieldset
+    class="fr-fieldset fr-my-4w"
+    class:fr-fieldset--error={contactEmailErrors.some(Boolean)}
+    aria-labelledby="contactEmails-legend"
+    role="group"
+  >
+    <legend
+      class="fr-fieldset__legend fr-text--regular"
+      id="contactEmails-legend"
+    >
+      E-mail(s) de contact
+      <span class="fr-hint-text" id="contactEmails-desc-hint">
+        Vous pouvez ajouter des adresses e-mail personnelles en complément
+        l'dresse fonctionnelle. Ces emails seront régulièrement vérifiés afin
+        d'assurer la bonne maintenabilité des jeux de données.
+      </span>
+    </legend>
+
+    <ul class="fr-fieldset__content fr-raw-list contact-entries fr-mb-3w">
+      {#each $form.contactEmails as _, i}
+        <li role="presentation">
+          <label for="contactEmails-{i}" hidden>Contact {i}</label>
+          <input
+            class="fr-input"
+            class:fr-input--error={contactEmailErrors[i]}
+            aria-describedby={contactEmailErrors[i]
+              ? `contactEmails-${i}-desc-error`
+              : null}
+            type="email"
+            id="contactEmails-{i}"
+            name="contactEmails-{i}"
+            on:change={handleChange}
+            on:blur={handleChange}
+            bind:value={$form.contactEmails[i]}
+          />
+          <button
+            type="button"
+            class="fr-btn fr-btn--secondary fr-fi-delete-fill"
+            title="Supprimer cet e-mail de contact"
+            on:click|preventDefault={() => removeContactEmail(i)}
+          />
+          {#if contactEmailErrors[i]}
+            <p id="contactEmails-{i}-desc-error" class="fr-error-text">
+              {contactEmailErrors[i]}
+            </p>
+          {/if}
+        </li>
+      {/each}
+    </ul>
+
+    <button
+      type="button"
+      class="fr-btn fr-btn--secondary fr-fi-edit-fill fr-btn--icon-left contact-entries-add"
+      on:click|preventDefault={() => addContactEmail()}
+    >
+      Ajouter un contact
+    </button>
+  </fieldset>
+
   <div class="fr-input-group fr-mt-9w">
-    <button type="submit" class="fr-btn" title={submitLabel}>
-      {#if loading}
-        {loadingLabel}
-      {:else}
-        {submitLabel}
-      {/if}
+    <button type="submit" class="fr-btn">
+      {saveBtnLabel}
     </button>
   </div>
 </form>
+
+<style>
+  .contact-entries {
+    display: grid;
+    row-gap: 1em;
+  }
+  .contact-entries > * {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 1em;
+  }
+  .contact-entries-add {
+    float: right;
+  }
+</style>
