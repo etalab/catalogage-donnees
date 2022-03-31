@@ -56,12 +56,7 @@ async def get_dataset_by_id(id: ID) -> Dataset:
 async def create_dataset(data: DatasetCreate) -> Dataset:
     bus = resolve(MessageBus)
 
-    command = CreateDataset(
-        title=data.title,
-        description=data.description,
-        formats=data.formats,
-        entrypoint_email=data.entrypoint_email,
-    )
+    command = CreateDataset(**data.dict())
 
     id = await bus.execute(command)
 
@@ -73,13 +68,8 @@ async def create_dataset(data: DatasetCreate) -> Dataset:
 async def update_dataset(id: ID, data: DatasetUpdate) -> Dataset:
     bus = resolve(MessageBus)
 
-    command = UpdateDataset(
-        id=id,
-        title=data.title,
-        description=data.description,
-        formats=data.formats,
-        entrypoint_email=data.entrypoint_email,
-    )
+    command = UpdateDataset(id=id, **data.dict())
+
     try:
         await bus.execute(command)
     except DatasetDoesNotExist:

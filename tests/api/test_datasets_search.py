@@ -172,6 +172,7 @@ async def test_search_results_change_when_data_changes(
         description="Description",
         formats=[DataFormat.OTHER],
         entrypoint_email="service@example.org",
+        contact_emails=[],
     )
     await bus.execute(command)
     # Updated dataset is returned in search results targeting updated data
@@ -187,6 +188,7 @@ async def test_search_results_change_when_data_changes(
         description="Jeu de données spécial",
         formats=[DataFormat.OTHER],
         entrypoint_email="service@example.org",
+        contact_emails=[],
     )
     await bus.execute(command)
     response = await client.get("/datasets/", params={"q": "spécial"})

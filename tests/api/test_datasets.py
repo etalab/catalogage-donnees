@@ -53,24 +53,32 @@ async def test_create_dataset_invalid(
     assert response.status_code == 422
 
     data = response.json()
-    assert len(data["detail"]) == len(expected_errors_attrs)
+    assert len(data["detail"]) == len(expected_errors_attrs), data["detail"]
 
     for error, expected_error_attrs in zip(data["detail"], expected_errors_attrs):
         error_attrs = {key: error[key] for key in expected_error_attrs}
         assert error_attrs == expected_error_attrs
 
 
+CREATE_DATASET_PAYLOAD = {
+    "title": "Example title",
+    "description": "Example description",
+    "formats": ["website"],
+    "entrypoint_email": "example.service@example.org",
+    "contact_emails": ["example.person@example.org"],
+}
+
+CREATE_ANY_DATASET = CreateDataset(
+    title="Title",
+    description="Description",
+    formats=["website", "api"],
+    entrypoint_email="service@example.org",
+)
+
+
 @pytest.mark.asyncio
 async def test_dataset_crud(client: httpx.AsyncClient) -> None:
-    response = await client.post(
-        "/datasets/",
-        json={
-            "title": "Example",
-            "description": "Some example items",
-            "formats": ["website"],
-            "entrypoint_email": "example.service@example.org",
-        },
-    )
+    response = await client.post("/datasets/", json=CREATE_DATASET_PAYLOAD)
     assert response.status_code == 201
     data = response.json()
 
@@ -85,10 +93,11 @@ async def test_dataset_crud(client: httpx.AsyncClient) -> None:
     assert data == {
         "id": pk,
         "created_at": created_at,
-        "title": "Example",
-        "description": "Some example items",
+        "title": "Example title",
+        "description": "Example description",
         "formats": ["website"],
         "entrypoint_email": "example.service@example.org",
+        "contact_emails": ["example.person@example.org"],
     }
 
     non_existing_id = id_factory()
@@ -114,22 +123,14 @@ async def test_dataset_crud(client: httpx.AsyncClient) -> None:
     assert response.json() == []
 
 
-CREATE_EXAMPLE_DATASET = CreateDataset(
-    title="Example title",
-    description="Example description",
-    formats=["website", "api"],
-    entrypoint_email="service@example.org",
-)
-
-
 @pytest.mark.asyncio
 async def test_dataset_get_all_uses_reverse_chronological_order(
     client: httpx.AsyncClient,
 ) -> None:
     bus = resolve(MessageBus)
-    await bus.execute(CREATE_EXAMPLE_DATASET.copy(update={"title": "Oldest"}))
-    await bus.execute(CREATE_EXAMPLE_DATASET.copy(update={"title": "Intermediate"}))
-    await bus.execute(CREATE_EXAMPLE_DATASET.copy(update={"title": "Newest"}))
+    await bus.execute(CREATE_ANY_DATASET.copy(update={"title": "Oldest"}))
+    await bus.execute(CREATE_ANY_DATASET.copy(update={"title": "Intermediate"}))
+    await bus.execute(CREATE_ANY_DATASET.copy(update={"title": "Newest"}))
 
     response = await client.get("/datasets/")
     assert response.status_code == 200
@@ -138,29 +139,54 @@ async def test_dataset_get_all_uses_reverse_chronological_order(
 
 
 @pytest.mark.asyncio
+class TestDatasetOptionalFields:
+    async def test_contact_emails(self, client: httpx.AsyncClient) -> None:
+        payload = CREATE_DATASET_PAYLOAD.copy()
+        payload.pop("contact_emails")
+        response = await client.post("/datasets/", json=payload)
+        assert response.status_code == 201
+        dataset = response.json()
+        assert dataset["contact_emails"] == []
+
+    async def test_contact_emails_invalid_email(
+        self, client: httpx.AsyncClient
+    ) -> None:
+        response = await client.post(
+            "/datasets/",
+            json={
+                **CREATE_DATASET_PAYLOAD,
+                "contact_emails": ["notanemail", "valid@example.org"],
+            },
+        )
+        assert response.status_code == 422
+        (err,) = response.json()["detail"]
+        assert err["loc"] == ["body", "contact_emails", 0]
+        assert err["type"] == "value_error.email"
+
+
+@pytest.mark.asyncio
 class TestDatasetUpdate:
     async def test_not_found(self, client: httpx.AsyncClient) -> None:
         response = await client.put(
             f"/datasets/{id_factory()}/",
-            json={
-                "title": "Title",
-                "description": "Description",
-                "formats": ["website"],
-                "entrypoint_email": "service@example.org",
-            },
+            json=CREATE_DATASET_PAYLOAD,
         )
         assert response.status_code == 404
 
     async def test_full_entity_expected(self, client: httpx.AsyncClient) -> None:
         bus = resolve(MessageBus)
-        dataset_id = await bus.execute(CREATE_EXAMPLE_DATASET)
+        dataset_id = await bus.execute(CREATE_ANY_DATASET)
 
         # Apply PUT semantics, which expect a full entity.
         response = await client.put(f"/datasets/{dataset_id}/", json={})
         assert response.status_code == 422
-        err_title, err_description, err_formats, err_entrypoint_email = response.json()[
-            "detail"
-        ]
+        (
+            err_title,
+            err_description,
+            err_formats,
+            err_entrypoint_email,
+            err_contact_emails,
+        ) = response.json()["detail"]
         assert err_title["loc"] == ["body", "title"]
         assert err_title["type"] == "value_error.missing"
         assert err_description["loc"] == ["body", "description"]
@@ -169,10 +195,12 @@ class TestDatasetUpdate:
         assert err_formats["type"] == "value_error.missing"
         assert err_entrypoint_email["loc"] == ["body", "entrypoint_email"]
         assert err_entrypoint_email["type"] == "value_error.missing"
+        assert err_contact_emails["loc"] == ["body", "contact_emails"]
+        assert err_contact_emails["type"] == "value_error.missing"
 
     async def test_fields_empty_invalid(self, client: httpx.AsyncClient) -> None:
         bus = resolve(MessageBus)
-        dataset_id = await bus.execute(CREATE_EXAMPLE_DATASET)
+        dataset_id = await bus.execute(CREATE_ANY_DATASET)
 
         response = await client.put(
             f"/datasets/{dataset_id}/",
@@ -181,6 +209,7 @@ class TestDatasetUpdate:
                 "description": "",
                 "formats": [],
                 "entrypoint_email": "service@example.org",
+                "contact_emails": [],
             },
         )
         assert response.status_code == 422
@@ -198,7 +227,7 @@ class TestDatasetUpdate:
 
     async def test_update(self, client: httpx.AsyncClient) -> None:
         bus = resolve(MessageBus)
-        dataset_id = await bus.execute(CREATE_EXAMPLE_DATASET)
+        dataset_id = await bus.execute(CREATE_ANY_DATASET)
 
         response = await client.put(
             f"/datasets/{dataset_id}/",
@@ -207,6 +236,7 @@ class TestDatasetUpdate:
                 "description": "Other description",
                 "formats": ["database"],
                 "entrypoint_email": "other.service@example.org",
+                "contact_emails": ["other.person@example.org"],
             },
         )
         assert response.status_code == 200
@@ -220,6 +250,7 @@ class TestDatasetUpdate:
             "description": "Other description",
             "formats": ["database"],
             "entrypoint_email": "other.service@example.org",
+            "contact_emails": ["other.person@example.org"],
         }
 
         # Entity was indeed updated
@@ -229,18 +260,19 @@ class TestDatasetUpdate:
         assert dataset.description == "Other description"
         assert dataset.formats == [DataFormat.DATABASE]
         assert dataset.entrypoint_email == "other.service@example.org"
+        assert dataset.contact_emails == ["other.person@example.org"]
 
 
 @pytest.mark.asyncio
 class TestFormats:
     async def test_formats_add(self, client: httpx.AsyncClient) -> None:
         bus = resolve(MessageBus)
-        dataset_id = await bus.execute(CREATE_EXAMPLE_DATASET)
+        dataset_id = await bus.execute(CREATE_ANY_DATASET)
 
         response = await client.put(
             f"/datasets/{dataset_id}/",
             json={
-                **CREATE_EXAMPLE_DATASET.dict(exclude={"formats"}),
+                **CREATE_ANY_DATASET.dict(exclude={"formats"}),
                 "formats": ["website", "api", "file_gis"],
             },
         )
@@ -250,12 +282,12 @@ class TestFormats:
 
     async def test_formats_remove(self, client: httpx.AsyncClient) -> None:
         bus = resolve(MessageBus)
-        dataset_id = await bus.execute(CREATE_EXAMPLE_DATASET)
+        dataset_id = await bus.execute(CREATE_ANY_DATASET)
 
         response = await client.put(
             f"/datasets/{dataset_id}/",
             json={
-                **CREATE_EXAMPLE_DATASET.dict(exclude={"formats"}),
+                **CREATE_ANY_DATASET.dict(exclude={"formats"}),
                 "formats": ["website"],
             },
         )
@@ -269,8 +301,7 @@ class TestDeleteDataset:
     async def test_delete(self, client: httpx.AsyncClient) -> None:
         bus = resolve(MessageBus)
 
-        command = CREATE_EXAMPLE_DATASET
-        dataset_id = await bus.execute(command)
+        dataset_id = await bus.execute(CREATE_ANY_DATASET)
 
         response = await client.delete(f"/datasets/{dataset_id}/")
         assert response.status_code == 204

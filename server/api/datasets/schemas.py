@@ -1,7 +1,7 @@
 import datetime as dt
 from typing import List
 
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, Field, validator
 
 from server.domain.common.types import ID
 from server.domain.datasets.entities import DataFormat
@@ -14,6 +14,7 @@ class DatasetRead(BaseModel):
     description: str
     formats: List[DataFormat]
     entrypoint_email: str
+    contact_emails: List[str]
 
 
 class DatasetCreate(BaseModel):
@@ -21,6 +22,7 @@ class DatasetCreate(BaseModel):
     description: str
     formats: List[DataFormat]
     entrypoint_email: EmailStr
+    contact_emails: List[EmailStr] = Field(default_factory=list)
 
     @validator("formats")
     def check_formats_at_least_one(cls, value: List[DataFormat]) -> List[DataFormat]:
@@ -34,6 +36,7 @@ class DatasetUpdate(BaseModel):
     description: str
     formats: List[DataFormat]
     entrypoint_email: EmailStr
+    contact_emails: List[EmailStr]
 
     @validator("title")
     def check_title_not_empty(cls, value: str) -> str:
