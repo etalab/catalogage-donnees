@@ -21,6 +21,7 @@ const toPayload = (data: Partial<Record<keyof Dataset, any>>) => {
   return {
     ...rest,
     entrypoint_email: entrypointEmail,
+    contact_emails: [],
   };
 };
 
