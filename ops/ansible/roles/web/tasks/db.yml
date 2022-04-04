@@ -9,3 +9,5 @@
   shell:
     cmd: make migrate
     chdir: "{{ workdir }}"
+  register: migrate
+  changed_when: "'Running upgrade' in migrate.stderr"
