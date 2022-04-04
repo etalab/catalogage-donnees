@@ -11,6 +11,7 @@ const dataset: Dataset = {
   description: "bar baz crux",
   formats: ["other"],
   entrypointEmail: "service@example.org",
+  contactEmails: [],
 };
 
 describe("Dataset detail page header", () => {

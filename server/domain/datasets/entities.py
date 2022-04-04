@@ -50,8 +50,10 @@ class Dataset(Entity):
         description: str,
         formats: List[DataFormat],
         entrypoint_email: str,
+        contact_emails: List[str],
     ) -> None:
         self.title = title
         self.description = description
         self.formats = formats
         self.entrypoint_email = entrypoint_email
+        self.contact_emails = contact_emails

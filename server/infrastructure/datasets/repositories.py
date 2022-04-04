@@ -16,7 +16,7 @@ from sqlalchemy import (
     select,
     text,
 )
-from sqlalchemy.dialects.postgresql import TSVECTOR, UUID
+from sqlalchemy.dialects.postgresql import ARRAY, TSVECTOR, UUID
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, relationship, selectinload
@@ -64,6 +64,8 @@ class DatasetModel(Base):
         secondary=dataset_dataformat,
     )
     entrypoint_email = Column(String, nullable=False)
+    contact_emails = Column(ARRAY(String), server_default="{}", nullable=False)
+
     search_tsv: Mapped[str] = Column(
         TSVECTOR,
         Computed("to_tsvector('french', title || ' ' || description)", persisted=True),
@@ -86,6 +88,7 @@ def make_entity(instance: DatasetModel) -> Dataset:
         description=instance.description,
         formats=[fmt.name for fmt in instance.formats],
         entrypoint_email=instance.entrypoint_email,
+        contact_emails=instance.contact_emails,
     )
 
 
@@ -97,6 +100,7 @@ def make_instance(entity: Dataset, formats: List[DataFormatModel]) -> DatasetMod
         description=entity.description,
         formats=formats,
         entrypoint_email=entity.entrypoint_email,
+        contact_emails=entity.contact_emails,
     )
 
 
@@ -107,6 +111,7 @@ def update_instance(
     instance.description = entity.description
     instance.formats = formats
     instance.entrypoint_email = entity.entrypoint_email
+    instance.contact_emails = entity.contact_emails
 
 
 class SqlDatasetRepository(DatasetRepository):

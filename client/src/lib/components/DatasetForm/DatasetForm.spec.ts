@@ -1,7 +1,11 @@
 import "@testing-library/jest-dom";
 
 import DatasetForm from "./DatasetForm.svelte";
-import { render, fireEvent } from "@testing-library/svelte";
+import {
+  render,
+  fireEvent,
+  getByRole as getByRoleIn,
+} from "@testing-library/svelte";
 import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
 
 describe("Test the dataset form", () => {
@@ -11,17 +15,20 @@ describe("Test the dataset form", () => {
     expect(title).toBeInTheDocument();
     expect(title).toBeRequired();
   });
+
   test('The "description" field is present', () => {
     const { getByLabelText } = render(DatasetForm);
     const description = getByLabelText("Description", { exact: false });
     expect(description).toBeInTheDocument();
     expect(description).toBeRequired();
   });
+
   test('The "formats" field is present', async () => {
     const { getAllByRole } = render(DatasetForm);
     const checkboxes = getAllByRole("checkbox");
     expect(checkboxes.length).toBeGreaterThan(0);
   });
+
   test("At least one format is required", async () => {
     const { getAllByRole } = render(DatasetForm);
     const checkboxes = getAllByRole("checkbox", { checked: false });
@@ -33,6 +40,7 @@ describe("Test the dataset form", () => {
       .forEach((checkbox) => expect(checkbox).not.toBeChecked());
     checkboxes.forEach((checkbox) => expect(checkbox).not.toBeRequired());
   });
+
   test('The "entrypoint email" field is present', () => {
     const { getByLabelText } = render(DatasetForm);
     const entrypointEmail = getByLabelText("Adresse e-mail fonctionnelle", {
@@ -42,27 +50,66 @@ describe("Test the dataset form", () => {
     expect(entrypointEmail).toBeRequired();
     expect(entrypointEmail).toHaveAttribute("type", "email");
   });
+
+  test('The "contact emails" field is present', () => {
+    const { getAllByLabelText } = render(DatasetForm);
+    const inputs = getAllByLabelText(/Contact \d/);
+    expect(inputs.length).toBe(1);
+    expect(inputs[0]).not.toBeRequired();
+    expect(inputs[0]).toHaveAttribute("type", "email");
+  });
+
+  test("Contact emails can be added, filled and removed", async () => {
+    const { getAllByLabelText, getByRole } = render(DatasetForm);
+    let inputs = getAllByLabelText(/Contact \d/);
+    expect(inputs.length).toBe(1);
+    expect(inputs[0]).toHaveValue("");
+
+    const addButton = getByRole("button", { name: /Ajouter/i });
+    await fireEvent.click(addButton);
+    inputs = getAllByLabelText(/Contact \d/);
+    expect(inputs.length).toBe(2);
+    expect(inputs[0]).toHaveValue("");
+    expect(inputs[1]).toHaveValue("");
+
+    await fireEvent.input(inputs[1], {
+      target: { value: "contact@example.org" },
+    });
+    inputs = getAllByLabelText(/Contact \d/);
+    expect(inputs[0]).toHaveValue("");
+    expect(inputs[1]).toHaveValue("contact@example.org");
+
+    const removeButton = getByRoleIn(inputs[1].parentElement, "button", {
+      name: /Supprimer/i,
+    });
+    await fireEvent.click(removeButton);
+    inputs = getAllByLabelText(/Contact \d/);
+    expect(inputs.length).toBe(1);
+    expect(inputs[0]).toHaveValue("");
+  });
+
   test("The submit button is present", () => {
     const { getByRole } = render(DatasetForm);
-    expect(getByRole("button")).toBeInTheDocument();
+    expect(getByRole("button", { name: /Publier/i })).toBeInTheDocument();
   });
+
   test("The submit button displays a loading text when loading", async () => {
     const props = { submitLabel: "Envoyer", loadingLabel: "Ça charge..." };
 
     const { getByRole, rerender } = render(DatasetForm, { props });
-    let submitButton = getByRole("button");
-    expect(submitButton).toHaveTextContent("Envoyer");
+    expect(getByRole("button", { name: "Envoyer" })).toBeInTheDocument();
 
     rerender({ props: { ...props, loading: true } });
-    submitButton = getByRole("button");
-    expect(submitButton).toHaveTextContent("Ça charge...");
+    expect(getByRole("button", { name: /Ça charge/i })).toBeInTheDocument();
   });
+
   test("The fields are initialized with initial values", async () => {
     const initial: DatasetFormData = {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
       entrypointEmail: "service.initial@example.org",
+      contactEmails: ["person@example.org"],
     };
     const props = { initial };
 
@@ -89,5 +136,10 @@ describe("Test the dataset form", () => {
       exact: false,
     }) as HTMLInputElement;
     expect(entrypointEmail.value).toBe("service.initial@example.org");
+
+    const { getAllByLabelText } = render(DatasetForm);
+    const inputs = getAllByLabelText(/Contact \d/);
+    expect(inputs.length).toBe(1);
+    expect(inputs[0]).toHaveValue("person@example.org");
   });
 });
