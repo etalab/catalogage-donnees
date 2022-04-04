@@ -21,7 +21,7 @@ Pour faciliter un démarrage rapide du projet, une configuration `docker-compose
 Installez d'abord les outils nécessaires :
 
 - [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Docker Compose](https://docs.docker.com/compose/install/) (Testé avec la version `1.29` )
 
 Puis lancez :
 
@@ -40,6 +40,14 @@ Pour arrêter le Docker Compose :
 ```
 make compose-down
 ```
+
+### Résolution de problème lors de l'installation
+
+#### la commande `make compose-up` échoue
+
+Dans ce cas ci, il est fort probable que la version de docker-compose ne soit plus à jour.
+
+Vous pouvez les mettre à jour en suivant les instructions [ici](https://docs.docker.com/compose/install/#upgradinggit)
 
 ---
 
@@ -81,8 +89,13 @@ cp .env.example .env
 
 ```bash
 # .env
-APP_DATABASE_URL="postgresql+asyncpg://user:pass@localhost:5432/${DB:-catalogage}"
+APP_DATABASE_URL="postgresql+asyncpg://user:pass@localhost:<PORT>/${DB:-catalogage}"
 ```
+
+:warning: Remplacer `<PORT>` par la valeur du Port qui sera utilisé par la DB.
+
+- Si vous disposez d'un serveur Postgres sur votre machine hôte le port sera `5432`
+- Si vous utilisez Postgres via la configiguration du `docker-compose` alors le port sera `6432`
 
 ## Interagir avec le projet
 
