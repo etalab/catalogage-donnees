@@ -27,6 +27,11 @@ export const test = base.extend<AppFixtures>({
       description: "Sample description",
       formats: ["api"],
       entrypoint_email: "service@example.org",
+      // Expected by API, update when frontend app is ready
+      service: "DUMMY",
+      first_published_at: null,
+      update_frequency: null,
+      last_updated_at: null,
     };
     let response = await apiContext.post("/datasets/", { data });
     expect(response.ok()).toBeTruthy();
