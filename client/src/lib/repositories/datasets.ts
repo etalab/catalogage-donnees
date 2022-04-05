@@ -6,29 +6,7 @@ import type {
 import type { Fetch } from "src/definitions/fetch";
 import { getApiUrl } from "$lib/fetch";
 import { toQueryString } from "$lib/util/urls";
-
-const toDataset = (item: any): Dataset => {
-  const { created_at, entrypoint_email, contact_emails, ...rest } = item;
-  return {
-    ...rest,
-    createdAt: new Date(created_at),
-    entrypointEmail: entrypoint_email,
-    contactEmails: contact_emails,
-  };
-};
-
-const toPayload = (data: Partial<Record<keyof Dataset, any>>) => {
-  const { entrypointEmail, contactEmails, ...rest } = data;
-  return {
-    ...rest,
-    entrypoint_email: entrypointEmail,
-    contact_emails: contactEmails,
-    // Expected by API, update when frontend app is ready
-    service: "DUMMY",
-    update_frequency: null,
-    last_updated_at: null,
-  };
-};
+import { toDataset, toPayload } from "$lib/transformers/dataset";
 
 type GetDatasetByID = (opts: { fetch: Fetch; id: string }) => Promise<Dataset>;
 
