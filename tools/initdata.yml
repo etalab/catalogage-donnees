@@ -14,7 +14,12 @@ datasets:
         Les coordonnées géographiques des placettes sont fournies au kilomètre près.
       formats:
         - website
+      service: Service cartographie
       entrypoint_email: service@example.org
+      contact_emails: []
+      first_published_at: null
+      update_frequency: null
+      last_updated_at: null
 
   -  # Mimicks: https://www.data.gouv.fr/fr/datasets/ensemble-des-lieux-de-restauration-des-crous-france-entiere-1/
     id: "4370d027-1447-4e1b-9452-781233be7f5a"
@@ -24,7 +29,12 @@ datasets:
         Les ressources ci-dessous recensent les restaurants, brasseries et cafétérias dans le réseau des CROUS.
       formats:
         - file_tabular
+      service: Direction des données du CROUS
       entrypoint_email: service@example.org
+      contact_emails: []
+      first_published_at: null
+      update_frequency: null
+      last_updated_at: null
 
   - # Mimicks: https://www.data.gouv.fr/fr/datasets/catalogue-des-enquetes-realisees-par-la-dares-2012-572205/
     id: "40abb40f-af83-4a3b-b926-78428402688f"
@@ -34,4 +44,9 @@ datasets:
         Présentation sous forme de fiches répertoriées par thèmes des enquêtes menées par la DARES avec reprise des objectifs, de la périodicité, de la taille de l'échantillon, des publications.
       formats:
         - other
+      service: Service enquêtes
       entrypoint_email: service@example.org
+      contact_emails: []
+      first_published_at: null
+      update_frequency: null
+      last_updated_at: null
