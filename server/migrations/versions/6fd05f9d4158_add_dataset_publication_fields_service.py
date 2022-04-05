@@ -27,6 +27,12 @@ update_frequency_enum = sa.Enum(
 
 
 def upgrade():
+    op.add_column(
+        "dataset",
+        sa.Column("service", sa.String(), server_default="Service", nullable=False),
+    )
+    op.alter_column("dataset", "service", server_default=None)
+
     update_frequency_enum.create(op.get_bind())
 
     op.add_column(
@@ -44,6 +50,7 @@ def upgrade():
 
 
 def downgrade():
+    op.drop_column("dataset", "service")
     op.drop_column("dataset", "last_updated_at")
     op.drop_column("dataset", "update_frequency")
     op.drop_column("dataset", "first_published_at")

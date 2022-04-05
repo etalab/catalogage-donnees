@@ -34,6 +34,7 @@ class Dataset(Entity):
     title: str
     description: str
     formats: List[DataFormat]
+    service: str
     entrypoint_email: str
     contact_emails: List[str] = Field(default_factory=list)
     first_published_at: Optional[dt.datetime] = None
@@ -48,6 +49,7 @@ class Dataset(Entity):
         title: str,
         description: str,
         formats: List[DataFormat],
+        service: str,
         entrypoint_email: str,
         contact_emails: List[str],
         first_published_at: Optional[dt.datetime],
@@ -57,6 +59,7 @@ class Dataset(Entity):
         self.title = title
         self.description = description
         self.formats = formats
+        self.service = service
         self.entrypoint_email = entrypoint_email
         self.contact_emails = contact_emails
         self.first_published_at = first_published_at

@@ -13,6 +13,7 @@ class DatasetRead(BaseModel):
     title: str
     description: str
     formats: List[DataFormat]
+    service: str
     entrypoint_email: str
     contact_emails: List[str]
     first_published_at: Optional[dt.datetime]
@@ -24,6 +25,7 @@ class DatasetCreate(BaseModel):
     title: str
     description: str
     formats: List[DataFormat]
+    service: str
     entrypoint_email: EmailStr
     contact_emails: List[EmailStr] = Field(default_factory=list)
     first_published_at: Optional[dt.datetime] = None
@@ -41,6 +43,7 @@ class DatasetUpdate(BaseModel):
     title: str
     description: str
     formats: List[DataFormat]
+    service: str
     entrypoint_email: EmailStr
     contact_emails: List[EmailStr]
     first_published_at: Optional[dt.datetime] = Field(...)
@@ -63,4 +66,10 @@ class DatasetUpdate(BaseModel):
     def check_formats_at_least_one(cls, value: List[DataFormat]) -> List[DataFormat]:
         if not value:
             raise ValueError("formats must contain at least one item")
+        return value
+
+    @validator("service")
+    def check_service_not_empty(cls, value: str) -> str:
+        if not value:
+            raise ValueError("service must not be empty")
         return value

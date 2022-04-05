@@ -12,6 +12,7 @@ class CreateDataset(Command[ID]):
     title: str
     description: str
     formats: List[DataFormat]
+    service: str
     entrypoint_email: str
     contact_emails: List[str] = Field(default_factory=list)
     first_published_at: Optional[dt.datetime] = None
@@ -24,6 +25,7 @@ class UpdateDataset(Command[None]):
     title: str
     description: str
     formats: List[DataFormat]
+    service: str
     entrypoint_email: str
     contact_emails: List[str]
     first_published_at: Optional[dt.datetime] = Field(...)

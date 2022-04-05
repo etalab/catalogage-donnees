@@ -63,6 +63,7 @@ class DatasetModel(Base):
         back_populates="datasets",
         secondary=dataset_dataformat,
     )
+    service = Column(String, nullable=False)
     entrypoint_email = Column(String, nullable=False)
     contact_emails = Column(ARRAY(String), server_default="{}", nullable=False)
     first_published_at = Column(DateTime(timezone=True))
@@ -90,6 +91,7 @@ def make_entity(instance: DatasetModel) -> Dataset:
         title=instance.title,
         description=instance.description,
         formats=[fmt.name for fmt in instance.formats],
+        service=instance.service,
         entrypoint_email=instance.entrypoint_email,
         contact_emails=instance.contact_emails,
         first_published_at=instance.first_published_at,
@@ -116,6 +118,7 @@ def update_instance(
     instance.title = entity.title
     instance.description = entity.description
     instance.formats = formats
+    instance.service = entity.service
     instance.entrypoint_email = entity.entrypoint_email
     instance.contact_emails = entity.contact_emails
     instance.first_published_at = entity.first_published_at

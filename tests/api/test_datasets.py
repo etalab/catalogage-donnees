@@ -26,6 +26,7 @@ from ..helpers import approx_datetime
                 {"loc": ["body", "title"], "type": "value_error.missing"},
                 {"loc": ["body", "description"], "type": "value_error.missing"},
                 {"loc": ["body", "formats"], "type": "value_error.missing"},
+                {"loc": ["body", "service"], "type": "value_error.missing"},
                 {"loc": ["body", "entrypoint_email"], "type": "value_error.missing"},
             ],
             id="missing-fields",
@@ -35,6 +36,7 @@ from ..helpers import approx_datetime
                 "title": "Title",
                 "description": "Description",
                 "formats": [],
+                "service": "Service",
                 "entrypoint_email": "service@example.org",
             },
             [
@@ -68,6 +70,7 @@ CREATE_DATASET_PAYLOAD = {
     "title": "Example title",
     "description": "Example description",
     "formats": ["website"],
+    "service": "Example service",
     "entrypoint_email": "example.service@example.org",
     "contact_emails": ["example.person@example.org"],
     "first_published_at": known_date.isoformat(),
@@ -79,6 +82,7 @@ CREATE_ANY_DATASET = CreateDataset(
     title="Title",
     description="Description",
     formats=["website", "api"],
+    service="Example service",
     entrypoint_email="service@example.org",
 )
 
@@ -103,6 +107,7 @@ async def test_dataset_crud(client: httpx.AsyncClient) -> None:
         "title": "Example title",
         "description": "Example description",
         "formats": ["website"],
+        "service": "Example service",
         "entrypoint_email": "example.service@example.org",
         "contact_emails": ["example.person@example.org"],
         "first_published_at": known_date.isoformat(),
@@ -151,7 +156,7 @@ async def test_dataset_get_all_uses_reverse_chronological_order(
 @pytest.mark.asyncio
 class TestDatasetOptionalFields:
     @pytest.mark.parametrize(
-        "field, value",
+        "field, default",
         [
             pytest.param("contact_emails", []),
             pytest.param("first_published_at", None),
@@ -159,30 +164,42 @@ class TestDatasetOptionalFields:
             pytest.param("last_updated_at", None),
         ],
     )
-    async def test_optional_fields_missing_is_ok(
-        self, client: httpx.AsyncClient, field: str, value: Any
+    async def test_optional_fields_missing_uses_defaults(
+        self, client: httpx.AsyncClient, field: str, default: Any
     ) -> None:
         payload = CREATE_DATASET_PAYLOAD.copy()
         payload.pop(field)
         response = await client.post("/datasets/", json=payload)
         assert response.status_code == 201
         dataset = response.json()
-        assert dataset[field] == value
+        assert dataset[field] == default
 
-    async def test_contact_emails_invalid_email(
-        self, client: httpx.AsyncClient
-    ) -> None:
+    async def test_optional_fields_invalid(self, client: httpx.AsyncClient) -> None:
         response = await client.post(
             "/datasets/",
             json={
                 **CREATE_DATASET_PAYLOAD,
                 "contact_emails": ["notanemail", "valid@example.org"],
+                "first_published_at": "not_a_datetime",
+                "update_frequency": "not_in_enum",
+                "last_updated_at": "not_a_datetime_either",
             },
         )
         assert response.status_code == 422
-        (err,) = response.json()["detail"]
-        assert err["loc"] == ["body", "contact_emails", 0]
-        assert err["type"] == "value_error.email"
+        (
+            err_contact_emails,
+            err_first_published_at,
+            err_update_frequency,
+            err_last_updated_at,
+        ) = response.json()["detail"]
+        assert err_contact_emails["loc"] == ["body", "contact_emails", 0]
+        assert err_contact_emails["type"] == "value_error.email"
+        assert err_first_published_at["loc"] == ["body", "first_published_at"]
+        assert err_first_published_at["type"] == "value_error.datetime"
+        assert err_update_frequency["loc"] == ["body", "update_frequency"]
+        assert err_update_frequency["type"] == "type_error.enum"
+        assert err_last_updated_at["loc"] == ["body", "last_updated_at"]
+        assert err_last_updated_at["type"] == "value_error.datetime"
 
 
 @pytest.mark.asyncio
@@ -205,6 +222,7 @@ class TestDatasetUpdate:
             "title",
             "description",
             "formats",
+            "service",
             "entrypoint_email",
             "contact_emails",
             "first_published_at",
@@ -227,6 +245,7 @@ class TestDatasetUpdate:
                 "title": "",
                 "description": "",
                 "formats": [],
+                "service": "",
                 "entrypoint_email": "service@example.org",
                 "contact_emails": [],
                 "first_published_at": known_date.isoformat(),
@@ -236,7 +255,7 @@ class TestDatasetUpdate:
         )
         assert response.status_code == 422
 
-        err_title, err_description, err_formats = response.json()["detail"]
+        err_title, err_description, err_formats, err_service = response.json()["detail"]
 
         assert err_title["loc"] == ["body", "title"]
         assert "empty" in err_title["msg"]
@@ -246,6 +265,9 @@ class TestDatasetUpdate:
 
         assert err_formats["loc"] == ["body", "formats"]
         assert "at least one" in err_formats["msg"].lower()
+
+        assert err_service["loc"] == ["body", "service"]
+        assert "empty" in err_service["msg"]
 
     async def test_update(self, client: httpx.AsyncClient) -> None:
         bus = resolve(MessageBus)
@@ -260,6 +282,7 @@ class TestDatasetUpdate:
                 "title": "Other title",
                 "description": "Other description",
                 "formats": ["database"],
+                "service": "Other service",
                 "entrypoint_email": "other.service@example.org",
                 "contact_emails": ["other.person@example.org"],
                 "first_published_at": other_known_date.isoformat(),
@@ -277,6 +300,7 @@ class TestDatasetUpdate:
             "title": "Other title",
             "description": "Other description",
             "formats": ["database"],
+            "service": "Other service",
             "entrypoint_email": "other.service@example.org",
             "contact_emails": ["other.person@example.org"],
             "first_published_at": other_known_date.isoformat(),
@@ -290,6 +314,7 @@ class TestDatasetUpdate:
         assert dataset.title == "Other title"
         assert dataset.description == "Other description"
         assert dataset.formats == [DataFormat.DATABASE]
+        assert dataset.service == "Other service"
         assert dataset.entrypoint_email == "other.service@example.org"
         assert dataset.contact_emails == ["other.person@example.org"]
         assert dataset.first_published_at == other_known_date
