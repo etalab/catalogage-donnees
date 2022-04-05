@@ -3,7 +3,7 @@
   import { createEventDispatcher } from "svelte";
   import { createForm } from "svelte-forms-lib";
   import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
-  import { DATA_FORMAT_LABELS } from "src/constants";
+  import { DATA_FORMAT_LABELS, UPDATE_FREQUENCY } from "src/constants";
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
 
   export let submitLabel = "Publier ce jeu de données";
@@ -18,6 +18,7 @@
     contactEmails: [],
     service: "",
     firstPublishedAt: "",
+    updateFrequency: "",
   };
 
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
@@ -30,6 +31,7 @@
     contactEmails: string[];
     service: string;
     firstPublishedAt: string;
+    updateFrequency: string;
   };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
@@ -48,6 +50,7 @@
       initial.contactEmails.length > 0 ? initial.contactEmails : [""],
     service: initial.service,
     firstPublishedAt: initial.firstPublishedAt,
+    updateFrequency: initial.updateFrequency,
   };
 
   // Handle this value manually.
@@ -69,6 +72,7 @@
         ),
         service: yup.string().required(""),
         firstPublishedAt: yup.string().required(""),
+        updateFrequency: yup.string().required(""),
       }),
       onSubmit: (values) => {
         const formats = values.dataFormats
@@ -331,35 +335,6 @@
       {/each}
     </ul>
 
-    <h2 class="fr-mt-6w">Mise à jour</h2>
-
-    <div
-      class="fr-input-group fr-my-4w {$errors.service
-        ? 'fr-input-group--error'
-        : ''}"
-    >
-      <label class="fr-label" for="firstPublishedAt">
-        Date de la dernière mise à jour
-        <RequiredMarker />
-      </label>
-
-      <div class="fr-input-wrap fr-fi-calendar-line">
-        <input
-          class="fr-input {$errors.firstPublishedAt ? 'fr-input--error' : ''}"
-          aria-describedby={$errors.firstPublishedAt
-            ? "entrypoint-service-desc-error"
-            : null}
-          type="date"
-          id="firstPublishedAt"
-          name="firstPublishedAt"
-          required
-          on:change={handleChange}
-          on:blur={handleChange}
-          bind:value={$form.firstPublishedAt}
-        />
-      </div>
-    </div>
-
     <button
       type="button"
       class="fr-btn fr-btn--secondary fr-fi-edit-fill fr-btn--icon-left contact-entries-add"
@@ -368,6 +343,51 @@
       Ajouter un contact
     </button>
   </fieldset>
+
+  <h2 class="fr-mt-6w">Mise à jour</h2>
+
+  <div
+    class="fr-input-group fr-my-4w {$errors.service
+      ? 'fr-input-group--error'
+      : ''}"
+  >
+    <label class="fr-label" for="firstPublishedAt">
+      Date de la dernière mise à jour
+      <RequiredMarker />
+    </label>
+
+    <div class="fr-input-wrap fr-fi-calendar-line">
+      <input
+        class="fr-input {$errors.firstPublishedAt ? 'fr-input--error' : ''}"
+        aria-describedby={$errors.firstPublishedAt
+          ? "entrypoint-service-desc-error"
+          : null}
+        type="date"
+        id="firstPublishedAt"
+        name="firstPublishedAt"
+        required
+        on:change={handleChange}
+        on:blur={handleChange}
+        bind:value={$form.firstPublishedAt}
+      />
+    </div>
+  </div>
+
+  <div class="fr-select-group">
+    <label class="fr-label" for="select"> Label pour liste déroulante </label>
+    <select
+      class="fr-select"
+      bind:value={$form.updateFrequency}
+      id="updateFrequency"
+      name="updateFrequency"
+      on:change={handleChange}
+      on:blur={handleChange}
+    >
+      {#each Object.keys(UPDATE_FREQUENCY) as frequency}
+        <option value={frequency}>{UPDATE_FREQUENCY[frequency]}</option>
+      {/each}
+    </select>
+  </div>
 
   <div class="fr-input-group fr-mt-9w">
     <button type="submit" class="fr-btn">
