@@ -29,6 +29,7 @@ export interface DatasetFormData {
   formats: DataFormat[];
   entrypointEmail: string;
   contactEmails: string[];
+  service: string
 }
 
 export type DatasetCreateData = DatasetFormData;
