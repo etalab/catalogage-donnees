@@ -16,6 +16,7 @@
     formats: [],
     entrypointEmail: "",
     contactEmails: [],
+    service: "",
   };
 
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
@@ -26,6 +27,7 @@
     dataFormats: boolean[];
     entrypointEmail: string;
     contactEmails: string[];
+    service: string;
   };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
@@ -42,6 +44,7 @@
     contactEmails:
       // Ensure at least one row is visible, so the field is ready to fill.
       initial.contactEmails.length > 0 ? initial.contactEmails : [""],
+    service: initial.service,
   };
 
   // Handle this value manually.
@@ -61,6 +64,7 @@
         contactEmails: yup.array(
           yup.string().email("Ce champ doit contenir une adresse e-mail valide")
         ),
+        service: yup.string().required(""),
       }),
       onSubmit: (values) => {
         const formats = values.dataFormats
@@ -215,6 +219,29 @@
   </fieldset>
 
   <h2 class="fr-mt-6w">Contact</h2>
+  <div
+    class="fr-input-group fr-my-4w {$errors.service
+      ? 'fr-input-group--error'
+      : ''}"
+  >
+    <label class="fr-label" for="service">
+      Service producteur de la donnée
+      <RequiredMarker />
+    </label>
+    <input
+      class="fr-input {$errors.service ? 'fr-input--error' : ''}"
+      aria-describedby={$errors.service
+        ? "entrypoint-service-desc-error"
+        : null}
+      type="text"
+      id="service"
+      name="service"
+      required
+      on:change={handleChange}
+      on:blur={handleChange}
+      bind:value={$form.service}
+    />
+  </div>
 
   <div
     class="fr-input-group fr-my-4w {$errors.entrypointEmail
