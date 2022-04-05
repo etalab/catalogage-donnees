@@ -21,6 +21,7 @@ export interface Dataset {
   entrypointEmail: string;
   contactEmails: string[];
   headlines?: DatasetHeadlines;
+  firstPublishedAt: string
 }
 
 export interface DatasetFormData {
@@ -29,7 +30,8 @@ export interface DatasetFormData {
   formats: DataFormat[];
   entrypointEmail: string;
   contactEmails: string[];
-  service: string
+  service: string;
+  firstPublishedAt: string
 }
 
 export type DatasetCreateData = DatasetFormData;

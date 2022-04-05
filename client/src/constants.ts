@@ -1,4 +1,4 @@
-import type { DataFormat } from "./definitions/datasets";
+import type { DataFormat, Frequency } from "./definitions/datasets";
 
 export const PUBLIC_PAGES = ["/login"];
 
@@ -19,3 +19,13 @@ export const DATA_FORMAT_SHORT_NAMES: { [K in DataFormat]: string } = {
   website: "Web",
   other: "Autre",
 };
+
+export const UPDATE_FREQUENCY: { [K in Frequency]: string } = {
+  monthly: "Mensuelle (ou plusieures fois pas mois)",
+  daily: "Quotidienne (ou plusieures fois par jour)",
+  weekly: "Hebdomadaire (ou plusieures fois par semaine)",
+  realtime: "Permanente (temps réel)",
+  never: "Aucune (contribution ponctuelle)",
+  yearly: "Annuel (ou plusieures fois par an)"
+};
+

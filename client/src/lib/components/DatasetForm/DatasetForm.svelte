@@ -17,6 +17,7 @@
     entrypointEmail: "",
     contactEmails: [],
     service: "",
+    firstPublishedAt: "",
   };
 
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
@@ -28,6 +29,7 @@
     entrypointEmail: string;
     contactEmails: string[];
     service: string;
+    firstPublishedAt: string;
   };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
@@ -45,6 +47,7 @@
       // Ensure at least one row is visible, so the field is ready to fill.
       initial.contactEmails.length > 0 ? initial.contactEmails : [""],
     service: initial.service,
+    firstPublishedAt: initial.firstPublishedAt,
   };
 
   // Handle this value manually.
@@ -65,6 +68,7 @@
           yup.string().email("Ce champ doit contenir une adresse e-mail valide")
         ),
         service: yup.string().required(""),
+        firstPublishedAt: yup.string().required(""),
       }),
       onSubmit: (values) => {
         const formats = values.dataFormats
@@ -326,6 +330,35 @@
         </li>
       {/each}
     </ul>
+
+    <h2 class="fr-mt-6w">Mise à jour</h2>
+
+    <div
+      class="fr-input-group fr-my-4w {$errors.service
+        ? 'fr-input-group--error'
+        : ''}"
+    >
+      <label class="fr-label" for="firstPublishedAt">
+        Date de la dernière mise à jour
+        <RequiredMarker />
+      </label>
+
+      <div class="fr-input-wrap fr-fi-calendar-line">
+        <input
+          class="fr-input {$errors.firstPublishedAt ? 'fr-input--error' : ''}"
+          aria-describedby={$errors.firstPublishedAt
+            ? "entrypoint-service-desc-error"
+            : null}
+          type="date"
+          id="firstPublishedAt"
+          name="firstPublishedAt"
+          required
+          on:change={handleChange}
+          on:blur={handleChange}
+          bind:value={$form.firstPublishedAt}
+        />
+      </div>
+    </div>
 
     <button
       type="button"
