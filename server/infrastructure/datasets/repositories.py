@@ -22,7 +22,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, relationship, selectinload
 
 from server.domain.common.types import ID
-from server.domain.datasets.entities import DataFormat, Dataset
+from server.domain.datasets.entities import DataFormat, Dataset, UpdateFrequency
 from server.domain.datasets.repositories import DatasetHeadlines, DatasetRepository
 
 from ..database import Base, Database
@@ -65,6 +65,9 @@ class DatasetModel(Base):
     )
     entrypoint_email = Column(String, nullable=False)
     contact_emails = Column(ARRAY(String), server_default="{}", nullable=False)
+    first_published_at = Column(DateTime(timezone=True))
+    update_frequency = Column(Enum(UpdateFrequency, enum="update_frequency_enum"))
+    last_updated_at = Column(DateTime(timezone=True))
 
     search_tsv: Mapped[str] = Column(
         TSVECTOR,
@@ -89,18 +92,21 @@ def make_entity(instance: DatasetModel) -> Dataset:
         formats=[fmt.name for fmt in instance.formats],
         entrypoint_email=instance.entrypoint_email,
         contact_emails=instance.contact_emails,
+        first_published_at=instance.first_published_at,
+        update_frequency=instance.update_frequency,
+        last_updated_at=instance.last_updated_at,
     )
 
 
 def make_instance(entity: Dataset, formats: List[DataFormatModel]) -> DatasetModel:
     return DatasetModel(
-        id=entity.id,
-        # created_at: managed by DB for better time consistency
-        title=entity.title,
-        description=entity.description,
+        **entity.dict(
+            exclude={
+                "created_at",  # Managed by DB for better time consistency
+                "formats",
+            }
+        ),
         formats=formats,
-        entrypoint_email=entity.entrypoint_email,
-        contact_emails=entity.contact_emails,
     )
 
 
@@ -112,6 +118,9 @@ def update_instance(
     instance.formats = formats
     instance.entrypoint_email = entity.entrypoint_email
     instance.contact_emails = entity.contact_emails
+    instance.first_published_at = entity.first_published_at
+    instance.update_frequency = entity.update_frequency
+    instance.last_updated_at = entity.last_updated_at
 
 
 class SqlDatasetRepository(DatasetRepository):
