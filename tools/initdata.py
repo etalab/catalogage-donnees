@@ -57,9 +57,8 @@ async def handle_dataset(item: dict, reset: bool = False) -> None:
             print(f"{warn('reset')}: {command!r}")
             return
 
-        result = "unchanged" if reset else "ok"
         dataset_repr = f"Dataset(id={id_!r}, title={item['params']['title']!r}, ...)"
-        print(f"{info(result)}: {dataset_repr}")
+        print(f"{info('ok')}: {dataset_repr}")
         return
 
     command = CreateDataset(**item["params"])
