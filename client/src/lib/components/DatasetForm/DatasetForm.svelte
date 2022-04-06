@@ -17,7 +17,7 @@
     entrypointEmail: "",
     contactEmails: [],
     service: "",
-    firstPublishedAt: "",
+    lastPublishedAt: "",
     updateFrequency: "",
   };
 
@@ -30,7 +30,7 @@
     entrypointEmail: string;
     contactEmails: string[];
     service: string;
-    firstPublishedAt: string;
+    lastPublishedAt: string;
     updateFrequency: string;
   };
 
@@ -49,7 +49,7 @@
       // Ensure at least one row is visible, so the field is ready to fill.
       initial.contactEmails.length > 0 ? initial.contactEmails : [""],
     service: initial.service,
-    firstPublishedAt: initial.firstPublishedAt,
+    lastPublishedAt: initial.lastPublishedAt,
     updateFrequency: initial.updateFrequency,
   };
 
@@ -71,7 +71,7 @@
           yup.string().email("Ce champ doit contenir une adresse e-mail valide")
         ),
         service: yup.string().required(""),
-        firstPublishedAt: yup.string().required(""),
+        lastPublishedAt: yup.string().required(""),
         updateFrequency: yup.string().required(""),
       }),
       onSubmit: (values) => {
@@ -346,29 +346,36 @@
 
   <h2 class="fr-mt-6w">Mise à jour</h2>
 
+  <p class="fr-text--md">
+    A moins qu’il ne soit une production ponctuelle, un jeu de donnée n’est
+    utile que lorsqu’il est à jour ! Avec ces quelques informations nous
+    pourrons indiquer à vos réutilisateurs lorsque les données seront mises à
+    jour.
+  </p>
+
   <div
     class="fr-input-group fr-my-4w {$errors.service
       ? 'fr-input-group--error'
       : ''}"
   >
-    <label class="fr-label" for="firstPublishedAt">
+    <label class="fr-label" for="lastPublishedAt">
       Date de la dernière mise à jour
       <RequiredMarker />
     </label>
 
     <div class="fr-input-wrap fr-fi-calendar-line">
       <input
-        class="fr-input {$errors.firstPublishedAt ? 'fr-input--error' : ''}"
-        aria-describedby={$errors.firstPublishedAt
+        class="fr-input {$errors.lastPublishedAt ? 'fr-input--error' : ''}"
+        aria-describedby={$errors.lastPublishedAt
           ? "entrypoint-service-desc-error"
           : null}
         type="date"
-        id="firstPublishedAt"
-        name="firstPublishedAt"
+        id="lastPublishedAt"
+        name="lastPublishedAt"
         required
         on:change={handleChange}
         on:blur={handleChange}
-        bind:value={$form.firstPublishedAt}
+        bind:value={$form.lastPublishedAt}
       />
     </div>
   </div>
