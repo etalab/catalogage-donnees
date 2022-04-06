@@ -1,5 +1,8 @@
 import { test as base, expect, APIRequestContext } from "@playwright/test";
+import { DATA_FORMAT_SHORT_NAMES, UPDATE_FREQUENCY } from "src/constants";
 import type { Dataset } from "src/definitions/datasets";
+import { getFakeDataSet } from "src/fixtures/dataset";
+import { toPayload } from "src/lib/transformers/dataset";
 
 /**
  * These fixtures allow simplifying setup/teardown logic in tests,
@@ -22,17 +25,15 @@ export const test = base.extend<AppFixtures>({
   },
 
   dataset: async ({ apiContext }, use) => {
-    const data = {
+    const dataSet = getFakeDataSet({
       title: "Sample title",
       description: "Sample description",
+      updateFrequency: "never",
       formats: ["api"],
-      entrypoint_email: "service@example.org",
-      // Expected by API, update when frontend app is ready
-      service: "DUMMY",
-      update_frequency: null,
-      last_updated_at: null,
-    };
-    let response = await apiContext.post("/datasets/", { data });
+    });
+    let response = await apiContext.post("/datasets/", {
+      data: toPayload(dataSet),
+    });
     expect(response.ok()).toBeTruthy();
     const dataset = await response.json();
 
