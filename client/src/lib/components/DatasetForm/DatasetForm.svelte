@@ -16,7 +16,7 @@
     description: "",
     formats: [],
     entrypointEmail: "",
-    contactEmail: $user.email,
+    contactEmail: $user?.email || "",
     service: "",
     lastPublishedAt: "",
     updateFrequency: "",
@@ -289,7 +289,7 @@
     {/if}
   </div>
 
-  <label class="fr-label" hidden for="contactEmail">
+  <label class="fr-label" for="contactEmail">
     E-mail de contact
     <RequiredMarker />
     <span class="fr-hint-text" id="contactEmail-desc-hint">
@@ -303,7 +303,7 @@
     aria-describedby={$errors.contactEmail
       ? "entrypoint-email-desc-error"
       : null}
-    type="text"
+    type="email"
     id="contactEmail"
     name="contactEmail"
     required

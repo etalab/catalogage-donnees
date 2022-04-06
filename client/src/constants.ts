@@ -26,6 +26,5 @@ export const UPDATE_FREQUENCY: { [K in Frequency]: string } = {
   weekly: "Hebdomadaire (ou plusieures fois par semaine)",
   realtime: "Permanente (temps réel)",
   never: "Aucune (contribution ponctuelle)",
-  yearly: "Annuel (ou plusieures fois par an)"
+  yearly: "Annuel (ou plusieures fois par an)",
 };
-

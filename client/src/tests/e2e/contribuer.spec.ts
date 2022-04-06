@@ -11,7 +11,7 @@ test.describe("Basic form submission", () => {
     const entrypointEmailText = "un.service@exemple.gouv.fr";
     const contactEmail1Text = "contact1@example.org";
     const lastPublishedAtDate = "2000-05-05";
-    const serviceText = "Ministère de l'écologie"
+    const serviceText = "Ministère de l'écologie";
 
     await page.goto("/contribuer");
 
@@ -41,7 +41,6 @@ test.describe("Basic form submission", () => {
     await contactEmail1.fill(contactEmail1Text);
     expect(await contactEmail1.inputValue()).toBe(contactEmail1Text);
 
-
     // "Mise à jour" section
 
     const lastPublishedAt = page.locator("form [name=lastPublishedAt]");
@@ -49,7 +48,7 @@ test.describe("Basic form submission", () => {
     expect(await lastPublishedAt.inputValue()).toBe(lastPublishedAtDate);
 
     const updateFrequency = page.locator("#updateFrequency");
-    await updateFrequency.selectOption({ label: UPDATE_FREQUENCY.daily })
+    await updateFrequency.selectOption({ label: UPDATE_FREQUENCY.daily });
 
     const button = page.locator("button[type='submit']");
     const [request, response] = await Promise.all([
@@ -66,8 +65,8 @@ test.describe("Basic form submission", () => {
     expect(json.entrypoint_email).toBe(entrypointEmailText);
     expect(json.contact_emails).toEqual([contactEmail1Text]);
     expect(json).toHaveProperty("id");
-    expect(json.update_frequency).toBe("daily")
-    expect(json.last_updated_at).toEqual("2000-05-05T00:00:00+00:00")
+    expect(json.update_frequency).toBe("daily");
+    expect(json.last_updated_at).toEqual("2000-05-05T00:00:00+00:00");
 
     await page.locator("text='Proposer une modification'").waitFor();
   });
