@@ -19,6 +19,7 @@
     service: "",
     lastPublishedAt: "",
     updateFrequency: "",
+    firstPublishedAt: "",
   };
 
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
