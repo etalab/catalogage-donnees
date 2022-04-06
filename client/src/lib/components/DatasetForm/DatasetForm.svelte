@@ -62,19 +62,20 @@
     createForm({
       initialValues,
       validationSchema: yup.object().shape({
-        title: yup.string().required(),
-        description: yup.string().required(""),
+        title: yup.string().required("Ce champs est requis"),
+        description: yup.string().required("Ce champs est requis"),
         dataFormats: yup.array(yup.boolean()).length(dataFormatsValue.length),
         entrypointEmail: yup
           .string()
           .email("Ce champ doit contenir une adresse e-mail valide")
-          .required(),
-        contactEmails: yup.array(
-          yup.string().email("Ce champ doit contenir une adresse e-mail valide")
-        ),
-        service: yup.string().required(""),
-        lastPublishedAt: yup.string().required(""),
-        updateFrequency: yup.string().required(""),
+          .required("Ce champs est requis"),
+        contactEmail: yup
+          .string()
+          .required("Ce champs est requis")
+          .email("Ce champ doit contenir une adresse e-mail valide"),
+        service: yup.string().required("Ce champs est requis"),
+        lastPublishedAt: yup.date().required("Ce champs est requis"),
+        updateFrequency: yup.string().required("Ce champs est requis"),
       }),
       onSubmit: (values) => {
         const formats = values.dataFormats
@@ -246,6 +247,12 @@
       on:blur={handleChange}
       bind:value={$form.service}
     />
+
+    {#if $errors.service}
+      <p id="title-desc-error" class="fr-error-text">
+        {$errors.service}
+      </p>
+    {/if}
   </div>
 
   <div
@@ -253,10 +260,10 @@
       ? 'fr-input-group--error'
       : ''}"
   >
-    <label class="fr-label" for="entrypoint-email">
+    <label class="fr-label" for="entrypointEmail">
       Adresse e-mail fonctionnelle
       <RequiredMarker />
-      <span class="fr-hint-text" id="entrypoint-email-desc-hint">
+      <span class="fr-hint-text" id="entrypointEmail-desc-hint">
         Il est fortement conseillé d'avoir une adresse e-mail accessible à
         plusieurs personnes afin de rendre la prise de contact possible quelle
         que soit les personnes en responsabilité.
@@ -265,11 +272,11 @@
     <input
       class="fr-input {$errors.entrypointEmail ? 'fr-input--error' : ''}"
       aria-describedby={$errors.entrypointEmail
-        ? "entrypoint-email-desc-error"
+        ? "entrypointEmail-desc-error"
         : null}
       type="email"
-      id="entrypoint-email"
-      name="entrypoint-email"
+      id="entrypointEmail"
+      name="entrypointEmail"
       required
       on:change={handleChange}
       on:blur={handleChange}
@@ -343,6 +350,12 @@
         on:blur={handleChange}
         bind:value={$form.lastPublishedAt}
       />
+
+      {#if $errors.lastPublishedAt}
+        <p id="title-desc-error" class="fr-error-text">
+          {$errors.lastPublishedAt}
+        </p>
+      {/if}
     </div>
   </div>
 
@@ -364,6 +377,12 @@
         <option value={frequency}>{UPDATE_FREQUENCY[frequency]}</option>
       {/each}
     </select>
+
+    {#if $errors.updateFrequency}
+      <p id="title-desc-error" class="fr-error-text">
+        {$errors.updateFrequency}
+      </p>
+    {/if}
   </div>
 
   <div class="fr-input-group fr-mt-9w">
