@@ -1,3 +1,4 @@
+import format from "date-fns/format";
 import type { Dataset } from "src/definitions/datasets";
 
 export const toPayload = (data: Partial<Record<keyof Dataset, any>>) => {
@@ -33,6 +34,6 @@ export const toDataset = (item: any): Dataset => {
     entrypointEmail: entrypoint_email,
     contactEmail: contact_emails[0],
     updateFrequency: update_frequency,
-    lastUpdatedAt: last_updated_at,
+    lastPublishedAt: format(new Date(last_updated_at), "yyyy-MM-dd"),
   };
 };
