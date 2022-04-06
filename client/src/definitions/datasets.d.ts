@@ -20,7 +20,7 @@ export type DatasetFormData = {
   description: string;
   formats: DataFormat[];
   entrypointEmail: string;
-  contactEmails: string[];
+  contactEmail: string;
   service: string;
   firstPublishedAt: string
   updateFrequency: string;

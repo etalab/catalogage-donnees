@@ -10,7 +10,6 @@ test.describe("Basic form submission", () => {
     const descriptionText = "Une longue\ndescription de jeu\nde données";
     const entrypointEmailText = "un.service@exemple.gouv.fr";
     const contactEmail1Text = "contact1@example.org";
-    const contactEmail2Text = "contact2@example.org";
     const lastPublishedAtDate = "2000-05-05";
     const serviceText = "Ministère de l'écologie"
 
@@ -38,14 +37,9 @@ test.describe("Basic form submission", () => {
     await entrypointEmail.fill(entrypointEmailText);
     expect(await entrypointEmail.inputValue()).toBe(entrypointEmailText);
 
-    const contactEmail1 = page.locator("[id='contactEmails-0']");
+    const contactEmail1 = page.locator("[id='contactEmail']");
     await contactEmail1.fill(contactEmail1Text);
     expect(await contactEmail1.inputValue()).toBe(contactEmail1Text);
-
-    await page.locator("text='Ajouter un contact'").click();
-    const contactEmail2 = page.locator("[id='contactEmails-1']");
-    await contactEmail2.fill(contactEmail2Text);
-    expect(await contactEmail2.inputValue()).toBe(contactEmail2Text);
 
 
     // "Mise à jour" section
@@ -70,7 +64,7 @@ test.describe("Basic form submission", () => {
     expect(json.description).toBe(descriptionText);
     expect(json.formats).toStrictEqual(["api"]);
     expect(json.entrypoint_email).toBe(entrypointEmailText);
-    expect(json.contact_emails).toEqual([contactEmail1Text, contactEmail2Text]);
+    expect(json.contact_emails).toEqual([contactEmail1Text]);
     expect(json).toHaveProperty("id");
     expect(json.update_frequency).toBe("daily")
     expect(json.last_updated_at).toEqual("2000-05-05T00:00:00+00:00")
