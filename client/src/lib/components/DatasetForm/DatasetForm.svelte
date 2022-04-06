@@ -362,7 +362,7 @@
   </p>
 
   <div
-    class="fr-input-group fr-my-4w {$errors.service
+    class="fr-input-group fr-my-4w {$errors.lastPublishedAt
       ? 'fr-input-group--error'
       : ''}"
   >

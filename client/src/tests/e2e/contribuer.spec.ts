@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { UPDATE_FREQUENCY } from "src/constants";
 import { STATE_AUTHENTICATED } from "./constants";
 
 test.describe("Basic form submission", () => {
@@ -10,8 +11,12 @@ test.describe("Basic form submission", () => {
     const entrypointEmailText = "un.service@exemple.gouv.fr";
     const contactEmail1Text = "contact1@example.org";
     const contactEmail2Text = "contact2@example.org";
+    const lastPublishedAtDate = "2000-05-05";
+    const serviceText = "Ministère de l'écologie"
 
     await page.goto("/contribuer");
+
+    // "Information Générales" section
 
     const title = page.locator("form [name=title]");
     await title.fill(titleText);
@@ -25,6 +30,10 @@ test.describe("Basic form submission", () => {
     await apiFormat.check();
     expect(await page.isChecked("input[value=api]")).toBeTruthy();
 
+    const service = page.locator("form [name=service]");
+    await service.fill(serviceText);
+    expect(await service.inputValue()).toBe(serviceText);
+
     const entrypointEmail = page.locator("label[for=entrypoint-email]");
     await entrypointEmail.fill(entrypointEmailText);
     expect(await entrypointEmail.inputValue()).toBe(entrypointEmailText);
@@ -37,6 +46,16 @@ test.describe("Basic form submission", () => {
     const contactEmail2 = page.locator("[id='contactEmails-1']");
     await contactEmail2.fill(contactEmail2Text);
     expect(await contactEmail2.inputValue()).toBe(contactEmail2Text);
+
+
+    // "Mise à jour" section
+
+    const lastPublishedAt = page.locator("form [name=lastPublishedAt]");
+    await lastPublishedAt.fill("2000-05-05");
+    expect(await lastPublishedAt.inputValue()).toBe(lastPublishedAtDate);
+
+    const updateFrequency = page.locator("#updateFrequency");
+    await updateFrequency.selectOption({ label: UPDATE_FREQUENCY.daily })
 
     const button = page.locator("button[type='submit']");
     const [request, response] = await Promise.all([
@@ -53,6 +72,8 @@ test.describe("Basic form submission", () => {
     expect(json.entrypoint_email).toBe(entrypointEmailText);
     expect(json.contact_emails).toEqual([contactEmail1Text, contactEmail2Text]);
     expect(json).toHaveProperty("id");
+    expect(json.update_frequency).toBe("daily")
+    expect(json.last_updated_at).toEqual("2000-05-05T00:00:00+00:00")
 
     await page.locator("text='Proposer une modification'").waitFor();
   });
