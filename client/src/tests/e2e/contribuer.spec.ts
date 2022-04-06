@@ -33,7 +33,7 @@ test.describe("Basic form submission", () => {
     await service.fill(serviceText);
     expect(await service.inputValue()).toBe(serviceText);
 
-    const entrypointEmail = page.locator("label[for=entrypoint-email]");
+    const entrypointEmail = page.locator("label[for=entrypointEmail]");
     await entrypointEmail.fill(entrypointEmailText);
     expect(await entrypointEmail.inputValue()).toBe(entrypointEmailText);
 

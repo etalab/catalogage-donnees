@@ -5,7 +5,7 @@ export const getFakeDataSet = (dataSet: Partial<Dataset>): Dataset => {
   return {
     updateFrequency: dataSet.updateFrequency || UPDATE_FREQUENCY.daily,
     title: dataSet.title || "Mon jeu de donnée",
-    contactEmails: dataSet.contactEmails || [],
+    contactEmail: dataSet.contactEmail || "contact@beta.gouv.fr",
     entrypointEmail: dataSet.entrypointEmail || "jane.doe@beta.gouv.fr",
     id: dataSet.id || "xxx-xxx-xxx",
     formats: dataSet.formats || [],
