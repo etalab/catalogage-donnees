@@ -389,15 +389,19 @@
   </div>
 
   <div class="fr-select-group">
-    <label class="fr-label" for="select"> Label pour liste déroulante </label>
+    <label class="fr-label" for="updateFrequency"
+      >Fréquence de mise à jour <RequiredMarker /></label
+    >
     <select
       class="fr-select"
+      required
       bind:value={$form.updateFrequency}
       id="updateFrequency"
       name="updateFrequency"
       on:change={handleChange}
       on:blur={handleChange}
     >
+      <option>Selecectionner une option</option>
       {#each Object.keys(UPDATE_FREQUENCY) as frequency}
         <option value={frequency}>{UPDATE_FREQUENCY[frequency]}</option>
       {/each}
