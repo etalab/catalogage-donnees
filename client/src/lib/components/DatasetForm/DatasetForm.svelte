@@ -118,6 +118,13 @@
 <form on:submit={handleSubmit} data-bitwarden-watching="1">
   <h2 class="fr-mt-6w">Informations générales</h2>
 
+  <p class="fr-text--md">
+    Dans un soucis de traçabilité et de facilité de mise à jour, il est
+    fondamental de pouvoir prendre contact avec l’organisation ou les personnes
+    productrices d’une donnée. Lorsqu’une demande de contact sera effectuée,
+    l’ensemble des adresses e-mail saisies recevront la notification.
+  </p>
+
   <div
     class="fr-input-group fr-my-4w {$errors.title
       ? 'fr-input-group--error'
