@@ -1,11 +1,13 @@
 import datetime as dt
+import itertools
 
+import httpx
 from _pytest.python_api import ApproxBase
 
 from server.application.auth.commands import CreateUser
 from server.application.auth.queries import GetUserByEmail
 from server.config.di import resolve
-from server.domain.auth.entities import User
+from server.domain.auth.entities import User, UserRole
 from server.seedwork.application.messages import MessageBus
 
 
@@ -26,15 +28,27 @@ class TestUser(_DisablePytestCollectionMixin, User):
 
     password: str
 
+    def auth(self, request: httpx.Request) -> httpx.Request:
+        """An auth function for use with HTTPX.
 
-async def temp_user() -> TestUser:
+        Usage:
+            response = client.post(..., auth=test_user.auth)
+        """
+        request.headers["Authorization"] = f"Bearer {self.api_token}"
+        return request
+
+
+_temp_user_ids = itertools.count(0)
+
+
+async def create_test_user(role: UserRole) -> TestUser:
     bus = resolve(MessageBus)
 
-    email = "temp@example.org"
+    email = f"temp{next(_temp_user_ids)}@example.org"
     password = "s3kr3t"
 
     command = CreateUser(email=email, password=password)
-    await bus.execute(command)
+    await bus.execute(command, role=role)
 
     query = GetUserByEmail(email=email)
     user = await bus.execute(query)

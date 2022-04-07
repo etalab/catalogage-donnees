@@ -52,9 +52,12 @@ from ..helpers import TestUser
     ],
 )
 async def test_create_user_invalid(
-    client: httpx.AsyncClient, payload: dict, expected_errors_attrs: List[dict]
+    client: httpx.AsyncClient,
+    admin_user: TestUser,
+    payload: dict,
+    expected_errors_attrs: List[dict],
 ) -> None:
-    response = await client.post("/auth/users/", json=payload)
+    response = await client.post("/auth/users/", json=payload, auth=admin_user.auth)
     assert response.status_code == 422
 
     data = response.json()
@@ -66,9 +69,18 @@ async def test_create_user_invalid(
 
 
 @pytest.mark.asyncio
-async def test_create_user(client: httpx.AsyncClient) -> None:
+async def test_create_user(
+    client: httpx.AsyncClient, temp_user: TestUser, admin_user: TestUser
+) -> None:
     payload = {"email": "john@doe.com", "password": "s3kr3t"}
+
+    # Permissions
     response = await client.post("/auth/users/", json=payload)
+    assert response.status_code == 401
+    response = await client.post("/auth/users/", json=payload, auth=temp_user.auth)
+    assert response.status_code == 403
+
+    response = await client.post("/auth/users/", json=payload, auth=admin_user.auth)
     assert response.status_code == 201
     user = response.json()
     pk = user.pop("id")
@@ -78,10 +90,10 @@ async def test_create_user(client: httpx.AsyncClient) -> None:
 
 @pytest.mark.asyncio
 async def test_create_user_already_exists(
-    client: httpx.AsyncClient, temp_user: TestUser
+    client: httpx.AsyncClient, temp_user: TestUser, admin_user: TestUser
 ) -> None:
     payload = {"email": temp_user.email, "password": "somethingelse"}
-    response = await client.post("/auth/users/", json=payload)
+    response = await client.post("/auth/users/", json=payload, auth=admin_user.auth)
     assert response.status_code == 400
 
 
@@ -121,8 +133,7 @@ async def test_login_failed(
 
 @pytest.mark.asyncio
 async def test_check(client: httpx.AsyncClient, temp_user: TestUser) -> None:
-    headers = {"Authorization": f"Bearer {temp_user.api_token}"}
-    response = await client.get("/auth/check/", headers=headers)
+    response = await client.get("/auth/check/", auth=temp_user.auth)
     assert response.status_code == 200
 
 
@@ -152,10 +163,18 @@ async def test_check_failed(
 
 
 @pytest.mark.asyncio
-async def test_delete_user(client: httpx.AsyncClient, temp_user: TestUser) -> None:
+async def test_delete_user(
+    client: httpx.AsyncClient, temp_user: TestUser, admin_user: TestUser
+) -> None:
     bus = resolve(MessageBus)
 
+    # Permissions
     response = await client.delete(f"/auth/users/{temp_user.id}/")
+    assert response.status_code == 401
+    response = await client.delete(f"/auth/users/{temp_user.id}/", auth=temp_user.auth)
+    assert response.status_code == 403
+
+    response = await client.delete(f"/auth/users/{temp_user.id}/", auth=admin_user.auth)
     assert response.status_code == 204
 
     query = GetUserByEmail(email=temp_user.email)
@@ -164,11 +183,13 @@ async def test_delete_user(client: httpx.AsyncClient, temp_user: TestUser) -> No
 
 
 @pytest.mark.asyncio
-async def test_delete_user_idempotent(client: httpx.AsyncClient) -> None:
+async def test_delete_user_idempotent(
+    client: httpx.AsyncClient, admin_user: TestUser
+) -> None:
     # Represents a non-existing user, or a user previously deleted.
     # These should be handled the same way as existing users by
     # this endpoint (idempotency).
     user_id = id_factory()
 
-    response = await client.delete(f"/auth/users/{user_id}/")
+    response = await client.delete(f"/auth/users/{user_id}/", auth=admin_user.auth)
     assert response.status_code == 204

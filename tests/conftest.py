@@ -11,9 +11,10 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from server.config import Settings
 from server.config.di import bootstrap, resolve
+from server.domain.auth.entities import UserRole
 from server.infrastructure.database import Database
 
-from .helpers import TestUser, temp_user
+from .helpers import TestUser, create_test_user
 
 os.environ["APP_TESTING"] = "True"
 
@@ -69,4 +70,9 @@ async def client() -> AsyncIterator[httpx.AsyncClient]:
 
 @pytest.fixture(name="temp_user")
 async def fixture_temp_user() -> TestUser:
-    return await temp_user()
+    return await create_test_user(UserRole.USER)
+
+
+@pytest.fixture
+async def admin_user() -> TestUser:
+    return await create_test_user(UserRole.ADMIN)

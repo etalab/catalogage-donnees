@@ -1,5 +1,5 @@
 from server.config.di import resolve
-from server.domain.auth.entities import User
+from server.domain.auth.entities import User, UserRole
 from server.domain.auth.exceptions import (
     EmailAlreadyExists,
     LoginFailed,
@@ -13,7 +13,9 @@ from .passwords import PasswordEncoder, generate_api_token
 from .queries import GetUserByAPIToken, GetUserByEmail, Login
 
 
-async def create_user(command: CreateUser, *, id_: ID = None) -> ID:
+async def create_user(
+    command: CreateUser, *, id_: ID = None, role: UserRole = UserRole.USER
+) -> ID:
     repository = resolve(UserRepository)
     password_encoder = resolve(PasswordEncoder)
 
@@ -34,6 +36,7 @@ async def create_user(command: CreateUser, *, id_: ID = None) -> ID:
         id=id_,
         email=email,
         password_hash=password_hash,
+        role=role,
         api_token=api_token,
     )
 
