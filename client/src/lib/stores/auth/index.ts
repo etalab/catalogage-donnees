@@ -17,10 +17,10 @@ export const isLoggedIn = derived(userInfo, (values) => values.loggedIn);
 
 export const user = derived(userInfo, (values) => values.user);
 
-export const login = (user: User) => {
+export const login = (user: User): void => {
   userInfo.set({ loggedIn: true, user });
 };
 
-export const logout = () => {
+export const logout = (): void => {
   userInfo.set({ loggedIn: false, user: null });
 };

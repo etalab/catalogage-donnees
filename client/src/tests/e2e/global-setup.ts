@@ -1,7 +1,7 @@
 import { Browser, expect, firefox, FullConfig } from "@playwright/test";
 import { STATE_AUTHENTICATED, TEST_EMAIL, TEST_PASSWORD } from "./constants";
 
-export default async function globalSetup(config: FullConfig) {
+export default async function globalSetup(config: FullConfig): Promise<void> {
   const browser = await firefox.launch();
   await saveAuthenticatedState(browser, config);
   await browser.close();

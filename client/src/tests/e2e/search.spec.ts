@@ -13,7 +13,7 @@ test.describe("Search", () => {
     expect(await search.inputValue()).toBe("title");
 
     const button = page.locator("button[type='submit']");
-    const [request, response, _] = await Promise.all([
+    const [request, response] = await Promise.all([
       page.waitForRequest("**/datasets/?q=title&highlight=true"),
       page.waitForResponse("**/datasets/?q=title&highlight=true"),
       button.click(),
@@ -50,7 +50,7 @@ test.describe("Search", () => {
     expect(await search.inputValue()).toBe("title");
 
     const button = page.locator("button[type='submit']");
-    let [request, response, _] = await Promise.all([
+    let [request, response] = await Promise.all([
       page.waitForRequest("**/datasets/?q=title&highlight=true"),
       page.waitForResponse("**/datasets/?q=title&highlight=true"),
       button.click(),
@@ -71,7 +71,7 @@ test.describe("Search", () => {
     await search.fill("noresultsexpected");
     expect(await search.inputValue()).toBe("noresultsexpected");
 
-    [request, response, _] = await Promise.all([
+    [request, response] = await Promise.all([
       page.waitForRequest("**/datasets/?q=noresultsexpected&highlight=true"),
       page.waitForResponse("**/datasets/?q=noresultsexpected&highlight=true"),
       button.click(),
