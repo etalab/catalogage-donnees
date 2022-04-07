@@ -29,7 +29,7 @@ export type DatasetFormData = {
   service: string;
   firstPublishedAt: string;
   updateFrequency: string;
-  lastPublishedAt: string;
+  lastUpdatedAt: string;
 
   description: string;
 };

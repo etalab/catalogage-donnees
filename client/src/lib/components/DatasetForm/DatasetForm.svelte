@@ -18,7 +18,7 @@
     entrypointEmail: "",
     contactEmail: $user?.email || "",
     service: "",
-    lastPublishedAt: "",
+    lastUpdatedAt: "",
     updateFrequency: "",
     firstPublishedAt: "",
   };
@@ -33,7 +33,7 @@
     entrypointEmail: string;
     contactEmail: string;
     service: string;
-    lastPublishedAt: string;
+    lastUpdatedAt: string;
     updateFrequency: string;
   };
 
@@ -50,7 +50,7 @@
     entrypointEmail: initial.entrypointEmail,
     contactEmail: initial.contactEmail,
     service: initial.service,
-    lastPublishedAt: initial.lastPublishedAt,
+    lastUpdatedAt: initial.lastUpdatedAt,
     updateFrequency: initial.updateFrequency,
     firstPublishedAt: initial.firstPublishedAt,
   };
@@ -74,7 +74,7 @@
           .required("Ce champs est requis")
           .email("Ce champ doit contenir une adresse e-mail valide"),
         service: yup.string().required("Ce champs est requis"),
-        lastPublishedAt: yup.date().required("Ce champs est requis"),
+        lastUpdatedAt: yup.date().required("Ce champs est requis"),
         updateFrequency: yup.string().required("Ce champs est requis"),
       }),
       onSubmit: (values) => {
@@ -327,33 +327,33 @@
   </p>
 
   <div
-    class="fr-input-group fr-my-4w {$errors.lastPublishedAt
+    class="fr-input-group fr-my-4w {$errors.lastUpdatedAt
       ? 'fr-input-group--error'
       : ''}"
   >
-    <label class="fr-label" for="lastPublishedAt">
+    <label class="fr-label" for="lastUpdatedAt">
       Date de la dernière mise à jour
       <RequiredMarker />
     </label>
 
     <div class="fr-input-wrap fr-fi-calendar-line">
       <input
-        class="fr-input {$errors.lastPublishedAt ? 'fr-input--error' : ''}"
-        aria-describedby={$errors.lastPublishedAt
+        class="fr-input {$errors.lastUpdatedAt ? 'fr-input--error' : ''}"
+        aria-describedby={$errors.lastUpdatedAt
           ? "entrypoint-service-desc-error"
           : null}
         type="date"
-        id="lastPublishedAt"
-        name="lastPublishedAt"
+        id="lastUpdatedAt"
+        name="lastUpdatedAt"
         required
         on:change={handleChange}
         on:blur={handleChange}
-        bind:value={$form.lastPublishedAt}
+        bind:value={$form.lastUpdatedAt}
       />
 
-      {#if $errors.lastPublishedAt}
+      {#if $errors.lastUpdatedAt}
         <p id="title-desc-error" class="fr-error-text">
-          {$errors.lastPublishedAt}
+          {$errors.lastUpdatedAt}
         </p>
       {/if}
     </div>

@@ -11,7 +11,7 @@ export const getFakeDataSet = (dataSet: Partial<Dataset>): Dataset => {
     formats: dataSet.formats || [],
     description: dataSet.description || "un joli jeu de donnée",
     firstPublishedAt: dataSet.firstPublishedAt || new Date().toISOString(),
-    lastPublishedAt: dataSet.lastPublishedAt || new Date().toISOString(),
+    lastUpdatedAt: dataSet.lastUpdatedAt || new Date().toISOString(),
     createdAt: dataSet.createdAt || new Date(),
     service: dataSet.service || "La Drac",
   };
@@ -29,8 +29,7 @@ export const getFakeDataSetFormData = (
     description: dataSetFormData.description || "un joli jeu de donnée",
     firstPublishedAt:
       dataSetFormData.firstPublishedAt || new Date().toISOString(),
-    lastPublishedAt:
-      dataSetFormData.lastPublishedAt || new Date().toISOString(),
+    lastUpdatedAt: dataSetFormData.lastUpdatedAt || new Date().toISOString(),
     service: dataSetFormData.service || "La Drac",
   };
 };
