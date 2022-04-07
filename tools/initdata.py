@@ -1,14 +1,17 @@
 import argparse
 import asyncio
 import functools
+import os
 import pathlib
 
 import click
 import yaml
+from pydantic import BaseModel
 
 from server.application.auth.commands import CreateUser
 from server.application.datasets.commands import CreateDataset, UpdateDataset
 from server.config.di import bootstrap, resolve
+from server.domain.auth.entities import UserRole
 from server.domain.auth.repositories import UserRepository
 from server.domain.datasets.repositories import DatasetRepository
 from server.seedwork.application.messages import MessageBus
@@ -16,13 +19,18 @@ from server.seedwork.application.messages import MessageBus
 info = functools.partial(click.style, fg="blue")
 success = functools.partial(click.style, fg="bright_green")
 warn = functools.partial(click.style, fg="yellow")
+error = functools.partial(click.style, fg="red")
 
 
 def ruler(text: str) -> str:
     return click.style(f"──── {text}", fg="magenta")
 
 
-async def handle_user(item: dict) -> None:
+class UserExtra(BaseModel):
+    role: UserRole = UserRole.USER
+
+
+async def handle_user(item: dict, *, no_input: bool) -> None:
     bus = resolve(MessageBus)
     repository = resolve(UserRepository)
 
@@ -33,8 +41,21 @@ async def handle_user(item: dict) -> None:
         print(f"{info('ok')}: User(email={email!r}, ...)")
         return
 
+    extra = UserExtra(**item.get("extra", {}))
+
+    if extra.role == UserRole.ADMIN:
+        password = os.getenv("ADMIN_PASSWORD")
+        if password is None:
+            if no_input:
+                raise RuntimeError(
+                    f"would prompt password for {email!r}, "
+                    "please set ADMIN_PASSWORD environment variable"
+                )
+            password = click.prompt(f"Password for {email}", hide_input=True)
+        item["params"]["password"] = password
+
     command = CreateUser(**item["params"])
-    await bus.execute(command, id_=item["id"])
+    await bus.execute(command, id_=item["id"], **extra.dict())
     print(f"{success('created')}: {command!r}")
 
 
@@ -67,14 +88,14 @@ async def handle_dataset(item: dict, reset: bool = False) -> None:
     print(f"{success('created')}: {command!r}")
 
 
-async def main(path: pathlib.Path, reset: bool = False) -> None:
+async def main(path: pathlib.Path, reset: bool = False, no_input: bool = False) -> None:
     with path.open() as f:
         spec = yaml.safe_load(f)
 
     print("\n", ruler("Users"))
 
     for item in spec["users"]:
-        await handle_user(item)
+        await handle_user(item, no_input=no_input)
 
     print("\n", ruler("Datasets"))
 

@@ -2,6 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel, EmailStr
 
+from server.domain.auth.entities import UserRole
 from server.domain.common.types import ID
 
 
@@ -13,6 +14,7 @@ class UserRead(BaseModel):
 class UserAuthenticatedRead(BaseModel):
     id: ID
     email: str
+    role: UserRole
     api_token: str
 
 

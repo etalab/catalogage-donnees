@@ -106,6 +106,7 @@ async def test_login(client: httpx.AsyncClient, temp_user: TestUser) -> None:
     assert user == {
         "id": str(temp_user.id),
         "email": temp_user.email,
+        "role": temp_user.role.value,
         "api_token": temp_user.api_token,
     }
 

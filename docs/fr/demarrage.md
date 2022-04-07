@@ -29,6 +29,8 @@ Puis lancez :
 make compose-up
 ```
 
+(Un mot de passe vous sera demandé la première fois pour la création du compte d'administration.)
+
 Le client (application web) sera alors disponible sur http://localhost:3000.
 
 Le client se rechargera automatiquement après des modifications dans le dossier `client/src/`, ce qui vous permettra d'y faire des modifications et de voir rapidement le résultat.

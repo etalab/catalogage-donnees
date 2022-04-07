@@ -49,6 +49,8 @@ jobs:
 
       - name: "Initialize data"
         run: make initdata
+        env:
+          ADMIN_PASSWORD: ci-admin
 
       - name: "Run checks"
         run: make check
