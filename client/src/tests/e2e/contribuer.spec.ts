@@ -10,7 +10,7 @@ test.describe("Basic form submission", () => {
     const descriptionText = "Une longue\ndescription de jeu\nde données";
     const entrypointEmailText = "un.service@exemple.gouv.fr";
     const contactEmail1Text = "contact1@example.org";
-    const lastPublishedAtDate = "2000-05-05";
+    const lastUpdatedAtDate = "2000-05-05";
     const serviceText = "Ministère de l'écologie";
 
     await page.goto("/contribuer");
@@ -43,9 +43,9 @@ test.describe("Basic form submission", () => {
 
     // "Mise à jour" section
 
-    const lastPublishedAt = page.locator("form [name=lastPublishedAt]");
-    await lastPublishedAt.fill("2000-05-05");
-    expect(await lastPublishedAt.inputValue()).toBe(lastPublishedAtDate);
+    const lastUpdatedAt = page.locator("form [name=lastUpdatedAt]");
+    await lastUpdatedAt.fill("2000-05-05");
+    expect(await lastUpdatedAt.inputValue()).toBe(lastUpdatedAtDate);
 
     const updateFrequency = page.locator("#updateFrequency");
     await updateFrequency.selectOption({ label: UPDATE_FREQUENCY.daily });

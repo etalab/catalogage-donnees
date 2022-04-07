@@ -6,7 +6,7 @@ export const toPayload = (data: Partial<Record<keyof Dataset, any>>) => {
     entrypointEmail,
     contactEmail,
     updateFrequency,
-    lastPublishedAt,
+    lastUpdatedAt,
     ...rest
   } = data;
   return {
@@ -15,7 +15,7 @@ export const toPayload = (data: Partial<Record<keyof Dataset, any>>) => {
     contact_emails: [contactEmail],
     first_published_at: new Date().toISOString(),
     update_frequency: updateFrequency,
-    last_updated_at: new Date(lastPublishedAt).toISOString(),
+    last_updated_at: new Date(lastUpdatedAt).toISOString(),
   };
 };
 
@@ -34,6 +34,6 @@ export const toDataset = (item: any): Dataset => {
     entrypointEmail: entrypoint_email,
     contactEmail: contact_emails[0],
     updateFrequency: update_frequency,
-    lastPublishedAt: format(new Date(last_updated_at), "yyyy-MM-dd"),
+    lastUpdatedAt: format(new Date(last_updated_at), "yyyy-MM-dd"),
   };
 };
