@@ -33,7 +33,7 @@ const persistToLocalStorage = <T = unknown>(key: string, value: T) => {
 export const storable = <T = unknown>(
   key: string,
   initialValue: T,
-  validateExisting: (value: T) => boolean = (value) => true
+  validateExisting: (value: T) => boolean = () => true
 ): Writable<T> => {
   const store = writable(initialValue);
 

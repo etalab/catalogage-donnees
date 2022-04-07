@@ -24,7 +24,7 @@ test.describe("Login", () => {
     expect(await password.inputValue()).toBe("demo");
 
     const button = page.locator("button[type='submit']");
-    const [request, response, _] = await Promise.all([
+    const [request, response] = await Promise.all([
       page.waitForRequest("**/auth/login/"),
       page.waitForResponse("**/auth/login/"),
       button.click(),
@@ -52,7 +52,7 @@ test.describe("Login", () => {
     expect(await password.inputValue()).toBe("wrongpassword");
 
     const button = page.locator("button[type='submit']");
-    const [request, response, _] = await Promise.all([
+    const [request, response] = await Promise.all([
       page.waitForRequest("**/auth/login/"),
       page.waitForResponse("**/auth/login/"),
       button.click(),

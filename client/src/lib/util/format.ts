@@ -4,18 +4,18 @@ export const pluralize = (
   amount: number,
   singleText: string,
   pluralText: string
-) => {
+): string => {
   if (amount === 1) {
     return singleText;
   }
   return pluralText;
 };
 
-export const capitalize = (text: string) => {
+export const capitalize = (text: string): string => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
 
-export const formatDaysMonthsOrYearsToNow = (date: Date) => {
+export const formatDaysMonthsOrYearsToNow = (date: Date): string => {
   const now = new Date();
 
   const daysDiff = datefns.differenceInDays(now, date);

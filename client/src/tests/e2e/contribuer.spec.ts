@@ -39,7 +39,7 @@ test.describe("Basic form submission", () => {
     expect(await contactEmail2.inputValue()).toBe(contactEmail2Text);
 
     const button = page.locator("button[type='submit']");
-    const [request, response, _] = await Promise.all([
+    const [request, response] = await Promise.all([
       page.waitForRequest("**/datasets/"),
       page.waitForResponse("**/datasets/"),
       button.click(),

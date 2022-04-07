@@ -38,12 +38,6 @@ const config = {
 
     vite,
   },
-  onwarn: (warning, handler) => {
-    const { code } = warning;
-    if (code === "a11y-no-redundant-roles") return;
-
-    handler(warning);
-  },
 };
 
 export default config;

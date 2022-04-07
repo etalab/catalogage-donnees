@@ -41,7 +41,7 @@ test.describe("Edit dataset", () => {
     expect(await page.isChecked("input[value=database]")).toBeTruthy();
 
     const button = page.locator("button[type='submit']");
-    const [request, response, _] = await Promise.all([
+    const [request, response] = await Promise.all([
       page.waitForRequest(`**/datasets/${dataset.id}/`),
       page.waitForResponse(`**/datasets/${dataset.id}/`),
       button.click(),
