@@ -15,7 +15,6 @@ class CreateDataset(Command[ID]):
     service: str
     entrypoint_email: str
     contact_emails: List[str] = Field(default_factory=list)
-    first_published_at: Optional[dt.datetime] = None
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
 
@@ -28,7 +27,6 @@ class UpdateDataset(Command[None]):
     service: str
     entrypoint_email: str
     contact_emails: List[str]
-    first_published_at: Optional[dt.datetime] = Field(...)
     update_frequency: Optional[UpdateFrequency] = Field(...)
     last_updated_at: Optional[dt.datetime] = Field(...)
 

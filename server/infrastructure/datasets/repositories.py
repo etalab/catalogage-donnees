@@ -66,7 +66,6 @@ class DatasetModel(Base):
     service = Column(String, nullable=False)
     entrypoint_email = Column(String, nullable=False)
     contact_emails = Column(ARRAY(String), server_default="{}", nullable=False)
-    first_published_at = Column(DateTime(timezone=True))
     update_frequency = Column(Enum(UpdateFrequency, enum="update_frequency_enum"))
     last_updated_at = Column(DateTime(timezone=True))
 
@@ -94,7 +93,6 @@ def make_entity(instance: DatasetModel) -> Dataset:
         service=instance.service,
         entrypoint_email=instance.entrypoint_email,
         contact_emails=instance.contact_emails,
-        first_published_at=instance.first_published_at,
         update_frequency=instance.update_frequency,
         last_updated_at=instance.last_updated_at,
     )
@@ -121,7 +119,6 @@ def update_instance(
     instance.service = entity.service
     instance.entrypoint_email = entity.entrypoint_email
     instance.contact_emails = entity.contact_emails
-    instance.first_published_at = entity.first_published_at
     instance.update_frequency = entity.update_frequency
     instance.last_updated_at = entity.last_updated_at
 

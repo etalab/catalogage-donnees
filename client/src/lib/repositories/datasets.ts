@@ -25,7 +25,6 @@ const toPayload = (data: Partial<Record<keyof Dataset, any>>) => {
     contact_emails: contactEmails,
     // Expected by API, update when frontend app is ready
     service: "DUMMY",
-    first_published_at: null,
     update_frequency: null,
     last_updated_at: null,
   };

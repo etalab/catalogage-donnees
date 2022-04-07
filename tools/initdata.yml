@@ -17,7 +17,6 @@ datasets:
       service: Service cartographie
       entrypoint_email: service@example.org
       contact_emails: []
-      first_published_at: null
       update_frequency: null
       last_updated_at: null
 
@@ -32,7 +31,6 @@ datasets:
       service: Direction des données du CROUS
       entrypoint_email: service@example.org
       contact_emails: []
-      first_published_at: null
       update_frequency: null
       last_updated_at: null
 
@@ -47,6 +45,5 @@ datasets:
       service: Service enquêtes
       entrypoint_email: service@example.org
       contact_emails: []
-      first_published_at: null
       update_frequency: null
       last_updated_at: null

@@ -16,7 +16,6 @@ class DatasetRead(BaseModel):
     service: str
     entrypoint_email: str
     contact_emails: List[str]
-    first_published_at: Optional[dt.datetime]
     update_frequency: Optional[UpdateFrequency]
     last_updated_at: Optional[dt.datetime]
 
@@ -28,7 +27,6 @@ class DatasetCreate(BaseModel):
     service: str
     entrypoint_email: EmailStr
     contact_emails: List[EmailStr] = Field(default_factory=list)
-    first_published_at: Optional[dt.datetime] = None
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
 
@@ -46,7 +44,6 @@ class DatasetUpdate(BaseModel):
     service: str
     entrypoint_email: EmailStr
     contact_emails: List[EmailStr]
-    first_published_at: Optional[dt.datetime] = Field(...)
     update_frequency: Optional[UpdateFrequency] = Field(...)
     last_updated_at: Optional[dt.datetime] = Field(...)
 

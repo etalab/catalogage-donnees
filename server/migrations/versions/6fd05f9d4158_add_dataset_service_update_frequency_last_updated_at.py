@@ -1,4 +1,4 @@
-"""add-dataset-timefields
+"""add-dataset-service-update_frequency-last_updated_at
 
 Revision ID: 6fd05f9d4158
 Revises: 67a6c2bf0696
@@ -37,10 +37,6 @@ def upgrade():
 
     op.add_column(
         "dataset",
-        sa.Column("first_published_at", sa.DateTime(timezone=True), nullable=True),
-    )
-    op.add_column(
-        "dataset",
         sa.Column("update_frequency", update_frequency_enum, nullable=True),
     )
     op.add_column(
@@ -53,5 +49,4 @@ def downgrade():
     op.drop_column("dataset", "service")
     op.drop_column("dataset", "last_updated_at")
     op.drop_column("dataset", "update_frequency")
-    op.drop_column("dataset", "first_published_at")
     update_frequency_enum.drop(op.get_bind())

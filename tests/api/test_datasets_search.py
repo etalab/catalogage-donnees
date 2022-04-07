@@ -176,7 +176,6 @@ async def test_search_results_change_when_data_changes(
         service="Service",
         entrypoint_email="service@example.org",
         contact_emails=[],
-        first_published_at=None,
         update_frequency=None,
         last_updated_at=None,
     )
@@ -196,7 +195,6 @@ async def test_search_results_change_when_data_changes(
         service="Service",
         entrypoint_email="service@example.org",
         contact_emails=[],
-        first_published_at=None,
         update_frequency=None,
         last_updated_at=None,
     )

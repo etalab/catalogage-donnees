@@ -29,7 +29,6 @@ export const test = base.extend<AppFixtures>({
       entrypoint_email: "service@example.org",
       // Expected by API, update when frontend app is ready
       service: "DUMMY",
-      first_published_at: null,
       update_frequency: null,
       last_updated_at: null,
     };

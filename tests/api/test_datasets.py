@@ -64,7 +64,6 @@ async def test_create_dataset_invalid(
 
 
 known_date = dtutil.parse("2022-01-04T10:15:19.121212+00:00")
-known_date_day_after = known_date + dt.timedelta(days=1)
 
 CREATE_DATASET_PAYLOAD = {
     "title": "Example title",
@@ -73,9 +72,8 @@ CREATE_DATASET_PAYLOAD = {
     "service": "Example service",
     "entrypoint_email": "example.service@example.org",
     "contact_emails": ["example.person@example.org"],
-    "first_published_at": known_date.isoformat(),
     "update_frequency": "weekly",
-    "last_updated_at": known_date_day_after.isoformat(),
+    "last_updated_at": known_date.isoformat(),
 }
 
 CREATE_ANY_DATASET = CreateDataset(
@@ -110,9 +108,8 @@ async def test_dataset_crud(client: httpx.AsyncClient) -> None:
         "service": "Example service",
         "entrypoint_email": "example.service@example.org",
         "contact_emails": ["example.person@example.org"],
-        "first_published_at": known_date.isoformat(),
         "update_frequency": "weekly",
-        "last_updated_at": known_date_day_after.isoformat(),
+        "last_updated_at": known_date.isoformat(),
     }
 
     non_existing_id = id_factory()
@@ -159,7 +156,6 @@ class TestDatasetOptionalFields:
         "field, default",
         [
             pytest.param("contact_emails", []),
-            pytest.param("first_published_at", None),
             pytest.param("update_frequency", None),
             pytest.param("last_updated_at", None),
         ],
@@ -180,22 +176,18 @@ class TestDatasetOptionalFields:
             json={
                 **CREATE_DATASET_PAYLOAD,
                 "contact_emails": ["notanemail", "valid@example.org"],
-                "first_published_at": "not_a_datetime",
                 "update_frequency": "not_in_enum",
-                "last_updated_at": "not_a_datetime_either",
+                "last_updated_at": "not_a_datetime",
             },
         )
         assert response.status_code == 422
         (
             err_contact_emails,
-            err_first_published_at,
             err_update_frequency,
             err_last_updated_at,
         ) = response.json()["detail"]
         assert err_contact_emails["loc"] == ["body", "contact_emails", 0]
         assert err_contact_emails["type"] == "value_error.email"
-        assert err_first_published_at["loc"] == ["body", "first_published_at"]
-        assert err_first_published_at["type"] == "value_error.datetime"
         assert err_update_frequency["loc"] == ["body", "update_frequency"]
         assert err_update_frequency["type"] == "type_error.enum"
         assert err_last_updated_at["loc"] == ["body", "last_updated_at"]
@@ -225,7 +217,6 @@ class TestDatasetUpdate:
             "service",
             "entrypoint_email",
             "contact_emails",
-            "first_published_at",
             "update_frequency",
             "last_updated_at",
         ]
@@ -248,9 +239,8 @@ class TestDatasetUpdate:
                 "service": "",
                 "entrypoint_email": "service@example.org",
                 "contact_emails": [],
-                "first_published_at": known_date.isoformat(),
                 "update_frequency": "weekly",
-                "last_updated_at": known_date_day_after.isoformat(),
+                "last_updated_at": known_date.isoformat(),
             },
         )
         assert response.status_code == 422
@@ -274,7 +264,6 @@ class TestDatasetUpdate:
         dataset_id = await bus.execute(CREATE_ANY_DATASET)
 
         other_known_date = dtutil.parse("2022-02-04T10:15:19.121212+00:00")
-        other_known_date_later = other_known_date + dt.timedelta(days=30)
 
         response = await client.put(
             f"/datasets/{dataset_id}/",
@@ -285,9 +274,8 @@ class TestDatasetUpdate:
                 "service": "Other service",
                 "entrypoint_email": "other.service@example.org",
                 "contact_emails": ["other.person@example.org"],
-                "first_published_at": other_known_date.isoformat(),
                 "update_frequency": "weekly",
-                "last_updated_at": other_known_date_later.isoformat(),
+                "last_updated_at": other_known_date.isoformat(),
             },
         )
         assert response.status_code == 200
@@ -303,9 +291,8 @@ class TestDatasetUpdate:
             "service": "Other service",
             "entrypoint_email": "other.service@example.org",
             "contact_emails": ["other.person@example.org"],
-            "first_published_at": other_known_date.isoformat(),
             "update_frequency": "weekly",
-            "last_updated_at": other_known_date_later.isoformat(),
+            "last_updated_at": other_known_date.isoformat(),
         }
 
         # Entity was indeed updated
@@ -317,9 +304,8 @@ class TestDatasetUpdate:
         assert dataset.service == "Other service"
         assert dataset.entrypoint_email == "other.service@example.org"
         assert dataset.contact_emails == ["other.person@example.org"]
-        assert dataset.first_published_at == other_known_date
         assert dataset.update_frequency == UpdateFrequency.WEEKLY
-        assert dataset.last_updated_at == other_known_date_later
+        assert dataset.last_updated_at == other_known_date
 
 
 @pytest.mark.asyncio
