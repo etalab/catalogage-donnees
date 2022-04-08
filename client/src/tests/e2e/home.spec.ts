@@ -5,7 +5,7 @@ import { test } from "./fixtures";
 test.describe("Catalog list", () => {
   test.use({ storageState: STATE_AUTHENTICATED });
 
-  test("Visits the home page", async ({ page, dataset }) => {
+  test("Visits the home page", async ({ page }) => {
     await page.goto("/");
 
     await expect(page).toHaveTitle("Catalogue");

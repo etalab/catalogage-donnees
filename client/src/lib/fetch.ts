@@ -10,7 +10,7 @@ import { API_BROWSER_URL, API_SSR_URL } from "src/env";
  * const response = await fetch(url);
  * ```
  */
-export const getApiUrl = () => {
+export const getApiUrl = (): string => {
   if (browser) {
     // This is:
     // * http://localhost:3579 on local.

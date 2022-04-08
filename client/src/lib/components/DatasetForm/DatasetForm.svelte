@@ -5,7 +5,6 @@
   import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
   import { DATA_FORMAT_LABELS } from "src/constants";
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
-  import About from "src/routes/about.svelte";
 
   export let submitLabel = "Publier ce jeu de données";
   export let loadingLabel = "Publication en cours...";
@@ -89,8 +88,8 @@
     return typeof error === "string" && Boolean(error);
   };
 
-  const handleDataformatChange = (event, index: number) => {
-    const { checked } = event.target;
+  const handleDataformatChange = (event: Event, index: number) => {
+    const { checked } = event.target as HTMLInputElement;
     dataFormatsValue[index] = checked;
     updateValidateField("dataFormats", dataFormatsValue);
   };

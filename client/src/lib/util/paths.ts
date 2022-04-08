@@ -9,7 +9,7 @@ type PathParamNames<Pattern extends string> =
   // prettier-ignore
   Pattern extends `:${infer Param}/${infer Rest}` ? Param | PathParamNames<Rest>
   : Pattern extends `:${infer Param}` ? Param
-  : Pattern extends `${infer _Prefix}:${infer Rest}` ? PathParamNames<`:${Rest}`>
+  : Pattern extends `${infer _Prefix}:${infer Rest}` ? PathParamNames<`:${Rest}`> // eslint-disable-line @typescript-eslint/no-unused-vars
   : never;
 
 /**
