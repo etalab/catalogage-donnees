@@ -12,6 +12,7 @@ export default defineConfig({
       // Add any alias resolutions that should be mocked, because
       // they are not available unless SvelteKit runs.
       "$app/env": path.resolve("./src/tests/app.env.mock.ts"),
+      "$app/navigation": path.resolve("./src/tests/app.navigation.mock.ts"),
     },
   },
   plugins: [

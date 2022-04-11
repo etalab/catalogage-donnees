@@ -50,7 +50,7 @@ jobs:
       - name: "Initialize data"
         run: make initdata
         env:
-          TOOLS_ADMIN_PASSWORD: ci-admin
+          TOOLS_ADMIN_PASSWORD: admin
 
       - name: "Run checks"
         run: make check
