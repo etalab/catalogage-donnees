@@ -6,6 +6,7 @@
   import { DATA_FORMAT_LABELS, UPDATE_FREQUENCY } from "src/constants";
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
   import { user } from "src/lib/stores/auth";
+  import EmailCreator from "../EmailCreator/EmailCreator.svelte";
 
   export let submitLabel = "Publier ce jeu de données";
   export let loadingLabel = "Publication en cours...";
@@ -70,9 +71,12 @@
           .email("Ce champ doit contenir une adresse e-mail valide")
           .required("Ce champs est requis"),
         contactEmails: yup
-          .string()
-          .required("Ce champs est requis")
-          .email("Ce champ doit contenir une adresse e-mail valide"),
+          .array()
+          .of(
+            yup
+              .string()
+              .email("Ce champ doit contenir une adresse e-mail valide")
+          ),
         service: yup.string().required("Ce champs est requis"),
         lastUpdatedAt: yup.date().required("Ce champs est requis"),
         updateFrequency: yup.string().required("Ce champs est requis"),
@@ -289,33 +293,11 @@
     {/if}
   </div>
 
-  <label class="fr-label" for="contactEmail">
-    E-mail de contact
-    <RequiredMarker />
-    <span class="fr-hint-text" id="contactEmail-desc-hint">
-      Vous pouvez ajouter une adresse e-mail personnelles en complément
-      l'adresse fonctionnelle. Ces emails seront régulièrement vérifiés afin
-      d'assurer la bonne maintenabilité des jeux de données.
-    </span>
-  </label>
-  <input
-    class="fr-input {$errors.contactEmail ? 'fr-input--error' : ''}"
-    aria-describedby={$errors.contactEmail
-      ? "entrypoint-email-desc-error"
-      : null}
-    type="email"
-    id="contactEmail"
-    name="contactEmail"
-    required
-    on:change={handleChange}
-    on:blur={handleChange}
-    bind:value={$form.contactEmail}
+  <EmailCreator
+    bind:errors={$errors.contactEmails}
+    bind:contactEmails={$form.contactEmails}
+    onChange={handleChange}
   />
-  {#if $errors.contactEmail}
-    <p id="entrypoint-email-desc-error" class="fr-error-text">
-      {$errors.contactEmail}
-    </p>
-  {/if}
 
   <h2 class="fr-mt-6w">Mise à jour</h2>
 

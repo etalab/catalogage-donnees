@@ -32,7 +32,7 @@ export const toDataset = (item: any): Dataset => {
     ...rest,
     createdAt: new Date(created_at),
     entrypointEmail: entrypoint_email,
-    contactEmail: contact_emails[0],
+    contactEmails: contact_emails,
     updateFrequency: update_frequency,
     lastUpdatedAt: format(new Date(last_updated_at), "yyyy-MM-dd"),
   };

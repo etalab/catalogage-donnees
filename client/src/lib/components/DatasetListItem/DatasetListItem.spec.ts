@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import { render } from "@testing-library/svelte";
 
 import DatasetListItem from "./DatasetListItem.svelte";
-import type { Dataset, DatasetHeadlines } from "src/definitions/datasets";
+import type { DatasetHeadlines } from "src/definitions/datasets";
 import { getFakeDataSet } from "src/fixtures/dataset";
 
 describe("Test the dataset list item", () => {

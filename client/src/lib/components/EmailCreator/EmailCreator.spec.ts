@@ -9,7 +9,9 @@ import {
 
 describe("EmailCreator component", () => {
   test("Only one input is displayed by default", async () => {
-    const { getAllByTestId } = render(EmailCreator);
+    const { getAllByTestId } = render(EmailCreator, {
+      onChange: () => undefined,
+    });
     const inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(1);
     expect(inputs[0]).toHaveValue("");
@@ -17,7 +19,9 @@ describe("EmailCreator component", () => {
   });
 
   test("I can fill the input", async () => {
-    const { getAllByTestId } = render(EmailCreator);
+    const { getAllByTestId } = render(EmailCreator, {
+      onChange: () => undefined,
+    });
     const inputs = getAllByTestId("contactEmails", { exact: false });
     await fireEvent.blur(inputs[0], {
       target: { value: "contact@example.org" },
@@ -26,7 +30,9 @@ describe("EmailCreator component", () => {
   });
 
   test("I can add a few inputs", async () => {
-    const { getAllByTestId, getByRole } = render(EmailCreator, {});
+    const { getAllByTestId, getByRole } = render(EmailCreator, {
+      onChange: () => undefined,
+    });
     let inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(1);
     const addButton = getByRole("button", { name: /Ajouter/i });
@@ -39,7 +45,9 @@ describe("EmailCreator component", () => {
   });
 
   test("I can update an input value", async () => {
-    const { getAllByTestId, getByRole } = render(EmailCreator, {});
+    const { getAllByTestId, getByRole } = render(EmailCreator, {
+      onChange: () => undefined,
+    });
     const addButton = getByRole("button", { name: /Ajouter/i });
     await fireEvent.click(addButton);
     await fireEvent.click(addButton);
@@ -54,7 +62,9 @@ describe("EmailCreator component", () => {
   });
 
   test("I can remove an input by clicking on delete button", async () => {
-    const { getAllByTestId, getByRole } = render(EmailCreator, {});
+    const { getAllByTestId, getByRole } = render(EmailCreator, {
+      onChange: () => undefined,
+    });
     const addButton = getByRole("button", { name: /Ajouter/i });
     await fireEvent.click(addButton);
     await fireEvent.click(addButton);
@@ -80,6 +90,7 @@ describe("EmailCreator component", () => {
   test("I can prefill the first input", async () => {
     const { getAllByTestId } = render(EmailCreator, {
       contactEmails: ["hello@foo.com"],
+      onChange: () => undefined
     });
     const inputs = getAllByTestId("contactEmails", { exact: false });
     expect((inputs[0] as HTMLInputElement).value).toBe("hello@foo.com");
@@ -88,6 +99,7 @@ describe("EmailCreator component", () => {
   test("I can add an input with prefilled input", async () => {
     const { getAllByTestId, getByRole } = render(EmailCreator, {
       contactEmails: ["hello@foo.com"],
+      onChange: () => undefined
     });
     let inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(1);

@@ -1,10 +1,12 @@
 import "@testing-library/jest-dom";
 
 import DatasetForm from "./DatasetForm.svelte";
-import { render, fireEvent } from "@testing-library/svelte";
-import type { DataFormat } from "src/definitions/datasets";
-import { UPDATE_FREQUENCY } from "src/constants";
-import { getFakeDataSetFormData } from "src/fixtures/dataset";
+import {
+  render,
+  fireEvent,
+  getByRole as getByRoleIn,
+} from "@testing-library/svelte";
+import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
 
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
@@ -49,43 +51,14 @@ describe("Test the dataset form", () => {
     expect(entrypointEmail).toHaveAttribute("type", "email");
   });
 
-  test('The "contact email" field is present', () => {
-    const { getByLabelText } = render(DatasetForm);
-    const inputs = getByLabelText("E-mail de contact", { exact: false });
-
-    expect(inputs).toBeRequired();
-    expect(inputs).toHaveAttribute("type", "email");
+  test('The "contact emails" field is present', () => {
+    const { getAllByLabelText } = render(DatasetForm);
+    const inputs = getAllByLabelText(/Contact \d/);
+    expect(inputs.length).toBe(1);
+    expect(inputs[0]).not.toBeRequired();
+    expect(inputs[0]).toHaveAttribute("type", "email");
   });
 
-  test('The "service field" field is present', () => {
-    const { getByLabelText } = render(DatasetForm);
-    const service = getByLabelText("Service producteur de la donnée", {
-      exact: false,
-    });
-    expect(service).toBeInTheDocument();
-    expect(service).toBeRequired();
-    expect(service).toHaveAttribute("type", "text");
-  });
-
-  test('The "last published at" field is present', () => {
-    const { getByLabelText } = render(DatasetForm);
-    const service = getByLabelText("Date de la dernière mise à jour", {
-      exact: false,
-    });
-    expect(service).toBeInTheDocument();
-    expect(service).toBeRequired();
-    expect(service).toHaveAttribute("type", "date");
-  });
-
-  test('The "updateFrequency" field is present', () => {
-    const { getByLabelText } = render(DatasetForm);
-    const updateFrequency = getByLabelText("Fréquence de mise à jour", {
-      exact: false,
-    });
-    expect(updateFrequency).toBeInTheDocument();
-    expect(updateFrequency).toBeRequired();
-    expect(updateFrequency.children.length).toBe(7);
-  });
 
   test("The submit button is present", () => {
     const { getByRole } = render(DatasetForm);
@@ -103,16 +76,13 @@ describe("Test the dataset form", () => {
   });
 
   test("The fields are initialized with initial values", async () => {
-    const initial = getFakeDataSetFormData({
+    const initial: DatasetFormData = {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
       entrypointEmail: "service.initial@example.org",
       contactEmails: ["person@example.org"],
-      firstPublishedAt: new Date().toISOString(),
-      updateFrequency: UPDATE_FREQUENCY.daily,
-      service: "Drac",
-    });
+    };
     const props = { initial };
 
     const { getByLabelText, container } = render(DatasetForm, { props });
@@ -139,10 +109,9 @@ describe("Test the dataset form", () => {
     }) as HTMLInputElement;
     expect(entrypointEmail.value).toBe("service.initial@example.org");
 
-    const inputs = getByLabelText("E-mail de contact", {
-      exact: false,
-    }) as HTMLInputElement;
-
-    expect(inputs.value).toBe("person@example.org");
+    const { getAllByLabelText } = render(DatasetForm);
+    const inputs = getAllByLabelText(/Contact \d/);
+    expect(inputs.length).toBe(1);
+    expect(inputs[0]).toHaveValue("person@example.org");
   });
 });
