@@ -26,6 +26,7 @@
 
       const user: User = {
         email: response.data.email,
+        role: response.data.role,
         apiToken: response.data.apiToken,
       };
 

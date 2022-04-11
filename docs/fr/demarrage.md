@@ -29,6 +29,8 @@ Puis lancez :
 make compose-up
 ```
 
+(Un mot de passe vous sera demandé la première fois pour la création du compte d'administration.)
+
 Le client (application web) sera alors disponible sur http://localhost:3000.
 
 Le client se rechargera automatiquement après des modifications dans le dossier `client/src/`, ce qui vous permettra d'y faire des modifications et de voir rapidement le résultat.
@@ -193,5 +195,6 @@ Des paramètres avancés (principalement dédiés au déploiement - voir [Opéra
 |---|---|---|
 | `APP_SERVER_MODE` | Un mode d'opération qui configure Uvicorn en conséquence : <br> - `local` : pour le développement local (_hot reload_ activé, etc) <br> - `live` : pour tout déploiement tel que défini via Ansible | `local` |
 | `APP_PORT` | Port du server d'API | `3579` |
+| `TOOLS_ADMIN_PASSWORD` | Mot de passe admin initial (voir [Données initiales](./outils.md#données-initiales)) | |
 | `VITE_API_BROWSER_URL` | URL utilisée par le navigateur lors de requêtes d'API. En mode `live`, indiquer le chemin vers l'API configuré sur Nginx : `/api`. | `http://localhost:3579` |
 | `VITE_API_SSR_URL` | URL utilisée par le serveur frontend lors de requêtes d'API | `http://localhost:3579` |

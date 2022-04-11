@@ -8,13 +8,17 @@ export interface LoginApiRequestData {
   password: string;
 }
 
+type UserRole = "USER" | "ADMIN";
+
 export interface LoginApiResponseData {
   email: string;
+  role: UserRole;
   apiToken: string;
 }
 
 export interface User {
   email: string;
+  role: UserRole;
   apiToken: string;
 }
 

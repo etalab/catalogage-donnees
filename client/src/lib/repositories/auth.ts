@@ -28,6 +28,7 @@ export const login: Login = async ({ fetch, data }) => {
     status: response.status,
     data: {
       email: apiData.email,
+      role: apiData.role,
       apiToken: apiData.api_token,
     },
   };
