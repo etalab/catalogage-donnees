@@ -12,7 +12,7 @@ from server.domain.datasets.entities import DataFormat
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
-from ..helpers import approx_datetime
+from ..helpers import TestUser, approx_datetime
 
 
 @pytest.mark.asyncio
@@ -77,7 +77,7 @@ CREATE_ANY_DATASET = CreateDataset(
 
 
 @pytest.mark.asyncio
-async def test_dataset_crud(client: httpx.AsyncClient) -> None:
+async def test_dataset_crud(client: httpx.AsyncClient, admin_user: TestUser) -> None:
     response = await client.post("/datasets/", json=CREATE_DATASET_PAYLOAD)
     assert response.status_code == 201
     data = response.json()
@@ -112,7 +112,7 @@ async def test_dataset_crud(client: httpx.AsyncClient) -> None:
     assert response.status_code == 200
     assert response.json() == [data]
 
-    response = await client.delete(f"/datasets/{pk}/")
+    response = await client.delete(f"/datasets/{pk}/", auth=admin_user.auth)
     assert response.status_code == 204
 
     response = await client.get(f"/datasets/{pk}/")
@@ -298,20 +298,30 @@ class TestFormats:
 
 @pytest.mark.asyncio
 class TestDeleteDataset:
-    async def test_delete(self, client: httpx.AsyncClient) -> None:
+    async def test_delete(
+        self, client: httpx.AsyncClient, temp_user: TestUser, admin_user: TestUser
+    ) -> None:
         bus = resolve(MessageBus)
 
         dataset_id = await bus.execute(CREATE_ANY_DATASET)
 
+        # Permissions
         response = await client.delete(f"/datasets/{dataset_id}/")
+        assert response.status_code == 401
+        response = await client.delete(f"/datasets/{dataset_id}/", auth=temp_user.auth)
+        assert response.status_code == 403
+
+        response = await client.delete(f"/datasets/{dataset_id}/", auth=admin_user.auth)
         assert response.status_code == 204
 
         query = GetDatasetByID(id=dataset_id)
         with pytest.raises(DatasetDoesNotExist):
             await bus.execute(query)
 
-    async def test_idempotent(self, client: httpx.AsyncClient) -> None:
+    async def test_idempotent(
+        self, client: httpx.AsyncClient, admin_user: TestUser
+    ) -> None:
         # Repeated calls on a deleted (or non-existing) resource should be fine.
         dataset_id = id_factory()
-        response = await client.delete(f"/datasets/{dataset_id}/")
+        response = await client.delete(f"/datasets/{dataset_id}/", auth=admin_user.auth)
         assert response.status_code == 204
