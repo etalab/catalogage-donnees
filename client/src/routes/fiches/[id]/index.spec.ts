@@ -11,7 +11,7 @@ const dataset = getFakeDataSet({
   description: "bar baz crux",
   formats: ["other"],
   entrypointEmail: "service@example.org",
-  contactEmail: "service@example.org",
+  contactEmails: ["service@example.org"],
 });
 
 describe("Dataset detail page header", () => {

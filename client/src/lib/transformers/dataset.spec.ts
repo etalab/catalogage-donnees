@@ -21,7 +21,7 @@ describe("transformers -- dataset", () => {
     const dataset = toPayload(getFakeDataSet({}));
     const result = toDataset(dataset);
     const keys = Object.keys(result);
-    ["entrypointEmail", "contactEmail", "updateFrequency"].forEach((item) => {
+    ["entrypointEmail", "contactEmails", "updateFrequency"].forEach((item) => {
       expect(keys).toContain(item);
     });
   });

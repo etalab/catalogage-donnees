@@ -13,7 +13,7 @@ describe("Test the dataset list item", () => {
     description: "Fichier de l'ensemble des arbres et forêts de France.",
     formats: ["database"],
     entrypointEmail: "forets@ign.fr",
-    contactEmail: "",
+    contactEmails: [""],
   });
 
   test("The title is present", () => {

@@ -4,7 +4,7 @@ import type { Dataset } from "src/definitions/datasets";
 export const toPayload = (data: Partial<Record<keyof Dataset, any>>) => {
   const {
     entrypointEmail,
-    contactEmail,
+    contactEmails,
     updateFrequency,
     lastUpdatedAt,
     ...rest
@@ -12,7 +12,7 @@ export const toPayload = (data: Partial<Record<keyof Dataset, any>>) => {
   return {
     ...rest,
     entrypoint_email: entrypointEmail,
-    contact_emails: [contactEmail],
+    contact_emails: contactEmails,
     first_published_at: new Date().toISOString(),
     update_frequency: updateFrequency,
     last_updated_at: new Date(lastUpdatedAt).toISOString(),
