@@ -25,9 +25,9 @@
 <ul class="fr-fieldset__content fr-raw-list  fr-mb-3w">
   {#each contactEmails as _, i}
     <li class="contact-entries">
-      <label for="contactEmail" hidden>Contact {i}</label>
+      <label for="contactEmails" hidden>Contact {i}</label>
       <input
-        data-testid="contactEmail"
+        data-testid="contactEmails"
         class="fr-input fr-mr-1w"
         class:fr-input--error={contactEmailErrors[i]}
         type="email"

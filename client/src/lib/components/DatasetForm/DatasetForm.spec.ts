@@ -108,7 +108,7 @@ describe("Test the dataset form", () => {
       description: "Description initiale",
       formats: ["website"],
       entrypointEmail: "service.initial@example.org",
-      contactEmail: "person@example.org",
+      contactEmails: ["person@example.org"],
       firstPublishedAt: new Date().toISOString(),
       updateFrequency: UPDATE_FREQUENCY.daily,
       service: "Drac",

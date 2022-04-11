@@ -16,7 +16,7 @@
     description: "",
     formats: [],
     entrypointEmail: "",
-    contactEmail: $user?.email || "",
+    contactEmails: [$user?.email] || [""],
     service: "",
     lastUpdatedAt: "",
     updateFrequency: "",
@@ -31,7 +31,7 @@
     dataFormats: boolean[];
     firstPublishedAt: string;
     entrypointEmail: string;
-    contactEmail: string;
+    contactEmails: string[];
     service: string;
     lastUpdatedAt: string;
     updateFrequency: string;
@@ -48,7 +48,7 @@
       ({ value }) => !!initial.formats.find((v) => v === value)
     ),
     entrypointEmail: initial.entrypointEmail,
-    contactEmail: initial.contactEmail,
+    contactEmails: initial.contactEmails,
     service: initial.service,
     lastUpdatedAt: initial.lastUpdatedAt,
     updateFrequency: initial.updateFrequency,
@@ -69,7 +69,7 @@
           .string()
           .email("Ce champ doit contenir une adresse e-mail valide")
           .required("Ce champs est requis"),
-        contactEmail: yup
+        contactEmails: yup
           .string()
           .required("Ce champs est requis")
           .email("Ce champ doit contenir une adresse e-mail valide"),

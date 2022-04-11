@@ -10,7 +10,7 @@ import {
 describe("EmailCreator component", () => {
   test("Only one input is displayed by default", async () => {
     const { getAllByTestId } = render(EmailCreator);
-    const inputs = getAllByTestId("contactEmail", { exact: false });
+    const inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(1);
     expect(inputs[0]).toHaveValue("");
     expect(inputs[0]).toHaveAttribute("type", "email");
@@ -18,7 +18,7 @@ describe("EmailCreator component", () => {
 
   test("I can fill the input", async () => {
     const { getAllByTestId } = render(EmailCreator);
-    const inputs = getAllByTestId("contactEmail", { exact: false });
+    const inputs = getAllByTestId("contactEmails", { exact: false });
     await fireEvent.blur(inputs[0], {
       target: { value: "contact@example.org" },
     });
@@ -27,14 +27,14 @@ describe("EmailCreator component", () => {
 
   test("I can add a few inputs", async () => {
     const { getAllByTestId, getByRole } = render(EmailCreator, {});
-    let inputs = getAllByTestId("contactEmail", { exact: false });
+    let inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(1);
     const addButton = getByRole("button", { name: /Ajouter/i });
     await fireEvent.click(addButton);
-    inputs = getAllByTestId("contactEmail", { exact: false });
+    inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(2);
     await fireEvent.click(addButton);
-    inputs = getAllByTestId("contactEmail", { exact: false });
+    inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(3);
   });
 
@@ -43,7 +43,7 @@ describe("EmailCreator component", () => {
     const addButton = getByRole("button", { name: /Ajouter/i });
     await fireEvent.click(addButton);
     await fireEvent.click(addButton);
-    const inputs = getAllByTestId("contactEmail", { exact: false });
+    const inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(3);
 
     await fireEvent.blur(inputs[2], {
@@ -59,7 +59,7 @@ describe("EmailCreator component", () => {
     await fireEvent.click(addButton);
     await fireEvent.click(addButton);
     await fireEvent.click(addButton);
-    let inputs = getAllByTestId("contactEmail", { exact: false });
+    let inputs = getAllByTestId("contactEmails", { exact: false });
 
     await fireEvent.blur(inputs[2], {
       target: { value: "contact@example.org" },
@@ -70,7 +70,7 @@ describe("EmailCreator component", () => {
     });
 
     await fireEvent.click(removeButton);
-    inputs = getAllByTestId("contactEmail", { exact: false });
+    inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(3);
 
     const values = (inputs as HTMLInputElement[]).map((item) => item.value);
@@ -81,7 +81,7 @@ describe("EmailCreator component", () => {
     const { getAllByTestId } = render(EmailCreator, {
       contactEmails: ["hello@foo.com"],
     });
-    const inputs = getAllByTestId("contactEmail", { exact: false });
+    const inputs = getAllByTestId("contactEmails", { exact: false });
     expect((inputs[0] as HTMLInputElement).value).toBe("hello@foo.com");
   });
 
@@ -89,13 +89,13 @@ describe("EmailCreator component", () => {
     const { getAllByTestId, getByRole } = render(EmailCreator, {
       contactEmails: ["hello@foo.com"],
     });
-    let inputs = getAllByTestId("contactEmail", { exact: false });
+    let inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(1);
     expect((inputs[0] as HTMLInputElement).value).toBe("hello@foo.com");
 
     const addButton = getByRole("button", { name: /Ajouter/i });
     await fireEvent.click(addButton);
-    inputs = getAllByTestId("contactEmail", { exact: false });
+    inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(2);
     await fireEvent.blur(inputs[1], {
       target: { value: "contact@example.org" },
