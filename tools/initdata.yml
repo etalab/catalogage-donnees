@@ -7,7 +7,7 @@ users:
   - id: "4c2cefce-ea47-4e6e-8c79-8befd4495f45"
     params:
       email: admin@catalogue.data.gouv.fr
-    extra:
+    extras:
       role: ADMIN
 
 datasets:

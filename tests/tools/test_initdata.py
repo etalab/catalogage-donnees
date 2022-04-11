@@ -40,14 +40,14 @@ async def test_initdata_admin_password(
           - id: 9c2cefce-ea47-4e6e-8c79-8befd4495f45
             params:
               email: test@admin.org
-            extra:
-                role: ADMIN
+            extras:
+              role: ADMIN
         datasets: []
         """
     )
 
-    # ADMIN_PASSWORD is used to create the admin user.
-    monkeypatch.setenv("ADMIN_PASSWORD", "test-admin")
+    # Env variable is used to create the admin user.
+    monkeypatch.setenv("TOOLS_ADMIN_PASSWORD", "test-admin")
     await initdata.main(path, no_input=True)
     # (Ensure user exists,
     user = await bus.execute(GetUserByEmail(email="test@admin.org"))
@@ -55,11 +55,11 @@ async def test_initdata_admin_password(
     await bus.execute(DeleteUser(id=user.id))
 
     # If not set, it would be prompted in the terminal.
-    monkeypatch.delenv("ADMIN_PASSWORD")
+    monkeypatch.delenv("TOOLS_ADMIN_PASSWORD")
     with pytest.raises(RuntimeError) as ctx:
         await initdata.main(path, no_input=True)
     assert "would prompt" in str(ctx.value)
-    assert "please set ADMIN_PASSWORD" in str(ctx.value)
+    assert "TOOLS_ADMIN_PASSWORD" in str(ctx.value)
 
 
 @pytest.mark.asyncio
@@ -68,7 +68,7 @@ async def test_repo_initdata(
 ) -> None:
     bus = resolve(MessageBus)
     path = Path("tools", "initdata.yml")
-    monkeypatch.setenv("ADMIN_PASSWORD", "test")
+    monkeypatch.setenv("TOOLS_ADMIN_PASSWORD", "test")
 
     await initdata.main(path, no_input=True)
     captured = capsys.readouterr()

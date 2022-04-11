@@ -6,6 +6,7 @@ import pathlib
 
 import click
 import yaml
+from dotenv import load_dotenv
 from pydantic import BaseModel
 
 from server.application.auth.commands import CreateUser
@@ -15,6 +16,8 @@ from server.domain.auth.entities import UserRole
 from server.domain.auth.repositories import UserRepository
 from server.domain.datasets.repositories import DatasetRepository
 from server.seedwork.application.messages import MessageBus
+
+load_dotenv()
 
 info = functools.partial(click.style, fg="blue")
 success = functools.partial(click.style, fg="bright_green")
@@ -26,7 +29,7 @@ def ruler(text: str) -> str:
     return click.style(f"──── {text}", fg="magenta")
 
 
-class UserExtra(BaseModel):
+class UserExtras(BaseModel):
     role: UserRole = UserRole.USER
 
 
@@ -41,21 +44,21 @@ async def handle_user(item: dict, *, no_input: bool) -> None:
         print(f"{info('ok')}: User(email={email!r}, ...)")
         return
 
-    extra = UserExtra(**item.get("extra", {}))
+    extras = UserExtras(**item.get("extras", {}))
 
-    if extra.role == UserRole.ADMIN:
-        password = os.getenv("ADMIN_PASSWORD")
+    if extras.role == UserRole.ADMIN:
+        password = os.getenv("TOOLS_ADMIN_PASSWORD")
         if password is None:
             if no_input:
                 raise RuntimeError(
                     f"would prompt password for {email!r}, "
-                    "please set ADMIN_PASSWORD environment variable"
+                    "please set the TOOLS_ADMIN_PASSWORD environment variable"
                 )
             password = click.prompt(f"Password for {email}", hide_input=True)
         item["params"]["password"] = password
 
     command = CreateUser(**item["params"])
-    await bus.execute(command, id_=item["id"], **extra.dict())
+    await bus.execute(command, id_=item["id"], **extras.dict())
     print(f"{success('created')}: {command!r}")
 
 
