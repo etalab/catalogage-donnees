@@ -1,15 +1,15 @@
 import "@testing-library/jest-dom";
 
-import EmailCreator from "./EmailCreator.svelte";
+import ContactEmailsField from "./ContactEmailsField.svelte";
 import {
   render,
   fireEvent,
   getByRole as getByRoleIn,
 } from "@testing-library/svelte";
 
-describe("EmailCreator component", () => {
+describe("ContactEmailsField component", () => {
   test("Only one input is displayed by default", async () => {
-    const { getAllByTestId } = render(EmailCreator, {
+    const { getAllByTestId } = render(ContactEmailsField, {
       onChange: () => undefined,
     });
     const inputs = getAllByTestId("contactEmails", { exact: false });
@@ -19,7 +19,7 @@ describe("EmailCreator component", () => {
   });
 
   test("I can fill the input", async () => {
-    const { getAllByTestId } = render(EmailCreator, {
+    const { getAllByTestId } = render(ContactEmailsField, {
       onChange: () => undefined,
     });
     const inputs = getAllByTestId("contactEmails", { exact: false });
@@ -30,7 +30,7 @@ describe("EmailCreator component", () => {
   });
 
   test("I can add a few inputs", async () => {
-    const { getAllByTestId, getByRole } = render(EmailCreator, {
+    const { getAllByTestId, getByRole } = render(ContactEmailsField, {
       onChange: () => undefined,
     });
     let inputs = getAllByTestId("contactEmails", { exact: false });
@@ -45,7 +45,7 @@ describe("EmailCreator component", () => {
   });
 
   test("I can update an input value", async () => {
-    const { getAllByTestId, getByRole } = render(EmailCreator, {
+    const { getAllByTestId, getByRole } = render(ContactEmailsField, {
       onChange: () => undefined,
     });
     const addButton = getByRole("button", { name: /Ajouter/i });
@@ -62,7 +62,7 @@ describe("EmailCreator component", () => {
   });
 
   test("I can remove an input by clicking on delete button", async () => {
-    const { getAllByTestId, getByRole } = render(EmailCreator, {
+    const { getAllByTestId, getByRole } = render(ContactEmailsField, {
       onChange: () => undefined,
     });
     const addButton = getByRole("button", { name: /Ajouter/i });
@@ -88,18 +88,18 @@ describe("EmailCreator component", () => {
   });
 
   test("I can prefill the first input", async () => {
-    const { getAllByTestId } = render(EmailCreator, {
+    const { getAllByTestId } = render(ContactEmailsField, {
       contactEmails: ["hello@foo.com"],
-      onChange: () => undefined
+      onChange: () => undefined,
     });
     const inputs = getAllByTestId("contactEmails", { exact: false });
     expect((inputs[0] as HTMLInputElement).value).toBe("hello@foo.com");
   });
 
   test("I can add an input with prefilled input", async () => {
-    const { getAllByTestId, getByRole } = render(EmailCreator, {
+    const { getAllByTestId, getByRole } = render(ContactEmailsField, {
       contactEmails: ["hello@foo.com"],
-      onChange: () => undefined
+      onChange: () => undefined,
     });
     let inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(1);

@@ -7,20 +7,23 @@ type DataFormat =
   | "website"
   | "other";
 
-type Frequency =
-  | "yearly"
-  | "daily"
-  | "monthly"
+type UpdateFrequency =
   | "never"
   | "realtime"
-  | "weekly";
+  | "daily"
+  | "weekly"
+  | "monthly"
+  | "yearly";
 
 export interface DatasetHeadlines {
   title: string;
   description: string;
 }
 
-export type DatasetFormData = {
+export type Dataset = {
+  id: string;
+  createdAt: Date;
+  headlines?: DatasetHeadlines;
   title: string;
   description: string;
   formats: DataFormat[];
@@ -33,11 +36,7 @@ export type DatasetFormData = {
   description: string;
 };
 
-export type Dataset = {
-  id: string;
-  createdAt: Date;
-  headlines?: DatasetHeadlines;
-} & DatasetFormData;
+export type DatasetFormData = Omit<Dataset, "id" | "createdAt" | "headlines">;
 
 export type DatasetCreateData = DatasetFormData;
 export type DatasetUpdateData = DatasetCreateData;

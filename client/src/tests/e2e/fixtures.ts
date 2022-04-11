@@ -1,7 +1,6 @@
 import { test as base, expect, APIRequestContext } from "@playwright/test";
-import { DATA_FORMAT_SHORT_NAMES, UPDATE_FREQUENCY } from "src/constants";
 import type { Dataset } from "src/definitions/datasets";
-import { getFakeDataSet } from "src/fixtures/dataset";
+import { getFakeDataset } from "src/fixtures/dataset";
 import { toPayload } from "src/lib/transformers/dataset";
 
 /**
@@ -25,7 +24,7 @@ export const test = base.extend<AppFixtures>({
   },
 
   dataset: async ({ apiContext }, use) => {
-    const dataSet = getFakeDataSet({
+    const dataSet = getFakeDataset({
       title: "Sample title",
       description: "Sample description",
       updateFrequency: "never",

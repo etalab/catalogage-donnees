@@ -6,7 +6,7 @@
   import { DATA_FORMAT_LABELS, UPDATE_FREQUENCY } from "src/constants";
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
   import { user } from "src/lib/stores/auth";
-  import EmailCreator from "../EmailCreator/EmailCreator.svelte";
+  import ContactEmailsField from "../ContactEmailsField/ContactEmailsField.svelte";
 
   export let submitLabel = "Publier ce jeu de données";
   export let loadingLabel = "Publication en cours...";
@@ -112,13 +112,6 @@
 
 <form on:submit={handleSubmit} data-bitwarden-watching="1">
   <h2 class="fr-mt-6w">Informations générales</h2>
-
-  <p class="fr-text--md">
-    Dans un soucis de traçabilité et de facilité de mise à jour, il est
-    fondamental de pouvoir prendre contact avec l’organisation ou les personnes
-    productrices d’une donnée. Lorsqu’une demande de contact sera effectuée,
-    l’ensemble des adresses e-mail saisies recevront la notification.
-  </p>
 
   <div
     class="fr-input-group fr-my-4w {$errors.title
@@ -228,7 +221,13 @@
     {/if}
   </fieldset>
 
-  <h2 class="fr-mt-6w">Contact</h2>
+  <h2 class="fr-mt-6w">Contacts</h2>
+  <p class="fr-text--md">
+    Dans un soucis de traçabilité et de facilité de mise à jour, il est
+    fondamental de pouvoir prendre contact avec l’organisation ou les personnes
+    productrices d’une donnée. Lorsqu’une demande de contact sera effectuée,
+    l’ensemble des adresses e-mail saisies recevront la notification.
+  </p>
   <div
     class="fr-input-group fr-my-4w {$errors.service
       ? 'fr-input-group--error'
@@ -293,7 +292,7 @@
     {/if}
   </div>
 
-  <EmailCreator
+  <ContactEmailsField
     bind:errors={$errors.contactEmails}
     bind:contactEmails={$form.contactEmails}
     onChange={handleChange}
