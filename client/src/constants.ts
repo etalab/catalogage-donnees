@@ -21,10 +21,10 @@ export const DATA_FORMAT_SHORT_NAMES: { [K in DataFormat]: string } = {
 };
 
 export const UPDATE_FREQUENCY: { [K in Frequency]: string } = {
-  monthly: "Mensuelle (ou plusieures fois pas mois)",
+  never: "Aucune (contribution ponctuelle)",
+  realtime: "Permanente (temps réel)",
   daily: "Quotidienne (ou plusieures fois par jour)",
   weekly: "Hebdomadaire (ou plusieures fois par semaine)",
-  realtime: "Permanente (temps réel)",
-  never: "Aucune (contribution ponctuelle)",
+  monthly: "Mensuelle (ou plusieures fois pas mois)",
   yearly: "Annuel (ou plusieures fois par an)",
 };

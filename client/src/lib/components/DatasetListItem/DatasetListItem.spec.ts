@@ -3,10 +3,10 @@ import { render } from "@testing-library/svelte";
 
 import DatasetListItem from "./DatasetListItem.svelte";
 import type { DatasetHeadlines } from "src/definitions/datasets";
-import { getFakeDataSet } from "src/fixtures/dataset";
+import { getFakeDataset } from "src/fixtures/dataset";
 
 describe("Test the dataset list item", () => {
-  const dataset = getFakeDataSet({
+  const dataset = getFakeDataset({
     id: "uuid1",
     createdAt: new Date(),
     title: "Inventaire des arbres et forêts",

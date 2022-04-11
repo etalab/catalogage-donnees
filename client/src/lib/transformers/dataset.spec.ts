@@ -1,28 +1,41 @@
-import { getFakeDataSet } from "src/fixtures/dataset";
-import { toDataset, toPayload } from "./dataset";
+import { getFakeDataset } from "src/fixtures/dataset";
+import {
+  toDataset,
+  toPayload,
+  camelToUnderscore,
+  transformKeysToUnderscoreCase,
+} from "./dataset";
 
 describe("transformers -- dataset", () => {
+  describe("transformKeysToUnderscoreCase", () => {
+    const text = "helloWorld";
+    const result = camelToUnderscore(text);
+    expect(result).toBe("hello_world");
+  });
+
+  describe("transformKeysToUnderscoreCase", () => {
+    const input = {
+      helloWorld: "hello",
+      fooBaz: "hello",
+    };
+    const result = transformKeysToUnderscoreCase(input);
+
+    expect(Object.keys(result).every((key) => key.includes("_"))).toBe(true);
+  });
+
   describe("toPayload", () => {
-    const dataset = getFakeDataSet({});
+    const dataset = getFakeDataset();
     const result = toPayload(dataset);
-    const keys = Object.keys(result);
-    [
-      "entrypoint_email",
-      "contact_emails",
-      "first_published_at",
-      "update_frequency",
-      "last_updated_at",
-    ].forEach((item) => {
-      expect(keys).toContain(item);
-    });
+    expect(Object.keys(result).every((key) => key === key.toLowerCase())).toBe(
+      true
+    );
   });
 
   describe("toDataset", () => {
-    const dataset = toPayload(getFakeDataSet({}));
+    const dataset = toPayload(getFakeDataset());
     const result = toDataset(dataset);
-    const keys = Object.keys(result);
-    ["entrypointEmail", "contactEmails", "updateFrequency"].forEach((item) => {
-      expect(keys).toContain(item);
-    });
+    expect(Object.keys(result).every((key) => key === key.toLowerCase())).toBe(
+      false
+    );
   });
 });

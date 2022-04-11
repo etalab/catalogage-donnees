@@ -59,7 +59,6 @@ describe("Test the dataset form", () => {
     expect(inputs[0]).toHaveAttribute("type", "email");
   });
 
-
   test("The submit button is present", () => {
     const { getByRole } = render(DatasetForm);
     expect(getByRole("button", { name: /Publier/i })).toBeInTheDocument();

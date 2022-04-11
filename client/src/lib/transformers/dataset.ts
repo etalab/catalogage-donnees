@@ -1,21 +1,29 @@
 import format from "date-fns/format";
 import type { Dataset } from "src/definitions/datasets";
 
-export const toPayload = (data: Partial<Record<keyof Dataset, any>>) => {
-  const {
-    entrypointEmail,
-    contactEmails,
-    updateFrequency,
-    lastUpdatedAt,
-    ...rest
-  } = data;
+export const camelToUnderscore = (key: string): string => {
+  return key.replace(/([A-Z])/g, "_$1").toLowerCase();
+};
+
+export const transformKeysToUnderscoreCase = (object: {
+  [K: string]: unknown;
+}): { [K: string]: unknown } => {
+  return Object.keys(object).reduce((previous, current) => {
+    return {
+      ...previous,
+      [camelToUnderscore(current)]: object[current],
+    };
+  }, {});
+};
+
+export const toPayload = (
+  data: Partial<Record<keyof Dataset, any>>
+): { [K: string]: unknown } => {
+  const transformed = transformKeysToUnderscoreCase(data);
   return {
-    ...rest,
-    entrypoint_email: entrypointEmail,
-    contact_emails: contactEmails,
+    ...transformed,
     first_published_at: new Date().toISOString(),
-    update_frequency: updateFrequency,
-    last_updated_at: new Date(lastUpdatedAt).toISOString(),
+    last_updated_at: new Date(data.lastUpdatedAt).toISOString(),
   };
 };
 
