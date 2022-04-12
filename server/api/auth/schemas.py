@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, SecretStr
 
 from server.domain.auth.entities import UserRole
 from server.domain.common.types import ID
@@ -20,12 +20,12 @@ class UserAuthenticatedRead(BaseModel):
 
 class UserCreate(BaseModel):
     email: EmailStr
-    password: str
+    password: SecretStr
 
 
 class UserLogin(BaseModel):
     email: EmailStr
-    password: str
+    password: SecretStr
 
 
 class CheckAuthResponse(BaseModel):
