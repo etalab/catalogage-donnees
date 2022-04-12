@@ -1,7 +1,6 @@
 <script lang="ts">
   export let contactEmails: string[] = [""];
   export let errors: string[] = [];
-  export let onChange: (event: Event) => any;
 
   const add = () => {
     contactEmails = contactEmails.concat("");
@@ -47,8 +46,8 @@
             data-testid="contactEmails"
             placeholder="email"
             name={`contactEmails[${i}]`}
-            on:change={onChange}
-            on:blur={onChange}
+            on:change
+            on:blur
             bind:value={contactEmails[i]}
           />
           <button

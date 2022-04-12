@@ -294,7 +294,8 @@
   <ContactEmailsField
     bind:errors={emailErrors}
     bind:contactEmails={$form.contactEmails}
-    onChange={handleChange}
+    on:blur={handleChange}
+    on:change={handleChange}
   />
 
   <h2 class="fr-mt-6w">Mise à jour</h2>
