@@ -22,7 +22,6 @@ export const toPayload = (
   const transformed = transformKeysToUnderscoreCase(data);
   return {
     ...transformed,
-    first_published_at: new Date().toISOString(),
     last_updated_at: new Date(data.lastUpdatedAt).toISOString(),
   };
 };

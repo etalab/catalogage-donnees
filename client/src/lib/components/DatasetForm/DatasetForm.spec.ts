@@ -1,12 +1,9 @@
 import "@testing-library/jest-dom";
 
 import DatasetForm from "./DatasetForm.svelte";
-import {
-  render,
-  fireEvent,
-  getByRole as getByRoleIn,
-} from "@testing-library/svelte";
+import { render, fireEvent } from "@testing-library/svelte";
 import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
+import { UPDATE_FREQUENCY } from "src/constants";
 
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
@@ -81,6 +78,9 @@ describe("Test the dataset form", () => {
       formats: ["website"],
       entrypointEmail: "service.initial@example.org",
       contactEmails: ["person@example.org"],
+      service: "A nice service",
+      lastUpdatedAt: new Date().toISOString(),
+      updateFrequency: UPDATE_FREQUENCY.never,
     };
     const props = { initial };
 

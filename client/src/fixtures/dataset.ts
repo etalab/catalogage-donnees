@@ -10,7 +10,6 @@ export const getFakeDataset = (dataset: Partial<Dataset> = {}): Dataset => {
     id: dataset.id || "xxx-xxx-xxx",
     formats: dataset.formats || [],
     description: dataset.description || "un joli jeu de donnée",
-    firstPublishedAt: dataset.firstPublishedAt || new Date().toISOString(),
     lastUpdatedAt: dataset.lastUpdatedAt || new Date().toISOString(),
     createdAt: dataset.createdAt || new Date(),
     service: dataset.service || "La Drac",
@@ -27,8 +26,6 @@ export const getFakeDataSetFormData = (
     entrypointEmail: datasetFormData.entrypointEmail || "jane.doe@beta.gouv.fr",
     formats: datasetFormData.formats || [],
     description: datasetFormData.description || "un joli jeu de donnée",
-    firstPublishedAt:
-      datasetFormData.firstPublishedAt || new Date().toISOString(),
     lastUpdatedAt: datasetFormData.lastUpdatedAt || new Date().toISOString(),
     service: datasetFormData.service || "La Drac",
   };

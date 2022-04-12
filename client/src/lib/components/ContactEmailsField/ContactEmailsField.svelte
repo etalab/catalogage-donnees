@@ -12,7 +12,9 @@
     contactEmails = contactEmails.filter((_, itemIndex) => {
       return i !== itemIndex;
     });
-    errors = errors.filter((u, j) => j !== i);
+    errors = errors.filter((_, itemIndex) => {
+      return i !== itemIndex;
+    });
   };
 </script>
 

@@ -6,7 +6,6 @@ import type { Dataset } from "src/definitions/datasets";
 import { getFakeDataset } from "src/fixtures/dataset";
 
 describe("Test the dataset list", () => {
-  const now = new Date();
   const fakeDatasets: Dataset[] = [
     getFakeDataset({
       id: "1",
