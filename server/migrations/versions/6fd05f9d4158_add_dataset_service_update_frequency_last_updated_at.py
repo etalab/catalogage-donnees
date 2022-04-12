@@ -1,7 +1,7 @@
 """add-dataset-service-update_frequency-last_updated_at
 
 Revision ID: 6fd05f9d4158
-Revises: 67a6c2bf0696
+Revises: 1cbaaf0d013b
 Create Date: 2022-04-05 12:24:18.910412
 
 """
@@ -10,7 +10,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "6fd05f9d4158"
-down_revision = "67a6c2bf0696"
+down_revision = "1cbaaf0d013b"
 branch_labels = None
 depends_on = None
 
