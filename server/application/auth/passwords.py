@@ -1,11 +1,13 @@
 import secrets
 
+from pydantic import SecretStr
+
 
 class PasswordEncoder:
-    def hash(self, value: str) -> str:
+    def hash(self, password: SecretStr) -> str:
         raise NotImplementedError  # pragma: no cover
 
-    def verify(self, password: str, hash: str) -> bool:
+    def verify(self, password: SecretStr, hash: str) -> bool:
         raise NotImplementedError  # pragma: no cover
 
 
