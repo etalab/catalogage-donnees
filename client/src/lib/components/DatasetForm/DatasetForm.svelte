@@ -17,7 +17,7 @@
     description: "",
     formats: [],
     entrypointEmail: "",
-    contactEmails: [$user?.email] || [""],
+    contactEmails: [$user?.email || ""],
     service: "",
     lastUpdatedAt: "",
     updateFrequency: "",
