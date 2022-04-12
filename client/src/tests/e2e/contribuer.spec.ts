@@ -55,7 +55,7 @@ test.describe("Basic form submission", () => {
     await lastUpdatedAt.fill("2000-05-05");
     expect(await lastUpdatedAt.inputValue()).toBe(lastUpdatedAtDate);
 
-    const updateFrequency = page.locator("#updateFrequency");
+    const updateFrequency = page.locator("form [name=updateFrequency]");
     await updateFrequency.selectOption({ label: UPDATE_FREQUENCY.daily });
 
     const button = page.locator("button[type='submit']");
@@ -75,6 +75,7 @@ test.describe("Basic form submission", () => {
     expect(json).toHaveProperty("id");
     expect(json.update_frequency).toBe("daily");
     expect(json.last_updated_at).toEqual("2000-05-05T00:00:00+00:00");
+    expect(json.service).toBe(serviceText);
 
     await page.locator("text='Proposer une modification'").waitFor();
   });

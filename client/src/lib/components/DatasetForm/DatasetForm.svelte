@@ -85,9 +85,12 @@
           )
           .filter(Boolean);
 
+        const contactEmails = values.contactEmails.filter(Boolean);
+
         const data: DatasetFormData = {
           ...values,
           formats,
+          contactEmails,
         };
 
         dispatch("save", data);
@@ -353,7 +356,7 @@
       on:change={handleChange}
       on:blur={handleChange}
     >
-      <option>Selecectionner une option</option>
+      <option value="" selected disabled hidden>Sélectionner une option</option>
       {#each Object.keys(UPDATE_FREQUENCY) as frequency}
         <option value={frequency}>{UPDATE_FREQUENCY[frequency]}</option>
       {/each}

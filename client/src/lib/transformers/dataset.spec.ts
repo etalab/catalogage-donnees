@@ -1,4 +1,4 @@
-import { getFakeDataset } from "src/fixtures/dataset";
+import { getFakeDataset } from "src/tests/factories/dataset";
 import {
   toDataset,
   toPayload,

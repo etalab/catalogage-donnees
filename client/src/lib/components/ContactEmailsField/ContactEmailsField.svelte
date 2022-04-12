@@ -24,19 +24,19 @@
   >
     E-mail(s) de contact
     <span class="fr-hint-text" id="contactEmails-desc-hint">
-      Vous pouvez ajouter des adresses e-mail personnelles en complément
-      l'dresse fonctionnelle. Ces emails seront régulièrement vérifiés afin
+      Vous pouvez ajouter des adresses e-mail personnelles en complément l'
+      adresse fonctionnelle. Ces emails seront régulièrement vérifiés afin
       d'assurer la bonne maintenabilité des jeux de données.
     </span>
   </legend>
 
-  <ul class="fr-fieldset__content fr-raw-list  fr-mb-3w">
+  <ul class="fr-fieldset__content fr-raw-list fr-mb-3w">
     {#each contactEmails as _, i}
       <li>
-        <div class="contact-entries">
+        <div class="contact-entry">
           <label for="contactEmails-{i}" hidden>Contact {i}</label>
           <input
-            class="fr-input"
+            class="fr-input fr-mr-1w"
             class:fr-input--error={errors[i]}
             aria-describedby={errors[i]
               ? `contactEmails-${i}-desc-error`
@@ -44,8 +44,8 @@
             type="email"
             id="contactEmails-{i}"
             data-testid="contactEmails"
-            placeholder="email"
-            name={`contactEmails[${i}]`}
+            placeholder="Adresse e-mail"
+            name={contactEmails[i]}
             on:change
             on:blur
             bind:value={contactEmails[i]}
@@ -69,7 +69,7 @@
 
   <button
     type="button"
-    class="fr-btn fr-btn--secondary fr-fi-edit-fill fr-btn--icon-left contact-entries-add"
+    class="fr-btn fr-btn--secondary fr-fi-edit-fill fr-btn--icon-left contact-entry-add"
     on:click|preventDefault={() => add()}
   >
     Ajouter un contact
@@ -77,7 +77,7 @@
 </fieldset>
 
 <style>
-  .contact-entries {
+  .contact-entry {
     display: flex;
     margin: 8px 0;
   }

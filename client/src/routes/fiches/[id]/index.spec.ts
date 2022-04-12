@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 
 import { render } from "@testing-library/svelte";
 import index from "./index.svelte";
-import { getFakeDataset } from "src/fixtures/dataset";
+import { getFakeDataset } from "src/tests/factories/dataset";
 
 const dataset = getFakeDataset({
   id: "d4765f06-ccdf-4bae-b237-2bced67e6dc2",

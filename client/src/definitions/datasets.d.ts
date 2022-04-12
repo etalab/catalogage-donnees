@@ -32,7 +32,6 @@ export type Dataset = {
   service: string;
   updateFrequency: string;
   lastUpdatedAt: string;
-  description: string;
 };
 
 export type DatasetFormData = Omit<Dataset, "id" | "createdAt" | "headlines">;

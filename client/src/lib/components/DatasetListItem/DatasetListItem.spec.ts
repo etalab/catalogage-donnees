@@ -3,7 +3,7 @@ import { render } from "@testing-library/svelte";
 
 import DatasetListItem from "./DatasetListItem.svelte";
 import type { DatasetHeadlines } from "src/definitions/datasets";
-import { getFakeDataset } from "src/fixtures/dataset";
+import { getFakeDataset } from "src/tests/factories/dataset";
 
 describe("Test the dataset list item", () => {
   const dataset = getFakeDataset({
@@ -11,9 +11,6 @@ describe("Test the dataset list item", () => {
     createdAt: new Date(),
     title: "Inventaire des arbres et forêts",
     description: "Fichier de l'ensemble des arbres et forêts de France.",
-    formats: ["database"],
-    entrypointEmail: "forets@ign.fr",
-    contactEmails: [""],
   });
 
   test("The title is present", () => {

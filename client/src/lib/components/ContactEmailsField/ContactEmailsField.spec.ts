@@ -19,7 +19,7 @@ describe("ContactEmailsField component", () => {
   test("I can fill the input", async () => {
     const { getAllByTestId } = render(ContactEmailsField);
     const inputs = getAllByTestId("contactEmails", { exact: false });
-    await fireEvent.blur(inputs[0], {
+    await fireEvent.input(inputs[0], {
       target: { value: "contact@example.org" },
     });
     expect((inputs[0] as HTMLInputElement).value).toBe("contact@example.org");
@@ -46,7 +46,7 @@ describe("ContactEmailsField component", () => {
     const inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(3);
 
-    await fireEvent.blur(inputs[2], {
+    await fireEvent.input(inputs[2], {
       target: { value: "contact@example.org" },
     });
     expect((inputs[0] as HTMLInputElement).value).toBe("");
@@ -61,7 +61,7 @@ describe("ContactEmailsField component", () => {
     await fireEvent.click(addButton);
     let inputs = getAllByTestId("contactEmails", { exact: false });
 
-    await fireEvent.blur(inputs[2], {
+    await fireEvent.input(inputs[2], {
       target: { value: "contact@example.org" },
     });
     expect(inputs.length).toBe(4);
@@ -97,7 +97,7 @@ describe("ContactEmailsField component", () => {
     await fireEvent.click(addButton);
     inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(2);
-    await fireEvent.blur(inputs[1], {
+    await fireEvent.input(inputs[1], {
       target: { value: "contact@example.org" },
     });
 

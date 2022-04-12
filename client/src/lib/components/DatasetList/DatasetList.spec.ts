@@ -3,7 +3,7 @@ import { render } from "@testing-library/svelte";
 
 import DatasetList from "./DatasetList.svelte";
 import type { Dataset } from "src/definitions/datasets";
-import { getFakeDataset } from "src/fixtures/dataset";
+import { getFakeDataset } from "src/tests/factories/dataset";
 
 describe("Test the dataset list", () => {
   const fakeDatasets: Dataset[] = [

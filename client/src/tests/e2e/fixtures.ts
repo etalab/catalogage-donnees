@@ -1,6 +1,6 @@
 import { test as base, expect, APIRequestContext } from "@playwright/test";
 import type { Dataset } from "src/definitions/datasets";
-import { getFakeDataset } from "src/fixtures/dataset";
+import { getFakeDataset } from "src/tests/factories/dataset";
 import { toPayload } from "src/lib/transformers/dataset";
 
 /**
