@@ -1,10 +1,12 @@
+from pydantic import SecretStr
+
 from server.domain.auth.entities import User
 from server.seedwork.application.queries import Query
 
 
 class Login(Query[User]):
     email: str
-    password: str
+    password: SecretStr
 
 
 class GetUserByEmail(Query[User]):
