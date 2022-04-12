@@ -30,7 +30,6 @@ export type Dataset = {
   entrypointEmail: string;
   contactEmails: string[];
   service: string;
-  firstPublishedAt: string;
   updateFrequency: string;
   lastUpdatedAt: string;
   description: string;

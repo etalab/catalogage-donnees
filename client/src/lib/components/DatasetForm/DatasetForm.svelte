@@ -21,7 +21,6 @@
     service: "",
     lastUpdatedAt: "",
     updateFrequency: "",
-    firstPublishedAt: "",
   };
 
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
@@ -30,7 +29,6 @@
     title: string;
     description: string;
     dataFormats: boolean[];
-    firstPublishedAt: string;
     entrypointEmail: string;
     contactEmails: string[];
     service: string;
@@ -53,7 +51,6 @@
     service: initial.service,
     lastUpdatedAt: initial.lastUpdatedAt,
     updateFrequency: initial.updateFrequency,
-    firstPublishedAt: initial.firstPublishedAt,
   };
 
   // Handle this value manually.
@@ -98,6 +95,8 @@
     });
 
   $: saveBtnLabel = loading ? loadingLabel : submitLabel;
+
+  $: emailErrors = $errors.contactEmails as unknown as string[];
 
   const hasError = (error: string | string[]) => {
     return typeof error === "string" && Boolean(error);
@@ -293,7 +292,7 @@
   </div>
 
   <ContactEmailsField
-    bind:errors={$errors.contactEmails}
+    bind:errors={emailErrors}
     bind:contactEmails={$form.contactEmails}
     onChange={handleChange}
   />
