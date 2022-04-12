@@ -3,12 +3,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from server.application.auth.commands import CreateUser, DeleteUser
 from server.application.auth.queries import GetUserByEmail, Login
 from server.config.di import resolve
-from server.domain.auth.entities import User
+from server.domain.auth.entities import User, UserRole
 from server.domain.auth.exceptions import EmailAlreadyExists, LoginFailed
 from server.domain.common.types import ID
 from server.seedwork.application.messages import MessageBus
 
-from .dependencies import current_user
+from .dependencies import HasRole, IsAuthenticated
 from .schemas import (
     CheckAuthResponse,
     UserAuthenticatedRead,
@@ -20,7 +20,12 @@ from .schemas import (
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/users/", response_model=UserRead, status_code=201)
+@router.post(
+    "/users/",
+    dependencies=[Depends(IsAuthenticated()), Depends(HasRole(UserRole.ADMIN))],
+    response_model=UserRead,
+    status_code=201,
+)
 async def create_user(data: UserCreate) -> User:
     bus = resolve(MessageBus)
 
@@ -47,7 +52,11 @@ async def login(data: UserLogin) -> None:
         raise HTTPException(401, detail=str(exc))
 
 
-@router.delete("/users/{id}/", status_code=204)
+@router.delete(
+    "/users/{id}/",
+    dependencies=[Depends(IsAuthenticated()), Depends(HasRole(UserRole.ADMIN))],
+    status_code=204,
+)
 async def delete_user(id: ID) -> None:
     bus = resolve(MessageBus)
 
@@ -55,6 +64,6 @@ async def delete_user(id: ID) -> None:
     await bus.execute(command)
 
 
-@router.get("/check/")
-async def check_auth(_: User = Depends(current_user)) -> CheckAuthResponse:
+@router.get("/check/", dependencies=[Depends(IsAuthenticated())])
+async def check_auth() -> CheckAuthResponse:
     return CheckAuthResponse()
