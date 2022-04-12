@@ -13,25 +13,12 @@
 </script>
 
 <script lang="ts">
-  import { goto } from "$app/navigation";
   import paths from "$lib/paths";
   import type { Dataset } from "src/definitions/datasets";
-  import { isAdmin, user } from "src/lib/stores/auth";
 
   export let dataset: Dataset;
 
   const editUrl = paths.datasetEdit({ id: dataset.id });
-
-  const onClickDelete = async (): Promise<void> => {
-    const confirmed = confirm(
-      "Voulez-vous vraiment supprimer ce jeu de données ? Cette opération est irréversible."
-    );
-    if (!confirmed) {
-      return;
-    }
-    await deleteDataset({ fetch, apiToken: $user.apiToken, id: dataset.id });
-    await goto(paths.home);
-  };
 </script>
 
 <section class="fr-container header">
@@ -231,24 +218,6 @@
     </div>
   </section>
 </section>
-
-{#if $isAdmin}
-  <section class="fr-container">
-    <div class="fr-alert fr-alert--error">
-      <p>
-        <strong> Zone de danger </strong>
-        <em>(visible car vous avez le rôle admin)</em>
-      </p>
-
-      <button
-        class="fr-btn fr-btn--secondary"
-        on:click|preventDefault={onClickDelete}
-      >
-        Supprimer ce jeu de données
-      </button>
-    </div>
-  </section>
-{/if}
 
 <style>
   .header {

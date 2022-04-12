@@ -18,6 +18,8 @@
   import type { Dataset, DatasetFormData } from "src/definitions/datasets";
   import DatasetForm from "$lib/components/DatasetForm/DatasetForm.svelte";
   import paths from "$lib/paths";
+  import { isAdmin, user } from "$lib/stores/auth";
+  import { deleteDataset } from "$lib/repositories/datasets";
 
   export let dataset: Dataset;
 
@@ -32,6 +34,19 @@
     } finally {
       loading = false;
     }
+  };
+
+  const onClickDelete = async (): Promise<void> => {
+    const confirmed = confirm(
+      "Voulez-vous vraiment supprimer ce jeu de données ? Cette opération est irréversible."
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    await deleteDataset({ fetch, apiToken: $user.apiToken, id: dataset.id });
+    await goto(paths.home);
   };
 </script>
 
@@ -48,5 +63,21 @@
       loadingLabel="Modification en cours..."
       on:save={onSave}
     />
+
+    {#if $isAdmin}
+      <div class="fr-alert fr-alert--error fr-mt-8w">
+        <p>
+          <strong> Zone de danger </strong>
+          <em>(visible car vous avez le rôle admin)</em>
+        </p>
+
+        <button
+          class="fr-btn fr-btn--secondary"
+          on:click|preventDefault={onClickDelete}
+        >
+          Supprimer ce jeu de données
+        </button>
+      </div>
+    {/if}
   </div>
 </section>
