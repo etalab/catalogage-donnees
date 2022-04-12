@@ -1,12 +1,12 @@
 import uuid
 from typing import Optional
 
-from sqlalchemy import Column, String, delete, select
+from sqlalchemy import Column, Enum, String, delete, select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import NoResultFound
 
 from server.application.auth.passwords import API_TOKEN_LENGTH
-from server.domain.auth.entities import User
+from server.domain.auth.entities import User, UserRole
 from server.domain.auth.repositories import UserRepository
 from server.domain.common.types import ID
 
@@ -19,6 +19,7 @@ class UserModel(Base):
     id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True)
     email = Column(String, nullable=False, unique=True, index=True)
     password_hash = Column(String, nullable=False)
+    role = Column(Enum(UserRole, name="user_role_enum"), nullable=False)
     api_token = Column(String(API_TOKEN_LENGTH), nullable=False)
 
 
@@ -54,6 +55,7 @@ class SqlUserRepository(UserRepository):
                 id=entity.id,
                 email=entity.email,
                 password_hash=entity.password_hash,
+                role=entity.role,
                 api_token=entity.api_token,
             )
 

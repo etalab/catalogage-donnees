@@ -44,12 +44,21 @@ Les données à charger sont définies dans le fichier YAML `tools/initdata.yml`
 
 ```yaml
 users:
-  - id: "<UUID>"
+  - # Utilisateur standard.
+    id: "<UUID>"
     params:
       email: "<email>"
       password: "<password>"
+  - # Utilisateur admin.
+    # Mot de passe défini par $TOOLS_ADMIN_PASSWORD,
+    # ou demandé en ligne de commande si vide.
+    id: "<UUID>"
+    params:
+      email: "<email>"
+    extras:
+      role: ADMIN
   - # ...
-  
+
 datasets:
   - id: "<UUID>"
     params:
