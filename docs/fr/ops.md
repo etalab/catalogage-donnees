@@ -49,16 +49,29 @@ Par ailleurs :
 
 ## Installation
 
+**Prérequis** :
+
+- Accès en SSH aux instances cloud (demander à un membre de l'équipe).
+- Mot de passe de déploiement (demander à un membre de l'équipe qui vous l'enverra de façon sécurisée).
+
 Installez les dépendances supplémentaires pour interagir avec les outils d'infrastructure :
 
 ```
 make install-ops
 ```
 
-Munissez-vous également du mot de passe de déploiement, puis placez-le dans :
+Placez le mot de passe de déploiement dans :
 
 ```
 ops/ansible/vault-password
+```
+
+> Ce fichier est ignoré par git.
+
+Vérifiez ensuite votre configuration avec :
+
+```
+cd ops && make ping env=staging
 ```
 
 ## Usage
