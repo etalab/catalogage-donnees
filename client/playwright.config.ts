@@ -1,4 +1,10 @@
+import path from "path";
+import dotenv from "dotenv";
 import { Config } from "@playwright/test";
+
+dotenv.config({
+  path: path.resolve("..", ".env"),
+});
 
 const config: Config = {
   testDir: "./src/tests/e2e/",
@@ -11,6 +17,14 @@ const config: Config = {
     screenshot: "only-on-failure",
     video: "on-first-retry",
   },
+  projects: [
+    {
+      name: "default",
+      use: {
+        adminTestPassword: process.env.TOOLS_ADMIN_PASSWORD,
+      },
+    },
+  ],
 };
 
 export default config;

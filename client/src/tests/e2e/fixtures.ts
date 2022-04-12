@@ -10,6 +10,7 @@ import type { Dataset } from "src/definitions/datasets";
 
 type AppFixtures = {
   apiContext: APIRequestContext;
+  adminTestPassword: string;
   adminApiToken: string;
   dataset: Dataset;
 };
@@ -22,8 +23,13 @@ export const test = base.extend<AppFixtures>({
     await apiContext.dispose();
   },
 
-  adminApiToken: async ({ apiContext }, use) => {
-    const data = { email: "admin@catalogue.data.gouv.fr", password: "admin" };
+  adminTestPassword: ["admin", { option: true }],
+
+  adminApiToken: async ({ apiContext, adminTestPassword }, use) => {
+    const data = {
+      email: "admin@catalogue.data.gouv.fr",
+      password: adminTestPassword,
+    };
     const response = await apiContext.post("/auth/login/", { data });
     expect(response.ok()).toBeTruthy();
     const { api_token: apiToken } = await response.json();
