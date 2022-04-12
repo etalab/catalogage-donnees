@@ -1,6 +1,8 @@
 import { expect } from "@playwright/test";
-import { STATE_AUTHENTICATED } from "./constants";
+import { STATE_AUTHENTICATED, STATE_AUTHENTICATED_ADMIN } from "./constants";
 import { test } from "./fixtures";
+
+const DELETE_DATASET_BUTTON_LOCATOR = "text=Supprimer ce jeu de données";
 
 test.describe("Edit dataset", () => {
   test.use({ storageState: STATE_AUTHENTICATED });
@@ -53,5 +55,40 @@ test.describe("Edit dataset", () => {
     expect(json.title).toBe(newTitleText);
     expect(json.description).toBe(newDescriptionText);
     expect(json.formats).toStrictEqual(["database", "website"]);
+  });
+
+  test("Does not see delete button", async ({ page, dataset }) => {
+    await page.goto(`/fiches/${dataset.id}/edit`);
+    const deleteButton = page.locator(DELETE_DATASET_BUTTON_LOCATOR);
+    await expect(deleteButton).not.toBeVisible();
+  });
+});
+
+test.describe("Edit dataset as admin", () => {
+  test.use({ storageState: STATE_AUTHENTICATED_ADMIN });
+
+  test("Deletes dataset via edit page", async ({ page, dataset }) => {
+    await page.goto(`/fiches/${dataset.id}/edit`);
+
+    let confirmShown = false;
+    page.on("dialog", async (dialog) => {
+      expect(dialog.type()).toBe("confirm");
+      confirmShown = true;
+      await dialog.accept();
+    });
+
+    const deleteButton = page.locator(DELETE_DATASET_BUTTON_LOCATOR);
+
+    await Promise.all([
+      page.waitForRequest((request) => request.method() === "DELETE"),
+      page.waitForResponse((response) => response.status() === 204),
+      deleteButton.click(),
+    ]);
+    await page.waitForURL("/");
+    expect(confirmShown).toBe(true);
+
+    await page.goto(`/fiches/${dataset.id}`);
+    const response = await page.waitForResponse(`**/datasets/${dataset.id}/`);
+    expect(response.status()).toBe(404);
   });
 });

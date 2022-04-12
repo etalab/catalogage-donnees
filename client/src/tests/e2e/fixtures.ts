@@ -8,22 +8,27 @@ import type { Dataset } from "src/definitions/datasets";
  * See: https://playwright.dev/docs/test-api-testing#sending-api-requests-from-ui-tests
  */
 
+type AppOptions = {
+  adminTestPassword: string;
+};
+
 type AppFixtures = {
   apiContext: APIRequestContext;
-  adminTestPassword: string;
   adminApiToken: string;
   dataset: Dataset;
 };
 
-export const test = base.extend<AppFixtures>({
+export type AppTestArgs = AppOptions & AppFixtures;
+
+export const test = base.extend<AppTestArgs>({
+  adminTestPassword: ["admin", { option: true }],
+
   apiContext: async ({ playwright }, use) => {
     const baseURL = "http://localhost:3579";
     const apiContext = await playwright.request.newContext({ baseURL });
     await use(apiContext);
     await apiContext.dispose();
   },
-
-  adminTestPassword: ["admin", { option: true }],
 
   adminApiToken: async ({ apiContext, adminTestPassword }, use) => {
     const data = {

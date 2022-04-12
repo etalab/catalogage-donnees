@@ -1,14 +1,15 @@
 import path from "path";
 import dotenv from "dotenv";
-import { Config } from "@playwright/test";
+import type { PlaywrightTestConfig } from "@playwright/test";
+import type { AppTestArgs } from "src/tests/e2e/fixtures";
 
 dotenv.config({
   path: path.resolve("..", ".env"),
 });
 
-const config: Config = {
-  testDir: "./src/tests/e2e/",
-  globalSetup: "./src/tests/e2e/global-setup.ts",
+const config: PlaywrightTestConfig<AppTestArgs> = {
+  testDir: "./tests/e2e/",
+  globalSetup: "./tests/e2e/global-setup.ts",
   retries: 3,
   use: {
     baseURL: "http://localhost:3000",

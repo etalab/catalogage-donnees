@@ -19,6 +19,7 @@ jobs:
 
     env:
       APP_DATABASE_URL: "postgresql+asyncpg://username:password@localhost:5432/catalogage"
+      TOOLS_ADMIN_PASSWORD: admin
 
     steps:
       - uses: actions/checkout@v2
@@ -49,8 +50,6 @@ jobs:
 
       - name: "Initialize data"
         run: make initdata
-        env:
-          TOOLS_ADMIN_PASSWORD: admin
 
       - name: "Run checks"
         run: make check
