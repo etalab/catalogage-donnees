@@ -10,13 +10,13 @@ describe("transformers -- selectOption", () => {
 
       expect(toSelectOption(source)).toEqual([
         {
-          value: "bar",
-          label: "foo",
+          value: "foo",
+          label: "bar",
           id: "bar-0",
         },
         {
-          value: "taz",
-          label: "baz",
+          value: "baz",
+          label: "taz",
           id: "taz-1",
         },
       ]);

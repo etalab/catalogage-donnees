@@ -12,6 +12,8 @@
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
   import { user } from "src/lib/stores/auth";
   import ContactEmailsField from "../ContactEmailsField/ContactEmailsField.svelte";
+  import Select from "../Select/Select.svelte";
+  import { toSelectOption } from "src/lib/transformers/selectOption";
 
   export let submitLabel = "Publier ce jeu de données";
   export let loadingLabel = "Publication en cours...";
@@ -380,32 +382,16 @@
     </div>
   </div>
 
-  <div class="fr-select-group">
-    <label class="fr-label" for="updateFrequency">
-      Fréquence de mise à jour
-    </label>
-    <select
-      class="fr-select"
-      bind:value={$form.updateFrequency}
-      id="updateFrequency"
-      name="updateFrequency"
-      on:change={handleUpdateFrequencyChange}
-      on:blur={handleUpdateFrequencyChange}
-    >
-      <option value={null} selected disabled hidden
-        >Sélectionner une option</option
-      >
-      {#each Object.keys(UPDATE_FREQUENCY_LABELS) as frequency}
-        <option value={frequency}>{UPDATE_FREQUENCY_LABELS[frequency]}</option>
-      {/each}
-    </select>
-
-    {#if $errors.updateFrequency}
-      <p id="title-desc-error" class="fr-error-text">
-        {$errors.updateFrequency}
-      </p>
-    {/if}
-  </div>
+  <Select
+    options={toSelectOption(UPDATE_FREQUENCY_LABELS)}
+    id="updateFrequency"
+    name="updateFrequency"
+    required
+    label="Fréquence de mise à jour"
+    on:change={handleChange}
+    on:blur={handleChange}
+    error={$errors.updateFrequency}
+  />
 
   <div class="fr-input-group fr-mt-9w">
     <button type="submit" class="fr-btn">
