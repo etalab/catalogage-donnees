@@ -1,4 +1,3 @@
-import format from "date-fns/format";
 import type { Dataset } from "src/definitions/datasets";
 
 export const camelToUnderscore = (key: string): string => {
@@ -41,6 +40,6 @@ export const toDataset = (item: any): Dataset => {
     entrypointEmail: entrypoint_email,
     contactEmails: contact_emails,
     updateFrequency: update_frequency,
-    lastUpdatedAt: format(new Date(last_updated_at), "yyyy-MM-dd"),
+    lastUpdatedAt: last_updated_at ? new Date(last_updated_at) : null,
   };
 };

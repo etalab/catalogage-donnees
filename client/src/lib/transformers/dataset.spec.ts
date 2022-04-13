@@ -7,13 +7,13 @@ import {
 } from "./dataset";
 
 describe("transformers -- dataset", () => {
-  describe("transformKeysToUnderscoreCase", () => {
+  test("transformKeysToUnderscoreCase", () => {
     const text = "helloWorld";
     const result = camelToUnderscore(text);
     expect(result).toBe("hello_world");
   });
 
-  describe("transformKeysToUnderscoreCase", () => {
+  test("transformKeysToUnderscoreCase", () => {
     const input = {
       helloWorld: "hello",
       fooBaz: "hello",
@@ -23,7 +23,7 @@ describe("transformers -- dataset", () => {
     expect(Object.keys(result).every((key) => key.includes("_"))).toBe(true);
   });
 
-  describe("toPayload", () => {
+  test("toPayload", () => {
     const dataset = getFakeDataset();
     const result = toPayload(dataset);
     expect(Object.keys(result).every((key) => key === key.toLowerCase())).toBe(
@@ -31,7 +31,7 @@ describe("transformers -- dataset", () => {
     );
   });
 
-  describe("toDataset", () => {
+  test("toDataset", () => {
     const dataset = toPayload(getFakeDataset());
     const result = toDataset(dataset);
     expect(Object.keys(result).every((key) => key === key.toLowerCase())).toBe(

@@ -2,8 +2,13 @@
   import * as yup from "yup";
   import { createEventDispatcher } from "svelte";
   import { createForm } from "svelte-forms-lib";
-  import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
+  import type {
+    DataFormat,
+    DatasetFormData,
+    UpdateFrequency,
+  } from "src/definitions/datasets";
   import { DATA_FORMAT_LABELS, UPDATE_FREQUENCY } from "src/constants";
+  import { formatHTMLDate } from "$lib/util/format";
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
   import { user } from "src/lib/stores/auth";
   import ContactEmailsField from "../ContactEmailsField/ContactEmailsField.svelte";
@@ -19,8 +24,8 @@
     entrypointEmail: "",
     contactEmails: [$user?.email || ""],
     service: "",
-    lastUpdatedAt: "",
-    updateFrequency: "",
+    lastUpdatedAt: null,
+    updateFrequency: null,
   };
 
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
@@ -32,8 +37,8 @@
     entrypointEmail: string;
     contactEmails: string[];
     service: string;
-    lastUpdatedAt: string;
-    updateFrequency: string;
+    lastUpdatedAt: string | null;
+    updateFrequency: UpdateFrequency | null;
   };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
@@ -49,7 +54,9 @@
     entrypointEmail: initial.entrypointEmail,
     contactEmails: initial.contactEmails,
     service: initial.service,
-    lastUpdatedAt: initial.lastUpdatedAt,
+    lastUpdatedAt: initial.lastUpdatedAt
+      ? formatHTMLDate(initial.lastUpdatedAt)
+      : null,
     updateFrequency: initial.updateFrequency,
   };
 
@@ -75,8 +82,8 @@
               .email("Ce champ doit contenir une adresse e-mail valide")
           ),
         service: yup.string().required("Ce champs est requis"),
-        lastUpdatedAt: yup.date().required("Ce champs est requis"),
-        updateFrequency: yup.string().required("Ce champs est requis"),
+        lastUpdatedAt: yup.date().nullable(),
+        updateFrequency: yup.string().nullable(),
       }),
       onSubmit: (values) => {
         const formats = values.dataFormats
@@ -87,10 +94,15 @@
 
         const contactEmails = values.contactEmails.filter(Boolean);
 
+        const lastUpdatedAt = values.lastUpdatedAt
+          ? new Date(values.lastUpdatedAt)
+          : null;
+
         const data: DatasetFormData = {
           ...values,
           formats,
           contactEmails,
+          lastUpdatedAt,
         };
 
         dispatch("save", data);
@@ -110,9 +122,25 @@
     dataFormatsValue[index] = checked;
     updateValidateField("dataFormats", dataFormatsValue);
   };
+
+  const handleLastUpdatedAtChange = (
+    event: Event & { currentTarget: EventTarget & HTMLInputElement }
+  ) => {
+    return event.currentTarget.value ? handleChange(event) : null;
+  };
+
+  const handleUpdateFrequencyChange = (
+    event: Event & { currentTarget: EventTarget & HTMLSelectElement }
+  ) => {
+    return event.currentTarget.value === "null" ? null : handleChange(event);
+  };
 </script>
 
-<form on:submit={handleSubmit} data-bitwarden-watching="1">
+<form
+  on:submit={handleSubmit}
+  data-bitwarden-watching="1"
+  aria-label="Formulaire de contribution"
+>
   <h2 class="fr-mt-6w">Informations générales</h2>
 
   <div
@@ -317,7 +345,6 @@
   >
     <label class="fr-label" for="lastUpdatedAt">
       Date de la dernière mise à jour
-      <RequiredMarker />
     </label>
 
     <div class="fr-input-wrap fr-fi-calendar-line">
@@ -329,9 +356,8 @@
         type="date"
         id="lastUpdatedAt"
         name="lastUpdatedAt"
-        required
-        on:change={handleChange}
-        on:blur={handleChange}
+        on:change={handleLastUpdatedAtChange}
+        on:blur={handleLastUpdatedAtChange}
         bind:value={$form.lastUpdatedAt}
       />
 
@@ -344,19 +370,18 @@
   </div>
 
   <div class="fr-select-group">
-    <label class="fr-label" for="updateFrequency"
-      >Fréquence de mise à jour <RequiredMarker /></label
-    >
+    <label class="fr-label" for="updateFrequency">
+      Fréquence de mise à jour
+    </label>
     <select
       class="fr-select"
-      required
       bind:value={$form.updateFrequency}
       id="updateFrequency"
       name="updateFrequency"
-      on:change={handleChange}
-      on:blur={handleChange}
+      on:change={handleUpdateFrequencyChange}
+      on:blur={handleUpdateFrequencyChange}
     >
-      <option value="" selected disabled hidden>Sélectionner une option</option>
+      <option value={null} selected hidden>Sélectionner une option</option>
       {#each Object.keys(UPDATE_FREQUENCY) as frequency}
         <option value={frequency}>{UPDATE_FREQUENCY[frequency]}</option>
       {/each}

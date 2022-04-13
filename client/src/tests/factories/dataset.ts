@@ -1,4 +1,3 @@
-import { UPDATE_FREQUENCY } from "src/constants";
 import type { Dataset, DatasetFormData } from "src/definitions/datasets";
 
 export const getFakeDataset = (dataset: Partial<Dataset> = {}): Dataset => {
@@ -11,8 +10,8 @@ export const getFakeDataset = (dataset: Partial<Dataset> = {}): Dataset => {
     entrypointEmail: dataset.entrypointEmail || "jane.doe@beta.gouv.fr",
     contactEmails: dataset.contactEmails || ["contact@beta.gouv.fr"],
     service: dataset.service || "La Drac",
-    updateFrequency: dataset.updateFrequency || UPDATE_FREQUENCY.daily,
-    lastUpdatedAt: dataset.lastUpdatedAt || new Date().toISOString(),
+    updateFrequency: dataset.updateFrequency || "daily",
+    lastUpdatedAt: dataset.lastUpdatedAt || new Date(),
   };
 };
 
@@ -26,7 +25,7 @@ export const getFakeDataSetFormData = (
     entrypointEmail: datasetFormData.entrypointEmail || "jane.doe@beta.gouv.fr",
     contactEmails: datasetFormData.contactEmails || ["contact@beta.gouv.fr"],
     service: datasetFormData.service || "La Drac",
-    updateFrequency: datasetFormData.updateFrequency || UPDATE_FREQUENCY.daily,
-    lastUpdatedAt: datasetFormData.lastUpdatedAt || new Date().toISOString(),
+    updateFrequency: datasetFormData.updateFrequency || "daily",
+    lastUpdatedAt: datasetFormData.lastUpdatedAt || new Date(),
   };
 };
