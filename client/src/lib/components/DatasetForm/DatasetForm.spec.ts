@@ -1,9 +1,8 @@
 import "@testing-library/jest-dom";
 
 import DatasetForm from "./DatasetForm.svelte";
-import { render, fireEvent } from "@testing-library/svelte";
+import { render, fireEvent, waitFor } from "@testing-library/svelte";
 import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
-import { UPDATE_FREQUENCY } from "src/constants";
 
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
@@ -79,12 +78,15 @@ describe("Test the dataset form", () => {
       entrypointEmail: "service.initial@example.org",
       contactEmails: ["person@example.org"],
       service: "A nice service",
-      lastUpdatedAt: new Date().toISOString(),
-      updateFrequency: UPDATE_FREQUENCY.never,
+      lastUpdatedAt: new Date("2022-02-01"),
+      updateFrequency: "never",
     };
     const props = { initial };
 
-    const { getByLabelText, container } = render(DatasetForm, { props });
+    const { getByLabelText, getAllByLabelText, container } = render(
+      DatasetForm,
+      { props }
+    );
 
     const title = getByLabelText("Nom", { exact: false }) as HTMLInputElement;
     expect(title.value).toBe("Titre initial");
@@ -108,9 +110,58 @@ describe("Test the dataset form", () => {
     }) as HTMLInputElement;
     expect(entrypointEmail.value).toBe("service.initial@example.org");
 
-    const { getAllByLabelText } = render(DatasetForm);
-    const inputs = getAllByLabelText(/Contact \d/);
-    expect(inputs.length).toBe(1);
-    expect(inputs[0]).toHaveValue("person@example.org");
+    const contactEmails = getAllByLabelText(/Contact \d/);
+    expect(contactEmails.length).toBe(1);
+    expect(contactEmails[0]).toHaveValue("person@example.org");
+
+    const lastUpdatedAt = getByLabelText("Date de la dernière mise à jour", {
+      exact: false,
+    }) as HTMLInputElement;
+    expect(lastUpdatedAt.value).toBe("2022-02-01");
+
+    const updateFrequency = getByLabelText("Fréquence de mise à jour", {
+      exact: false,
+    }) as HTMLSelectElement;
+    expect(updateFrequency.value).toBe("never");
+  });
+
+  test("Null fields are correctly handled in HTML and submitted as null", async () => {
+    const initial: DatasetFormData = {
+      title: "Titre initial",
+      description: "Description initiale",
+      formats: ["website"],
+      entrypointEmail: "service.initial@example.org",
+      contactEmails: ["person@example.org"],
+      service: "A nice service",
+      lastUpdatedAt: null,
+      updateFrequency: null,
+    };
+    const props = { initial };
+    const { getByLabelText, getByRole, component } = render(DatasetForm, {
+      props,
+    });
+
+    const lastUpdatedAt = getByLabelText("Date de la dernière mise à jour", {
+      exact: false,
+    }) as HTMLInputElement;
+    expect(lastUpdatedAt.value).toBe("");
+
+    const updateFrequency = getByLabelText("Fréquence de mise à jour", {
+      exact: false,
+    }) as HTMLSelectElement;
+    expect(updateFrequency.value).toBe("null");
+
+    // Simulate touching the fields. This sends HTML values such as "" (empty date or select value)
+    // which should be handled as null.
+    await fireEvent.blur(lastUpdatedAt);
+    await fireEvent.blur(updateFrequency);
+
+    let submittedValue: DatasetFormData;
+    component.$on("save", (event) => (submittedValue = event.detail));
+    const form = getByRole("form");
+    await fireEvent.submit(form);
+    await waitFor(() => expect(submittedValue).toBeDefined());
+    expect(submittedValue.lastUpdatedAt).toBe(null);
+    expect(submittedValue.updateFrequency).toBe(null);
   });
 });

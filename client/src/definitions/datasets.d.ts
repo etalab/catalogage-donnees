@@ -30,8 +30,8 @@ export type Dataset = {
   entrypointEmail: string;
   contactEmails: string[];
   service: string;
-  updateFrequency: string;
-  lastUpdatedAt: string;
+  lastUpdatedAt: Date | null;
+  updateFrequency: UpdateFrequency | null;
 };
 
 export type DatasetFormData = Omit<Dataset, "id" | "createdAt" | "headlines">;
