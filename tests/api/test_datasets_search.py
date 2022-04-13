@@ -32,6 +32,7 @@ async def add_corpus(items: List[Tuple[str, str]] = None) -> None:
             title=title,
             description=description,
             formats=[DataFormat.FILE_TABULAR],
+            service="Service",
             entrypoint_email="service@example.org",
         )
         pk = await bus.execute(command)
@@ -156,6 +157,7 @@ async def test_search_results_change_when_data_changes(
         title="Titre",
         description="Description",
         formats=[DataFormat.OTHER],
+        service="Service",
         entrypoint_email="service@example.org",
     )
     pk = await bus.execute(command)
@@ -171,8 +173,11 @@ async def test_search_results_change_when_data_changes(
         title="Modifié",
         description="Description",
         formats=[DataFormat.OTHER],
+        service="Service",
         entrypoint_email="service@example.org",
         contact_emails=[],
+        update_frequency=None,
+        last_updated_at=None,
     )
     await bus.execute(command)
     # Updated dataset is returned in search results targeting updated data
@@ -187,8 +192,11 @@ async def test_search_results_change_when_data_changes(
         title="Modifié",
         description="Jeu de données spécial",
         formats=[DataFormat.OTHER],
+        service="Service",
         entrypoint_email="service@example.org",
         contact_emails=[],
+        update_frequency=None,
+        last_updated_at=None,
     )
     await bus.execute(command)
     response = await client.get("/datasets/", params={"q": "spécial"})
