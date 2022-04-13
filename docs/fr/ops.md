@@ -90,6 +90,14 @@ Exemple :
 make deploy env=staging
 ```
 
+Si vous souhaitez déployer depuis une branche (dans le cadre d'une _pull request_, par exemple), utilisez :
+
+```
+make deploy env=<ENV> extra_opts="-e git_version=<BRANCH>"
+```
+
+> **Tip** : `git_version` accepte n'importe quelle [référence git](https://git-scm.com/book/fr/v2/Les-tripes-de-Git-R%C3%A9f%C3%A9rences-Git) (branche, tag...) ou commit hash.
+
 En cas de problème, voir [Débogage](#débogage).
 
 ### Ajouter un nouvel environnement
