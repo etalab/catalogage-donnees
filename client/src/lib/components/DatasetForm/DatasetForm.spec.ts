@@ -3,7 +3,6 @@ import "@testing-library/jest-dom";
 import DatasetForm from "./DatasetForm.svelte";
 import { render, fireEvent, waitFor } from "@testing-library/svelte";
 import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
-import { UPDATE_FREQUENCY } from "src/constants";
 
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
