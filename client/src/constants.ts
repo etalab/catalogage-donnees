@@ -20,7 +20,7 @@ export const DATA_FORMAT_SHORT_NAMES: { [K in DataFormat]: string } = {
   other: "Autre",
 };
 
-export const UPDATE_FREQUENCY: { [K in UpdateFrequency]: string } = {
+export const UPDATE_FREQUENCY_LABELS: { [K in UpdateFrequency]: string } = {
   never: "Aucune (contribution ponctuelle)",
   realtime: "Permanente (temps réel)",
   daily: "Quotidienne (ou plusieures fois par jour)",

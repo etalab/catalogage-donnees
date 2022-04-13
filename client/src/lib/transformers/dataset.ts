@@ -18,11 +18,7 @@ export const transformKeysToUnderscoreCase = (object: {
 export const toPayload = (
   data: Partial<Record<keyof Dataset, any>>
 ): { [K: string]: unknown } => {
-  const transformed = transformKeysToUnderscoreCase(data);
-  return {
-    ...transformed,
-    last_updated_at: new Date(data.lastUpdatedAt).toISOString(),
-  };
+  return transformKeysToUnderscoreCase(data);
 };
 
 export const toDataset = (item: any): Dataset => {

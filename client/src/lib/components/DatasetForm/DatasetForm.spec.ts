@@ -125,7 +125,7 @@ describe("Test the dataset form", () => {
     expect(updateFrequency.value).toBe("never");
   });
 
-  test("Nullable fields are handled correctly", async () => {
+  test("Null fields are correctly handled in HTML and submitted as null", async () => {
     const initial: DatasetFormData = {
       title: "Titre initial",
       description: "Description initiale",

@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { UPDATE_FREQUENCY } from "src/constants";
+import { UPDATE_FREQUENCY_LABELS } from "src/constants";
 import { STATE_AUTHENTICATED } from "./constants";
 
 test.describe("Basic form submission", () => {
@@ -56,7 +56,9 @@ test.describe("Basic form submission", () => {
     expect(await lastUpdatedAt.inputValue()).toBe(lastUpdatedAtDate);
 
     const updateFrequency = page.locator("form [name=updateFrequency]");
-    await updateFrequency.selectOption({ label: UPDATE_FREQUENCY.daily });
+    await updateFrequency.selectOption({
+      label: UPDATE_FREQUENCY_LABELS.daily,
+    });
 
     const button = page.locator("button[type='submit']");
     const [request, response] = await Promise.all([

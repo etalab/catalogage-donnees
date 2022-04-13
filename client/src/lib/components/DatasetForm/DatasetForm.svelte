@@ -7,7 +7,7 @@
     DatasetFormData,
     UpdateFrequency,
   } from "src/definitions/datasets";
-  import { DATA_FORMAT_LABELS, UPDATE_FREQUENCY } from "src/constants";
+  import { DATA_FORMAT_LABELS, UPDATE_FREQUENCY_LABELS } from "src/constants";
   import { formatHTMLDate } from "$lib/util/format";
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
   import { user } from "src/lib/stores/auth";
@@ -123,23 +123,34 @@
     updateValidateField("dataFormats", dataFormatsValue);
   };
 
-  const handleLastUpdatedAtChange = (
+  const handleLastUpdatedAtChange = async (
     event: Event & { currentTarget: EventTarget & HTMLInputElement }
   ) => {
-    return event.currentTarget.value ? handleChange(event) : null;
+    if (!event.currentTarget.value /* Empty date */) {
+      // Needs manual handling, otherwise yup would call e.g. new Date("") which is invalid.
+      updateValidateField("lastUpdatedAt", null);
+    } else {
+      await handleChange(event);
+    }
   };
 
-  const handleUpdateFrequencyChange = (
+  const handleUpdateFrequencyChange = async (
     event: Event & { currentTarget: EventTarget & HTMLSelectElement }
   ) => {
-    return event.currentTarget.value === "null" ? null : handleChange(event);
+    if (event.currentTarget.value === "null" /* Empty option selected */) {
+      // Needs manual handling to ensure a `null` initial value and the empty
+      // option all correspond to `null`.
+      updateValidateField("updateFrequency", null);
+    } else {
+      await handleChange(event);
+    }
   };
 </script>
 
 <form
   on:submit={handleSubmit}
   data-bitwarden-watching="1"
-  aria-label="Formulaire de contribution"
+  aria-label="Informations sur le jeu de données"
 >
   <h2 class="fr-mt-6w">Informations générales</h2>
 
@@ -381,9 +392,11 @@
       on:change={handleUpdateFrequencyChange}
       on:blur={handleUpdateFrequencyChange}
     >
-      <option value={null} selected hidden>Sélectionner une option</option>
-      {#each Object.keys(UPDATE_FREQUENCY) as frequency}
-        <option value={frequency}>{UPDATE_FREQUENCY[frequency]}</option>
+      <option value={null} selected disabled hidden
+        >Sélectionner une option</option
+      >
+      {#each Object.keys(UPDATE_FREQUENCY_LABELS) as frequency}
+        <option value={frequency}>{UPDATE_FREQUENCY_LABELS[frequency]}</option>
       {/each}
     </select>
 
