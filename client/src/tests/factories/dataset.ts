@@ -12,6 +12,7 @@ export const getFakeDataset = (dataset: Partial<Dataset> = {}): Dataset => {
     service: dataset.service || "La Drac",
     updateFrequency: dataset.updateFrequency || "daily",
     lastUpdatedAt: dataset.lastUpdatedAt || new Date(),
+    geographicalCoverage: dataset.geographicalCoverage || "europe",
   };
 };
 
@@ -27,5 +28,6 @@ export const getFakeDataSetFormData = (
     service: datasetFormData.service || "La Drac",
     updateFrequency: datasetFormData.updateFrequency || "daily",
     lastUpdatedAt: datasetFormData.lastUpdatedAt || new Date(),
+    geographicalCoverage: datasetFormData.geographicalCoverage || "europe",
   };
 };

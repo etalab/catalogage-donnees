@@ -15,6 +15,16 @@ type UpdateFrequency =
   | "monthly"
   | "yearly";
 
+type GeographicalCoverage =
+  | "municipality"
+  | "EPCI"
+  | "departement"
+  | "region"
+  | "national"
+  | "national_full_territory"
+  | "europe"
+  | "world";
+
 export interface DatasetHeadlines {
   title: string;
   description: string;
@@ -32,6 +42,7 @@ export type Dataset = {
   service: string;
   lastUpdatedAt: Date | null;
   updateFrequency: UpdateFrequency | null;
+  geographicalCoverage: GeographicalCoverage;
 };
 
 export type DatasetFormData = Omit<Dataset, "id" | "createdAt" | "headlines">;

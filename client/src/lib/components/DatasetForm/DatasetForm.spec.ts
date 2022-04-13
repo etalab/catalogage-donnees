@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import DatasetForm from "./DatasetForm.svelte";
 import { render, fireEvent, waitFor } from "@testing-library/svelte";
 import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
+import { GEOGRAPHICAL_COVERAGE_LABELS } from "src/constants";
 
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
@@ -23,6 +24,15 @@ describe("Test the dataset form", () => {
     const { getAllByRole } = render(DatasetForm);
     const checkboxes = getAllByRole("checkbox");
     expect(checkboxes.length).toBeGreaterThan(0);
+  });
+
+  test('The "geographicalCoverage" field is present', async () => {
+    const { getByLabelText } = render(DatasetForm);
+    const geographicalCoverage = getByLabelText("Couverture géographique", {
+      exact: false,
+    });
+    expect(geographicalCoverage).toBeInTheDocument();
+    expect(geographicalCoverage).toBeRequired();
   });
 
   test("At least one format is required", async () => {
@@ -80,6 +90,7 @@ describe("Test the dataset form", () => {
       service: "A nice service",
       lastUpdatedAt: new Date("2022-02-01"),
       updateFrequency: "never",
+      geographicalCoverage: "europe",
     };
     const props = { initial };
 
@@ -135,6 +146,7 @@ describe("Test the dataset form", () => {
       service: "A nice service",
       lastUpdatedAt: null,
       updateFrequency: null,
+      geographicalCoverage: "europe",
     };
     const props = { initial };
     const { getByLabelText, getByRole, component } = render(DatasetForm, {

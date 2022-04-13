@@ -109,4 +109,27 @@ describe("Test the select component", () => {
 
     expect(count).toBe(1);
   });
+
+  test("should display a error message", () => {
+    const options: SelectOption[] = [];
+    const label = "label";
+
+    const props = {
+      options,
+      label,
+      id: "myId",
+      name: "mySelect",
+      error: "a nice error message",
+    };
+
+    const { getByText } = render(Select, { props });
+
+    const errorMessage = getByText("a nice error message", {
+      exact: false,
+    });
+
+    expect(errorMessage).toBeDefined();
+    expect(errorMessage).toHaveClass("fr-error-text");
+    expect(errorMessage).toHaveAttribute("id", "title-desc-error");
+  });
 });

@@ -7,20 +7,37 @@
   export let name: string;
   export let options: SelectOption[];
 
-  export let placeholder: string = "";
-  export let required: boolean = false;
-  export let error: string = "";
-  export let value: string = "";
+  export let placeholder = "";
+  export let hintText = "";
+  export let required = false;
+  export let error = "";
+  export let value = "";
 </script>
 
-<div class="fr-select-group">
+<div class="fr-select-group" class:fr-select-group--error={error}>
   <label class="fr-label" for={id}>
     {label}
     {#if required}
       <RequiredMarker />
     {/if}
+
+    {#if hintText}
+      <span class="fr-hint-text" id="description-desc-hint">
+        {hintText}
+      </span>
+    {/if}
   </label>
-  <select class="fr-select" {required} bind:value {id} {name} on:change on:blur>
+  <select
+    aria-describedby={error ? "select-error-desc-error" : ""}
+    class="fr-select"
+    class:fr-select--error={error}
+    {required}
+    bind:value
+    {id}
+    {name}
+    on:change
+    on:blur
+  >
     {#if placeholder}
       <option value="" selected>{placeholder}</option>
     {/if}

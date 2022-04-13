@@ -1,5 +1,8 @@
 import { test, expect } from "@playwright/test";
-import { UPDATE_FREQUENCY_LABELS } from "src/constants";
+import {
+  UPDATE_FREQUENCY_LABELS,
+  GEOGRAPHICAL_COVERAGE_LABELS,
+} from "src/constants";
 import { STATE_AUTHENTICATED } from "./constants";
 
 test.describe("Basic form submission", () => {
@@ -25,6 +28,13 @@ test.describe("Basic form submission", () => {
     const description = page.locator("form [name=description]");
     await description.fill(descriptionText);
     expect(await description.inputValue()).toBe(descriptionText);
+
+    const geographicalCoverage = page.locator(
+      "form [name=geographicalCoverage]"
+    );
+    await geographicalCoverage.selectOption({
+      label: GEOGRAPHICAL_COVERAGE_LABELS.europe,
+    });
 
     const apiFormat = page.locator("label[for=dataformats-api]");
     await apiFormat.check();
@@ -71,6 +81,7 @@ test.describe("Basic form submission", () => {
     const json = await response.json();
     expect(json.title).toBe(titleText);
     expect(json.description).toBe(descriptionText);
+    expect(json.geographical_coverage).toBe("europe");
     expect(json.formats).toStrictEqual(["api"]);
     expect(json.entrypoint_email).toBe(entrypointEmailText);
     expect(json.contact_emails).toEqual([contactEmail1Text, contactEmail2Text]);

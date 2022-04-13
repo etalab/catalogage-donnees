@@ -5,9 +5,14 @@
   import type {
     DataFormat,
     DatasetFormData,
+    GeographicalCoverage,
     UpdateFrequency,
   } from "src/definitions/datasets";
-  import { DATA_FORMAT_LABELS, UPDATE_FREQUENCY_LABELS } from "src/constants";
+  import {
+    DATA_FORMAT_LABELS,
+    UPDATE_FREQUENCY_LABELS,
+    GEOGRAPHICAL_COVERAGE_LABELS,
+  } from "src/constants";
   import { formatHTMLDate } from "$lib/util/format";
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
   import { user } from "src/lib/stores/auth";
@@ -25,6 +30,7 @@
     formats: [],
     entrypointEmail: "",
     contactEmails: [$user?.email || ""],
+    geographicalCoverage: null,
     service: "",
     lastUpdatedAt: null,
     updateFrequency: null,
@@ -38,6 +44,7 @@
     dataFormats: boolean[];
     entrypointEmail: string;
     contactEmails: string[];
+    geographicalCoverage: GeographicalCoverage;
     service: string;
     lastUpdatedAt: string | null;
     updateFrequency: UpdateFrequency | null;
@@ -59,6 +66,7 @@
     lastUpdatedAt: initial.lastUpdatedAt
       ? formatHTMLDate(initial.lastUpdatedAt)
       : null,
+    geographicalCoverage: initial.geographicalCoverage,
     updateFrequency: initial.updateFrequency,
   };
 
@@ -86,6 +94,7 @@
         service: yup.string().required("Ce champs est requis"),
         lastUpdatedAt: yup.date().nullable(),
         updateFrequency: yup.string().nullable(),
+        geographicalCoverage: yup.string().required("Ce champs est requis"),
       }),
       onSubmit: (values) => {
         const formats = values.dataFormats
@@ -137,7 +146,7 @@
   };
 
   const handleUpdateFrequencyChange = async (
-    event: Event & { currentTarget: EventTarget & HTMLSelectElement }
+    event: FocusEvent & { currentTarget: EventTarget & HTMLSelectElement }
   ) => {
     if (event.currentTarget.value === "null" /* Empty option selected */) {
       // Needs manual handling to ensure a `null` initial value and the empty
@@ -216,6 +225,20 @@
       </p>
     {/if}
   </div>
+
+  <Select
+    options={toSelectOption(GEOGRAPHICAL_COVERAGE_LABELS)}
+    id="geographicalCoverage"
+    name="geographicalCoverage"
+    hintText="Quelle est l’étendue de la zone couverte par votre jeu de données ?"
+    required
+    label="Couverture géographique"
+    placeholder="Sélectionnez une couverture géographique ..."
+    bind:value={$form.geographicalCoverage}
+    on:change={handleChange}
+    on:blur={handleChange}
+    error={$errors.geographicalCoverage}
+  />
 
   <fieldset
     class="fr-fieldset {hasError($errors.dataFormats)
@@ -388,8 +411,8 @@
     name="updateFrequency"
     required
     label="Fréquence de mise à jour"
-    on:change={handleChange}
-    on:blur={handleChange}
+    on:change={handleUpdateFrequencyChange}
+    on:blur={handleUpdateFrequencyChange}
     error={$errors.updateFrequency}
   />
 
