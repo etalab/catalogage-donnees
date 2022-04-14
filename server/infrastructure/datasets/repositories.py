@@ -22,7 +22,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, relationship, selectinload
 
 from server.domain.common.types import ID
-from server.domain.datasets.entities import DataFormat, Dataset, UpdateFrequency
+from server.domain.datasets.entities import (
+    DataFormat,
+    Dataset,
+    GeographicalCoverage,
+    UpdateFrequency,
+)
 from server.domain.datasets.repositories import DatasetHeadlines, DatasetRepository
 
 from ..database import Base, Database
@@ -58,12 +63,16 @@ class DatasetModel(Base):
     )
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
+    service = Column(String, nullable=False)
+    geographical_coverage = Column(
+        Enum(GeographicalCoverage, enum="geographical_coverage_enum"), nullable=False
+    )
     formats: List[DataFormatModel] = relationship(
         "DataFormatModel",
         back_populates="datasets",
         secondary=dataset_dataformat,
     )
-    service = Column(String, nullable=False)
+    technical_source = Column(String)
     entrypoint_email = Column(String, nullable=False)
     contact_emails = Column(ARRAY(String), server_default="{}", nullable=False)
     update_frequency = Column(Enum(UpdateFrequency, enum="update_frequency_enum"))
@@ -89,8 +98,10 @@ def make_entity(instance: DatasetModel) -> Dataset:
         created_at=instance.created_at,
         title=instance.title,
         description=instance.description,
-        formats=[fmt.name for fmt in instance.formats],
         service=instance.service,
+        geographical_coverage=instance.geographical_coverage,
+        formats=[fmt.name for fmt in instance.formats],
+        technical_source=instance.technical_source,
         entrypoint_email=instance.entrypoint_email,
         contact_emails=instance.contact_emails,
         update_frequency=instance.update_frequency,
@@ -115,8 +126,10 @@ def update_instance(
 ) -> None:
     instance.title = entity.title
     instance.description = entity.description
-    instance.formats = formats
     instance.service = entity.service
+    instance.geographical_coverage = entity.geographical_coverage
+    instance.formats = formats
+    instance.technical_source = entity.technical_source
     instance.entrypoint_email = entity.entrypoint_email
     instance.contact_emails = entity.contact_emails
     instance.update_frequency = entity.update_frequency

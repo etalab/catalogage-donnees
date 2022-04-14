@@ -4,15 +4,21 @@ from typing import List, Optional
 from pydantic import Field
 
 from server.domain.common.types import ID
-from server.domain.datasets.entities import DataFormat, UpdateFrequency
+from server.domain.datasets.entities import (
+    DataFormat,
+    GeographicalCoverage,
+    UpdateFrequency,
+)
 from server.seedwork.application.commands import Command
 
 
 class CreateDataset(Command[ID]):
     title: str
     description: str
-    formats: List[DataFormat]
     service: str
+    geographical_coverage: GeographicalCoverage
+    formats: List[DataFormat]
+    technical_source: Optional[str] = None
     entrypoint_email: str
     contact_emails: List[str] = Field(default_factory=list)
     update_frequency: Optional[UpdateFrequency] = None
@@ -23,8 +29,10 @@ class UpdateDataset(Command[None]):
     id: ID
     title: str
     description: str
-    formats: List[DataFormat]
     service: str
+    geographical_coverage: GeographicalCoverage
+    formats: List[DataFormat]
+    technical_source: Optional[str] = Field(...)
     entrypoint_email: str
     contact_emails: List[str]
     update_frequency: Optional[UpdateFrequency] = Field(...)

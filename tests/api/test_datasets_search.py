@@ -11,7 +11,7 @@ from server.application.datasets.commands import (
 )
 from server.application.datasets.queries import GetDatasetByID
 from server.config.di import resolve
-from server.domain.datasets.entities import DataFormat
+from server.domain.datasets.entities import DataFormat, GeographicalCoverage
 from server.seedwork.application.messages import MessageBus
 
 DEFAULT_CORPUS_ITEMS = [
@@ -31,8 +31,9 @@ async def add_corpus(items: List[Tuple[str, str]] = None) -> None:
         command = CreateDataset(
             title=title,
             description=description,
-            formats=[DataFormat.FILE_TABULAR],
             service="Service",
+            geographical_coverage=GeographicalCoverage.NATIONAL,
+            formats=[DataFormat.FILE_TABULAR],
             entrypoint_email="service@example.org",
         )
         pk = await bus.execute(command)
@@ -156,8 +157,9 @@ async def test_search_results_change_when_data_changes(
     command = CreateDataset(
         title="Titre",
         description="Description",
-        formats=[DataFormat.OTHER],
         service="Service",
+        geographical_coverage=GeographicalCoverage.DEPARTMENT,
+        formats=[DataFormat.OTHER],
         entrypoint_email="service@example.org",
     )
     pk = await bus.execute(command)
@@ -172,8 +174,10 @@ async def test_search_results_change_when_data_changes(
         id=pk,
         title="Modifié",
         description="Description",
-        formats=[DataFormat.OTHER],
         service="Service",
+        geographical_coverage=GeographicalCoverage.DEPARTMENT,
+        formats=[DataFormat.OTHER],
+        technical_source=None,
         entrypoint_email="service@example.org",
         contact_emails=[],
         update_frequency=None,
@@ -191,8 +195,10 @@ async def test_search_results_change_when_data_changes(
         id=pk,
         title="Modifié",
         description="Jeu de données spécial",
-        formats=[DataFormat.OTHER],
         service="Service",
+        geographical_coverage=GeographicalCoverage.DEPARTMENT,
+        formats=[DataFormat.OTHER],
+        technical_source=None,
         entrypoint_email="service@example.org",
         contact_emails=[],
         update_frequency=None,

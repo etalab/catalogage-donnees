@@ -10,6 +10,17 @@ from ..common import datetime as dtutil
 from ..common.types import ID
 
 
+class GeographicalCoverage(enum.Enum):
+    MUNICIPALITY = "municipality"
+    EPCI = "EPCI"
+    DEPARTMENT = "department"
+    REGION = "region"
+    NATIONAL = "national"
+    NATIONAL_FULL_TERRITORY = "national_full_territory"
+    EUROPE = "europe"
+    WORLD = "world"
+
+
 class DataFormat(enum.Enum):
     FILE_TABULAR = "file_tabular"
     FILE_GIS = "file_gis"
@@ -33,8 +44,10 @@ class Dataset(Entity):
     created_at: dt.datetime = Field(default_factory=dtutil.now)
     title: str
     description: str
-    formats: List[DataFormat]
     service: str
+    geographical_coverage: GeographicalCoverage
+    formats: List[DataFormat]
+    technical_source: Optional[str]
     entrypoint_email: str
     contact_emails: List[str] = Field(default_factory=list)
     update_frequency: Optional[UpdateFrequency] = None
@@ -47,8 +60,10 @@ class Dataset(Entity):
         self,
         title: str,
         description: str,
-        formats: List[DataFormat],
         service: str,
+        geographical_coverage: GeographicalCoverage,
+        formats: List[DataFormat],
+        technical_source: Optional[str],
         entrypoint_email: str,
         contact_emails: List[str],
         update_frequency: Optional[UpdateFrequency],
@@ -56,8 +71,10 @@ class Dataset(Entity):
     ) -> None:
         self.title = title
         self.description = description
-        self.formats = formats
         self.service = service
+        self.geographical_coverage = geographical_coverage
+        self.formats = formats
+        self.technical_source = technical_source
         self.entrypoint_email = entrypoint_email
         self.contact_emails = contact_emails
         self.update_frequency = update_frequency
