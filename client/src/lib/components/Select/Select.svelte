@@ -32,7 +32,7 @@
     class="fr-select"
     class:fr-select--error={error}
     {required}
-    bind:value
+    {value}
     {id}
     {name}
     on:change

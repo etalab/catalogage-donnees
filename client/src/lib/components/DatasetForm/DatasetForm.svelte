@@ -148,7 +148,10 @@
   const handleUpdateFrequencyChange = async (
     event: FocusEvent & { currentTarget: EventTarget & HTMLSelectElement }
   ) => {
-    if (event.currentTarget.value === "null" /* Empty option selected */) {
+    if (
+      event.currentTarget.value === "null" ||
+      !event.currentTarget.value /* Empty option selected */
+    ) {
       // Needs manual handling to ensure a `null` initial value and the empty
       // option all correspond to `null`.
       updateValidateField("updateFrequency", null);
@@ -411,6 +414,7 @@
     name="updateFrequency"
     required
     label="Fréquence de mise à jour"
+    bind:value={$form.updateFrequency}
     on:change={handleUpdateFrequencyChange}
     on:blur={handleUpdateFrequencyChange}
     error={$errors.updateFrequency}

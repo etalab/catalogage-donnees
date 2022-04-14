@@ -1,4 +1,4 @@
-import type { SelectOption } from "src/definitions/selectOption";
+import type { SelectOption } from "src/definietions/selectOption";
 
 export const toSelectOption = (source: {
   [key: string]: any;

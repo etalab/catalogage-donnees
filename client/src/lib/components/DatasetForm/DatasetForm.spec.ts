@@ -3,7 +3,6 @@ import "@testing-library/jest-dom";
 import DatasetForm from "./DatasetForm.svelte";
 import { render, fireEvent, waitFor } from "@testing-library/svelte";
 import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
-import { GEOGRAPHICAL_COVERAGE_LABELS } from "src/constants";
 
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
@@ -161,7 +160,6 @@ describe("Test the dataset form", () => {
     const updateFrequency = getByLabelText("Fréquence de mise à jour", {
       exact: false,
     }) as HTMLSelectElement;
-    expect(updateFrequency.value).toBe("null");
 
     // Simulate touching the fields. This sends HTML values such as "" (empty date or select value)
     // which should be handled as null.
