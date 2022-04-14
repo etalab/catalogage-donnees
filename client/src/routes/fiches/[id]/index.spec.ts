@@ -2,17 +2,17 @@ import "@testing-library/jest-dom";
 
 import { render } from "@testing-library/svelte";
 import index from "./index.svelte";
-import type { Dataset } from "src/definitions/datasets";
+import { getFakeDataset } from "src/tests/factories/dataset";
 
-const dataset: Dataset = {
+const dataset = getFakeDataset({
   id: "d4765f06-ccdf-4bae-b237-2bced67e6dc2",
   createdAt: new Date(),
   title: "foo",
   description: "bar baz crux",
   formats: ["other"],
   entrypointEmail: "service@example.org",
-  contactEmails: [],
-};
+  contactEmails: ["service@example.org"],
+});
 
 describe("Dataset detail page header", () => {
   test("The dataset title is present", () => {

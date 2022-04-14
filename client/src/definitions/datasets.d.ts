@@ -7,29 +7,34 @@ type DataFormat =
   | "website"
   | "other";
 
+type UpdateFrequency =
+  | "never"
+  | "realtime"
+  | "daily"
+  | "weekly"
+  | "monthly"
+  | "yearly";
+
 export interface DatasetHeadlines {
   title: string;
   description: string;
 }
 
-export interface Dataset {
+export type Dataset = {
   id: string;
   createdAt: Date;
-  title: string;
-  description: string;
-  formats: DataFormat[];
-  entrypointEmail: string;
-  contactEmails: string[];
   headlines?: DatasetHeadlines;
-}
-
-export interface DatasetFormData {
   title: string;
   description: string;
   formats: DataFormat[];
   entrypointEmail: string;
   contactEmails: string[];
-}
+  service: string;
+  lastUpdatedAt: Date | null;
+  updateFrequency: UpdateFrequency | null;
+};
+
+export type DatasetFormData = Omit<Dataset, "id" | "createdAt" | "headlines">;
 
 export type DatasetCreateData = DatasetFormData;
 export type DatasetUpdateData = DatasetCreateData;

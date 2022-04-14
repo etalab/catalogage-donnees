@@ -15,6 +15,10 @@ export const capitalize = (text: string): string => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
 
+export const formatHTMLDate = (date: Date): string => {
+  return datefns.format(date, "yyyy-MM-dd");
+};
+
 export const formatDaysMonthsOrYearsToNow = (date: Date): string => {
   const now = new Date();
 

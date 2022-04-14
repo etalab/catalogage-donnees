@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import Any
 
 import httpx
 import pytest
@@ -8,7 +9,7 @@ from server.application.datasets.queries import GetDatasetByID
 from server.config.di import resolve
 from server.domain.common import datetime as dtutil
 from server.domain.common.types import id_factory
-from server.domain.datasets.entities import DataFormat
+from server.domain.datasets.entities import DataFormat, UpdateFrequency
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
@@ -25,6 +26,7 @@ from ..helpers import TestUser, approx_datetime
                 {"loc": ["body", "title"], "type": "value_error.missing"},
                 {"loc": ["body", "description"], "type": "value_error.missing"},
                 {"loc": ["body", "formats"], "type": "value_error.missing"},
+                {"loc": ["body", "service"], "type": "value_error.missing"},
                 {"loc": ["body", "entrypoint_email"], "type": "value_error.missing"},
             ],
             id="missing-fields",
@@ -34,6 +36,7 @@ from ..helpers import TestUser, approx_datetime
                 "title": "Title",
                 "description": "Description",
                 "formats": [],
+                "service": "Service",
                 "entrypoint_email": "service@example.org",
             },
             [
@@ -60,18 +63,24 @@ async def test_create_dataset_invalid(
         assert error_attrs == expected_error_attrs
 
 
+known_date = dtutil.parse("2022-01-04T10:15:19.121212+00:00")
+
 CREATE_DATASET_PAYLOAD = {
     "title": "Example title",
     "description": "Example description",
     "formats": ["website"],
+    "service": "Example service",
     "entrypoint_email": "example.service@example.org",
     "contact_emails": ["example.person@example.org"],
+    "update_frequency": "weekly",
+    "last_updated_at": known_date.isoformat(),
 }
 
 CREATE_ANY_DATASET = CreateDataset(
     title="Title",
     description="Description",
     formats=["website", "api"],
+    service="Example service",
     entrypoint_email="service@example.org",
 )
 
@@ -96,8 +105,11 @@ async def test_dataset_crud(client: httpx.AsyncClient, admin_user: TestUser) -> 
         "title": "Example title",
         "description": "Example description",
         "formats": ["website"],
+        "service": "Example service",
         "entrypoint_email": "example.service@example.org",
         "contact_emails": ["example.person@example.org"],
+        "update_frequency": "weekly",
+        "last_updated_at": known_date.isoformat(),
     }
 
     non_existing_id = id_factory()
@@ -140,28 +152,46 @@ async def test_dataset_get_all_uses_reverse_chronological_order(
 
 @pytest.mark.asyncio
 class TestDatasetOptionalFields:
-    async def test_contact_emails(self, client: httpx.AsyncClient) -> None:
+    @pytest.mark.parametrize(
+        "field, default",
+        [
+            pytest.param("contact_emails", []),
+            pytest.param("update_frequency", None),
+            pytest.param("last_updated_at", None),
+        ],
+    )
+    async def test_optional_fields_missing_uses_defaults(
+        self, client: httpx.AsyncClient, field: str, default: Any
+    ) -> None:
         payload = CREATE_DATASET_PAYLOAD.copy()
-        payload.pop("contact_emails")
+        payload.pop(field)
         response = await client.post("/datasets/", json=payload)
         assert response.status_code == 201
         dataset = response.json()
-        assert dataset["contact_emails"] == []
+        assert dataset[field] == default
 
-    async def test_contact_emails_invalid_email(
-        self, client: httpx.AsyncClient
-    ) -> None:
+    async def test_optional_fields_invalid(self, client: httpx.AsyncClient) -> None:
         response = await client.post(
             "/datasets/",
             json={
                 **CREATE_DATASET_PAYLOAD,
                 "contact_emails": ["notanemail", "valid@example.org"],
+                "update_frequency": "not_in_enum",
+                "last_updated_at": "not_a_datetime",
             },
         )
         assert response.status_code == 422
-        (err,) = response.json()["detail"]
-        assert err["loc"] == ["body", "contact_emails", 0]
-        assert err["type"] == "value_error.email"
+        (
+            err_contact_emails,
+            err_update_frequency,
+            err_last_updated_at,
+        ) = response.json()["detail"]
+        assert err_contact_emails["loc"] == ["body", "contact_emails", 0]
+        assert err_contact_emails["type"] == "value_error.email"
+        assert err_update_frequency["loc"] == ["body", "update_frequency"]
+        assert err_update_frequency["type"] == "type_error.enum"
+        assert err_last_updated_at["loc"] == ["body", "last_updated_at"]
+        assert err_last_updated_at["type"] == "value_error.datetime"
 
 
 @pytest.mark.asyncio
@@ -180,23 +210,21 @@ class TestDatasetUpdate:
         # Apply PUT semantics, which expect a full entity.
         response = await client.put(f"/datasets/{dataset_id}/", json={})
         assert response.status_code == 422
-        (
-            err_title,
-            err_description,
-            err_formats,
-            err_entrypoint_email,
-            err_contact_emails,
-        ) = response.json()["detail"]
-        assert err_title["loc"] == ["body", "title"]
-        assert err_title["type"] == "value_error.missing"
-        assert err_description["loc"] == ["body", "description"]
-        assert err_description["type"] == "value_error.missing"
-        assert err_formats["loc"] == ["body", "formats"]
-        assert err_formats["type"] == "value_error.missing"
-        assert err_entrypoint_email["loc"] == ["body", "entrypoint_email"]
-        assert err_entrypoint_email["type"] == "value_error.missing"
-        assert err_contact_emails["loc"] == ["body", "contact_emails"]
-        assert err_contact_emails["type"] == "value_error.missing"
+        fields = [
+            "title",
+            "description",
+            "formats",
+            "service",
+            "entrypoint_email",
+            "contact_emails",
+            "update_frequency",
+            "last_updated_at",
+        ]
+        errors = response.json()["detail"]
+        assert len(errors) == len(fields)
+        for field, error in zip(fields, errors):
+            assert error["loc"] == ["body", field], field
+            assert error["type"] == "value_error.missing", field
 
     async def test_fields_empty_invalid(self, client: httpx.AsyncClient) -> None:
         bus = resolve(MessageBus)
@@ -208,13 +236,16 @@ class TestDatasetUpdate:
                 "title": "",
                 "description": "",
                 "formats": [],
+                "service": "",
                 "entrypoint_email": "service@example.org",
                 "contact_emails": [],
+                "update_frequency": "weekly",
+                "last_updated_at": known_date.isoformat(),
             },
         )
         assert response.status_code == 422
 
-        err_title, err_description, err_formats = response.json()["detail"]
+        err_title, err_description, err_formats, err_service = response.json()["detail"]
 
         assert err_title["loc"] == ["body", "title"]
         assert "empty" in err_title["msg"]
@@ -225,9 +256,14 @@ class TestDatasetUpdate:
         assert err_formats["loc"] == ["body", "formats"]
         assert "at least one" in err_formats["msg"].lower()
 
+        assert err_service["loc"] == ["body", "service"]
+        assert "empty" in err_service["msg"]
+
     async def test_update(self, client: httpx.AsyncClient) -> None:
         bus = resolve(MessageBus)
         dataset_id = await bus.execute(CREATE_ANY_DATASET)
+
+        other_known_date = dtutil.parse("2022-02-04T10:15:19.121212+00:00")
 
         response = await client.put(
             f"/datasets/{dataset_id}/",
@@ -235,8 +271,11 @@ class TestDatasetUpdate:
                 "title": "Other title",
                 "description": "Other description",
                 "formats": ["database"],
+                "service": "Other service",
                 "entrypoint_email": "other.service@example.org",
                 "contact_emails": ["other.person@example.org"],
+                "update_frequency": "weekly",
+                "last_updated_at": other_known_date.isoformat(),
             },
         )
         assert response.status_code == 200
@@ -249,8 +288,11 @@ class TestDatasetUpdate:
             "title": "Other title",
             "description": "Other description",
             "formats": ["database"],
+            "service": "Other service",
             "entrypoint_email": "other.service@example.org",
             "contact_emails": ["other.person@example.org"],
+            "update_frequency": "weekly",
+            "last_updated_at": other_known_date.isoformat(),
         }
 
         # Entity was indeed updated
@@ -259,8 +301,11 @@ class TestDatasetUpdate:
         assert dataset.title == "Other title"
         assert dataset.description == "Other description"
         assert dataset.formats == [DataFormat.DATABASE]
+        assert dataset.service == "Other service"
         assert dataset.entrypoint_email == "other.service@example.org"
         assert dataset.contact_emails == ["other.person@example.org"]
+        assert dataset.update_frequency == UpdateFrequency.WEEKLY
+        assert dataset.last_updated_at == other_known_date
 
 
 @pytest.mark.asyncio

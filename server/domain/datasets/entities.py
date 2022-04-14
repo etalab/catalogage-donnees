@@ -34,10 +34,9 @@ class Dataset(Entity):
     title: str
     description: str
     formats: List[DataFormat]
-    producer: Optional[str] = None
+    service: str
     entrypoint_email: str
     contact_emails: List[str] = Field(default_factory=list)
-    first_published_at: Optional[dt.datetime] = None
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
 
@@ -49,11 +48,17 @@ class Dataset(Entity):
         title: str,
         description: str,
         formats: List[DataFormat],
+        service: str,
         entrypoint_email: str,
         contact_emails: List[str],
+        update_frequency: Optional[UpdateFrequency],
+        last_updated_at: Optional[dt.datetime],
     ) -> None:
         self.title = title
         self.description = description
         self.formats = formats
+        self.service = service
         self.entrypoint_email = entrypoint_email
         self.contact_emails = contact_emails
+        self.update_frequency = update_frequency
+        self.last_updated_at = last_updated_at
