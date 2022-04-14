@@ -18,7 +18,7 @@ type UpdateFrequency =
 type GeographicalCoverage =
   | "municipality"
   | "EPCI"
-  | "departement"
+  | "department"
   | "region"
   | "national"
   | "national_full_territory"
@@ -43,6 +43,7 @@ export type Dataset = {
   lastUpdatedAt: Date | null;
   updateFrequency: UpdateFrequency | null;
   geographicalCoverage: GeographicalCoverage;
+  technicalSource: string | null;
 };
 
 export type DatasetFormData = Omit<Dataset, "id" | "createdAt" | "headlines">;

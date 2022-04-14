@@ -50,6 +50,7 @@ export const test = base.extend<AppTestArgs>({
       description: "Sample description",
       updateFrequency: "never",
       formats: ["api"],
+      technicalSource: "foo/baz",
     });
     let response = await apiContext.post("/datasets/", {
       data: toPayload(data),

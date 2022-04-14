@@ -7,7 +7,7 @@ import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
     const { getByLabelText } = render(DatasetForm);
-    const title = getByLabelText("Nom", { exact: false });
+    const title = getByLabelText("Nom de la donnée", { exact: false });
     expect(title).toBeInTheDocument();
     expect(title).toBeRequired();
   });
@@ -32,6 +32,15 @@ describe("Test the dataset form", () => {
     });
     expect(geographicalCoverage).toBeInTheDocument();
     expect(geographicalCoverage).toBeRequired();
+  });
+
+  test('The "technicalSource" field is present', async () => {
+    const { getByLabelText } = render(DatasetForm);
+    const technicalSource = getByLabelText("Système d’information source", {
+      exact: false,
+    });
+    expect(technicalSource).toBeInTheDocument();
+    expect(technicalSource).not.toBeRequired();
   });
 
   test("At least one format is required", async () => {
@@ -90,6 +99,7 @@ describe("Test the dataset form", () => {
       lastUpdatedAt: new Date("2022-02-01"),
       updateFrequency: "never",
       geographicalCoverage: "europe",
+      technicalSource: "foo/bar",
     };
     const props = { initial };
 
@@ -98,7 +108,9 @@ describe("Test the dataset form", () => {
       { props }
     );
 
-    const title = getByLabelText("Nom", { exact: false }) as HTMLInputElement;
+    const title = getByLabelText("Nom de la donnée", {
+      exact: false,
+    }) as HTMLInputElement;
     expect(title.value).toBe("Titre initial");
 
     const description = getByLabelText("Description", {
@@ -133,6 +145,11 @@ describe("Test the dataset form", () => {
       exact: false,
     }) as HTMLSelectElement;
     expect(updateFrequency.value).toBe("never");
+
+    const technicalSource = getByLabelText("Système d’information source", {
+      exact: false,
+    }) as HTMLSelectElement;
+    expect(technicalSource.value).toBe("foo/bar");
   });
 
   test("Null fields are correctly handled in HTML and submitted as null", async () => {
@@ -146,6 +163,7 @@ describe("Test the dataset form", () => {
       lastUpdatedAt: null,
       updateFrequency: null,
       geographicalCoverage: "europe",
+      technicalSource: "foo/bar",
     };
     const props = { initial };
     const { getByLabelText, getByRole, component } = render(DatasetForm, {

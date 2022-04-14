@@ -38,7 +38,7 @@ export const GEOGRAPHICAL_COVERAGE_LABELS: {
 } = {
   municipality: "Communale",
   EPCI: "EPCI",
-  departement: "Departementale",
+  department: "Départementale",
   region: "Régionale",
   national: "Nationale (métropole)",
   national_full_territory: "Nationale (terr Outre-mer inclus)",

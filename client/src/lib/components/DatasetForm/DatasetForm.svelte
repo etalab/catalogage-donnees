@@ -34,6 +34,7 @@
     service: "",
     lastUpdatedAt: null,
     updateFrequency: null,
+    technicalSource: "",
   };
 
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
@@ -48,6 +49,7 @@
     service: string;
     lastUpdatedAt: string | null;
     updateFrequency: UpdateFrequency | null;
+    technicalSource: string | null;
   };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
@@ -68,6 +70,7 @@
       : null,
     geographicalCoverage: initial.geographicalCoverage,
     updateFrequency: initial.updateFrequency,
+    technicalSource: initial.technicalSource,
   };
 
   // Handle this value manually.
@@ -289,6 +292,37 @@
       </p>
     {/if}
   </fieldset>
+
+  <div
+    class="fr-input-group fr-my-4w {$errors.technicalSource
+      ? 'fr-input-group--error'
+      : ''}"
+  >
+    <label class="fr-label" for="technicalSource">
+      Système d’information source
+      <span class="fr-hint-text" id="technicalSource-desc-hint">
+        De quelle sources proviennent ces données ? Séparez leur nom par des “/”
+        lorsqu’il y en a plusieurs.
+      </span>
+    </label>
+    <input
+      class="fr-input {$errors.technicalSource ? 'fr-input--error' : ''}"
+      aria-describedby={$errors.technicalSource
+        ? "technicalSource-desc-error"
+        : null}
+      type="text"
+      id="technicalSource"
+      name="technicalSource"
+      on:change={handleChange}
+      on:blur={handleChange}
+      bind:value={$form.technicalSource}
+    />
+    {#if $errors.technicalSource}
+      <p id="technicalSource-desc-error" class="fr-error-text">
+        {$errors.technicalSource}
+      </p>
+    {/if}
+  </div>
 
   <h2 class="fr-mt-6w">Contacts</h2>
   <p class="fr-text--md">

@@ -16,6 +16,7 @@ test.describe("Basic form submission", () => {
     const contactEmail2Text = "contact2@example.org";
     const lastUpdatedAtDate = "2000-05-05";
     const serviceText = "Ministère de l'écologie";
+    const technicalSourceText = "foo/bar";
 
     await page.goto("/contribuer");
 
@@ -39,6 +40,10 @@ test.describe("Basic form submission", () => {
     const apiFormat = page.locator("label[for=dataformats-api]");
     await apiFormat.check();
     expect(await page.isChecked("input[value=api]")).toBeTruthy();
+
+    const technicalSource = page.locator("form [name=technicalSource]");
+    await technicalSource.fill(technicalSourceText);
+    expect(await technicalSource.inputValue()).toBe(technicalSourceText);
 
     // "Contacts" section
 
@@ -86,6 +91,7 @@ test.describe("Basic form submission", () => {
     expect(json.entrypoint_email).toBe(entrypointEmailText);
     expect(json.contact_emails).toEqual([contactEmail1Text, contactEmail2Text]);
     expect(json).toHaveProperty("id");
+    expect(json.technical_source).toBe(technicalSourceText);
     expect(json.update_frequency).toBe("daily");
     expect(json.last_updated_at).toEqual("2000-05-05T00:00:00+00:00");
     expect(json.service).toBe(serviceText);
