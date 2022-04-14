@@ -84,3 +84,7 @@ const ensureHasOrigin = (origin: string, value: string) => {
   }
   return value;
 };
+
+export const getHeaders = (apiToken?: string): [string, string][] => {
+  return apiToken ? [["authorization", `Bearer ${apiToken}`]] : [];
+};

@@ -17,6 +17,11 @@ export const isLoggedIn = derived(userInfo, (values) => values.loggedIn);
 
 export const user = derived(userInfo, (values) => values.user);
 
+export const isAdmin = derived(
+  userInfo,
+  (values) => values.user?.role === "ADMIN"
+);
+
 export const login = (user: User): void => {
   userInfo.set({ loggedIn: true, user });
 };

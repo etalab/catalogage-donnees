@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
-  import { getDatasetByID } from "$lib/repositories/datasets";
+  import { getDatasetByID, deleteDataset } from "$lib/repositories/datasets";
 
   export const load: Load = async ({ fetch, params }) => {
     const dataset = await getDatasetByID({ fetch, id: params.id });

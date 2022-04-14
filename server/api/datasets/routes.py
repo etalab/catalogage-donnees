@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
@@ -16,11 +16,13 @@ from server.application.datasets.queries import (
     SearchDatasets,
 )
 from server.config.di import resolve
+from server.domain.auth.entities import UserRole
 from server.domain.common.types import ID
 from server.domain.datasets.entities import Dataset
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
+from ..auth.dependencies import HasRole, IsAuthenticated
 from .schemas import DatasetCreate, DatasetRead, DatasetUpdate
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
@@ -79,7 +81,11 @@ async def update_dataset(id: ID, data: DatasetUpdate) -> Dataset:
     return await bus.execute(query)
 
 
-@router.delete("/{id}/", status_code=204)
+@router.delete(
+    "/{id}/",
+    dependencies=[Depends(IsAuthenticated()), Depends(HasRole(UserRole.ADMIN))],
+    status_code=204,
+)
 async def delete_dataset(id: ID) -> None:
     bus = resolve(MessageBus)
 

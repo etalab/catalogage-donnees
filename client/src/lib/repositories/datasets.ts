@@ -4,7 +4,7 @@ import type {
   DatasetUpdateData,
 } from "src/definitions/datasets";
 import type { Fetch } from "src/definitions/fetch";
-import { getApiUrl } from "$lib/fetch";
+import { getHeaders, getApiUrl } from "$lib/fetch";
 import { toQueryString } from "$lib/util/urls";
 import { toDataset, toPayload } from "$lib/transformers/dataset";
 
@@ -65,4 +65,22 @@ export const updateDataset: UpdateDataset = async ({ fetch, id, data }) => {
   });
   const response = await fetch(request);
   return toDataset(await response.json());
+};
+
+type DeleteDataset = (opts: {
+  fetch: Fetch;
+  apiToken: string;
+  id: string;
+}) => Promise<void>;
+
+export const deleteDataset: DeleteDataset = async ({ fetch, apiToken, id }) => {
+  const url = `${getApiUrl()}/datasets/${id}/`;
+  const request = new Request(url, {
+    method: "DELETE",
+    headers: new Headers(getHeaders(apiToken)),
+  });
+  const response = await fetch(request);
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
 };
