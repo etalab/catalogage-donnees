@@ -2,6 +2,7 @@ import { test as base, expect, APIRequestContext } from "@playwright/test";
 import type { Dataset } from "src/definitions/datasets";
 import { getFakeDataset } from "src/tests/factories/dataset";
 import { toPayload } from "src/lib/transformers/dataset";
+import { ADMIN_EMAIL } from "./constants";
 
 /**
  * These fixtures allow simplifying setup/teardown logic in tests,
@@ -34,7 +35,7 @@ export const test = base.extend<AppTestArgs>({
 
   adminApiToken: async ({ apiContext, adminTestPassword }, use) => {
     const data = {
-      email: "admin@catalogue.data.gouv.fr",
+      email: ADMIN_EMAIL,
       password: adminTestPassword,
     };
     const response = await apiContext.post("/auth/login/", { data });
