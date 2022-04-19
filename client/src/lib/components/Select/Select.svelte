@@ -22,13 +22,13 @@
     {/if}
 
     {#if hintText}
-      <span class="fr-hint-text" id="description-desc-hint">
+      <span class="fr-hint-text" id="{name}-desc-hint">
         {hintText}
       </span>
     {/if}
   </label>
   <select
-    aria-describedby={error ? "select-error-desc-error" : ""}
+    aria-describedby={error ? `{name}-desc-error` : ""}
     class="fr-select"
     class:fr-select--error={error}
     {required}
@@ -39,7 +39,7 @@
     on:blur
   >
     {#if placeholder}
-      <option value="" selected>{placeholder}</option>
+      <option value={null} disabled>{placeholder}</option>
     {/if}
 
     {#each options as { id, value, label }}
@@ -48,7 +48,7 @@
   </select>
 
   {#if error}
-    <p id="title-desc-error" class="fr-error-text">
+    <p id="{name}-desc-error" class="fr-error-text">
       {error}
     </p>
   {/if}

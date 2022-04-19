@@ -53,7 +53,7 @@ describe("Test the select component", () => {
 
     expect(
       (getByRole("option", { name: placeholder }) as HTMLOptionElement).selected
-    ).toBeTruthy();
+    ).toBeFalsy();
   });
 
   test("should be marked as required", () => {
@@ -130,6 +130,6 @@ describe("Test the select component", () => {
 
     expect(errorMessage).toBeDefined();
     expect(errorMessage).toHaveClass("fr-error-text");
-    expect(errorMessage).toHaveAttribute("id", "title-desc-error");
+    expect(errorMessage).toHaveAttribute("id", "mySelect-desc-error");
   });
 });
