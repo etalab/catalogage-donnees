@@ -19,6 +19,7 @@
   import ContactEmailsField from "../ContactEmailsField/ContactEmailsField.svelte";
   import Select from "../Select/Select.svelte";
   import { toSelectOptions } from "src/lib/transformers/form";
+  import { handleSelectChange } from "src/lib/util/form";
 
   export let submitLabel = "Publier ce jeu de données";
   export let loadingLabel = "Publication en cours...";
@@ -272,8 +273,20 @@
     label="Couverture géographique"
     placeholder="Sélectionnez une couverture géographique..."
     bind:value={$form.geographicalCoverage}
-    on:change={handleChange}
-    on:blur={handleChange}
+    on:change={(event) =>
+      handleSelectChange(
+        "geographicalCoverage",
+        event,
+        handleChange,
+        updateValidateField
+      )}
+    on:blur={(event) =>
+      handleSelectChange(
+        "geographicalCoverage",
+        event,
+        handleChange,
+        updateValidateField
+      )}
     error={$errors.geographicalCoverage}
   />
 
@@ -451,8 +464,20 @@
     placeholder="Sélectionner une option"
     label="Fréquence de mise à jour"
     bind:value={$form.updateFrequency}
-    on:change={handleUpdateFrequencyChange}
-    on:blur={handleUpdateFrequencyChange}
+    on:change={(event) =>
+      handleSelectChange(
+        "updateFrequency",
+        event,
+        handleChange,
+        updateValidateField
+      )}
+    on:blur={(event) =>
+      handleSelectChange(
+        "updateFrequency",
+        event,
+        handleChange,
+        updateValidateField
+      )}
     error={$errors.updateFrequency}
   />
 

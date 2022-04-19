@@ -8,19 +8,21 @@ describe("Test the select component", () => {
   test("should display a select input with 3 options", () => {
     const options: SelectOption[] = [
       {
+        id: "label-1-value-1",
         label: "label-1",
         value: "value-1",
       },
       {
+        id: "label-2-value-2",
         label: "label-2",
         value: "value-2",
       },
       {
+        id: "label-3-value-3",
         label: "label-3",
         value: "value-3",
       },
     ];
-
 
     const props = {
       options,
@@ -57,9 +59,10 @@ describe("Test the select component", () => {
   test("should be marked as required", () => {
     const options: SelectOption[] = [
       {
+        id: "foo-tata",
         value: "foo",
-        label: "tata"
-      }
+        label: "tata",
+      },
     ];
 
     const label = "label";
@@ -84,6 +87,7 @@ describe("Test the select component", () => {
   test("on:change should be triggered", () => {
     const options: SelectOption[] = [
       {
+        id: "label-my-name",
         label: "label",
         value: "my-name",
       },
