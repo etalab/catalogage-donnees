@@ -29,10 +29,13 @@ from server.domain.datasets.entities import (
     UpdateFrequency,
 )
 from server.domain.datasets.repositories import DatasetHeadlines, DatasetRepository
+from server.domain.tags.entities import Tag
 
 from ..catalog_records.repositories import CatalogRecordModel
 from ..catalog_records.repositories import make_entity as make_catalog_record_entity
 from ..database import Base, Database
+from ..tags.repositories import TagModel
+from ..tags.repositories import make_entity as make_tag_entity
 
 # Association table
 # See: https://docs.sqlalchemy.org/en/14/orm/basic_relationships.html#many-to-many
@@ -41,6 +44,13 @@ dataset_dataformat = Table(
     Base.metadata,
     Column("dataset_id", ForeignKey("dataset.id"), primary_key=True),
     Column("dataformat_id", ForeignKey("dataformat.id"), primary_key=True),
+)
+
+dataset_tag = Table(
+    "dataset_tag",
+    Base.metadata,
+    Column("dataset_id", ForeignKey("dataset.id"), primary_key=True),
+    Column("tag_id", ForeignKey("tag.id"), primary_key=True),
 )
 
 
@@ -85,6 +95,7 @@ class DatasetModel(Base):
     update_frequency = Column(Enum(UpdateFrequency, enum="update_frequency_enum"))
     last_updated_at = Column(DateTime(timezone=True))
     published_url = Column(String)
+    tags: List["TagModel"] = relationship("TagModel", secondary=dataset_tag)
 
     search_tsv: Mapped[str] = Column(
         TSVECTOR,
@@ -104,6 +115,7 @@ def make_entity(instance: DatasetModel) -> Dataset:
     kwargs = {
         "catalog_record": make_catalog_record_entity(instance.catalog_record),
         "formats": [fmt.name for fmt in instance.formats],
+        "tags": [make_tag_entity(tag) for tag in instance.tags],
     }
 
     kwargs.update(
@@ -119,21 +131,27 @@ def make_instance(
     entity: Dataset,
     catalog_record: CatalogRecordModel,
     formats: List[DataFormatModel],
+    tags: List[TagModel],
 ) -> DatasetModel:
     return DatasetModel(
-        **entity.dict(exclude={"catalog_record", "formats"}),
+        **entity.dict(exclude={"catalog_record", "formats", "tags"}),
         catalog_record=catalog_record,
         formats=formats,
+        tags=tags,
     )
 
 
 def update_instance(
-    instance: DatasetModel, entity: Dataset, formats: List[DataFormatModel]
+    instance: DatasetModel,
+    entity: Dataset,
+    formats: List[DataFormatModel],
+    tags: List[TagModel],
 ) -> None:
-    for field in set(Dataset.__fields__) - {"id", "catalog_record", "formats"}:
+    for field in set(Dataset.__fields__) - {"id", "catalog_record", "formats", "tags"}:
         setattr(instance, field, getattr(entity, field))
 
     instance.formats = formats
+    instance.tags = tags
 
 
 class SqlDatasetRepository(DatasetRepository):
@@ -147,6 +165,7 @@ class SqlDatasetRepository(DatasetRepository):
                 .options(
                     selectinload(DatasetModel.formats),
                     selectinload(DatasetModel.catalog_record),
+                    selectinload(DatasetModel.tags),
                 )
                 .join(DatasetModel.catalog_record)
                 .order_by(CatalogRecordModel.created_at.desc())
@@ -201,6 +220,7 @@ class SqlDatasetRepository(DatasetRepository):
                 .options(
                     selectinload(DatasetModel.formats),
                     selectinload(DatasetModel.catalog_record),
+                    selectinload(DatasetModel.tags),
                 )
                 .where(
                     # NOTE: SQLAlchemy has `.match(...)` that uses `to_tsquery()`.
@@ -236,6 +256,7 @@ class SqlDatasetRepository(DatasetRepository):
             .options(
                 selectinload(DatasetModel.formats),
                 selectinload(DatasetModel.catalog_record),
+                selectinload(DatasetModel.tags),
             )
         )
         result = await session.execute(stmt)
@@ -268,13 +289,19 @@ class SqlDatasetRepository(DatasetRepository):
         result = await session.execute(stmt)
         return result.scalars().all()
 
+    async def _get_tags(self, session: AsyncSession, tags: List[Tag]) -> List[TagModel]:
+        stmt = select(TagModel).where(TagModel.id.in_({tag.id for tag in tags}))
+        result = await session.execute(stmt)
+        return result.scalars().all()
+
     async def insert(self, entity: Dataset) -> ID:
         async with self._db.session() as session:
             catalog_record = await self._get_catalog_record(
                 session, entity.catalog_record.id
             )
             formats = await self._get_formats(session, entity.formats)
-            instance = make_instance(entity, catalog_record, formats)
+            tags = await self._get_tags(session, entity.tags)
+            instance = make_instance(entity, catalog_record, formats, tags)
 
             session.add(instance)
 
@@ -291,7 +318,8 @@ class SqlDatasetRepository(DatasetRepository):
                 return
 
             formats = await self._get_formats(session, entity.formats)
-            update_instance(instance, entity, formats)
+            tags = await self._get_tags(session, entity.tags)
+            update_instance(instance, entity, formats, tags)
 
             await session.commit()
 

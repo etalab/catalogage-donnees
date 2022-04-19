@@ -2,6 +2,9 @@ import datetime as dt
 import enum
 from typing import List, Optional
 
+from pydantic import Field
+
+from server.domain.tags.entities import Tag
 from server.seedwork.domain.entities import Entity
 
 from ..catalog_records.entities import CatalogRecord
@@ -51,6 +54,7 @@ class Dataset(Entity):
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
     published_url: Optional[str] = None
+    tags: List[Tag] = Field(default_factory=list)
 
     class Config:
         orm_mode = True
@@ -68,6 +72,7 @@ class Dataset(Entity):
         update_frequency: Optional[UpdateFrequency],
         last_updated_at: Optional[dt.datetime],
         published_url: Optional[str],
+        tags: List[Tag],
     ) -> None:
         self.title = title
         self.description = description
@@ -80,3 +85,4 @@ class Dataset(Entity):
         self.update_frequency = update_frequency
         self.last_updated_at = last_updated_at
         self.published_url = published_url
+        self.tags = tags

@@ -7,6 +7,7 @@ from server.domain.common.types import ID
 from server.domain.datasets.entities import Dataset
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.domain.datasets.repositories import DatasetRepository
+from server.domain.tags.repositories import TagRepository
 
 from .commands import CreateDataset, DeleteDataset, UpdateDataset
 from .queries import GetAllDatasets, GetDatasetByID, SearchDatasets
@@ -16,6 +17,7 @@ from .views import DatasetSearchView, DatasetView
 async def create_dataset(command: CreateDataset, *, id_: ID = None) -> ID:
     repository = resolve(DatasetRepository)
     catalog_record_repository = resolve(CatalogRecordRepository)
+    tag_repository = resolve(TagRepository)
 
     if id_ is None:
         id_ = repository.make_id()
@@ -25,20 +27,30 @@ async def create_dataset(command: CreateDataset, *, id_: ID = None) -> ID:
     )
     catalog_record = await catalog_record_repository.get_by_id(catalog_record_id)
     assert catalog_record is not None
-    dataset = Dataset(id=id_, catalog_record=catalog_record, **command.dict())
+
+    tags = await tag_repository.get_all_by_ids(command.tag_ids)
+
+    dataset = Dataset(
+        id=id_,
+        catalog_record=catalog_record,
+        tags=tags,
+        **command.dict(exclude={"tag_ids"}),
+    )
 
     return await repository.insert(dataset)
 
 
 async def update_dataset(command: UpdateDataset) -> None:
     repository = resolve(DatasetRepository)
+    tag_repository = resolve(TagRepository)
 
     pk = command.id
     dataset = await repository.get_by_id(pk)
     if dataset is None:
         raise DatasetDoesNotExist(pk)
 
-    dataset.update(**command.dict(exclude={"id"}))
+    tags = await tag_repository.get_all_by_ids(command.tag_ids)
+    dataset.update(**command.dict(exclude={"id", "tag_ids"}), tags=tags)
 
     await repository.update(dataset)
 
