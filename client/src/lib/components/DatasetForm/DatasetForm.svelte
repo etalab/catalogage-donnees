@@ -27,11 +27,11 @@
   export let initial: DatasetFormData = {
     title: "",
     description: "",
+    service: "",
     formats: [],
     entrypointEmail: "",
     contactEmails: [$user?.email || ""],
     geographicalCoverage: null,
-    service: "",
     lastUpdatedAt: null,
     updateFrequency: null,
     technicalSource: "",
@@ -42,11 +42,11 @@
   type DatasetFormValues = {
     title: string;
     description: string;
+    service: string;
     dataFormats: boolean[];
     entrypointEmail: string;
     contactEmails: string[];
     geographicalCoverage: GeographicalCoverage;
-    service: string;
     lastUpdatedAt: string | null;
     updateFrequency: UpdateFrequency | null;
     technicalSource: string | null;
@@ -59,12 +59,12 @@
   const initialValues: DatasetFormValues = {
     title: initial.title,
     description: initial.description,
+    service: initial.service,
     dataFormats: dataFormatChoices.map(
       ({ value }) => !!initial.formats.find((v) => v === value)
     ),
     entrypointEmail: initial.entrypointEmail,
     contactEmails: initial.contactEmails,
-    service: initial.service,
     lastUpdatedAt: initial.lastUpdatedAt
       ? formatHTMLDate(initial.lastUpdatedAt)
       : null,
@@ -82,6 +82,7 @@
       validationSchema: yup.object().shape({
         title: yup.string().required("Ce champs est requis"),
         description: yup.string().required("Ce champs est requis"),
+        service: yup.string().required("Ce champs est requis"),
         dataFormats: yup.array(yup.boolean()).length(dataFormatsValue.length),
         entrypointEmail: yup
           .string()
@@ -94,7 +95,6 @@
               .string()
               .email("Ce champ doit contenir une adresse e-mail valide")
           ),
-        service: yup.string().required("Ce champs est requis"),
         lastUpdatedAt: yup.date().nullable(),
         updateFrequency: yup.string().nullable(),
         geographicalCoverage: yup.string().required("Ce champs est requis"),
@@ -178,11 +178,11 @@
       : ''}"
   >
     <label class="fr-label" for="title">
-      Nom de la donnée
+      Nom du jeu de la donnée
       <RequiredMarker />
       <span class="fr-hint-text" id="title-desc-hint">
-        Ce nom doit aller à l'essentiel et permettre d'indiquer en quelques mots
-        les informations que l'on peut y trouver.
+        Ce nom doit aller à l’essentiel et permettre d’indiquer en quelques mots
+        les informations que l’on peut y trouver.
       </span>
     </label>
     <input
@@ -209,7 +209,7 @@
       : ''}"
   >
     <label class="fr-label" for="description">
-      Description des données
+      Description du jeu de données
       <RequiredMarker />
       <span class="fr-hint-text" id="description-desc-hint">
         Quel type de données sont contenues dans ce jeu de données ? Les
@@ -229,6 +229,36 @@
     {#if $errors.description}
       <p id="description-desc-error" class="fr-error-text">
         {$errors.description}
+      </p>
+    {/if}
+  </div>
+
+  <div
+    class="fr-input-group fr-my-4w {$errors.service
+      ? 'fr-input-group--error'
+      : ''}"
+  >
+    <label class="fr-label" for="service">
+      Service producteur de la donnée
+      <RequiredMarker />
+    </label>
+    <input
+      class="fr-input {$errors.service ? 'fr-input--error' : ''}"
+      aria-describedby={$errors.service
+        ? "entrypoint-service-desc-error"
+        : null}
+      type="text"
+      id="service"
+      name="service"
+      required
+      on:change={handleChange}
+      on:blur={handleChange}
+      bind:value={$form.service}
+    />
+
+    {#if $errors.service}
+      <p id="title-desc-error" class="fr-error-text">
+        {$errors.service}
       </p>
     {/if}
   </div>
@@ -332,35 +362,6 @@
     productrices d’une donnée. Lorsqu’une demande de contact sera effectuée,
     l’ensemble des adresses e-mail saisies recevront la notification.
   </p>
-  <div
-    class="fr-input-group fr-my-4w {$errors.service
-      ? 'fr-input-group--error'
-      : ''}"
-  >
-    <label class="fr-label" for="service">
-      Service producteur de la donnée
-      <RequiredMarker />
-    </label>
-    <input
-      class="fr-input {$errors.service ? 'fr-input--error' : ''}"
-      aria-describedby={$errors.service
-        ? "entrypoint-service-desc-error"
-        : null}
-      type="text"
-      id="service"
-      name="service"
-      required
-      on:change={handleChange}
-      on:blur={handleChange}
-      bind:value={$form.service}
-    />
-
-    {#if $errors.service}
-      <p id="title-desc-error" class="fr-error-text">
-        {$errors.service}
-      </p>
-    {/if}
-  </div>
 
   <div
     class="fr-input-group fr-my-4w {$errors.entrypointEmail
