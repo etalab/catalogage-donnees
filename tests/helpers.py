@@ -5,9 +5,9 @@ import httpx
 from _pytest.python_api import ApproxBase
 
 from server.application.auth.commands import CreateUser
-from server.application.auth.queries import GetUserByEmail
 from server.config.di import resolve
 from server.domain.auth.entities import User, UserRole
+from server.domain.auth.repositories import UserRepository
 from server.seedwork.application.messages import MessageBus
 
 
@@ -43,6 +43,7 @@ _temp_user_ids = itertools.count(0)
 
 async def create_test_user(role: UserRole) -> TestUser:
     bus = resolve(MessageBus)
+    user_repository = resolve(UserRepository)
 
     email = f"temp{next(_temp_user_ids)}@example.org"
     password = "s3kr3t"
@@ -50,8 +51,8 @@ async def create_test_user(role: UserRole) -> TestUser:
     command = CreateUser(email=email, password=password)
     await bus.execute(command, role=role)
 
-    query = GetUserByEmail(email=email)
-    user = await bus.execute(query)
+    user = await user_repository.get_by_email(email)
+    assert user is not None
 
     return TestUser(**user.dict(), password=password)
 

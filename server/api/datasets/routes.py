@@ -15,36 +15,36 @@ from server.application.datasets.queries import (
     GetDatasetByID,
     SearchDatasets,
 )
+from server.application.datasets.views import DatasetView
 from server.config.di import resolve
 from server.domain.auth.entities import UserRole
 from server.domain.common.types import ID
-from server.domain.datasets.entities import Dataset
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
 from ..auth.dependencies import HasRole, IsAuthenticated
-from .schemas import DatasetCreate, DatasetRead, DatasetUpdate
+from .schemas import DatasetCreate, DatasetUpdate
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
 
-@router.get("/", response_model=List[DatasetRead])
+@router.get("/", response_model=List[DatasetView])
 async def list_datasets(
     q: str = None, highlight: bool = False
-) -> Union[JSONResponse, List[Dataset]]:
+) -> Union[JSONResponse, List[DatasetView]]:
     bus = resolve(MessageBus)
 
     if q is not None:
         query = SearchDatasets(q=q, highlight=highlight)
-        items = await bus.execute(query)
-        return JSONResponse(jsonable_encoder(items))
+        views = await bus.execute(query)
+        return JSONResponse(jsonable_encoder(views))
 
     query = GetAllDatasets()
     return await bus.execute(query)
 
 
-@router.get("/{id}/", response_model=DatasetRead, responses={404: {}})
-async def get_dataset_by_id(id: ID) -> Dataset:
+@router.get("/{id}/", response_model=DatasetView, responses={404: {}})
+async def get_dataset_by_id(id: ID) -> DatasetView:
     bus = resolve(MessageBus)
 
     query = GetDatasetByID(id=id)
@@ -54,8 +54,8 @@ async def get_dataset_by_id(id: ID) -> Dataset:
         raise HTTPException(404)
 
 
-@router.post("/", response_model=DatasetRead, status_code=201)
-async def create_dataset(data: DatasetCreate) -> Dataset:
+@router.post("/", response_model=DatasetView, status_code=201)
+async def create_dataset(data: DatasetCreate) -> DatasetView:
     bus = resolve(MessageBus)
 
     command = CreateDataset(**data.dict())
@@ -66,8 +66,8 @@ async def create_dataset(data: DatasetCreate) -> Dataset:
     return await bus.execute(query)
 
 
-@router.put("/{id}/", response_model=DatasetRead, responses={404: {}})
-async def update_dataset(id: ID, data: DatasetUpdate) -> Dataset:
+@router.put("/{id}/", response_model=DatasetView, responses={404: {}})
+async def update_dataset(id: ID, data: DatasetUpdate) -> DatasetView:
     bus = resolve(MessageBus)
 
     command = UpdateDataset(id=id, **data.dict())

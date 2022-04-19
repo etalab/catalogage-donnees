@@ -2,20 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from server.application.auth.commands import CreateUser, DeleteUser
 from server.application.auth.queries import GetUserByEmail, Login
+from server.application.auth.views import AuthenticatedUserView, UserView
 from server.config.di import resolve
-from server.domain.auth.entities import User, UserRole
+from server.domain.auth.entities import UserRole
 from server.domain.auth.exceptions import EmailAlreadyExists, LoginFailed
 from server.domain.common.types import ID
 from server.seedwork.application.messages import MessageBus
 
 from .dependencies import HasRole, IsAuthenticated
-from .schemas import (
-    CheckAuthResponse,
-    UserAuthenticatedRead,
-    UserCreate,
-    UserLogin,
-    UserRead,
-)
+from .schemas import CheckAuthResponse, UserCreate, UserLogin
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -23,10 +18,10 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 @router.post(
     "/users/",
     dependencies=[Depends(IsAuthenticated()), Depends(HasRole(UserRole.ADMIN))],
-    response_model=UserRead,
+    response_model=UserView,
     status_code=201,
 )
-async def create_user(data: UserCreate) -> User:
+async def create_user(data: UserCreate) -> UserView:
     bus = resolve(MessageBus)
 
     command = CreateUser(email=data.email, password=data.password)
@@ -40,8 +35,8 @@ async def create_user(data: UserCreate) -> User:
     return await bus.execute(query)
 
 
-@router.post("/login/", response_model=UserAuthenticatedRead)
-async def login(data: UserLogin) -> None:
+@router.post("/login/", response_model=AuthenticatedUserView)
+async def login(data: UserLogin) -> AuthenticatedUserView:
     bus = resolve(MessageBus)
 
     query = Login(email=data.email, password=data.password)
