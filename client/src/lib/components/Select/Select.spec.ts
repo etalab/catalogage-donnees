@@ -21,10 +21,8 @@ describe("Test the select component", () => {
       },
     ];
 
-    const placeholder = "My brand new select";
 
     const props = {
-      placeholder,
       options,
       label: "My Nice Select",
       id: "myId",
@@ -33,17 +31,17 @@ describe("Test the select component", () => {
 
     const { getAllByRole } = render(Select, { props });
 
-    expect(getAllByRole("option").length).toBe(4);
+    expect(getAllByRole("option").length).toBe(3);
   });
 
-  test("should have a default option selected", () => {
+  test("should have a placeholder value", () => {
     const options: SelectOption[] = [];
 
     const placeholder = "My brand new select";
 
     const props = {
-      placeholder,
       options,
+      placeholder,
       label: "My Nice Select",
       id: "myId",
       name: "mySelect",
@@ -57,13 +55,16 @@ describe("Test the select component", () => {
   });
 
   test("should be marked as required", () => {
-    const options: SelectOption[] = [];
+    const options: SelectOption[] = [
+      {
+        value: "foo",
+        label: "tata"
+      }
+    ];
 
-    const placeholder = "My brand new select";
     const label = "label";
 
     const props = {
-      placeholder,
       options,
       label,
       id: "myId",

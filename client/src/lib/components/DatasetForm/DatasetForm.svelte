@@ -270,7 +270,7 @@
     hintText="Quelle est l’étendue de la zone couverte par votre jeu de données ?"
     required
     label="Couverture géographique"
-    placeholder="Sélectionnez une couverture géographique ..."
+    placeholder="Sélectionnez une couverture géographique..."
     bind:value={$form.geographicalCoverage}
     on:change={handleChange}
     on:blur={handleChange}
@@ -448,7 +448,7 @@
     options={toSelectOptions(UPDATE_FREQUENCY_LABELS)}
     id="updateFrequency"
     name="updateFrequency"
-    required
+    placeholder="Sélectionner une option"
     label="Fréquence de mise à jour"
     bind:value={$form.updateFrequency}
     on:change={handleUpdateFrequencyChange}
