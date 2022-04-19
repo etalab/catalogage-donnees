@@ -98,6 +98,7 @@
         lastUpdatedAt: yup.date().nullable(),
         updateFrequency: yup.string().nullable(),
         geographicalCoverage: yup.string().required("Ce champs est requis"),
+        technicalSource: yup.string(),
       }),
       onSubmit: (values) => {
         const formats = values.dataFormats

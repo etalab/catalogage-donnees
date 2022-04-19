@@ -51,6 +51,7 @@ export const test = base.extend<AppTestArgs>({
       updateFrequency: "never",
       formats: ["api"],
       technicalSource: "foo/baz",
+      geographicalCoverage: "world",
     });
     let response = await apiContext.post("/datasets/", {
       data: toPayload(data),
