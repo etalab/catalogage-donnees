@@ -87,7 +87,7 @@ async def handle_tag(item: dict) -> None:
     existing_tag = await repository.get_by_id(id_)
 
     if existing_tag is not None:
-        print(f"{info('ok')}: {existing_tag}")
+        print(f"{info('ok')}: {existing_tag!r}")
         return
 
     command = CreateTag(**item["params"])
