@@ -7,7 +7,7 @@ import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
     const { getByLabelText } = render(DatasetForm);
-    const title = getByLabelText("Nom de la donnée", { exact: false });
+    const title = getByLabelText("Nom du jeu de la donnée", { exact: false });
     expect(title).toBeInTheDocument();
     expect(title).toBeRequired();
   });
@@ -108,7 +108,7 @@ describe("Test the dataset form", () => {
       { props }
     );
 
-    const title = getByLabelText("Nom de la donnée", {
+    const title = getByLabelText("Nom du jeu de la donnée", {
       exact: false,
     }) as HTMLInputElement;
     expect(title.value).toBe("Titre initial");
