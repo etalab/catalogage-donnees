@@ -1,7 +1,7 @@
 import { fireEvent } from "@testing-library/dom";
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/svelte";
-import type { SelectOption } from "src/definitions/selectOption";
+import type { SelectOption } from "src/definitions/form";
 import Select from "./Select.svelte";
 
 describe("Test the select component", () => {

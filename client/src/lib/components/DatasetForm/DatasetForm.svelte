@@ -18,7 +18,7 @@
   import { user } from "src/lib/stores/auth";
   import ContactEmailsField from "../ContactEmailsField/ContactEmailsField.svelte";
   import Select from "../Select/Select.svelte";
-  import { toSelectOption } from "src/lib/transformers/selectOption";
+  import { toSelectOptions } from "src/lib/transformers/form";
 
   export let submitLabel = "Publier ce jeu de données";
   export let loadingLabel = "Publication en cours...";
@@ -264,7 +264,7 @@
   </div>
 
   <Select
-    options={toSelectOption(GEOGRAPHICAL_COVERAGE_LABELS)}
+    options={toSelectOptions(GEOGRAPHICAL_COVERAGE_LABELS)}
     id="geographicalCoverage"
     name="geographicalCoverage"
     hintText="Quelle est l’étendue de la zone couverte par votre jeu de données ?"
@@ -445,7 +445,7 @@
   </div>
 
   <Select
-    options={toSelectOption(UPDATE_FREQUENCY_LABELS)}
+    options={toSelectOptions(UPDATE_FREQUENCY_LABELS)}
     id="updateFrequency"
     name="updateFrequency"
     required

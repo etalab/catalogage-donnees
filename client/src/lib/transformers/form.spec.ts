@@ -1,14 +1,14 @@
-import { toSelectOption } from "./selectOption";
+import { toSelectOptions } from "./form";
 
-describe("transformers -- selectOption", () => {
-  describe("toSelectOption", () => {
+describe("transformers -- form", () => {
+  describe("toSelectOptions", () => {
     it("should transform an object to SelectOption", () => {
       const source = {
         foo: "bar",
         baz: "taz",
       };
 
-      expect(toSelectOption(source)).toEqual([
+      expect(toSelectOptions(source)).toEqual([
         {
           value: "foo",
           label: "bar",

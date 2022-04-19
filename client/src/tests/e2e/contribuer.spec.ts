@@ -33,7 +33,7 @@ test.describe("Basic form submission", () => {
     const geographicalCoverage = page.locator(
       "form [name=geographicalCoverage]"
     );
-    await geographicalCoverage.selectOption({
+    await geographicalCoverage.form({
       label: GEOGRAPHICAL_COVERAGE_LABELS.europe,
     });
 
@@ -71,7 +71,7 @@ test.describe("Basic form submission", () => {
     expect(await lastUpdatedAt.inputValue()).toBe(lastUpdatedAtDate);
 
     const updateFrequency = page.locator("form [name=updateFrequency]");
-    await updateFrequency.selectOption({
+    await updateFrequency.form({
       label: UPDATE_FREQUENCY_LABELS.daily,
     });
 

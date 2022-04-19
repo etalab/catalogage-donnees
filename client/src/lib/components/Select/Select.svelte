@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { SelectOption } from "src/definitions/selectOption";
+  import type { SelectOption } from "src/definitions/form";
 
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
   export let label: string;
