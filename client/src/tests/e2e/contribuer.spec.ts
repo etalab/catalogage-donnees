@@ -33,7 +33,9 @@ test.describe("Basic form submission", () => {
     const geographicalCoverage = page.locator(
       "form [name=geographicalCoverage]"
     );
-    await geographicalCoverage.fill(GEOGRAPHICAL_COVERAGE_LABELS.EPCI);
+    await geographicalCoverage.selectOption({
+      label: GEOGRAPHICAL_COVERAGE_LABELS.europe,
+    });
 
     const apiFormat = page.locator("label[for=dataformats-api]");
     await apiFormat.check();
@@ -69,7 +71,9 @@ test.describe("Basic form submission", () => {
     expect(await lastUpdatedAt.inputValue()).toBe(lastUpdatedAtDate);
 
     const updateFrequency = page.locator("form [name=updateFrequency]");
-    await updateFrequency.fill(UPDATE_FREQUENCY_LABELS.daily);
+    await updateFrequency.selectOption({
+      label: UPDATE_FREQUENCY_LABELS.daily,
+    });
 
     const button = page.locator("button[type='submit']");
     const [request, response] = await Promise.all([
