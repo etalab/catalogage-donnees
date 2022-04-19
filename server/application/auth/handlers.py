@@ -1,3 +1,4 @@
+from server.application.auth.views import AuthenticatedUserView, UserView
 from server.config.di import resolve
 from server.domain.auth.entities import User, UserRole
 from server.domain.auth.exceptions import (
@@ -48,7 +49,7 @@ async def delete_user(command: DeleteUser) -> None:
     await repository.delete(command.id)
 
 
-async def login(query: Login) -> User:
+async def login(query: Login) -> AuthenticatedUserView:
     repository = resolve(UserRepository)
     password_encoder = resolve(PasswordEncoder)
 
@@ -61,10 +62,10 @@ async def login(query: Login) -> User:
     if not password_encoder.verify(password=query.password, hash=user.password_hash):
         raise LoginFailed("Invalid credentials")
 
-    return user
+    return AuthenticatedUserView(**user.dict())
 
 
-async def get_user_by_email(query: GetUserByEmail) -> User:
+async def get_user_by_email(query: GetUserByEmail) -> UserView:
     repository = resolve(UserRepository)
 
     email = query.email
@@ -74,10 +75,10 @@ async def get_user_by_email(query: GetUserByEmail) -> User:
     if user is None:
         raise UserDoesNotExist(email)
 
-    return user
+    return UserView(**user.dict())
 
 
-async def get_user_by_api_token(query: GetUserByAPIToken) -> User:
+async def get_user_by_api_token(query: GetUserByAPIToken) -> UserView:
     repository = resolve(UserRepository)
 
     user = await repository.get_by_api_token(query.api_token)
@@ -85,4 +86,4 @@ async def get_user_by_api_token(query: GetUserByAPIToken) -> User:
     if user is None:
         raise UserDoesNotExist("__token__")
 
-    return user
+    return UserView(**user.dict())

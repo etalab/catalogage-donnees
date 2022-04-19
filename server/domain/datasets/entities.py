@@ -12,7 +12,7 @@ from ..common.types import ID
 
 class GeographicalCoverage(enum.Enum):
     MUNICIPALITY = "municipality"
-    EPCI = "EPCI"
+    EPCI = "epci"
     DEPARTMENT = "department"
     REGION = "region"
     NATIONAL = "national"

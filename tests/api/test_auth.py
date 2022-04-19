@@ -83,9 +83,9 @@ async def test_create_user(
     response = await client.post("/auth/users/", json=payload, auth=admin_user.auth)
     assert response.status_code == 201
     user = response.json()
-    pk = user.pop("id")
-    assert isinstance(pk, str)
-    assert user == {"email": "john@doe.com"}
+    id_ = user["id"]
+    assert isinstance(id_, str)
+    assert user == {"id": id_, "email": "john@doe.com", "role": "USER"}
 
 
 @pytest.mark.asyncio
