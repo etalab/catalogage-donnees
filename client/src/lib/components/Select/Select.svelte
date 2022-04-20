@@ -42,8 +42,8 @@
       <option value={null} disabled>{placeholder}</option>
     {/if}
 
-    {#each options as { id, value, label }}
-      <option {id} {value}>{label}</option>
+    {#each options as { value, label }}
+      <option {value}>{label}</option>
     {/each}
   </select>
 

@@ -12,12 +12,10 @@ describe("transformers -- form", () => {
         {
           value: "foo",
           label: "bar",
-          id: "bar-0",
         },
         {
           value: "baz",
           label: "taz",
-          id: "taz-1",
         },
       ]);
     });

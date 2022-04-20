@@ -37,7 +37,7 @@ export const GEOGRAPHICAL_COVERAGE_LABELS: {
   [K in GeographicalCoverage]: string;
 } = {
   municipality: "Communale",
-  EPCI: "epci",
+  epci: "EPCI",
   department: "Départementale",
   region: "Régionale",
   national: "Nationale (métropole)",

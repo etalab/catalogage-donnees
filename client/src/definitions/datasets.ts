@@ -1,5 +1,5 @@
 // Matches enum on the backend.
-type DataFormat =
+export type DataFormat =
   | "file_tabular"
   | "file_gis"
   | "api"
@@ -7,7 +7,7 @@ type DataFormat =
   | "website"
   | "other";
 
-type UpdateFrequency =
+export type UpdateFrequency =
   | "never"
   | "realtime"
   | "daily"
@@ -15,9 +15,9 @@ type UpdateFrequency =
   | "monthly"
   | "yearly";
 
-type GeographicalCoverage =
+export type GeographicalCoverage =
   | "municipality"
-  | "EPCI"
+  | "epci"
   | "department"
   | "region"
   | "national"
