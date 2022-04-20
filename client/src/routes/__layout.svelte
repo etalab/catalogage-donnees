@@ -3,7 +3,7 @@
   import { authGuard } from "$lib/auth/guard";
 
   export const load: Load = async ({ url }) => {
-    return authGuard(url);
+    return await authGuard(url);
   };
 </script>
 

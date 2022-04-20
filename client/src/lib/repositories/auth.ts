@@ -3,7 +3,7 @@ import type {
   LoginApiResponseData,
 } from "src/definitions/auth";
 import type { ApiResponse, Fetch } from "src/definitions/fetch";
-import { getApiUrl } from "../fetch";
+import { getApiUrl, getHeaders } from "../fetch";
 
 type Login = (opts: {
   fetch: Fetch;
@@ -31,5 +31,19 @@ export const login: Login = async ({ fetch, data }) => {
       role: apiData.role,
       apiToken: apiData.api_token,
     },
+  };
+};
+
+type CheckLogin = (opts: {
+  fetch: Fetch;
+  apiToken: string;
+}) => Promise<ApiResponse<void>>;
+
+export const checkLogin: CheckLogin = async ({ fetch, apiToken }) => {
+  const url = `${getApiUrl()}/auth/check/`;
+  const request = new Request(url, { headers: getHeaders(apiToken) });
+  const response = await fetch(request);
+  return {
+    status: response.status,
   };
 };
