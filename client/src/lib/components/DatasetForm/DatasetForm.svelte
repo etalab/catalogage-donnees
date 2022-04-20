@@ -149,21 +149,6 @@
       await handleChange(event);
     }
   };
-
-  const handleUpdateFrequencyChange = async (
-    event: FocusEvent & { currentTarget: EventTarget & HTMLSelectElement }
-  ) => {
-    if (
-      event.currentTarget.value === "null" ||
-      !event.currentTarget.value /* Empty option selected */
-    ) {
-      // Needs manual handling to ensure a `null` initial value and the empty
-      // option all correspond to `null`.
-      updateValidateField("updateFrequency", null);
-    } else {
-      await handleChange(event);
-    }
-  };
 </script>
 
 <form
