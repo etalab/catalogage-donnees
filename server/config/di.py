@@ -69,10 +69,14 @@ import punq
 
 from server.application.auth.passwords import PasswordEncoder
 from server.domain.auth.repositories import UserRepository
+from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.datasets.repositories import DatasetRepository
 from server.infrastructure.adapters.messages import MessageBusAdapter
 from server.infrastructure.auth.passwords import Argon2PasswordEncoder
 from server.infrastructure.auth.repositories import SqlUserRepository
+from server.infrastructure.catalog_records.repositories import (
+    SqlCatalogRecordRepository,
+)
 from server.infrastructure.database import Database
 from server.infrastructure.datasets.repositories import SqlDatasetRepository
 from server.seedwork.application.messages import MessageBus
@@ -147,7 +151,7 @@ def create_container() -> punq.Container:
     # Repositories
 
     container.register(UserRepository, SqlUserRepository)
-
+    container.register(CatalogRecordRepository, SqlCatalogRecordRepository)
     container.register(DatasetRepository, SqlDatasetRepository)
 
     return container

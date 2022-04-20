@@ -33,7 +33,10 @@ describe("transformers -- dataset", () => {
 
   test("toDataset", () => {
     const dataset = toPayload(getFakeDataset());
-    const result = toDataset(dataset);
+    const result = toDataset({
+      ...dataset,
+      catalog_record: { created_at: new Date().toISOString() },
+    });
     expect(Object.keys(result).every((key) => key === key.toLowerCase())).toBe(
       false
     );

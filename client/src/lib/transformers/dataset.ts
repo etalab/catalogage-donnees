@@ -1,3 +1,4 @@
+import _ from "lodash";
 import type { Dataset } from "src/definitions/datasets";
 
 export const camelToUnderscore = (key: string): string => {
@@ -18,12 +19,12 @@ export const transformKeysToUnderscoreCase = (object: {
 export const toPayload = (
   data: Partial<Record<keyof Dataset, any>>
 ): { [K: string]: unknown } => {
-  return transformKeysToUnderscoreCase(data);
+  return transformKeysToUnderscoreCase(_.omit(data, "catalogRecord"));
 };
 
 export const toDataset = (item: any): Dataset => {
   const {
-    created_at,
+    catalog_record,
     entrypoint_email,
     contact_emails,
     update_frequency,
@@ -32,9 +33,12 @@ export const toDataset = (item: any): Dataset => {
     technical_source,
     ...rest
   } = item;
+  const { created_at } = catalog_record;
   return {
     ...rest,
-    createdAt: new Date(created_at),
+    catalogRecord: {
+      createdAt: new Date(created_at),
+    },
     entrypointEmail: entrypoint_email,
     contactEmails: contact_emails,
     updateFrequency: update_frequency,

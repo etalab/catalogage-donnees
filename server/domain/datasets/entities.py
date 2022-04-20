@@ -6,7 +6,7 @@ from pydantic import Field
 
 from server.seedwork.domain.entities import Entity
 
-from ..common import datetime as dtutil
+from ..catalog_records.entities import CatalogRecord
 from ..common.types import ID
 
 
@@ -41,7 +41,7 @@ class UpdateFrequency(enum.Enum):
 
 class Dataset(Entity):
     id: ID
-    created_at: dt.datetime = Field(default_factory=dtutil.now)
+    catalog_record: CatalogRecord
     title: str
     description: str
     service: str

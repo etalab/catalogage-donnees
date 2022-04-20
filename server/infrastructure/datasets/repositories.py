@@ -30,6 +30,8 @@ from server.domain.datasets.entities import (
 )
 from server.domain.datasets.repositories import DatasetHeadlines, DatasetRepository
 
+from ..catalog_records.repositories import CatalogRecordModel
+from ..catalog_records.repositories import make_entity as make_catalog_record_entity
 from ..database import Base, Database
 
 # Association table
@@ -58,9 +60,11 @@ class DatasetModel(Base):
     __tablename__ = "dataset"
 
     id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True)
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.clock_timestamp(), nullable=False
+
+    catalog_record: "CatalogRecordModel" = relationship(
+        "CatalogRecordModel", back_populates="dataset", uselist=False
     )
+
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
     service = Column(String, nullable=False)
@@ -95,7 +99,7 @@ class DatasetModel(Base):
 def make_entity(instance: DatasetModel) -> Dataset:
     return Dataset(
         id=instance.id,
-        created_at=instance.created_at,
+        catalog_record=make_catalog_record_entity(instance.catalog_record),
         title=instance.title,
         description=instance.description,
         service=instance.service,
@@ -109,14 +113,14 @@ def make_entity(instance: DatasetModel) -> Dataset:
     )
 
 
-def make_instance(entity: Dataset, formats: List[DataFormatModel]) -> DatasetModel:
+def make_instance(
+    entity: Dataset,
+    catalog_record: CatalogRecordModel,
+    formats: List[DataFormatModel],
+) -> DatasetModel:
     return DatasetModel(
-        **entity.dict(
-            exclude={
-                "created_at",  # Managed by DB for better time consistency
-                "formats",
-            }
-        ),
+        **entity.dict(exclude={"catalog_record", "formats"}),
+        catalog_record=catalog_record,
         formats=formats,
     )
 
@@ -144,8 +148,12 @@ class SqlDatasetRepository(DatasetRepository):
         async with self._db.session() as session:
             stmt = (
                 select(DatasetModel)
-                .options(selectinload(DatasetModel.formats))
-                .order_by(DatasetModel.created_at.desc())
+                .options(
+                    selectinload(DatasetModel.formats),
+                    selectinload(DatasetModel.catalog_record),
+                )
+                .join(DatasetModel.catalog_record)
+                .order_by(CatalogRecordModel.created_at.desc())
             )
             result = await session.execute(stmt)
             instances = result.scalars().all()
@@ -194,7 +202,10 @@ class SqlDatasetRepository(DatasetRepository):
                     rank_col.label("rank"),
                     *headline_cols,
                 )
-                .options(selectinload(DatasetModel.formats))
+                .options(
+                    selectinload(DatasetModel.formats),
+                    selectinload(DatasetModel.catalog_record),
+                )
                 .where(
                     # NOTE: SQLAlchemy has `.match(...)` that uses `to_tsquery()`.
                     # But we use this `.op()` advanced syntax because we need
@@ -226,7 +237,10 @@ class SqlDatasetRepository(DatasetRepository):
         stmt = (
             select(DatasetModel)
             .where(DatasetModel.id == id)
-            .options(selectinload(DatasetModel.formats))
+            .options(
+                selectinload(DatasetModel.formats),
+                selectinload(DatasetModel.catalog_record),
+            )
         )
         result = await session.execute(stmt)
 
@@ -244,6 +258,13 @@ class SqlDatasetRepository(DatasetRepository):
 
             return make_entity(instance)
 
+    async def _get_catalog_record(
+        self, session: AsyncSession, id_: ID
+    ) -> CatalogRecordModel:
+        stmt = select(CatalogRecordModel).where(CatalogRecordModel.id == id_)
+        result = await session.execute(stmt)
+        return result.scalar_one()
+
     async def _get_formats(
         self, session: AsyncSession, formats: List[DataFormat]
     ) -> List[DataFormatModel]:
@@ -253,8 +274,11 @@ class SqlDatasetRepository(DatasetRepository):
 
     async def insert(self, entity: Dataset) -> ID:
         async with self._db.session() as session:
+            catalog_record = await self._get_catalog_record(
+                session, entity.catalog_record.id
+            )
             formats = await self._get_formats(session, entity.formats)
-            instance = make_instance(entity, formats)
+            instance = make_instance(entity, catalog_record, formats)
 
             session.add(instance)
 

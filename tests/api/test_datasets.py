@@ -106,14 +106,16 @@ async def test_dataset_crud(client: httpx.AsyncClient, admin_user: TestUser) -> 
     pk = data["id"]
     assert isinstance(pk, str)
 
-    created_at = data["created_at"]
+    created_at = data["catalog_record"]["created_at"]
     assert dtutil.parse(created_at) == approx_datetime(
-        dtutil.now(), abs=dt.timedelta(seconds=0.1)
+        dtutil.now(), abs=dt.timedelta(seconds=0.2)
     )
 
     assert data == {
         "id": pk,
-        "created_at": created_at,
+        "catalog_record": {
+            "created_at": created_at,
+        },
         "title": "Example title",
         "description": "Example description",
         "service": "Example service",
@@ -309,7 +311,7 @@ class TestDatasetUpdate:
         data = response.json()
         assert data == {
             "id": str(dataset_id),
-            "created_at": data["created_at"],
+            "catalog_record": data["catalog_record"],
             "title": "Other title",
             "description": "Other description",
             "service": "Other service",

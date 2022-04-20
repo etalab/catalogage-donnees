@@ -9,10 +9,12 @@ from alembic.config import Config
 from asgi_lifespan import LifespanManager
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
+from server.application.datasets.queries import GetAllDatasets
 from server.config import Settings
 from server.config.di import bootstrap, resolve
 from server.domain.auth.entities import UserRole
 from server.infrastructure.database import Database
+from server.seedwork.application.messages import MessageBus
 
 from .helpers import TestUser, create_test_user
 
@@ -45,6 +47,14 @@ async def transaction() -> AsyncIterator[None]:
     async with db.transaction() as tx:
         yield
         await tx.rollback()
+
+
+@pytest.fixture(scope="session", autouse=True)
+async def warmup_db() -> None:
+    # Run a database query to warmup tables. Otherwise this warmup would
+    # occur during tests and interfere with time measurements.
+    bus = resolve(MessageBus)
+    await bus.execute(GetAllDatasets())
 
 
 @pytest.fixture(scope="session")

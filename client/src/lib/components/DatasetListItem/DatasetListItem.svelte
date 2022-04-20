@@ -51,7 +51,9 @@
 
   <div class="actions">
     <p class="fr-mb-2w fr-text--sm fr-text-mention--grey">
-      {capitalize(formatDaysMonthsOrYearsToNow(dataset.createdAt))}
+      {capitalize(
+        formatDaysMonthsOrYearsToNow(dataset.catalogRecord.createdAt)
+      )}
     </p>
     <a
       href={paths.datasetDetail({ id: dataset.id })}

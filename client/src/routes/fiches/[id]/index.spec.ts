@@ -6,7 +6,6 @@ import { getFakeDataset } from "src/tests/factories/dataset";
 
 const dataset = getFakeDataset({
   id: "d4765f06-ccdf-4bae-b237-2bced67e6dc2",
-  createdAt: new Date(),
   title: "foo",
   description: "bar baz crux",
   formats: ["other"],

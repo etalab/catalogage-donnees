@@ -8,7 +8,6 @@ import { getFakeDataset } from "src/tests/factories/dataset";
 describe("Test the dataset list item", () => {
   const dataset = getFakeDataset({
     id: "uuid1",
-    createdAt: new Date(),
     title: "Inventaire des arbres et forêts",
     description: "Fichier de l'ensemble des arbres et forêts de France.",
   });
