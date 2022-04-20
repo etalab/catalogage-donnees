@@ -1,33 +1,33 @@
 import "@testing-library/jest-dom";
 
-import SearchForm from "./SearchForm.svelte";
+import Search from "./SearchBar.svelte";
 import { render, fireEvent } from "@testing-library/svelte";
 
 describe("Test the search form", () => {
   test("The form is marked as 'search'", () => {
-    const { getByRole } = render(SearchForm);
+    const { getByRole } = render(Search);
     expect(getByRole("search")).toBeInTheDocument();
   });
 
   test("The 'search' field is present", () => {
-    const { getByRole } = render(SearchForm);
+    const { getByRole } = render(Search);
     expect(getByRole("searchbox")).toBeInTheDocument();
   });
 
   test("The submit button is present", () => {
-    const { getByRole } = render(SearchForm);
+    const { getByRole } = render(Search);
     expect(getByRole("button")).toBeInTheDocument();
   });
 
   test("The 'search' initial value can be set", async () => {
     const props = { value: "initial" };
-    const { getByRole } = render(SearchForm, { props });
+    const { getByRole } = render(Search, { props });
     const search = getByRole("searchbox") as HTMLInputElement;
     expect(search.value).toBe("initial");
   });
 
   test("The 'search' placeholder can be set", async () => {
-    const { getByPlaceholderText, rerender } = render(SearchForm);
+    const { getByPlaceholderText, rerender } = render(Search);
     expect(getByPlaceholderText("Rechercher")).toBeInTheDocument();
 
     const props = { placeholder: "Rechercher un jeu de données" };
@@ -38,7 +38,7 @@ describe("Test the search form", () => {
   });
 
   test("The form submits the search value", async () => {
-    const { getByRole, component } = render(SearchForm);
+    const { getByRole, getByPlaceholderText, component } = render(Search);
 
     const submittedValues: string[] = [];
     component.$on("submit", (event: CustomEvent<string>) => {
@@ -48,15 +48,18 @@ describe("Test the search form", () => {
     await fireEvent.click(getByRole("button"));
     expect(submittedValues.pop()).toBe("");
 
-    await fireEvent.input(getByRole("searchbox"), {
+    const input = getByPlaceholderText("Rechercher");
+
+    await fireEvent.input(input, {
       target: { value: "Forêt" },
     });
+
     await fireEvent.click(getByRole("button"));
     expect(submittedValues.pop()).toBe("Forêt");
   });
 
   test("The form can be large", async () => {
-    const { getByRole, rerender } = render(SearchForm);
+    const { getByRole, rerender } = render(Search);
     expect(getByRole("search")).not.toHaveClass("fr-search-bar--lg");
 
     const props = { size: "lg" };

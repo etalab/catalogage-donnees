@@ -21,7 +21,7 @@
   import { toQueryString } from "$lib/util/urls";
   import { Maybe } from "$lib/util/maybe";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
-  import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
+  import Search from "src/lib/components/SearchBar/SearchBar.svelte";
   import paths from "$lib/paths";
 
   export let datasets: Maybe<Dataset[]>;
@@ -42,10 +42,10 @@
   <div class="fr-container fr-grid-row fr-grid-row--center fr-py-6w">
     <div class="fr-col-10">
       <h1>Recherchez un jeu de données</h1>
-      <SearchForm
+      <Search
         size="lg"
         placeholder="Ex : taux de contamination COVID, nombre de naissances en France, ..."
-        on:submit={submitSearch}
+        on:search={submitSearch}
       />
     </div>
   </div>
