@@ -1,5 +1,5 @@
 // Matches enum on the backend.
-type DataFormat =
+export type DataFormat =
   | "file_tabular"
   | "file_gis"
   | "api"
@@ -7,13 +7,23 @@ type DataFormat =
   | "website"
   | "other";
 
-type UpdateFrequency =
+export type UpdateFrequency =
   | "never"
   | "realtime"
   | "daily"
   | "weekly"
   | "monthly"
   | "yearly";
+
+export type GeographicalCoverage =
+  | "municipality"
+  | "epci"
+  | "department"
+  | "region"
+  | "national"
+  | "national_full_territory"
+  | "europe"
+  | "world";
 
 export interface DatasetHeadlines {
   title: string;
@@ -32,6 +42,8 @@ export type Dataset = {
   service: string;
   lastUpdatedAt: Date | null;
   updateFrequency: UpdateFrequency | null;
+  geographicalCoverage: GeographicalCoverage;
+  technicalSource: string | null;
 };
 
 export type DatasetFormData = Omit<Dataset, "id" | "createdAt" | "headlines">;
