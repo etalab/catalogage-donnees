@@ -145,3 +145,21 @@
     </div>
   </div>
 </header>
+
+<style>
+  header {
+    overflow-x: hidden; /* Prevent beta banner from overflowing */
+  }
+
+  header::after {
+    /* Beta corner banner */
+    position: absolute;
+    float: right;
+    top: 1.5em;
+    right: -3em;
+    padding: 0.5em 3em;
+    transform: rotate(45deg);
+    background-color: var(--background-action-low-pink-tuile);
+    content: "Version bêta";
+  }
+</style>
