@@ -28,6 +28,8 @@ export const toDataset = (item: any): Dataset => {
     contact_emails,
     update_frequency,
     last_updated_at,
+    geographical_coverage,
+    technical_source,
     ...rest
   } = item;
   return {
@@ -36,6 +38,8 @@ export const toDataset = (item: any): Dataset => {
     entrypointEmail: entrypoint_email,
     contactEmails: contact_emails,
     updateFrequency: update_frequency,
+    geographicalCoverage: geographical_coverage,
+    technicalSource: technical_source,
     lastUpdatedAt: last_updated_at ? new Date(last_updated_at) : null,
   };
 };

@@ -5,13 +5,21 @@
   import type {
     DataFormat,
     DatasetFormData,
+    GeographicalCoverage,
     UpdateFrequency,
   } from "src/definitions/datasets";
-  import { DATA_FORMAT_LABELS, UPDATE_FREQUENCY_LABELS } from "src/constants";
+  import {
+    DATA_FORMAT_LABELS,
+    UPDATE_FREQUENCY_LABELS,
+    GEOGRAPHICAL_COVERAGE_LABELS,
+  } from "src/constants";
   import { formatHTMLDate } from "$lib/util/format";
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
   import { user } from "src/lib/stores/auth";
   import ContactEmailsField from "../ContactEmailsField/ContactEmailsField.svelte";
+  import Select from "../Select/Select.svelte";
+  import { toSelectOptions } from "src/lib/transformers/form";
+  import { handleSelectChange } from "src/lib/util/form";
 
   export let submitLabel = "Publier ce jeu de données";
   export let loadingLabel = "Publication en cours...";
@@ -20,12 +28,14 @@
   export let initial: DatasetFormData = {
     title: "",
     description: "",
+    service: "",
     formats: [],
     entrypointEmail: "",
     contactEmails: [$user?.email || ""],
-    service: "",
+    geographicalCoverage: null,
     lastUpdatedAt: null,
     updateFrequency: null,
+    technicalSource: "",
   };
 
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
@@ -33,12 +43,14 @@
   type DatasetFormValues = {
     title: string;
     description: string;
+    service: string;
     dataFormats: boolean[];
     entrypointEmail: string;
     contactEmails: string[];
-    service: string;
+    geographicalCoverage: GeographicalCoverage;
     lastUpdatedAt: string | null;
     updateFrequency: UpdateFrequency | null;
+    technicalSource: string | null;
   };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
@@ -48,16 +60,18 @@
   const initialValues: DatasetFormValues = {
     title: initial.title,
     description: initial.description,
+    service: initial.service,
     dataFormats: dataFormatChoices.map(
       ({ value }) => !!initial.formats.find((v) => v === value)
     ),
     entrypointEmail: initial.entrypointEmail,
     contactEmails: initial.contactEmails,
-    service: initial.service,
     lastUpdatedAt: initial.lastUpdatedAt
       ? formatHTMLDate(initial.lastUpdatedAt)
       : null,
+    geographicalCoverage: initial.geographicalCoverage,
     updateFrequency: initial.updateFrequency,
+    technicalSource: initial.technicalSource,
   };
 
   // Handle this value manually.
@@ -69,6 +83,7 @@
       validationSchema: yup.object().shape({
         title: yup.string().required("Ce champs est requis"),
         description: yup.string().required("Ce champs est requis"),
+        service: yup.string().required("Ce champs est requis"),
         dataFormats: yup.array(yup.boolean()).length(dataFormatsValue.length),
         entrypointEmail: yup
           .string()
@@ -81,9 +96,10 @@
               .string()
               .email("Ce champ doit contenir une adresse e-mail valide")
           ),
-        service: yup.string().required("Ce champs est requis"),
         lastUpdatedAt: yup.date().nullable(),
         updateFrequency: yup.string().nullable(),
+        geographicalCoverage: yup.string().required("Ce champs est requis"),
+        technicalSource: yup.string(),
       }),
       onSubmit: (values) => {
         const formats = values.dataFormats
@@ -133,18 +149,6 @@
       await handleChange(event);
     }
   };
-
-  const handleUpdateFrequencyChange = async (
-    event: Event & { currentTarget: EventTarget & HTMLSelectElement }
-  ) => {
-    if (event.currentTarget.value === "null" /* Empty option selected */) {
-      // Needs manual handling to ensure a `null` initial value and the empty
-      // option all correspond to `null`.
-      updateValidateField("updateFrequency", null);
-    } else {
-      await handleChange(event);
-    }
-  };
 </script>
 
 <form
@@ -160,11 +164,11 @@
       : ''}"
   >
     <label class="fr-label" for="title">
-      Nom de la donnée
+      Nom du jeu de la donnée
       <RequiredMarker />
       <span class="fr-hint-text" id="title-desc-hint">
-        Ce nom doit aller à l'essentiel et permettre d'indiquer en quelques mots
-        les informations que l'on peut y trouver.
+        Ce nom doit aller à l’essentiel et permettre d’indiquer en quelques mots
+        les informations que l’on peut y trouver.
       </span>
     </label>
     <input
@@ -191,7 +195,7 @@
       : ''}"
   >
     <label class="fr-label" for="description">
-      Description des données
+      Description du jeu de données
       <RequiredMarker />
       <span class="fr-hint-text" id="description-desc-hint">
         Quel type de données sont contenues dans ce jeu de données ? Les
@@ -214,6 +218,62 @@
       </p>
     {/if}
   </div>
+
+  <div
+    class="fr-input-group fr-my-4w {$errors.service
+      ? 'fr-input-group--error'
+      : ''}"
+  >
+    <label class="fr-label" for="service">
+      Service producteur de la donnée
+      <RequiredMarker />
+    </label>
+    <input
+      class="fr-input {$errors.service ? 'fr-input--error' : ''}"
+      aria-describedby={$errors.service
+        ? "entrypoint-service-desc-error"
+        : null}
+      type="text"
+      id="service"
+      name="service"
+      required
+      on:change={handleChange}
+      on:blur={handleChange}
+      bind:value={$form.service}
+    />
+
+    {#if $errors.service}
+      <p id="title-desc-error" class="fr-error-text">
+        {$errors.service}
+      </p>
+    {/if}
+  </div>
+
+  <Select
+    options={toSelectOptions(GEOGRAPHICAL_COVERAGE_LABELS)}
+    id="geographicalCoverage"
+    name="geographicalCoverage"
+    hintText="Quelle est l’étendue de la zone couverte par votre jeu de données ?"
+    required
+    label="Couverture géographique"
+    placeholder="Sélectionnez une couverture géographique..."
+    bind:value={$form.geographicalCoverage}
+    on:change={(event) =>
+      handleSelectChange(
+        "geographicalCoverage",
+        event,
+        handleChange,
+        updateValidateField
+      )}
+    on:blur={(event) =>
+      handleSelectChange(
+        "geographicalCoverage",
+        event,
+        handleChange,
+        updateValidateField
+      )}
+    error={$errors.geographicalCoverage}
+  />
 
   <fieldset
     class="fr-fieldset {hasError($errors.dataFormats)
@@ -262,6 +322,37 @@
     {/if}
   </fieldset>
 
+  <div
+    class="fr-input-group fr-my-4w {$errors.technicalSource
+      ? 'fr-input-group--error'
+      : ''}"
+  >
+    <label class="fr-label" for="technicalSource">
+      Système d’information source
+      <span class="fr-hint-text" id="technicalSource-desc-hint">
+        De quelle sources proviennent ces données ? Séparez leur nom par des “/”
+        lorsqu’il y en a plusieurs.
+      </span>
+    </label>
+    <input
+      class="fr-input {$errors.technicalSource ? 'fr-input--error' : ''}"
+      aria-describedby={$errors.technicalSource
+        ? "technicalSource-desc-error"
+        : null}
+      type="text"
+      id="technicalSource"
+      name="technicalSource"
+      on:change={handleChange}
+      on:blur={handleChange}
+      bind:value={$form.technicalSource}
+    />
+    {#if $errors.technicalSource}
+      <p id="technicalSource-desc-error" class="fr-error-text">
+        {$errors.technicalSource}
+      </p>
+    {/if}
+  </div>
+
   <h2 class="fr-mt-6w">Contacts</h2>
   <p class="fr-text--md">
     Dans un soucis de traçabilité et de facilité de mise à jour, il est
@@ -269,35 +360,6 @@
     productrices d’une donnée. Lorsqu’une demande de contact sera effectuée,
     l’ensemble des adresses e-mail saisies recevront la notification.
   </p>
-  <div
-    class="fr-input-group fr-my-4w {$errors.service
-      ? 'fr-input-group--error'
-      : ''}"
-  >
-    <label class="fr-label" for="service">
-      Service producteur de la donnée
-      <RequiredMarker />
-    </label>
-    <input
-      class="fr-input {$errors.service ? 'fr-input--error' : ''}"
-      aria-describedby={$errors.service
-        ? "entrypoint-service-desc-error"
-        : null}
-      type="text"
-      id="service"
-      name="service"
-      required
-      on:change={handleChange}
-      on:blur={handleChange}
-      bind:value={$form.service}
-    />
-
-    {#if $errors.service}
-      <p id="title-desc-error" class="fr-error-text">
-        {$errors.service}
-      </p>
-    {/if}
-  </div>
 
   <div
     class="fr-input-group fr-my-4w {$errors.entrypointEmail
@@ -380,32 +442,29 @@
     </div>
   </div>
 
-  <div class="fr-select-group">
-    <label class="fr-label" for="updateFrequency">
-      Fréquence de mise à jour
-    </label>
-    <select
-      class="fr-select"
-      bind:value={$form.updateFrequency}
-      id="updateFrequency"
-      name="updateFrequency"
-      on:change={handleUpdateFrequencyChange}
-      on:blur={handleUpdateFrequencyChange}
-    >
-      <option value={null} selected disabled hidden
-        >Sélectionner une option</option
-      >
-      {#each Object.keys(UPDATE_FREQUENCY_LABELS) as frequency}
-        <option value={frequency}>{UPDATE_FREQUENCY_LABELS[frequency]}</option>
-      {/each}
-    </select>
-
-    {#if $errors.updateFrequency}
-      <p id="title-desc-error" class="fr-error-text">
-        {$errors.updateFrequency}
-      </p>
-    {/if}
-  </div>
+  <Select
+    options={toSelectOptions(UPDATE_FREQUENCY_LABELS)}
+    id="updateFrequency"
+    name="updateFrequency"
+    placeholder="Sélectionner une option"
+    label="Fréquence de mise à jour"
+    bind:value={$form.updateFrequency}
+    on:change={(event) =>
+      handleSelectChange(
+        "updateFrequency",
+        event,
+        handleChange,
+        updateValidateField
+      )}
+    on:blur={(event) =>
+      handleSelectChange(
+        "updateFrequency",
+        event,
+        handleChange,
+        updateValidateField
+      )}
+    error={$errors.updateFrequency}
+  />
 
   <div class="fr-input-group fr-mt-9w">
     <button type="submit" class="fr-btn">

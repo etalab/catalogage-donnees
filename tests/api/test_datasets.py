@@ -9,7 +9,11 @@ from server.application.datasets.queries import GetDatasetByID
 from server.config.di import resolve
 from server.domain.common import datetime as dtutil
 from server.domain.common.types import id_factory
-from server.domain.datasets.entities import DataFormat, UpdateFrequency
+from server.domain.datasets.entities import (
+    DataFormat,
+    GeographicalCoverage,
+    UpdateFrequency,
+)
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
@@ -25,8 +29,12 @@ from ..helpers import TestUser, approx_datetime
             [
                 {"loc": ["body", "title"], "type": "value_error.missing"},
                 {"loc": ["body", "description"], "type": "value_error.missing"},
-                {"loc": ["body", "formats"], "type": "value_error.missing"},
                 {"loc": ["body", "service"], "type": "value_error.missing"},
+                {
+                    "loc": ["body", "geographical_coverage"],
+                    "type": "value_error.missing",
+                },
+                {"loc": ["body", "formats"], "type": "value_error.missing"},
                 {"loc": ["body", "entrypoint_email"], "type": "value_error.missing"},
             ],
             id="missing-fields",
@@ -35,8 +43,9 @@ from ..helpers import TestUser, approx_datetime
             {
                 "title": "Title",
                 "description": "Description",
-                "formats": [],
                 "service": "Service",
+                "geographical_coverage": "national",
+                "formats": [],
                 "entrypoint_email": "service@example.org",
             },
             [
@@ -68,8 +77,10 @@ known_date = dtutil.parse("2022-01-04T10:15:19.121212+00:00")
 CREATE_DATASET_PAYLOAD = {
     "title": "Example title",
     "description": "Example description",
-    "formats": ["website"],
     "service": "Example service",
+    "geographical_coverage": "national",
+    "formats": ["website"],
+    "technical_source": "Example database",
     "entrypoint_email": "example.service@example.org",
     "contact_emails": ["example.person@example.org"],
     "update_frequency": "weekly",
@@ -79,8 +90,9 @@ CREATE_DATASET_PAYLOAD = {
 CREATE_ANY_DATASET = CreateDataset(
     title="Title",
     description="Description",
-    formats=["website", "api"],
     service="Example service",
+    geographical_coverage=GeographicalCoverage.NATIONAL,
+    formats=[DataFormat.WEBSITE, DataFormat.API],
     entrypoint_email="service@example.org",
 )
 
@@ -104,8 +116,10 @@ async def test_dataset_crud(client: httpx.AsyncClient, admin_user: TestUser) -> 
         "created_at": created_at,
         "title": "Example title",
         "description": "Example description",
-        "formats": ["website"],
         "service": "Example service",
+        "geographical_coverage": "national",
+        "formats": ["website"],
+        "technical_source": "Example database",
         "entrypoint_email": "example.service@example.org",
         "contact_emails": ["example.person@example.org"],
         "update_frequency": "weekly",
@@ -155,6 +169,7 @@ class TestDatasetOptionalFields:
     @pytest.mark.parametrize(
         "field, default",
         [
+            pytest.param("technical_source", None),
             pytest.param("contact_emails", []),
             pytest.param("update_frequency", None),
             pytest.param("last_updated_at", None),
@@ -175,6 +190,7 @@ class TestDatasetOptionalFields:
             "/datasets/",
             json={
                 **CREATE_DATASET_PAYLOAD,
+                "geographical_coverage": "not_in_enum",
                 "contact_emails": ["notanemail", "valid@example.org"],
                 "update_frequency": "not_in_enum",
                 "last_updated_at": "not_a_datetime",
@@ -182,10 +198,13 @@ class TestDatasetOptionalFields:
         )
         assert response.status_code == 422
         (
+            err_geographical_coverage,
             err_contact_emails,
             err_update_frequency,
             err_last_updated_at,
         ) = response.json()["detail"]
+        assert err_geographical_coverage["loc"] == ["body", "geographical_coverage"]
+        assert err_geographical_coverage["type"] == "type_error.enum"
         assert err_contact_emails["loc"] == ["body", "contact_emails", 0]
         assert err_contact_emails["type"] == "value_error.email"
         assert err_update_frequency["loc"] == ["body", "update_frequency"]
@@ -213,8 +232,10 @@ class TestDatasetUpdate:
         fields = [
             "title",
             "description",
-            "formats",
             "service",
+            "geographical_coverage",
+            "formats",
+            "technical_source",
             "entrypoint_email",
             "contact_emails",
             "update_frequency",
@@ -235,9 +256,11 @@ class TestDatasetUpdate:
             json={
                 "title": "",
                 "description": "",
-                "formats": [],
                 "service": "",
+                "formats": [],
+                "geographical_coverage": "national",
                 "entrypoint_email": "service@example.org",
+                "technical_source": "",
                 "contact_emails": [],
                 "update_frequency": "weekly",
                 "last_updated_at": known_date.isoformat(),
@@ -245,7 +268,7 @@ class TestDatasetUpdate:
         )
         assert response.status_code == 422
 
-        err_title, err_description, err_formats, err_service = response.json()["detail"]
+        err_title, err_description, err_service, err_formats = response.json()["detail"]
 
         assert err_title["loc"] == ["body", "title"]
         assert "empty" in err_title["msg"]
@@ -253,11 +276,11 @@ class TestDatasetUpdate:
         assert err_description["loc"] == ["body", "description"]
         assert "empty" in err_description["msg"]
 
-        assert err_formats["loc"] == ["body", "formats"]
-        assert "at least one" in err_formats["msg"].lower()
-
         assert err_service["loc"] == ["body", "service"]
         assert "empty" in err_service["msg"]
+
+        assert err_formats["loc"] == ["body", "formats"]
+        assert "at least one" in err_formats["msg"].lower()
 
     async def test_update(self, client: httpx.AsyncClient) -> None:
         bus = resolve(MessageBus)
@@ -270,8 +293,10 @@ class TestDatasetUpdate:
             json={
                 "title": "Other title",
                 "description": "Other description",
-                "formats": ["database"],
                 "service": "Other service",
+                "geographical_coverage": "region",
+                "formats": ["database"],
+                "technical_source": "Other information system",
                 "entrypoint_email": "other.service@example.org",
                 "contact_emails": ["other.person@example.org"],
                 "update_frequency": "weekly",
@@ -287,8 +312,10 @@ class TestDatasetUpdate:
             "created_at": data["created_at"],
             "title": "Other title",
             "description": "Other description",
-            "formats": ["database"],
             "service": "Other service",
+            "geographical_coverage": "region",
+            "formats": ["database"],
+            "technical_source": "Other information system",
             "entrypoint_email": "other.service@example.org",
             "contact_emails": ["other.person@example.org"],
             "update_frequency": "weekly",
@@ -300,8 +327,10 @@ class TestDatasetUpdate:
         dataset = await bus.execute(query)
         assert dataset.title == "Other title"
         assert dataset.description == "Other description"
-        assert dataset.formats == [DataFormat.DATABASE]
         assert dataset.service == "Other service"
+        assert dataset.geographical_coverage == GeographicalCoverage.REGION
+        assert dataset.formats == [DataFormat.DATABASE]
+        assert dataset.technical_source == "Other information system"
         assert dataset.entrypoint_email == "other.service@example.org"
         assert dataset.contact_emails == ["other.person@example.org"]
         assert dataset.update_frequency == UpdateFrequency.WEEKLY
@@ -317,7 +346,8 @@ class TestFormats:
         response = await client.put(
             f"/datasets/{dataset_id}/",
             json={
-                **CREATE_ANY_DATASET.dict(exclude={"formats"}),
+                **CREATE_ANY_DATASET.dict(),
+                "geographical_coverage": CREATE_ANY_DATASET.geographical_coverage.value,
                 "formats": ["website", "api", "file_gis"],
             },
         )
@@ -332,7 +362,8 @@ class TestFormats:
         response = await client.put(
             f"/datasets/{dataset_id}/",
             json={
-                **CREATE_ANY_DATASET.dict(exclude={"formats"}),
+                **CREATE_ANY_DATASET.dict(),
+                "geographical_coverage": CREATE_ANY_DATASET.geographical_coverage.value,
                 "formats": ["website"],
             },
         )

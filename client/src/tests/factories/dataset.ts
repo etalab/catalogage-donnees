@@ -10,8 +10,10 @@ export const getFakeDataset = (dataset: Partial<Dataset> = {}): Dataset => {
     entrypointEmail: dataset.entrypointEmail || "jane.doe@beta.gouv.fr",
     contactEmails: dataset.contactEmails || ["contact@beta.gouv.fr"],
     service: dataset.service || "La Drac",
+    technicalSource: dataset.technicalSource || null,
     updateFrequency: dataset.updateFrequency || "daily",
     lastUpdatedAt: dataset.lastUpdatedAt || new Date(),
+    geographicalCoverage: dataset.geographicalCoverage || "europe",
   };
 };
 
@@ -25,7 +27,9 @@ export const getFakeDataSetFormData = (
     entrypointEmail: datasetFormData.entrypointEmail || "jane.doe@beta.gouv.fr",
     contactEmails: datasetFormData.contactEmails || ["contact@beta.gouv.fr"],
     service: datasetFormData.service || "La Drac",
+    technicalSource: datasetFormData.technicalSource || null,
     updateFrequency: datasetFormData.updateFrequency || "daily",
     lastUpdatedAt: datasetFormData.lastUpdatedAt || new Date(),
+    geographicalCoverage: datasetFormData.geographicalCoverage || "europe",
   };
 };
