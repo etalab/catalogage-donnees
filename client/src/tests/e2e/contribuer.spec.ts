@@ -96,6 +96,6 @@ test.describe("Basic form submission", () => {
     expect(json.last_updated_at).toEqual("2000-05-05T00:00:00+00:00");
     expect(json.service).toBe(serviceText);
 
-    await page.locator("text='Proposer une modification'").waitFor();
+    await page.locator("text='Modifier'").waitFor();
   });
 });

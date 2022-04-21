@@ -12,6 +12,6 @@ test.describe("Catalog list", () => {
 
     const link = page.locator("text='Voir'").first();
     await link.click();
-    await page.locator("text='Proposer une modification'").waitFor();
+    await page.locator("text='Modifier'").waitFor();
   });
 });

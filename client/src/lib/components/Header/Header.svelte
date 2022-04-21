@@ -11,16 +11,16 @@
 
   const navigationItems: NavItem[] = [
     {
+      label: "Accueil",
+      href: paths.home,
+    },
+    {
       label: "Rechercher",
       href: paths.datasetSearch,
     },
     {
       label: "Contribuer",
       href: paths.contribute,
-    },
-    {
-      label: "Mon espace",
-      href: "#",
     },
   ];
 
@@ -76,16 +76,10 @@
               </p>
               <ul class="fr-links-group">
                 <li>
-                  <a
-                    href={paths.home}
-                    class="fr-link"
-                    title="Accéder aux réglages"
+                  <button
+                    class="fr-link fr-link--icon-left fr-fi-logout-box-r-line"
+                    on:click={onClickLogout}
                   >
-                    Réglages
-                  </a>
-                </li>
-                <li>
-                  <button class="fr-link" on:click={onClickLogout}>
                     Déconnexion
                   </button>
                 </li>

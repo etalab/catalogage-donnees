@@ -36,7 +36,7 @@ describe("Test the dataset form", () => {
 
   test('The "technicalSource" field is present', async () => {
     const { getByLabelText } = render(DatasetForm);
-    const technicalSource = getByLabelText("Système d’information source", {
+    const technicalSource = getByLabelText("Système d'information source", {
       exact: false,
     });
     expect(technicalSource).toBeInTheDocument();
@@ -146,7 +146,7 @@ describe("Test the dataset form", () => {
     }) as HTMLSelectElement;
     expect(updateFrequency.value).toBe("never");
 
-    const technicalSource = getByLabelText("Système d’information source", {
+    const technicalSource = getByLabelText("Système d'information source", {
       exact: false,
     }) as HTMLSelectElement;
     expect(technicalSource.value).toBe("foo/bar");

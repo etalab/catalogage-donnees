@@ -1,6 +1,9 @@
 <script lang="ts">
   import type { Dataset } from "src/definitions/datasets";
-  import { DATA_FORMAT_SHORT_NAMES } from "src/constants";
+  import {
+    DATA_FORMAT_SHORT_NAMES,
+    GEOGRAPHICAL_COVERAGE_LABELS,
+  } from "src/constants";
   import paths from "$lib/paths";
   import { capitalize, formatDaysMonthsOrYearsToNow } from "$lib/util/format";
 
@@ -30,15 +33,29 @@
         </strong>
       {/if}
     </p>
+
     <p class="fr-m-0 fr-text--sm fr-text-mention--grey">
-      Bibliothèque nationale de France
+      {dataset.service}
     </p>
-    <div class="metadata-items">
-      <span> France </span>
-      <span> 2010-2018 </span>
-      <span> {formatFormats(dataset)} </span>
-      <span> Qualité : haute </span>
-      <span> Open data </span>
+
+    <div class="metadata-items fr-mt-1w">
+      <div>
+        <span class="fr-fi fr-fi-x-map-2-line" aria-hidden="true" />
+        <p class="fr-text--xs fr-my-0">
+          <span class="fr-text-mention--grey">Couverture géographique</span>
+          <br />
+          <span
+            >{GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage]}</span
+          >
+        </p>
+      </div>
+      <div>
+        <span class="fr-fi fr-fi-file-line" aria-hidden="true" />
+        <p class="fr-text--xs fr-my-0">
+          <span class="fr-text-mention--grey">Formats</span> <br />
+          <span>{formatFormats(dataset)}</span>
+        </p>
+      </div>
     </div>
     {#if dataset.headlines}
       <p class="fr-mb-0 fr-mt-1w fr-text--sm fr-text-mention--grey">
@@ -67,7 +84,7 @@
   li {
     display: grid;
     grid-template-columns: auto 1fr auto;
-    column-gap: 1em;
+    column-gap: 2rem;
   }
 
   li:not(:last-child) {
@@ -77,12 +94,21 @@
   .metadata-items {
     display: flex;
     flex-wrap: wrap;
-    margin: 0 -1em;
+    margin: 0 -2em;
   }
 
   .metadata-items > * {
-    flex: 1 1 auto;
-    margin: 0 1em;
+    flex: 0 1 auto;
+    margin: 0 2em;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    column-gap: 0.5rem;
+  }
+
+  .metadata-items [class*="fr-fi"] {
+    color: var(--text-action-high-blue-france);
+    display: inline-block;
   }
 
   .actions {

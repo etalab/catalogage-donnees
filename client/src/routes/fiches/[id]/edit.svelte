@@ -50,7 +50,7 @@
   };
 </script>
 
-<section class="fr-container fr-mt-9w">
+<section class="fr-container fr-my-9w">
   <h1 class="fr-text--lg">
     Modifier "{dataset.title}"
   </h1>
