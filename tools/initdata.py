@@ -3,6 +3,7 @@ import asyncio
 import functools
 import os
 import pathlib
+from typing import Dict
 
 import click
 import yaml
@@ -33,7 +34,19 @@ class UserExtras(BaseModel):
     role: UserRole = UserRole.USER
 
 
-async def handle_user(item: dict, *, no_input: bool) -> None:
+def _parse_env_passwords(passwords_env: str) -> Dict[str, str]:
+    if not passwords_env:
+        return {}
+    passwords = {}
+    for pair in passwords_env.split(","):
+        email, password = pair.split("=")
+        passwords[email] = password
+    return passwords
+
+
+async def handle_user(
+    item: dict, *, no_input: bool, env_passwords: Dict[str, str]
+) -> None:
     bus = resolve(MessageBus)
     repository = resolve(UserRepository)
 
@@ -46,13 +59,14 @@ async def handle_user(item: dict, *, no_input: bool) -> None:
 
     extras = UserExtras(**item.get("extras", {}))
 
-    if extras.role == UserRole.ADMIN:
-        password = os.getenv("TOOLS_ADMIN_PASSWORD")
+    if item["params"]["password"] == "__env__":
+        password = env_passwords.get(email)
         if password is None:
             if no_input:
                 raise RuntimeError(
                     f"would prompt password for {email!r}, "
-                    "please set the TOOLS_ADMIN_PASSWORD environment variable"
+                    "please include '<email>=<password>' in TOOLS_PASSWORDS "
+                    "environment variable"
                 )
             password = click.prompt(f"Password for {email}", hide_input=True)
         item["params"]["password"] = password
@@ -97,8 +111,10 @@ async def main(path: pathlib.Path, reset: bool = False, no_input: bool = False) 
 
     print("\n", ruler("Users"))
 
+    env_passwords = _parse_env_passwords(os.getenv("TOOLS_PASSWORDS", ""))
+
     for item in spec["users"]:
-        await handle_user(item, no_input=no_input)
+        await handle_user(item, no_input=no_input, env_passwords=env_passwords)
 
     print("\n", ruler("Datasets"))
 
