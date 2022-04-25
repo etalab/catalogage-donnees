@@ -1,6 +1,8 @@
 from typing import List
 
 from server.config.di import resolve
+from server.domain.catalog_records.entities import CatalogRecord
+from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.common.types import ID
 from server.domain.datasets.entities import Dataset
 from server.domain.datasets.exceptions import DatasetDoesNotExist
@@ -13,11 +15,17 @@ from .views import DatasetSearchView, DatasetView
 
 async def create_dataset(command: CreateDataset, *, id_: ID = None) -> ID:
     repository = resolve(DatasetRepository)
+    catalog_record_repository = resolve(CatalogRecordRepository)
 
     if id_ is None:
         id_ = repository.make_id()
 
-    dataset = Dataset(id=id_, **command.dict())
+    catalog_record_id = await catalog_record_repository.insert(
+        CatalogRecord(id=catalog_record_repository.make_id())
+    )
+    catalog_record = await catalog_record_repository.get_by_id(catalog_record_id)
+    assert catalog_record is not None
+    dataset = Dataset(id=id_, catalog_record=catalog_record, **command.dict())
 
     return await repository.insert(dataset)
 

@@ -1,3 +1,5 @@
+import type { CatalogRecord } from "./catalog_records";
+
 // Matches enum on the backend.
 export type DataFormat =
   | "file_tabular"
@@ -32,7 +34,7 @@ export interface DatasetHeadlines {
 
 export type Dataset = {
   id: string;
-  createdAt: Date;
+  catalogRecord: CatalogRecord;
   headlines?: DatasetHeadlines;
   title: string;
   description: string;
@@ -46,7 +48,10 @@ export type Dataset = {
   technicalSource: string | null;
 };
 
-export type DatasetFormData = Omit<Dataset, "id" | "createdAt" | "headlines">;
+export type DatasetFormData = Omit<
+  Dataset,
+  "id" | "catalogRecord" | "headlines"
+>;
 
 export type DatasetCreateData = DatasetFormData;
 export type DatasetUpdateData = DatasetCreateData;

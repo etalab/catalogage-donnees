@@ -7,6 +7,7 @@ import pytest
 from server.application.datasets.commands import CreateDataset
 from server.application.datasets.queries import GetDatasetByID
 from server.config.di import resolve
+from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.common import datetime as dtutil
 from server.domain.common.types import id_factory
 from server.domain.datasets.entities import (
@@ -106,14 +107,17 @@ async def test_dataset_crud(client: httpx.AsyncClient, admin_user: TestUser) -> 
     pk = data["id"]
     assert isinstance(pk, str)
 
-    created_at = data["created_at"]
+    created_at = data["catalog_record"]["created_at"]
     assert dtutil.parse(created_at) == approx_datetime(
-        dtutil.now(), abs=dt.timedelta(seconds=0.1)
+        dtutil.now(), abs=dt.timedelta(seconds=0.2)
     )
 
     assert data == {
         "id": pk,
-        "created_at": created_at,
+        "catalog_record": {
+            "id": data["catalog_record"]["id"],
+            "created_at": created_at,
+        },
         "title": "Example title",
         "description": "Example description",
         "service": "Example service",
@@ -309,7 +313,7 @@ class TestDatasetUpdate:
         data = response.json()
         assert data == {
             "id": str(dataset_id),
-            "created_at": data["created_at"],
+            "catalog_record": data["catalog_record"],
             "title": "Other title",
             "description": "Other description",
             "service": "Other service",
@@ -380,6 +384,7 @@ class TestDeleteDataset:
         bus = resolve(MessageBus)
 
         dataset_id = await bus.execute(CREATE_ANY_DATASET)
+        dataset = await bus.execute(GetDatasetByID(id=dataset_id))
 
         # Permissions
         response = await client.delete(f"/datasets/{dataset_id}/")
@@ -393,6 +398,12 @@ class TestDeleteDataset:
         query = GetDatasetByID(id=dataset_id)
         with pytest.raises(DatasetDoesNotExist):
             await bus.execute(query)
+
+        # Verify cascades
+        catalog_record_repository = resolve(CatalogRecordRepository)
+        assert (
+            await catalog_record_repository.get_by_id(dataset.catalog_record.id) is None
+        )
 
     async def test_idempotent(
         self, client: httpx.AsyncClient, admin_user: TestUser

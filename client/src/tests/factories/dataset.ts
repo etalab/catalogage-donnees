@@ -3,7 +3,7 @@ import type { Dataset, DatasetFormData } from "src/definitions/datasets";
 export const getFakeDataset = (dataset: Partial<Dataset> = {}): Dataset => {
   return {
     id: dataset.id || "xxx-xxx-xxx",
-    createdAt: dataset.createdAt || new Date(),
+    catalogRecord: dataset.catalogRecord || { createdAt: new Date() },
     title: dataset.title || "Mon jeu de donnée",
     description: dataset.description || "un joli jeu de donnée",
     formats: dataset.formats || [],

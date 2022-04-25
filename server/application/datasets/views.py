@@ -11,10 +11,12 @@ from server.domain.datasets.entities import (
 )
 from server.domain.datasets.repositories import DatasetHeadlines
 
+from ..catalog_records.views import CatalogRecordView
+
 
 class DatasetView(BaseModel):
     id: ID
-    created_at: dt.datetime
+    catalog_record: CatalogRecordView
     title: str
     description: str
     service: str
