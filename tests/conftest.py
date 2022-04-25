@@ -4,6 +4,7 @@ from typing import AsyncIterator, Iterator
 
 import httpx
 import pytest
+import pytest_asyncio
 from alembic import command
 from alembic.config import Config
 from asgi_lifespan import LifespanManager
@@ -40,7 +41,7 @@ def test_database() -> Iterator[None]:
         drop_database(url)
 
 
-@pytest.fixture(autouse=True)
+@pytest_asyncio.fixture(autouse=True)
 async def transaction() -> AsyncIterator[None]:
     db = resolve(Database)
 
@@ -49,7 +50,7 @@ async def transaction() -> AsyncIterator[None]:
         await tx.rollback()
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest_asyncio.fixture(scope="session", autouse=True)
 async def warmup_db() -> None:
     # Run a database query to warmup tables. Otherwise this warmup would
     # occur during tests and interfere with time measurements.
@@ -67,7 +68,7 @@ def event_loop() -> Iterator[asyncio.AbstractEventLoop]:
         loop.close()
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 async def client() -> AsyncIterator[httpx.AsyncClient]:
     from server.api.app import create_app
 
@@ -78,11 +79,11 @@ async def client() -> AsyncIterator[httpx.AsyncClient]:
             yield client
 
 
-@pytest.fixture(name="temp_user")
+@pytest_asyncio.fixture(name="temp_user")
 async def fixture_temp_user() -> TestUser:
     return await create_test_user(UserRole.USER)
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def admin_user() -> TestUser:
     return await create_test_user(UserRole.ADMIN)

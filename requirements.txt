@@ -1,27 +1,27 @@
 # App
 argon2-cffi==21.3.0
 asyncpg==0.25.0
-alembic==1.7.5
-fastapi==0.70.0
+alembic==1.7.7
+fastapi==0.75.2
 gunicorn==20.1.0
-punq==0.5
-pydantic[email]==1.8.2
-uvicorn[standard]==0.16.0
-sqlalchemy[asyncio,mypy]==1.4.27
+punq==0.6.2
+pydantic[email]==1.9.0
+uvicorn[standard]==0.17.6
+sqlalchemy[asyncio,mypy]==1.4.35
 
 # Tooling
 asgi-lifespan==1.0.1
-black==21.12b0
-click==8.0.4
+black==22.3.0
+click==8.1.2
 flake8==4.0.1
-httpx==0.21.1
+httpx==0.22.0
 isort==5.10.1
-mypy==0.910
+mypy==0.942
 psycopg2-binary==2.9.2
-pytest==6.2.5
-pytest-asyncio==0.16.0
+pytest==7.1.2
+pytest-asyncio==0.18.3
 pytest-cov==3.0.0
 pyyaml==6.0
-sqlalchemy-utils==0.37.9
+sqlalchemy-utils==0.38.2
 svg-path-transform==1.2.1
-types-pyyaml==6.0.4
+types-pyyaml==6.0.7
