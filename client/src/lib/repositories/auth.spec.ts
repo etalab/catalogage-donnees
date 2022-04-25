@@ -3,7 +3,7 @@ import { login } from "./auth";
 
 test("The login endpoint behaves as expected", async () => {
   const fakeToken = "abcd1234";
-  const email = "fake@example.org";
+  const email = "fake@mydomain.org";
   const password = "p@ssw0rd";
   const data = { email, password };
 

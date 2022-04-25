@@ -21,7 +21,7 @@ def upgrade():
         sa.Column(
             "entrypoint_email",
             sa.String(),
-            server_default="service@example.org",
+            server_default="service@mydomain.org",
             nullable=False,
         ),
     )

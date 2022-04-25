@@ -93,8 +93,8 @@ describe("Test the dataset form", () => {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
-      entrypointEmail: "service.initial@example.org",
-      contactEmails: ["person@example.org"],
+      entrypointEmail: "service.initial@mydomain.org",
+      contactEmails: ["person@mydomain.org"],
       service: "A nice service",
       lastUpdatedAt: new Date("2022-02-01"),
       updateFrequency: "never",
@@ -130,11 +130,11 @@ describe("Test the dataset form", () => {
     const entrypointEmail = getByLabelText("Adresse e-mail fonctionnelle", {
       exact: false,
     }) as HTMLInputElement;
-    expect(entrypointEmail.value).toBe("service.initial@example.org");
+    expect(entrypointEmail.value).toBe("service.initial@mydomain.org");
 
     const contactEmails = getAllByLabelText(/Contact \d/);
     expect(contactEmails.length).toBe(1);
-    expect(contactEmails[0]).toHaveValue("person@example.org");
+    expect(contactEmails[0]).toHaveValue("person@mydomain.org");
 
     const lastUpdatedAt = getByLabelText("Date de la dernière mise à jour", {
       exact: false,
@@ -157,8 +157,8 @@ describe("Test the dataset form", () => {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
-      entrypointEmail: "service.initial@example.org",
-      contactEmails: ["person@example.org"],
+      entrypointEmail: "service.initial@mydomain.org",
+      contactEmails: ["person@mydomain.org"],
       service: "A nice service",
       lastUpdatedAt: null,
       updateFrequency: null,

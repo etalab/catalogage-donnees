@@ -45,7 +45,7 @@ async def create_test_user(role: UserRole) -> TestUser:
     bus = resolve(MessageBus)
     user_repository = resolve(UserRepository)
 
-    email = f"temp{next(_temp_user_ids)}@example.org"
+    email = f"temp{next(_temp_user_ids)}@mydomain.org"
     password = "s3kr3t"
 
     command = CreateUser(email=email, password=password)
