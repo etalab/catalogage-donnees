@@ -55,7 +55,7 @@ describe("Test the dataset list item", () => {
     );
 
     await fireEvent.input(getByLabelText("Adresse e-mail"), {
-      target: { value: "user@example.org" },
+      target: { value: "user@mydomain.org" },
     });
     await fireEvent.input(getByLabelText("Mot de passe"), {
       target: { value: "p@ssw0rd" },
@@ -64,7 +64,7 @@ describe("Test the dataset list item", () => {
     await waitFor(() => expect(submittedValue).toBeDefined());
 
     expect(submittedValue).toEqual({
-      email: "user@example.org",
+      email: "user@mydomain.org",
       password: "p@ssw0rd",
     });
   });
