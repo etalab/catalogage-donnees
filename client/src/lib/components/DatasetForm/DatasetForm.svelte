@@ -20,6 +20,7 @@
   import Select from "../Select/Select.svelte";
   import { toSelectOptions } from "src/lib/transformers/form";
   import { handleSelectChange } from "src/lib/util/form";
+  // import YesNoRadioField from "../YesNoRadioField/YesNoRadioField.svelte";
 
   export let submitLabel = "Publier ce jeu de données";
   export let loadingLabel = "Publication en cours...";
@@ -36,6 +37,7 @@
     lastUpdatedAt: null,
     updateFrequency: null,
     technicalSource: "",
+    publishedUrl: null,
   };
 
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
@@ -51,6 +53,7 @@
     lastUpdatedAt: string | null;
     updateFrequency: UpdateFrequency | null;
     technicalSource: string | null;
+    publishedUrl: string | null;
   };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
@@ -72,6 +75,7 @@
     geographicalCoverage: initial.geographicalCoverage,
     updateFrequency: initial.updateFrequency,
     technicalSource: initial.technicalSource,
+    publishedUrl: initial.publishedUrl,
   };
 
   // Handle this value manually.
@@ -100,6 +104,7 @@
         updateFrequency: yup.string().nullable(),
         geographicalCoverage: yup.string().required("Ce champs est requis"),
         technicalSource: yup.string().nullable(),
+        publishedUrl: yup.string().nullable(),
       }),
       onSubmit: (values) => {
         const formats = values.dataFormats
@@ -468,6 +473,56 @@
       )}
     error={$errors.updateFrequency}
   />
+
+  <h2 class="fr-mt-6w fr-mb-5w">Ouverture</h2>
+
+  <p class="fr-mb-5w">
+    La mise à disposition du public des informations de l'Etat est un...
+  </p>
+
+  <!-- 
+  <YesNoRadioField
+    name="isPublished"
+    bind:value={$form.isPublished}
+    on:change={({ detail }) => updateValidateField("isPublished", detail)}
+    required
+    error={$errors.isPublished}
+  >
+    <svelte:fragment slot="label">
+      Ce jeu de données est-il publié en open data ?
+    </svelte:fragment>
+  </YesNoRadioField> -->
+
+  <div
+    class="fr-input-group fr-my-4w"
+    class:fr-input-group--error={$errors.publishedUrl}
+  >
+    <label class="fr-label" for="publishedUrl">
+      Page open data du jeu de données
+      <span class="fr-hint-text" id="publishedUrl-desc-hint">
+        Si le jeu de données est publié en open data, saisissez ici le lien qui
+        permet d'y accéder.
+      </span>
+    </label>
+
+    <input
+      class="fr-input"
+      class:fr-input--error={$errors.lastUpdatedAt}
+      aria-describedby={$errors.publishedUrl ? "publishedUrl-desc-error" : null}
+      type="text"
+      id="publishedUrl"
+      name="publishedUrl"
+      on:change={handleChange}
+      on:blur={handleChange}
+      bind:value={$form.publishedUrl}
+    />
+
+    {#if $errors.publishedUrl}
+      <p id="publishedUrl-desc-error" class="fr-error-text">
+        {$errors.publishedUrl}
+      </p>
+    {/if}
+  </div>
 
   <div class="fr-input-group fr-mt-8w">
     <button type="submit" class="fr-btn">
