@@ -115,7 +115,7 @@ async def test_login(client: httpx.AsyncClient, temp_user: TestUser) -> None:
 @pytest.mark.parametrize(
     "email, password",
     [
-        pytest.param("bad@example.org", "{password}", id="bad-email"),
+        pytest.param("bad@mydomain.org", "{password}", id="bad-email"),
         pytest.param("{email}", "badpass", id="bad-password"),
     ],
 )

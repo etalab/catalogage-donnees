@@ -20,9 +20,9 @@ describe("ContactEmailsField component", () => {
     const { getAllByTestId } = render(ContactEmailsField);
     const inputs = getAllByTestId("contactEmails", { exact: false });
     await fireEvent.input(inputs[0], {
-      target: { value: "contact@example.org" },
+      target: { value: "contact@mydomain.org" },
     });
-    expect((inputs[0] as HTMLInputElement).value).toBe("contact@example.org");
+    expect((inputs[0] as HTMLInputElement).value).toBe("contact@mydomain.org");
   });
 
   test("I can add a few inputs", async () => {
@@ -47,10 +47,10 @@ describe("ContactEmailsField component", () => {
     expect(inputs.length).toBe(3);
 
     await fireEvent.input(inputs[2], {
-      target: { value: "contact@example.org" },
+      target: { value: "contact@mydomain.org" },
     });
     expect((inputs[0] as HTMLInputElement).value).toBe("");
-    expect((inputs[2] as HTMLInputElement).value).toBe("contact@example.org");
+    expect((inputs[2] as HTMLInputElement).value).toBe("contact@mydomain.org");
   });
 
   test("I can remove an input by clicking on delete button", async () => {
@@ -62,7 +62,7 @@ describe("ContactEmailsField component", () => {
     let inputs = getAllByTestId("contactEmails", { exact: false });
 
     await fireEvent.input(inputs[2], {
-      target: { value: "contact@example.org" },
+      target: { value: "contact@mydomain.org" },
     });
     expect(inputs.length).toBe(4);
     const removeButton = getByRoleIn(inputs[2].parentElement, "button", {
@@ -74,7 +74,9 @@ describe("ContactEmailsField component", () => {
     expect(inputs.length).toBe(3);
 
     const values = (inputs as HTMLInputElement[]).map((item) => item.value);
-    expect(values.findIndex((item) => item === "contact@example.org")).toBe(-1);
+    expect(values.findIndex((item) => item === "contact@mydomain.org")).toBe(
+      -1
+    );
   });
 
   test("I can prefill the first input", async () => {
@@ -98,9 +100,9 @@ describe("ContactEmailsField component", () => {
     inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(2);
     await fireEvent.input(inputs[1], {
-      target: { value: "contact@example.org" },
+      target: { value: "contact@mydomain.org" },
     });
 
-    expect((inputs[1] as HTMLInputElement).value).toBe("contact@example.org");
+    expect((inputs[1] as HTMLInputElement).value).toBe("contact@mydomain.org");
   });
 });
