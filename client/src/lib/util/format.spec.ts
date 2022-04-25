@@ -1,5 +1,11 @@
 import * as datefns from "date-fns";
-import { pluralize, capitalize, formatDaysMonthsOrYearsToNow } from "./format";
+import {
+  pluralize,
+  capitalize,
+  formatDaysMonthsOrYearsToNow,
+  formatFullDate,
+  splitParagraphs,
+} from "./format";
 
 test("pluralize", () => {
   expect(`0 résultat${pluralize(0, "", "s")}`).toBe("0 résultats");
@@ -15,6 +21,12 @@ test.each([
   ["test it", "Test it"],
 ])("capitalize", (value, expected) => {
   expect(capitalize(value)).toBe(expected);
+});
+
+describe("formatFullDate", () => {
+  test("formats successfully", () => {
+    expect(formatFullDate(new Date("2022-04-21"))).toBe("21 avril 2022");
+  });
 });
 
 describe("formatDaysMonthsOrYearsToNow", () => {
@@ -41,5 +53,16 @@ describe("formatDaysMonthsOrYearsToNow", () => {
     expect(() =>
       formatDaysMonthsOrYearsToNow(datefns.addDays(new Date(), 1))
     ).toThrowError(/date should be in the past/);
+  });
+});
+
+describe("splitParagraphs", () => {
+  test.each([
+    ["", [""]],
+    ["hello, world", ["hello, world"]],
+    ["hello,\nworld", ["hello,", "world"]],
+    ["hello,\n\n world", ["hello,", "", " world"]],
+  ])("splits successfully", (text, expected) => {
+    expect(splitParagraphs(text)).toEqual(expected);
   });
 });

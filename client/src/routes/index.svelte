@@ -47,8 +47,8 @@
   </div>
 </section>
 
-<section class="fr-container">
-  <h2 class="fr-my-3w">Dernières contributions</h2>
+<section class="fr-container fr-mt-8w fr-mb-15w">
+  <h2 class="fr-mb-3w">Dernières contributions</h2>
 
   <DatasetList {datasets} />
 </section>

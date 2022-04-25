@@ -99,7 +99,7 @@
         lastUpdatedAt: yup.date().nullable(),
         updateFrequency: yup.string().nullable(),
         geographicalCoverage: yup.string().required("Ce champs est requis"),
-        technicalSource: yup.string(),
+        technicalSource: yup.string().nullable(),
       }),
       onSubmit: (values) => {
         const formats = values.dataFormats
@@ -156,10 +156,10 @@
   data-bitwarden-watching="1"
   aria-label="Informations sur le jeu de données"
 >
-  <h2 class="fr-mt-6w">Informations générales</h2>
+  <h2 class="fr-mb-5w">Informations générales</h2>
 
   <div
-    class="fr-input-group fr-my-4w {$errors.title
+    class="fr-input-group fr-mb-4w {$errors.title
       ? 'fr-input-group--error'
       : ''}"
   >
@@ -167,8 +167,8 @@
       Nom du jeu de la donnée
       <RequiredMarker />
       <span class="fr-hint-text" id="title-desc-hint">
-        Ce nom doit aller à l’essentiel et permettre d’indiquer en quelques mots
-        les informations que l’on peut y trouver.
+        Ce nom doit aller à l'essentiel et permettre d'indiquer en quelques mots
+        les informations que l'on peut y trouver.
       </span>
     </label>
     <input
@@ -253,7 +253,7 @@
     options={toSelectOptions(GEOGRAPHICAL_COVERAGE_LABELS)}
     id="geographicalCoverage"
     name="geographicalCoverage"
-    hintText="Quelle est l’étendue de la zone couverte par votre jeu de données ?"
+    hintText="Quelle est l'étendue de la zone couverte par votre jeu de données ?"
     required
     label="Couverture géographique"
     placeholder="Sélectionnez une couverture géographique..."
@@ -274,6 +274,8 @@
       )}
     error={$errors.geographicalCoverage}
   />
+
+  <h2 class="fr-mt-6w fr-mb-5w">Sources et formats</h2>
 
   <fieldset
     class="fr-fieldset {hasError($errors.dataFormats)
@@ -328,10 +330,10 @@
       : ''}"
   >
     <label class="fr-label" for="technicalSource">
-      Système d’information source
+      Système d'information source
       <span class="fr-hint-text" id="technicalSource-desc-hint">
         De quelle sources proviennent ces données ? Séparez leur nom par des “/”
-        lorsqu’il y en a plusieurs.
+        lorsqu'il y en a plusieurs.
       </span>
     </label>
     <input
@@ -353,12 +355,13 @@
     {/if}
   </div>
 
-  <h2 class="fr-mt-6w">Contacts</h2>
-  <p class="fr-text--md">
+  <h2 class="fr-mt-6w fr-mb-5w">Contacts</h2>
+
+  <p class="fr-mb-6w">
     Dans un soucis de traçabilité et de facilité de mise à jour, il est
-    fondamental de pouvoir prendre contact avec l’organisation ou les personnes
-    productrices d’une donnée. Lorsqu’une demande de contact sera effectuée,
-    l’ensemble des adresses e-mail saisies recevront la notification.
+    fondamental de pouvoir prendre contact avec l'organisation ou les personnes
+    productrices d'une donnée. Lorsqu'une demande de contact sera effectuée,
+    l'ensemble des adresses e-mail saisies recevront la notification.
   </p>
 
   <div
@@ -402,11 +405,11 @@
     on:change={handleChange}
   />
 
-  <h2 class="fr-mt-6w">Mise à jour</h2>
+  <h2 class="fr-mt-6w fr-mb-5w">Mise à jour</h2>
 
-  <p class="fr-text--md">
-    A moins qu’il ne soit une production ponctuelle, un jeu de donnée n’est
-    utile que lorsqu’il est à jour ! Avec ces quelques informations nous
+  <p class="fr-mb-5w">
+    A moins qu'il ne soit une production ponctuelle, un jeu de donnée n'est
+    utile que lorsqu'il est à jour ! Avec ces quelques informations nous
     pourrons indiquer à vos réutilisateurs lorsque les données seront mises à
     jour.
   </p>
@@ -417,7 +420,7 @@
       : ''}"
   >
     <label class="fr-label" for="lastUpdatedAt">
-      Date de la dernière mise à jour
+      Date de la dernière mise à jour (JJ / MM / AAAA)
     </label>
 
     <div class="fr-input-wrap fr-fi-calendar-line">
@@ -466,9 +469,15 @@
     error={$errors.updateFrequency}
   />
 
-  <div class="fr-input-group fr-mt-9w">
+  <div class="fr-input-group fr-mt-8w">
     <button type="submit" class="fr-btn">
       {saveBtnLabel}
     </button>
   </div>
 </form>
+
+<style>
+  textarea {
+    resize: vertical;
+  }
+</style>

@@ -11,10 +11,10 @@ test.describe("Dataset details", () => {
     const title = page.locator("h1");
     expect(title).toHaveText(dataset.title);
 
-    const description = page.locator("[aria-labelledby=tabpanel-resume]");
+    const description = page.locator("[data-testid=dataset-description]");
     expect(description).toHaveText(dataset.description);
 
-    const editUrl = page.locator("text=Proposer une modification");
+    const editUrl = page.locator("text=Modifier");
     await page.pause();
     expect(await editUrl.getAttribute("href")).toBe(
       `/fiches/${dataset.id}/edit`

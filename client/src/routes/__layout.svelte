@@ -54,9 +54,7 @@
 <Header />
 
 <main id="contenu" role="main">
-  <div class="fr-mb-8w">
-    <slot />
-  </div>
+  <slot />
 </main>
 
 <Footer />

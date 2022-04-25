@@ -6,7 +6,7 @@
   <div class="fr-container">
     <div class="fr-footer__body">
       <div class="fr-footer__brand fr-enlarge-link">
-        <a href={paths.home} title="Retour à l’accueil">
+        <a href={paths.home} title="Retour à l'accueil">
           <p class="fr-logo" title="république française">
             Catalogage
             <br />des

@@ -23,7 +23,7 @@ describe("Dataset detail page header", () => {
 describe("Dataset detail page action buttons", () => {
   test("The button to modify the dataset is present", () => {
     const { getByText } = render(index, { dataset });
-    const modifyButton = getByText("Proposer une modification");
+    const modifyButton = getByText("Modifier");
     expect(modifyButton).toBeInTheDocument();
     expect(modifyButton.getAttribute("href")).toContain(dataset.id);
   });
@@ -35,25 +35,12 @@ describe("Dataset detail page action buttons", () => {
       dataset.entrypointEmail
     );
   });
-  test("The button to follow the dataset is present", () => {
-    const { getByText } = render(index, { dataset });
-    expect(getByText("Suivre")).toBeInTheDocument();
-  });
 });
 
-describe("Dataset detail page tabs", () => {
-  test("The tabs are present", () => {
-    const { getAllByRole } = render(index, { dataset });
-    const tabs = getAllByRole("tab");
-    expect(tabs.length).toEqual(4);
-    expect(tabs[0]).toHaveTextContent("Résumé");
-    expect(tabs[1]).toHaveTextContent("Sources");
-    expect(tabs[2]).toHaveTextContent("Contenu");
-    expect(tabs[3]).toHaveTextContent("Discussion");
-  });
-  test("The 'Résumé' tab panels displays the description", async () => {
-    const { getAllByRole } = render(index, { dataset });
-    const panel = getAllByRole("tabpanel")[0];
-    expect(panel).toHaveTextContent(dataset.description);
+describe("Dataset detail description", () => {
+  test("The description is shown", async () => {
+    const { getByTestId } = render(index, { dataset });
+    const description = getByTestId("dataset-description");
+    expect(description).toHaveTextContent(dataset.description);
   });
 });
