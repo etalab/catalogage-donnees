@@ -62,7 +62,10 @@ class DatasetModel(Base):
     id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True)
 
     catalog_record: "CatalogRecordModel" = relationship(
-        "CatalogRecordModel", back_populates="dataset", uselist=False
+        "CatalogRecordModel",
+        back_populates="dataset",
+        cascade="delete",
+        uselist=False,
     )
 
     title = Column(String, nullable=False)
