@@ -1,4 +1,5 @@
 import * as datefns from "date-fns";
+import { fr } from "date-fns/locale";
 
 export const pluralize = (
   amount: number,
@@ -17,6 +18,10 @@ export const capitalize = (text: string): string => {
 
 export const formatHTMLDate = (date: Date): string => {
   return datefns.format(date, "yyyy-MM-dd");
+};
+
+export const formatFullDate = (date: Date): string => {
+  return datefns.format(date, "d LLLL yyyy", { locale: fr });
 };
 
 export const formatDaysMonthsOrYearsToNow = (date: Date): string => {
@@ -41,4 +46,8 @@ export const formatDaysMonthsOrYearsToNow = (date: Date): string => {
   }
 
   return `il y a ${yearsDiff} an${pluralize(yearsDiff, "", "s")}`;
+};
+
+export const splitParagraphs = (text: string): string[] => {
+  return text.split("\n");
 };
