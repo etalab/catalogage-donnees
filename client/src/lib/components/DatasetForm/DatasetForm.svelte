@@ -20,7 +20,6 @@
   import Select from "../Select/Select.svelte";
   import { toSelectOptions } from "src/lib/transformers/form";
   import { handleSelectChange } from "src/lib/util/form";
-  // import YesNoRadioField from "../YesNoRadioField/YesNoRadioField.svelte";
 
   export let submitLabel = "Publier ce jeu de données";
   export let loadingLabel = "Publication en cours...";
@@ -480,28 +479,15 @@
     La mise à disposition du public des informations de l'Etat est un...
   </p>
 
-  <!-- 
-  <YesNoRadioField
-    name="isPublished"
-    bind:value={$form.isPublished}
-    on:change={({ detail }) => updateValidateField("isPublished", detail)}
-    required
-    error={$errors.isPublished}
-  >
-    <svelte:fragment slot="label">
-      Ce jeu de données est-il publié en open data ?
-    </svelte:fragment>
-  </YesNoRadioField> -->
-
   <div
     class="fr-input-group fr-my-4w"
     class:fr-input-group--error={$errors.publishedUrl}
   >
     <label class="fr-label" for="publishedUrl">
-      Page open data du jeu de données
+      Page open data
       <span class="fr-hint-text" id="publishedUrl-desc-hint">
-        Si le jeu de données est publié en open data, saisissez ici le lien qui
-        permet d'y accéder.
+        Si le jeu de données est publié en open data, saisissez ici le lien de
+        la page web associée.
       </span>
     </label>
 
