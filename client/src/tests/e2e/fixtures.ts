@@ -45,6 +45,8 @@ export const test = base.extend<AppTestArgs>({
   },
 
   dataset: async ({ apiContext, adminApiToken }, use) => {
+    const headers = { Authorization: `Bearer ${adminApiToken}` };
+
     const data = getFakeDataset({
       title: "Sample title",
       description: "Sample description",
@@ -55,6 +57,7 @@ export const test = base.extend<AppTestArgs>({
     });
     let response = await apiContext.post("/datasets/", {
       data: toPayload(data),
+      headers,
     });
     expect(response.ok()).toBeTruthy();
     const dataset = await response.json();
@@ -62,7 +65,7 @@ export const test = base.extend<AppTestArgs>({
     await use(dataset);
 
     response = await apiContext.delete(`/datasets/${dataset.id}/`, {
-      headers: { Authorization: `Bearer ${adminApiToken}` },
+      headers,
     });
     expect(response.ok()).toBeTruthy();
   },

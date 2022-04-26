@@ -28,7 +28,11 @@ from .schemas import DatasetCreate, DatasetUpdate
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
 
-@router.get("/", response_model=List[DatasetView])
+@router.get(
+    "/",
+    dependencies=[Depends(IsAuthenticated())],
+    response_model=List[DatasetView],
+)
 async def list_datasets(
     q: str = None, highlight: bool = False
 ) -> Union[JSONResponse, List[DatasetView]]:
@@ -43,7 +47,12 @@ async def list_datasets(
     return await bus.execute(query)
 
 
-@router.get("/{id}/", response_model=DatasetView, responses={404: {}})
+@router.get(
+    "/{id}/",
+    dependencies=[Depends(IsAuthenticated())],
+    response_model=DatasetView,
+    responses={404: {}},
+)
 async def get_dataset_by_id(id: ID) -> DatasetView:
     bus = resolve(MessageBus)
 
@@ -54,7 +63,12 @@ async def get_dataset_by_id(id: ID) -> DatasetView:
         raise HTTPException(404)
 
 
-@router.post("/", response_model=DatasetView, status_code=201)
+@router.post(
+    "/",
+    dependencies=[Depends(IsAuthenticated())],
+    response_model=DatasetView,
+    status_code=201,
+)
 async def create_dataset(data: DatasetCreate) -> DatasetView:
     bus = resolve(MessageBus)
 
@@ -66,7 +80,12 @@ async def create_dataset(data: DatasetCreate) -> DatasetView:
     return await bus.execute(query)
 
 
-@router.put("/{id}/", response_model=DatasetView, responses={404: {}})
+@router.put(
+    "/{id}/",
+    dependencies=[Depends(IsAuthenticated())],
+    response_model=DatasetView,
+    responses={404: {}},
+)
 async def update_dataset(id: ID, data: DatasetUpdate) -> DatasetView:
     bus = resolve(MessageBus)
 

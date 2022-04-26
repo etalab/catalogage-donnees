@@ -14,6 +14,8 @@ from server.config.di import resolve
 from server.domain.datasets.entities import DataFormat, GeographicalCoverage
 from server.seedwork.application.messages import MessageBus
 
+from ..helpers import TestUser
+
 DEFAULT_CORPUS_ITEMS = [
     ("Inventaire national forestier", "Ensemble des forêts de France"),
     ("Base Carbone", "Inventaire des données climat de l'ADEME"),
@@ -93,11 +95,15 @@ async def add_corpus(items: List[Tuple[str, str]] = None) -> None:
     ],
 )
 async def test_search(
-    client: httpx.AsyncClient, q: str, expected_titles: List[str]
+    client: httpx.AsyncClient, temp_user: TestUser, q: str, expected_titles: List[str]
 ) -> None:
     await add_corpus()
 
-    response = await client.get("/datasets/", params={"q": q})
+    response = await client.get(
+        "/datasets/",
+        params={"q": q},
+        auth=temp_user.auth,
+    )
     assert response.status_code == 200
     data = response.json()
     titles = [item["title"] for item in data]
@@ -121,17 +127,25 @@ async def test_search(
     ],
 )
 async def test_search_robustness(
-    client: httpx.AsyncClient, q_ref: str, q_other: str
+    client: httpx.AsyncClient, temp_user: TestUser, q_ref: str, q_other: str
 ) -> None:
     await add_corpus()
 
-    response = await client.get("/datasets/", params={"q": q_ref})
+    response = await client.get(
+        "/datasets/",
+        params={"q": q_ref},
+        auth=temp_user.auth,
+    )
     assert response.status_code == 200
     data = response.json()
     reference_titles = [item["title"] for item in data]
     assert reference_titles
 
-    response = await client.get("/datasets/", params={"q": q_other})
+    response = await client.get(
+        "/datasets/",
+        params={"q": q_other},
+        auth=temp_user.auth,
+    )
     assert response.status_code == 200
     data = response.json()
     other_titles = [item["title"] for item in data]
@@ -142,13 +156,18 @@ async def test_search_robustness(
 @pytest.mark.asyncio
 async def test_search_results_change_when_data_changes(
     client: httpx.AsyncClient,
+    temp_user: TestUser,
 ) -> None:
     await add_corpus()
 
     bus = resolve(MessageBus)
 
     # No results initially
-    response = await client.get("/datasets/", params={"q": "titre"})
+    response = await client.get(
+        "/datasets/",
+        params={"q": "titre"},
+        auth=temp_user.auth,
+    )
     assert response.status_code == 200
     data = response.json()
     assert not data
@@ -164,7 +183,11 @@ async def test_search_results_change_when_data_changes(
     )
     pk = await bus.execute(command)
     # New dataset is returned in search results
-    response = await client.get("/datasets/", params={"q": "titre"})
+    response = await client.get(
+        "/datasets/",
+        params={"q": "titre"},
+        auth=temp_user.auth,
+    )
     assert response.status_code == 200
     (dataset,) = response.json()
     assert dataset["id"] == str(pk)
@@ -185,7 +208,11 @@ async def test_search_results_change_when_data_changes(
     )
     await bus.execute(command)
     # Updated dataset is returned in search results targeting updated data
-    response = await client.get("/datasets/", params={"q": "modifié"})
+    response = await client.get(
+        "/datasets/",
+        params={"q": "modifié"},
+        auth=temp_user.auth,
+    )
     assert response.status_code == 200
     (dataset,) = response.json()
     assert dataset["id"] == str(pk)
@@ -205,7 +232,11 @@ async def test_search_results_change_when_data_changes(
         last_updated_at=None,
     )
     await bus.execute(command)
-    response = await client.get("/datasets/", params={"q": "spécial"})
+    response = await client.get(
+        "/datasets/",
+        params={"q": "spécial"},
+        auth=temp_user.auth,
+    )
     assert response.status_code == 200
     (dataset,) = response.json()
     assert dataset["id"] == str(pk)
@@ -213,14 +244,18 @@ async def test_search_results_change_when_data_changes(
     # Deleted dataset is not returned in search results anymore
     command = DeleteDataset(id=pk)
     await bus.execute(command)
-    response = await client.get("/datasets/", params={"q": "modifié"})
+    response = await client.get(
+        "/datasets/",
+        params={"q": "modifié"},
+        auth=temp_user.auth,
+    )
     assert response.status_code == 200
     data = response.json()
     assert not data
 
 
 @pytest.mark.asyncio
-async def test_search_ranking(client: httpx.AsyncClient) -> None:
+async def test_search_ranking(client: httpx.AsyncClient, temp_user: TestUser) -> None:
     items = [
         ("A", "..."),
         ("B", "Forêt nouvelle"),
@@ -239,7 +274,7 @@ async def test_search_ranking(client: httpx.AsyncClient) -> None:
         "D",  # Both lexemes match, further away from each other
     ]
 
-    response = await client.get("/datasets/", params={"q": q})
+    response = await client.get("/datasets/", params={"q": q}, auth=temp_user.auth)
     assert response.status_code == 200
     data = response.json()
     titles = [item["title"] for item in data]
@@ -266,13 +301,20 @@ async def test_search_ranking(client: httpx.AsyncClient) -> None:
     ],
 )
 async def test_search_highlight(
-    client: httpx.AsyncClient, highlight: bool, expected_headlines: Optional[dict]
+    client: httpx.AsyncClient,
+    temp_user: TestUser,
+    highlight: bool,
+    expected_headlines: Optional[dict],
 ) -> None:
     await add_corpus([("Restaurants CROUS", "Lieux de restauration du CROUS")])
 
     q = "restaurant"
 
-    response = await client.get("/datasets/", params={"q": q, "highlight": highlight})
+    response = await client.get(
+        "/datasets/",
+        params={"q": q, "highlight": highlight},
+        auth=temp_user.auth,
+    )
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 1
