@@ -34,9 +34,11 @@ class SqlTagRepository(TagRepository):
     def make_id(self) -> ID:
         return id_factory()
 
-    async def get_all_by_ids(self, ids: List[ID]) -> List[Tag]:
+    async def get_all(self, *, ids: List[ID] = None) -> List[Tag]:
         async with self._db.session() as session:
-            stmt = select(TagModel).where(TagModel.id.in_(ids))
+            stmt = select(TagModel)
+            if ids is not None:
+                stmt = stmt.where(TagModel.id.in_(ids))
             result = await session.execute(stmt)
             return [make_entity(instance) for instance in result.scalars().all()]
 

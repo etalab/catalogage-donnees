@@ -28,7 +28,7 @@ async def create_dataset(command: CreateDataset, *, id_: ID = None) -> ID:
     catalog_record = await catalog_record_repository.get_by_id(catalog_record_id)
     assert catalog_record is not None
 
-    tags = await tag_repository.get_all_by_ids(command.tag_ids)
+    tags = await tag_repository.get_all(ids=command.tag_ids)
 
     dataset = Dataset(
         id=id_,
@@ -49,7 +49,7 @@ async def update_dataset(command: UpdateDataset) -> None:
     if dataset is None:
         raise DatasetDoesNotExist(pk)
 
-    tags = await tag_repository.get_all_by_ids(command.tag_ids)
+    tags = await tag_repository.get_all(ids=command.tag_ids)
     dataset.update(**command.dict(exclude={"id", "tag_ids"}), tags=tags)
 
     await repository.update(dataset)

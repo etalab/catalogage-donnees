@@ -1,4 +1,7 @@
-from server.application.tags.queries import GetTagByID
+from typing import List
+
+from server.application.tags.queries import GetAllTags, GetTagByID
+from server.application.tags.views import TagView
 from server.config.di import resolve
 from server.domain.common.types import ID
 from server.domain.tags.entities import Tag
@@ -19,7 +22,13 @@ async def create_tag(command: CreateTag, *, id_: ID = None) -> ID:
     return await repository.insert(tag)
 
 
-async def get_tag_by_id(query: GetTagByID) -> Tag:
+async def get_all_tags(query: GetAllTags) -> List[TagView]:
+    repository = resolve(TagRepository)
+    tags = await repository.get_all()
+    return [TagView(**tag.dict()) for tag in tags]
+
+
+async def get_tag_by_id(query: GetTagByID) -> TagView:
     repository = resolve(TagRepository)
 
     id_ = query.id
@@ -28,4 +37,4 @@ async def get_tag_by_id(query: GetTagByID) -> Tag:
     if tag is None:
         raise TagDoesNotExist(id_)
 
-    return tag
+    return TagView(**tag.dict())
