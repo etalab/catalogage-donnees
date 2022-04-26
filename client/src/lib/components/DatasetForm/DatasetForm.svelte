@@ -475,10 +475,6 @@
 
   <h2 class="fr-mt-6w fr-mb-5w">Ouverture</h2>
 
-  <p class="fr-mb-5w">
-    La mise à disposition du public des informations de l'Etat est un...
-  </p>
-
   <div
     class="fr-input-group fr-my-4w"
     class:fr-input-group--error={$errors.publishedUrl}
