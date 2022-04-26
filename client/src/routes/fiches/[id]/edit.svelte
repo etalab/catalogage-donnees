@@ -23,7 +23,7 @@
   import type { Dataset, DatasetFormData } from "src/definitions/datasets";
   import DatasetForm from "$lib/components/DatasetForm/DatasetForm.svelte";
   import paths from "$lib/paths";
-  import { isAdmin, apiToken, user } from "$lib/stores/auth";
+  import { isAdmin, apiToken } from "$lib/stores/auth";
   import { deleteDataset } from "$lib/repositories/datasets";
   import { Maybe } from "$lib/util/maybe";
 
@@ -38,11 +38,12 @@
 
     try {
       loading = true;
-      const tagIds = event.detail.tags.map((item) => item.id);
-      await updateDataset({
+
+      const updatedDataset = await updateDataset({
         fetch,
-        data: { ...event.detail, tagIds },
-        apiToken: $user.apiToken,
+        apiToken: $apiToken,
+        id: dataset.id,
+        data: event.detail,
       });
 
       if (Maybe.Some(updatedDataset)) {

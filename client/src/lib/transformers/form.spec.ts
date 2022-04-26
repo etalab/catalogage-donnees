@@ -1,7 +1,6 @@
 import { toSelectOptions } from "./form";
-
-import type { Tag } from "src/definitions/tag";
 import { transformTagToSelectOption } from "./form";
+import { buildFakeTag } from "src/tests/factories/tag";
 
 describe("transformers -- form", () => {
   test("should transform an object to SelectOption", () => {
@@ -23,13 +22,10 @@ describe("transformers -- form", () => {
   });
 
   test("should transform tag to select option", () => {
-    const tag: Tag = {
-      id: 3,
-      name: "foo",
-    };
+    const tag = buildFakeTag();
     expect(transformTagToSelectOption(tag)).toEqual({
-      label: "foo",
-      value: "3",
+      label: tag.name,
+      value: tag.id,
     });
   });
 });

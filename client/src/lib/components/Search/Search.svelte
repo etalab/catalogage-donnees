@@ -9,8 +9,12 @@
 
   export let name: string;
 
+  let searchTerm = "";
+
   export let id = `${name}-label`;
   export let options: Array<SelectOption> = [];
+
+  let myInput: HTMLInputElement;
 
   const listName = `${name}-list`;
 
@@ -21,6 +25,7 @@
 
     if (selectedOption) {
       dispatch("search", selectedOption);
+      myInput.value = "";
     }
   };
 </script>
@@ -32,6 +37,7 @@
     list={listName}
     {id}
     {name}
+    bind:this={myInput}
     on:input|stopPropagation|preventDefault={handleInput}
   />
 

@@ -11,6 +11,9 @@
   export let id: string = name;
 
   export let selectedTags: TagType[] = [];
+
+  let searchTerm = "";
+
   const dispatch = createEventDispatcher();
 
   const handleSearch = (e: CustomEvent<SelectOption>) => {
@@ -23,7 +26,6 @@
     if (!tag || tagHasBeenAlreadySelected) return;
 
     selectedTags = [...selectedTags, tag];
-
     dispatch("change", selectedTags);
   };
 

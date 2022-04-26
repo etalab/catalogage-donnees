@@ -1,4 +1,5 @@
 import type { Dataset, DatasetFormData } from "src/definitions/datasets";
+import { buildFakeTag } from "./tag";
 
 export const getFakeDataset = (dataset: Partial<Dataset> = {}): Dataset => {
   return {
@@ -15,6 +16,7 @@ export const getFakeDataset = (dataset: Partial<Dataset> = {}): Dataset => {
     lastUpdatedAt: dataset.lastUpdatedAt || new Date(),
     geographicalCoverage: dataset.geographicalCoverage || "europe",
     publishedUrl: dataset.publishedUrl || null,
+    tags: dataset.tags || [buildFakeTag()],
   };
 };
 
@@ -33,5 +35,6 @@ export const getFakeDataSetFormData = (
     lastUpdatedAt: datasetFormData.lastUpdatedAt || new Date(),
     geographicalCoverage: datasetFormData.geographicalCoverage || "europe",
     publishedUrl: datasetFormData.publishedUrl || null,
+    tags: datasetFormData.tags || [buildFakeTag()],
   };
 };

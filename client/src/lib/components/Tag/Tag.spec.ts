@@ -1,11 +1,7 @@
 import "@testing-library/jest-dom";
 
 import Tag from "./Tag.svelte";
-import {
-  render,
-  fireEvent,
-  getByRole as getByRoleIn,
-} from "@testing-library/svelte";
+import { render, fireEvent } from "@testing-library/svelte";
 
 describe("Tag component", () => {
   test("A tag  should have a name ", async () => {
@@ -17,7 +13,7 @@ describe("Tag component", () => {
     expect(button).toHaveTextContent(buttonText);
   });
 
-  test.only("A tag should return his label after being clicked", async () => {
+  test("A tag should return his name and id after being clicked", async () => {
     const buttonText = "A nice text";
     const { getByText, component } = render(Tag, {
       id: 33,

@@ -18,6 +18,7 @@ test.describe("Basic form submission", () => {
     const serviceText = "Ministère de l'écologie";
     const technicalSourceText = "foo/bar";
     const publishedUrlText = "https://data.gouv.fr/datasets/example";
+    const tagName = "services";
 
     await page.goto("/contribuer");
 
@@ -81,6 +82,14 @@ test.describe("Basic form submission", () => {
     const publishedUrl = page.locator("form [name=publishedUrl]");
     await publishedUrl.fill(publishedUrlText);
     expect(await publishedUrl.inputValue()).toBe(publishedUrlText);
+    // "Mots clés" section
+
+    const tags = page.locator("form [name=tags]");
+
+    await tags.fill(tagName);
+    const selectedTag = page.locator("text=services");
+
+    expect(selectedTag).toBeDefined();
 
     const button = page.locator("button[type='submit']");
     const [request, response] = await Promise.all([
@@ -103,6 +112,9 @@ test.describe("Basic form submission", () => {
     expect(json.last_updated_at).toEqual("2000-05-05T00:00:00+00:00");
     expect(json.service).toBe(serviceText);
     expect(json.published_url).toBe(publishedUrlText);
+
+    const hasTag = json.tags.findIndex((item) => item.name === tagName) !== -1;
+    expect(hasTag).toBeTruthy();
 
     await page.locator("text='Modifier'").waitFor();
   });
