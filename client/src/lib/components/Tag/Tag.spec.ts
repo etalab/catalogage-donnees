@@ -20,12 +20,16 @@ describe("Tag component", () => {
   test.only("A tag should return his label after being clicked", async () => {
     const buttonText = "A nice text";
     const { getByText, component } = render(Tag, {
+      id: 33,
       name: buttonText,
     });
     const button = getByText(buttonText);
 
     component.$on("select", (event) => {
-      expect(event.detail).toBe(buttonText);
+      expect(event.detail).toEqual({
+        name: buttonText,
+        id: 33,
+      });
     });
     await fireEvent.click(button);
   });

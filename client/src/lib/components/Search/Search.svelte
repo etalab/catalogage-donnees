@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { InputEvent } from "src/definitions/event";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
@@ -8,15 +7,16 @@
     value: string;
   };
 
-  export let label: string;
   export let name: string;
-  const listName = `${name}-list`;
-  const id = `${name}-label`;
+
+  export let id = `${name}-label`;
   export let options: Array<SelectOption> = [];
 
-  const handlInput = (e: InputEvent) => {
+  const listName = `${name}-list`;
+
+  const handleInput = (e: any) => {
     const selectedOption = options.find(
-      (item) => item.label === e.currentTarget.currentValue
+      (item) => item.label === e.target.value
     );
 
     if (selectedOption) {
@@ -26,22 +26,24 @@
 </script>
 
 <div class="fr-select-group">
-  <label class="fr-label" for={id}>{label}</label>
+  <input
+    role="search"
+    class="fr-select"
+    list={listName}
+    {id}
+    {name}
+    on:input|stopPropagation|preventDefault={handleInput}
+  />
 
-  <div class="select-search-input">
-    <input
-      role="search"
-      class="fr-select"
-      list={listName}
-      {id}
-      {name}
-      on:input={handlInput}
-    />
-
-    <datalist id={listName}>
-      {#each options as { label }}
-        <option value={label} />
-      {/each}
-    </datalist>
-  </div>
+  <datalist id={listName}>
+    {#each options as { label }}
+      <option value={label} />
+    {/each}
+  </datalist>
 </div>
+
+<style>
+  :global(input::-webkit-calendar-picker-indicator) {
+    display: none !important;
+  }
+</style>

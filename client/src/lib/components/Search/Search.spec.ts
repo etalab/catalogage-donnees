@@ -1,8 +1,7 @@
 import "@testing-library/jest-dom";
 
 import Search from "./Search.svelte";
-import { render, screen } from "@testing-library/svelte";
-import { fireEvent } from "@testing-library/dom";
+import { render, fireEvent, screen } from "@testing-library/svelte";
 
 describe("Test the Search", () => {
   test("should return the selected option", async () => {
@@ -35,7 +34,7 @@ describe("Test the Search", () => {
 
     await fireEvent.input(input, {
       target: {
-        currentValue: "tata",
+        value: "tata",
       },
     });
 
