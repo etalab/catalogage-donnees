@@ -53,7 +53,10 @@ export type Dataset = {
 
 export type DatasetFormData = Omit<
   Dataset,
-  "id" | "catalogRecord" | "headlines">
+  "id" | "catalogRecord" | "headlines"
+>;
 
-export type DatasetCreateData = Omit<DatasetFormData, "tags"> & { tagIds: string[] };
+export type DatasetCreateData = Omit<DatasetFormData, "tags"> & {
+  tagIds: string[];
+};
 export type DatasetUpdateData = DatasetCreateData;

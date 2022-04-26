@@ -1,12 +1,11 @@
 import "@testing-library/jest-dom";
 
 import TagSelector from "./TagSelector.svelte";
-import { render, fireEvent, screen } from "@testing-library/svelte";
+import { render, fireEvent } from "@testing-library/svelte";
 
 describe("Test the TagSelector", () => {
   test("should display no selected tags", async () => {
     const { queryAllByRole } = render(TagSelector, {
-      label: "label",
       name: "my-list",
       selectedTags: [],
       tags: [
@@ -26,7 +25,6 @@ describe("Test the TagSelector", () => {
 
   test("should select and display a tag", async () => {
     const { getByRole, getAllByRole } = render(TagSelector, {
-      label: "label",
       name: "my-list",
       selectedTags: [],
       tags: [
@@ -55,9 +53,8 @@ describe("Test the TagSelector", () => {
     expect(tag).toHaveTextContent("toto");
   });
 
-  test("should display no tags", async () => {
+  test("should remove one tag form tag list", async () => {
     const { getByRole, getAllByRole, queryAllByRole } = render(TagSelector, {
-      label: "label",
       name: "my-list",
       selectedTags: [],
       tags: [
@@ -87,5 +84,21 @@ describe("Test the TagSelector", () => {
 
     tags = queryAllByRole("listitem");
     expect(tags).toHaveLength(0);
+  });
+
+  test("should display one selected tag", async () => {
+    const { getAllByRole } = render(TagSelector, {
+      name: "my-list",
+      selectedTags: [
+        {
+          id: "uuid",
+          name: "toto",
+        },
+      ],
+      tags: [],
+    });
+
+    const tags = getAllByRole("listitem");
+    expect(tags).toHaveLength(1);
   });
 });

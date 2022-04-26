@@ -10,7 +10,7 @@
   export let name: string;
   export let id: string = name;
 
-  let selectedTags: TagType[] = [];
+  export let selectedTags: TagType[] = [];
   const dispatch = createEventDispatcher();
 
   const handleSearch = (e: CustomEvent<SelectOption>) => {
