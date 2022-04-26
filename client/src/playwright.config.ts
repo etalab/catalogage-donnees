@@ -9,11 +9,7 @@ dotenv.config({
 });
 
 const getAdminTestPassword = (): string => {
-  const passwords = Object.fromEntries(
-    process.env.TOOLS_PASSWORDS.split(",")
-      .map((value) => value.trim())
-      .map((value) => value.split("="))
-  );
+  const passwords = JSON.parse(process.env.TOOLS_PASSWORDS);
   const adminPassword = passwords[ADMIN_EMAIL];
   if (!adminPassword) {
     throw new Error(

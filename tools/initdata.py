@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import functools
+import json
 import os
 import pathlib
 from typing import Dict
@@ -8,7 +9,7 @@ from typing import Dict
 import click
 import yaml
 from dotenv import load_dotenv
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError, parse_raw_as
 
 from server.application.auth.commands import CreateUser
 from server.application.datasets.commands import CreateDataset, UpdateDataset
@@ -35,13 +36,12 @@ class UserExtras(BaseModel):
 
 
 def _parse_env_passwords(passwords_env: str) -> Dict[str, str]:
-    if not passwords_env:
-        return {}
-    passwords = {}
-    for pair in passwords_env.split(","):
-        email, password = pair.split("=")
-        passwords[email] = password
-    return passwords
+    try:
+        return parse_raw_as(Dict[str, str], passwords_env or "{}")
+    except json.JSONDecodeError:
+        raise ValueError("Malformed TOOLS_PASSWORDS: invalid JSON")
+    except ValidationError as exc:
+        raise ValueError(f"Malformed TOOLS_PASSWORDS: {exc}")
 
 
 async def handle_user(

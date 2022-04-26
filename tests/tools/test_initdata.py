@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pytest
@@ -28,6 +29,35 @@ async def test_initdata_empty(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "value",
+    [
+        pytest.param('{"missingquote: "pwd"}', id="invalid-json"),
+        pytest.param('["email", "pwd"]', id="not-dict"),
+    ],
+)
+async def test_initdata_env_password_invalid(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, value: str
+) -> None:
+    path = tmp_path / "initdata.yml"
+    path.write_text(
+        """
+        users:
+          - id: 9c2cefce-ea47-4e6e-8c79-8befd4495f45
+            params:
+              email: test@admin.org
+              password: __env__
+        datasets: []
+        """
+    )
+
+    monkeypatch.setenv("TOOLS_PASSWORDS", value)
+
+    with pytest.raises(ValueError):
+        await initdata.main(path, no_input=True)
+
+
+@pytest.mark.asyncio
 async def test_initdata_env_password(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -46,7 +76,7 @@ async def test_initdata_env_password(
     )
 
     # Env variable is used to create the user.
-    monkeypatch.setenv("TOOLS_PASSWORDS", "test@admin.org=testpwd")
+    monkeypatch.setenv("TOOLS_PASSWORDS", json.dumps({"test@admin.org": "testpwd"}))
     await initdata.main(path, no_input=True)
 
     user = await bus.execute(Login(email="test@admin.org", password="testpwd"))
@@ -68,7 +98,9 @@ async def test_repo_initdata(
 ) -> None:
     bus = resolve(MessageBus)
     path = Path("tools", "initdata.yml")
-    monkeypatch.setenv("TOOLS_PASSWORDS", "admin@catalogue.data.gouv.fr=test")
+    monkeypatch.setenv(
+        "TOOLS_PASSWORDS", json.dumps({"admin@catalogue.data.gouv.fr": "test"})
+    )
 
     await initdata.main(path, no_input=True)
     captured = capsys.readouterr()

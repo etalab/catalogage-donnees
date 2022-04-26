@@ -62,10 +62,10 @@ Structure :
   * `params` - dict
     * title, description, et autres champs de [`DatasetCreate` (API docs)](https://demo.catalogue.multi.coop/api/docs)
 
-Il est possible de passer des mots de passe utilisateur secrets en utilisant la valeur spéciale `password: __env__` et en définissant une variable d'environnement `TOOLS_PASSWORD` qui fait correspondre emails et mots de passe :
+Il est possible de passer des mots de passe utilisateur secrets en utilisant la valeur spéciale `password: __env__`. Le mot de passe correspondant à l'email doit alors être défini dans un objet JSON via la variable d'environnement `TOOLS_PASSWORD` :
 
 ```bash
-TOOLS_PASSWORDS="email1=password1, email2=password2, ..." venv/bin/python -m tools.initdata /path/to/initdata.yml
+TOOLS_PASSWORDS='{"email1": "password1", "email2": "password2", ...}' venv/bin/python -m tools.initdata /path/to/initdata.yml
 ```
 
 Exemple :
@@ -78,8 +78,7 @@ users:
       email: "john.doe@example.org"
       password: "example"
   - # Utilisateur admin.
-    # Mot de passe défini par $TOOLS_PASSWORDS (format : '<email>=<password>' séparés par des virgules),
-    # ou demandé en ligne de commande si vide.
+    # Mot de passe défini par $TOOLS_PASSWORDS, ou demandé en ligne de commande si vide.
     id: "<UUID>"
     params:
       email: "sarah.conor@example.org"
@@ -102,7 +101,7 @@ datasets:
 Utilisation :
 
 ```
-TOOLS_PASSWORDS="sarah.conor@example.org=sarahpwd" venv/bin/python -m tools.initdata /path/to/initdata.yml
+TOOLS_PASSWORDS='{"sarah.conor@example.org": "sarahpwd"}' venv/bin/python -m tools.initdata /path/to/initdata.yml
 ```
 
 N.B. : Avant de créer chaque entité, le script s'assure qu'elle n'existe pas déjà en base. En passant le flag `--reset` (intégré dans `make initdatareset`), les champs des entités existantes sont réinitialisées à leurs valeurs définies dans le fichier YAML.
