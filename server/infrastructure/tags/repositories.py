@@ -20,11 +20,11 @@ class TagModel(Base):
 
 
 def make_entity(instance: TagModel) -> Tag:
-    return Tag(id=instance.id, name=instance.name)
+    return Tag(**{field: getattr(instance, field) for field in Tag.__fields__})
 
 
 def make_instance(entity: Tag) -> TagModel:
-    return TagModel(id=entity.id, name=entity.name)
+    return TagModel(**entity.dict())
 
 
 class SqlTagRepository(TagRepository):
