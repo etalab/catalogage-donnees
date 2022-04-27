@@ -65,7 +65,7 @@ describe("ContactEmailsField component", () => {
       target: { value: "contact@mydomain.org" },
     });
     expect(inputs.length).toBe(4);
-    const removeButton = getByRoleIn(inputs[2].parentElement, "button", {
+    const removeButton = getByRoleIn(inputs[2].parentElement!, "button", {
       name: /Supprimer/i,
     });
 

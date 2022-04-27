@@ -2,7 +2,7 @@ export const handleSelectChange = async <Inf>(
   fieldname: keyof Inf,
   event: Event,
   handleChange: (event: Event) => Promise<void>,
-  updateValidateField: (fieldname: keyof Inf, event: Event) => void
+  updateValidateField: (fieldname: keyof Inf, value: unknown) => void
 ): Promise<void> => {
   const target = event.currentTarget as EventTarget & HTMLSelectElement;
 

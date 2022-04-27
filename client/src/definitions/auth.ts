@@ -1,3 +1,5 @@
+import type { Maybe } from "$lib/util/maybe";
+
 export interface LoginFormData {
   email: string;
   password: string;
@@ -24,5 +26,5 @@ export interface User {
 
 export interface UserInfo {
   loggedIn: boolean;
-  user: User | null;
+  user: Maybe<User>;
 }

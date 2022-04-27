@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, fireEvent, waitFor } from "@testing-library/svelte";
+import { render, fireEvent } from "@testing-library/svelte";
 import type { LoginFormData } from "src/definitions/auth";
 
 import LoginForm from "./LoginForm.svelte";
@@ -47,13 +47,6 @@ describe("Test the dataset list item", () => {
   test("The form submits the logged in user", async () => {
     const { getByRole, getByLabelText, component } = render(LoginForm);
 
-    let submittedValue: LoginFormData;
-
-    component.$on(
-      "submit",
-      (event: CustomEvent<LoginFormData>) => (submittedValue = event.detail)
-    );
-
     await fireEvent.input(getByLabelText("Adresse e-mail"), {
       target: { value: "user@mydomain.org" },
     });
@@ -61,7 +54,10 @@ describe("Test the dataset list item", () => {
       target: { value: "p@ssw0rd" },
     });
     await fireEvent.click(getByRole("button"));
-    await waitFor(() => expect(submittedValue).toBeDefined());
+
+    const submittedValue = await new Promise<LoginFormData>((resolve) => {
+      component.$on("submit", (event) => resolve(event.detail));
+    });
 
     expect(submittedValue).toEqual({
       email: "user@mydomain.org",

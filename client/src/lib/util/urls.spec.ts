@@ -1,7 +1,7 @@
 import { toQueryString } from "./urls";
 
 describe("toQueryString", () => {
-  const cases: [[string, string][], string][] = [
+  const cases: [[string, string | null | undefined][], string][] = [
     [[], ""],
     [[["q", undefined]], ""],
     [[["q", null]], ""],

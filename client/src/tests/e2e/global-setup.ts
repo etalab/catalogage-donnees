@@ -21,7 +21,7 @@ export default async function globalSetup(
 
   await saveAuthenticatedState(browser, config, {
     email: ADMIN_EMAIL,
-    password: config.projects[0].use.adminTestPassword,
+    password: config.projects[0].use.adminTestPassword || "",
     path: STATE_AUTHENTICATED_ADMIN,
   });
 

@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
   import { get } from "svelte/store";
-  import { user } from "$lib/stores/auth";
+  import { apiToken } from "$lib/stores/auth";
   import { getDatasets } from "$lib/repositories/datasets";
 
   export const load: Load = async ({ fetch }) => {
-    const datasets = await getDatasets({ fetch, apiToken: get(user).apiToken });
+    const datasets = await getDatasets({ fetch, apiToken: get(apiToken) });
 
     return {
       props: {

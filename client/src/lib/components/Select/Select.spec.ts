@@ -48,9 +48,11 @@ describe("Test the select component", () => {
 
     const { getByRole } = render(Select, { props });
 
-    expect(
-      (getByRole("option", { name: placeholder }) as HTMLOptionElement).selected
-    ).toBeFalsy();
+    const option = getByRole("option", {
+      name: placeholder,
+    }) as HTMLOptionElement;
+    expect(option.value).toBe("null");
+    expect(option.selected).toBeTruthy();
   });
 
   test("should be marked as required", () => {

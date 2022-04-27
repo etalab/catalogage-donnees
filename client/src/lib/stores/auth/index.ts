@@ -1,5 +1,6 @@
 import type { UserInfo, User } from "src/definitions/auth";
 import { derived } from "svelte/store";
+import { Maybe } from "$lib/util/maybe";
 import { storable } from "../localStorage";
 
 const validateExistingUserInfo = (value: UserInfo): boolean => {
@@ -13,14 +14,15 @@ const userInfo = storable<UserInfo>(
   validateExistingUserInfo
 );
 
-export const isLoggedIn = derived(userInfo, (values) => values.loggedIn);
-
 export const user = derived(userInfo, (values) => values.user);
 
-export const isAdmin = derived(
-  userInfo,
-  (values) => values.user?.role === "ADMIN"
-);
+export const apiToken = derived(user, ($user) => {
+  return Maybe.Some($user) ? $user.apiToken : "";
+});
+
+export const isAdmin = derived(user, (user) => {
+  return user?.role === "ADMIN";
+});
 
 export const login = (user: User): void => {
   userInfo.set({ loggedIn: true, user });

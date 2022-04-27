@@ -40,21 +40,19 @@ describe("Test the search form", () => {
   test("The form submits the search value", async () => {
     const { getByRole, component } = render(SearchForm);
 
-    let submittedValue: string;
-
-    component.$on(
-      "submit",
-      (event: CustomEvent<string>) => (submittedValue = event.detail)
-    );
+    const submittedValues: string[] = [];
+    component.$on("submit", (event: CustomEvent<string>) => {
+      submittedValues.push(event.detail);
+    });
 
     await fireEvent.click(getByRole("button"));
-    expect(submittedValue).toBe("");
+    expect(submittedValues.pop()).toBe("");
 
     await fireEvent.input(getByRole("searchbox"), {
       target: { value: "Forêt" },
     });
     await fireEvent.click(getByRole("button"));
-    expect(submittedValue).toBe("Forêt");
+    expect(submittedValues.pop()).toBe("Forêt");
   });
 
   test("The form can be large", async () => {
