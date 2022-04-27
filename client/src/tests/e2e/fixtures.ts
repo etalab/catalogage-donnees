@@ -1,9 +1,7 @@
 import { test as base, expect, type APIRequestContext } from "@playwright/test";
 import type { Dataset } from "src/definitions/datasets";
-import { getFakeDataset } from "src/tests/factories/dataset";
 import { toPayload } from "src/lib/transformers/dataset";
 import { ADMIN_EMAIL } from "./constants";
-import { buildFakeTag } from "../factories/tag";
 
 /**
  * These fixtures allow simplifying setup/teardown logic in tests,

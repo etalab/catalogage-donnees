@@ -2,22 +2,20 @@
   import { createEventDispatcher } from "svelte";
 
   export let size: "default" | "lg" = "default";
-  export let labelId = "";
   export let value = "";
   export let placeholder = "Rechercher";
 
-  const dispatch = createEventDispatcher<{ search: string }>();
+  const dispatch = createEventDispatcher<{ submit: string }>();
 
-  const handleSearch = () => {
-    dispatch("search", value);
-  };
+  const onSubmit = () => dispatch("submit", value);
 </script>
 
-<div
+<form
   class="fr-search-bar {size === 'lg' ? 'fr-search-bar--lg' : ''}"
   role="search"
+  on:submit|preventDefault={onSubmit}
 >
-  <label for="q" id={labelId} class="fr-label">Rechercher</label>
+  <label for="q" class="fr-label">Rechercher</label>
   <input type="search" class="fr-input" name="q" bind:value {placeholder} />
-  <button on:click={handleSearch} class="fr-btn"> Rechercher </button>
-</div>
+  <button type="submit" class="fr-btn"> Rechercher </button>
+</form>
