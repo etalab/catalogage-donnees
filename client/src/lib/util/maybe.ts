@@ -15,6 +15,11 @@ const Some = <T>(m: Maybe<T>): m is T => {
   return m !== null && m !== undefined;
 };
 
+const map = <A, B>(a: Maybe<A>, f: (value: A) => B): Maybe<B> => {
+  return Some(a) ? f(a) : null;
+};
+
 export const Maybe = {
   Some,
+  map,
 };

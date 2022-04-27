@@ -19,11 +19,12 @@
   import { goto } from "$app/navigation";
   import type { Dataset } from "src/definitions/datasets";
   import { toQueryString } from "$lib/util/urls";
+  import { Maybe } from "$lib/util/maybe";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import paths from "$lib/paths";
 
-  export let datasets: Dataset[];
+  export let datasets: Maybe<Dataset[]>;
 
   const submitSearch = (event: CustomEvent<string>) => {
     const q = event.detail;
@@ -53,5 +54,7 @@
 <section class="fr-container fr-mt-8w fr-mb-15w">
   <h2 class="fr-mb-3w">Dernières contributions</h2>
 
-  <DatasetList {datasets} />
+  {#if Maybe.Some(datasets)}
+    <DatasetList {datasets} />
+  {/if}
 </section>
