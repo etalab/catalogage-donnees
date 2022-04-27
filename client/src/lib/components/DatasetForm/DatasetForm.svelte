@@ -36,6 +36,7 @@
     lastUpdatedAt: null,
     updateFrequency: null,
     technicalSource: "",
+    publishedUrl: null,
   };
 
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
@@ -51,6 +52,7 @@
     lastUpdatedAt: string | null;
     updateFrequency: UpdateFrequency | null;
     technicalSource: string | null;
+    publishedUrl: string | null;
   };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
@@ -72,6 +74,7 @@
     geographicalCoverage: initial.geographicalCoverage,
     updateFrequency: initial.updateFrequency,
     technicalSource: initial.technicalSource,
+    publishedUrl: initial.publishedUrl,
   };
 
   // Handle this value manually.
@@ -100,6 +103,7 @@
         updateFrequency: yup.string().nullable(),
         geographicalCoverage: yup.string().required("Ce champs est requis"),
         technicalSource: yup.string().nullable(),
+        publishedUrl: yup.string().nullable(),
       }),
       onSubmit: (values) => {
         const formats = values.dataFormats
@@ -468,6 +472,39 @@
       )}
     error={$errors.updateFrequency}
   />
+
+  <h2 class="fr-mt-6w fr-mb-5w">Ouverture</h2>
+
+  <div
+    class="fr-input-group fr-my-4w"
+    class:fr-input-group--error={$errors.publishedUrl}
+  >
+    <label class="fr-label" for="publishedUrl">
+      Page open data
+      <span class="fr-hint-text" id="publishedUrl-desc-hint">
+        Si le jeu de données est publié en open data, saisissez ici le lien de
+        la page web associée.
+      </span>
+    </label>
+
+    <input
+      class="fr-input"
+      class:fr-input--error={$errors.lastUpdatedAt}
+      aria-describedby={$errors.publishedUrl ? "publishedUrl-desc-error" : null}
+      type="text"
+      id="publishedUrl"
+      name="publishedUrl"
+      on:change={handleChange}
+      on:blur={handleChange}
+      bind:value={$form.publishedUrl}
+    />
+
+    {#if $errors.publishedUrl}
+      <p id="publishedUrl-desc-error" class="fr-error-text">
+        {$errors.publishedUrl}
+      </p>
+    {/if}
+  </div>
 
   <div class="fr-input-group fr-mt-8w">
     <button type="submit" class="fr-btn">

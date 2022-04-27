@@ -46,6 +46,7 @@ export type Dataset = {
   updateFrequency: UpdateFrequency | null;
   geographicalCoverage: GeographicalCoverage;
   technicalSource: string | null;
+  publishedUrl: string | null;
 };
 
 export type DatasetFormData = Omit<

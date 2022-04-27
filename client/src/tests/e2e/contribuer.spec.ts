@@ -17,6 +17,7 @@ test.describe("Basic form submission", () => {
     const lastUpdatedAtDate = "2000-05-05";
     const serviceText = "Ministère de l'écologie";
     const technicalSourceText = "foo/bar";
+    const publishedUrlText = "https://data.gouv.fr/datasets/example";
 
     await page.goto("/contribuer");
 
@@ -75,6 +76,12 @@ test.describe("Basic form submission", () => {
       label: UPDATE_FREQUENCY_LABELS.daily,
     });
 
+    // "Ouverture" section
+
+    const publishedUrl = page.locator("form [name=publishedUrl]");
+    await publishedUrl.fill(publishedUrlText);
+    expect(await publishedUrl.inputValue()).toBe(publishedUrlText);
+
     const button = page.locator("button[type='submit']");
     const [request, response] = await Promise.all([
       page.waitForRequest("**/datasets/"),
@@ -95,6 +102,7 @@ test.describe("Basic form submission", () => {
     expect(json.update_frequency).toBe("daily");
     expect(json.last_updated_at).toEqual("2000-05-05T00:00:00+00:00");
     expect(json.service).toBe(serviceText);
+    expect(json.published_url).toBe(publishedUrlText);
 
     await page.locator("text='Modifier'").waitFor();
   });

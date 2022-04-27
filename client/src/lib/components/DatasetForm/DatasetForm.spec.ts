@@ -73,6 +73,15 @@ describe("Test the dataset form", () => {
     expect(inputs[0]).toHaveAttribute("type", "email");
   });
 
+  test('The "publishedUrl" field is present', async () => {
+    const { getByLabelText } = render(DatasetForm);
+    const publishedUrl = getByLabelText("Page open data", {
+      exact: false,
+    });
+    expect(publishedUrl).toBeInTheDocument();
+    expect(publishedUrl).not.toBeRequired();
+  });
+
   test("The submit button is present", () => {
     const { getByRole } = render(DatasetForm);
     expect(getByRole("button", { name: /Publier/i })).toBeInTheDocument();
@@ -100,6 +109,7 @@ describe("Test the dataset form", () => {
       updateFrequency: "never",
       geographicalCoverage: "europe",
       technicalSource: "foo/bar",
+      publishedUrl: "https://data.gouv.fr/datasets/example",
     };
     const props = { initial };
 
@@ -150,6 +160,11 @@ describe("Test the dataset form", () => {
       exact: false,
     }) as HTMLSelectElement;
     expect(technicalSource.value).toBe("foo/bar");
+
+    const publishedUrl = getByLabelText("Page open data", {
+      exact: false,
+    }) as HTMLSelectElement;
+    expect(publishedUrl.value).toBe("https://data.gouv.fr/datasets/example");
   });
 
   test("Null fields are correctly handled in HTML and submitted as null", async () => {
@@ -164,6 +179,7 @@ describe("Test the dataset form", () => {
       updateFrequency: null,
       geographicalCoverage: "europe",
       technicalSource: "foo/bar",
+      publishedUrl: null,
     };
     const props = { initial };
     const { getByLabelText, getByRole, component } = render(DatasetForm, {
@@ -191,5 +207,6 @@ describe("Test the dataset form", () => {
     await waitFor(() => expect(submittedValue).toBeDefined());
     expect(submittedValue.lastUpdatedAt).toBe(null);
     expect(submittedValue.updateFrequency).toBe(null);
+    expect(submittedValue.publishedUrl).toBe(null);
   });
 });

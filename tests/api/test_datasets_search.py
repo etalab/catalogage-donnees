@@ -182,6 +182,7 @@ async def test_search_results_change_when_data_changes(
         contact_emails=[],
         update_frequency=None,
         last_updated_at=None,
+        published_url=None,
     )
     await bus.execute(command)
     # Updated dataset is returned in search results targeting updated data
@@ -203,6 +204,7 @@ async def test_search_results_change_when_data_changes(
         contact_emails=[],
         update_frequency=None,
         last_updated_at=None,
+        published_url=None,
     )
     await bus.execute(command)
     response = await client.get("/datasets/", params={"q": "spécial"})

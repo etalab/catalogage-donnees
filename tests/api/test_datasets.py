@@ -86,6 +86,7 @@ CREATE_DATASET_PAYLOAD = {
     "contact_emails": ["example.person@mydomain.org"],
     "update_frequency": "weekly",
     "last_updated_at": known_date.isoformat(),
+    "published_url": None,
 }
 
 CREATE_ANY_DATASET = CreateDataset(
@@ -128,6 +129,7 @@ async def test_dataset_crud(client: httpx.AsyncClient, admin_user: TestUser) -> 
         "contact_emails": ["example.person@mydomain.org"],
         "update_frequency": "weekly",
         "last_updated_at": known_date.isoformat(),
+        "published_url": None,
     }
 
     non_existing_id = id_factory()
@@ -244,6 +246,7 @@ class TestDatasetUpdate:
             "contact_emails",
             "update_frequency",
             "last_updated_at",
+            "published_url",
         ]
         errors = response.json()["detail"]
         assert len(errors) == len(fields)
@@ -268,11 +271,18 @@ class TestDatasetUpdate:
                 "contact_emails": [],
                 "update_frequency": "weekly",
                 "last_updated_at": known_date.isoformat(),
+                "published_url": "",
             },
         )
         assert response.status_code == 422
 
-        err_title, err_description, err_service, err_formats = response.json()["detail"]
+        (
+            err_title,
+            err_description,
+            err_service,
+            err_formats,
+            err_published_url,
+        ) = response.json()["detail"]
 
         assert err_title["loc"] == ["body", "title"]
         assert "empty" in err_title["msg"]
@@ -285,6 +295,9 @@ class TestDatasetUpdate:
 
         assert err_formats["loc"] == ["body", "formats"]
         assert "at least one" in err_formats["msg"].lower()
+
+        assert err_published_url["loc"] == ["body", "published_url"]
+        assert "empty" in err_service["msg"]
 
     async def test_update(self, client: httpx.AsyncClient) -> None:
         bus = resolve(MessageBus)
@@ -305,6 +318,7 @@ class TestDatasetUpdate:
                 "contact_emails": ["other.person@mydomain.org"],
                 "update_frequency": "weekly",
                 "last_updated_at": other_known_date.isoformat(),
+                "published_url": "https://data.gouv.fr/datasets/other",
             },
         )
         assert response.status_code == 200
@@ -324,6 +338,7 @@ class TestDatasetUpdate:
             "contact_emails": ["other.person@mydomain.org"],
             "update_frequency": "weekly",
             "last_updated_at": other_known_date.isoformat(),
+            "published_url": "https://data.gouv.fr/datasets/other",
         }
 
         # Entity was indeed updated
@@ -339,6 +354,7 @@ class TestDatasetUpdate:
         assert dataset.contact_emails == ["other.person@mydomain.org"]
         assert dataset.update_frequency == UpdateFrequency.WEEKLY
         assert dataset.last_updated_at == other_known_date
+        assert dataset.published_url == "https://data.gouv.fr/datasets/other"
 
 
 @pytest.mark.asyncio

@@ -52,6 +52,7 @@ class Dataset(Entity):
     contact_emails: List[str] = Field(default_factory=list)
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
+    published_url: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -68,6 +69,7 @@ class Dataset(Entity):
         contact_emails: List[str],
         update_frequency: Optional[UpdateFrequency],
         last_updated_at: Optional[dt.datetime],
+        published_url: Optional[str],
     ) -> None:
         self.title = title
         self.description = description
@@ -79,3 +81,4 @@ class Dataset(Entity):
         self.contact_emails = contact_emails
         self.update_frequency = update_frequency
         self.last_updated_at = last_updated_at
+        self.published_url = published_url

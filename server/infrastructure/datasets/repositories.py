@@ -84,6 +84,7 @@ class DatasetModel(Base):
     contact_emails = Column(ARRAY(String), server_default="{}", nullable=False)
     update_frequency = Column(Enum(UpdateFrequency, enum="update_frequency_enum"))
     last_updated_at = Column(DateTime(timezone=True))
+    published_url = Column(String)
 
     search_tsv: Mapped[str] = Column(
         TSVECTOR,
@@ -100,20 +101,18 @@ class DatasetModel(Base):
 
 
 def make_entity(instance: DatasetModel) -> Dataset:
-    return Dataset(
-        id=instance.id,
-        catalog_record=make_catalog_record_entity(instance.catalog_record),
-        title=instance.title,
-        description=instance.description,
-        service=instance.service,
-        geographical_coverage=instance.geographical_coverage,
-        formats=[fmt.name for fmt in instance.formats],
-        technical_source=instance.technical_source,
-        entrypoint_email=instance.entrypoint_email,
-        contact_emails=instance.contact_emails,
-        update_frequency=instance.update_frequency,
-        last_updated_at=instance.last_updated_at,
+    kwargs = {
+        "catalog_record": make_catalog_record_entity(instance.catalog_record),
+        "formats": [fmt.name for fmt in instance.formats],
+    }
+
+    kwargs.update(
+        (field, getattr(instance, field))
+        for field in Dataset.__fields__
+        if field not in kwargs
     )
+
+    return Dataset(**kwargs)
 
 
 def make_instance(
@@ -131,16 +130,10 @@ def make_instance(
 def update_instance(
     instance: DatasetModel, entity: Dataset, formats: List[DataFormatModel]
 ) -> None:
-    instance.title = entity.title
-    instance.description = entity.description
-    instance.service = entity.service
-    instance.geographical_coverage = entity.geographical_coverage
+    for field in set(Dataset.__fields__) - {"id", "catalog_record", "formats"}:
+        setattr(instance, field, getattr(entity, field))
+
     instance.formats = formats
-    instance.technical_source = entity.technical_source
-    instance.entrypoint_email = entity.entrypoint_email
-    instance.contact_emails = entity.contact_emails
-    instance.update_frequency = entity.update_frequency
-    instance.last_updated_at = entity.last_updated_at
 
 
 class SqlDatasetRepository(DatasetRepository):
