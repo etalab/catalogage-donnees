@@ -48,7 +48,7 @@ export type Dataset = {
   geographicalCoverage: GeographicalCoverage;
   technicalSource: string | null;
   publishedUrl: string | null;
-  tags: Tag[]
+  tags: Tag[];
 };
 
 export type DatasetFormData = Omit<

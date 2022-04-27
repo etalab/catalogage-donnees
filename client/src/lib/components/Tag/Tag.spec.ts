@@ -7,6 +7,7 @@ describe("Tag component", () => {
   test("A tag  should have a name ", async () => {
     const buttonText = "A nice text";
     const { getByText } = render(Tag, {
+      id: 33,
       name: buttonText,
     });
     const button = getByText(buttonText);

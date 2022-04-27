@@ -1,12 +1,11 @@
 import "@testing-library/jest-dom";
 
 import Search from "./Search.svelte";
-import { render, fireEvent, screen } from "@testing-library/svelte";
+import { render, fireEvent } from "@testing-library/svelte";
 
 describe("Test the Search", () => {
   test("should return the selected option", async () => {
     const { getByRole, component } = render(Search, {
-      label: "label",
       name: "my-list",
       options: [
         {
@@ -46,7 +45,6 @@ describe("Test the Search", () => {
 
   test("should NOT return the selected option if no matching option found", async () => {
     const { getByRole, component } = render(Search, {
-      label: "label",
       name: "my-list",
       options: [
         {

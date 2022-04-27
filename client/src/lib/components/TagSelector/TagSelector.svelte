@@ -12,8 +12,6 @@
 
   export let selectedTags: TagType[] = [];
 
-  let searchTerm = "";
-
   const dispatch = createEventDispatcher();
 
   const handleSearch = (e: CustomEvent<SelectOption>) => {
