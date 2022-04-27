@@ -1,9 +1,15 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
+  import { get } from "svelte/store";
   import { getDatasetByID, updateDataset } from "$lib/repositories/datasets";
 
   export const load: Load = async ({ fetch, params }) => {
-    const dataset = await getDatasetByID({ fetch, id: params.id });
+    const dataset = await getDatasetByID({
+      fetch,
+      apiToken: get(user).apiToken,
+      id: params.id,
+    });
+
     return {
       props: {
         dataset,
@@ -29,7 +35,12 @@
   const onSave = async (event: CustomEvent<DatasetFormData>) => {
     try {
       loading = true;
-      await updateDataset({ fetch, id, data: event.detail });
+      await updateDataset({
+        fetch,
+        apiToken: $user.apiToken,
+        id,
+        data: event.detail,
+      });
       await goto(paths.datasetDetail({ id }));
     } finally {
       loading = false;

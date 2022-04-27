@@ -8,25 +8,41 @@ import { getHeaders, getApiUrl } from "$lib/fetch";
 import { toQueryString } from "$lib/util/urls";
 import { toDataset, toPayload } from "$lib/transformers/dataset";
 
-type GetDatasetByID = (opts: { fetch: Fetch; id: string }) => Promise<Dataset>;
+type GetDatasetByID = (opts: {
+  fetch: Fetch;
+  apiToken: string;
+  id: string;
+}) => Promise<Dataset>;
 
-export const getDatasetByID: GetDatasetByID = async ({ fetch, id }) => {
+export const getDatasetByID: GetDatasetByID = async ({
+  fetch,
+  apiToken,
+  id,
+}) => {
   const url = `${getApiUrl()}/datasets/${id}/`;
-  const request = new Request(url);
+  const request = new Request(url, {
+    headers: new Headers(getHeaders(apiToken)),
+  });
   const response = await fetch(request);
   return toDataset(await response.json());
 };
 
-type GetDatasets = (opts: { fetch: Fetch; q?: string }) => Promise<Dataset[]>;
+type GetDatasets = (opts: {
+  fetch: Fetch;
+  apiToken: string;
+  q?: string;
+}) => Promise<Dataset[]>;
 
-export const getDatasets: GetDatasets = async ({ fetch, q }) => {
+export const getDatasets: GetDatasets = async ({ fetch, apiToken, q }) => {
   const queryItems = [];
   if (typeof q === "string") {
     queryItems.push(["q", q], ["highlight", "true"]);
   }
   const queryString = toQueryString(queryItems);
   const url = `${getApiUrl()}/datasets/${queryString}`;
-  const request = new Request(url);
+  const request = new Request(url, {
+    headers: new Headers(getHeaders(apiToken)),
+  });
   const response = await fetch(request);
   const items: any[] = await response.json();
   return items.map((item) => toDataset(item));
@@ -34,15 +50,23 @@ export const getDatasets: GetDatasets = async ({ fetch, q }) => {
 
 type CreateDataset = (opts: {
   fetch: Fetch;
+  apiToken: string;
   data: DatasetCreateData;
 }) => Promise<Dataset>;
 
-export const createDataset: CreateDataset = async ({ fetch, data }) => {
+export const createDataset: CreateDataset = async ({
+  fetch,
+  apiToken,
+  data,
+}) => {
   const body = JSON.stringify(toPayload(data));
   const url = `${getApiUrl()}/datasets/`;
   const request = new Request(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: new Headers([
+      ["Content-Type", "application/json"],
+      ...getHeaders(apiToken),
+    ]),
     body,
   });
   const response = await fetch(request);
@@ -51,16 +75,25 @@ export const createDataset: CreateDataset = async ({ fetch, data }) => {
 
 type UpdateDataset = (opts: {
   fetch: Fetch;
+  apiToken: string;
   id: string;
   data: DatasetUpdateData;
 }) => Promise<Dataset>;
 
-export const updateDataset: UpdateDataset = async ({ fetch, id, data }) => {
+export const updateDataset: UpdateDataset = async ({
+  fetch,
+  apiToken,
+  id,
+  data,
+}) => {
   const body = JSON.stringify(toPayload(data));
   const url = `${getApiUrl()}/datasets/${id}/`;
   const request = new Request(url, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: new Headers([
+      ["Content-Type", "application/json"],
+      ...getHeaders(apiToken),
+    ]),
     body,
   });
   const response = await fetch(request);

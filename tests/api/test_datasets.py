@@ -60,9 +60,12 @@ from ..helpers import TestUser, approx_datetime
     ],
 )
 async def test_create_dataset_invalid(
-    client: httpx.AsyncClient, payload: dict, expected_errors_attrs: list
+    client: httpx.AsyncClient,
+    temp_user: TestUser,
+    payload: dict,
+    expected_errors_attrs: list,
 ) -> None:
-    response = await client.post("/datasets/", json=payload)
+    response = await client.post("/datasets/", json=payload, auth=temp_user.auth)
     assert response.status_code == 422
 
     data = response.json()
@@ -100,8 +103,12 @@ CREATE_ANY_DATASET = CreateDataset(
 
 
 @pytest.mark.asyncio
-async def test_dataset_crud(client: httpx.AsyncClient, admin_user: TestUser) -> None:
-    response = await client.post("/datasets/", json=CREATE_DATASET_PAYLOAD)
+async def test_dataset_crud(
+    client: httpx.AsyncClient, temp_user: TestUser, admin_user: TestUser
+) -> None:
+    response = await client.post(
+        "/datasets/", json=CREATE_DATASET_PAYLOAD, auth=temp_user.auth
+    )
     assert response.status_code == 201
     data = response.json()
 
@@ -133,38 +140,72 @@ async def test_dataset_crud(client: httpx.AsyncClient, admin_user: TestUser) -> 
     }
 
     non_existing_id = id_factory()
-    response = await client.get(f"/datasets/{non_existing_id}/")
+
+    response = await client.get(f"/datasets/{non_existing_id}/", auth=temp_user.auth)
     assert response.status_code == 404
 
-    response = await client.get(f"/datasets/{pk}/")
+    response = await client.get(f"/datasets/{pk}/", auth=temp_user.auth)
     assert response.status_code == 200
     assert response.json() == data
 
-    response = await client.get("/datasets/")
+    response = await client.get("/datasets/", auth=temp_user.auth)
     assert response.status_code == 200
     assert response.json() == [data]
 
     response = await client.delete(f"/datasets/{pk}/", auth=admin_user.auth)
     assert response.status_code == 204
 
-    response = await client.get(f"/datasets/{pk}/")
+    response = await client.get(f"/datasets/{pk}/", auth=temp_user.auth)
     assert response.status_code == 404
 
-    response = await client.get("/datasets/")
+    response = await client.get("/datasets/", auth=temp_user.auth)
     assert response.status_code == 200
     assert response.json() == []
 
 
 @pytest.mark.asyncio
+class TestDatasetPermissions:
+    async def test_create_not_authenticated(self, client: httpx.AsyncClient) -> None:
+        response = await client.post("/datasets/", json=CREATE_DATASET_PAYLOAD)
+        assert response.status_code == 401
+
+    async def test_get_not_authenticated(self, client: httpx.AsyncClient) -> None:
+        pk = id_factory()
+        response = await client.get(f"/datasets/{pk}/")
+        assert response.status_code == 401
+
+    async def test_list_not_authenticated(self, client: httpx.AsyncClient) -> None:
+        response = await client.get("/datasets/")
+        assert response.status_code == 401
+
+    async def test_update_not_authenticated(self, client: httpx.AsyncClient) -> None:
+        pk = id_factory()
+        response = await client.put(f"/datasets/{pk}/", json={})
+        assert response.status_code == 401
+
+    async def test_delete_not_authenticated(self, client: httpx.AsyncClient) -> None:
+        pk = id_factory()
+        response = await client.delete(f"/datasets/{pk}/")
+        assert response.status_code == 401
+
+    async def test_delete_not_admin(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
+        pk = id_factory()
+        response = await client.delete(f"/datasets/{pk}/", auth=temp_user.auth)
+        assert response.status_code == 403
+
+
+@pytest.mark.asyncio
 async def test_dataset_get_all_uses_reverse_chronological_order(
-    client: httpx.AsyncClient,
+    client: httpx.AsyncClient, temp_user: TestUser
 ) -> None:
     bus = resolve(MessageBus)
     await bus.execute(CREATE_ANY_DATASET.copy(update={"title": "Oldest"}))
     await bus.execute(CREATE_ANY_DATASET.copy(update={"title": "Intermediate"}))
     await bus.execute(CREATE_ANY_DATASET.copy(update={"title": "Newest"}))
 
-    response = await client.get("/datasets/")
+    response = await client.get("/datasets/", auth=temp_user.auth)
     assert response.status_code == 200
     titles = [dataset["title"] for dataset in response.json()]
     assert titles == ["Newest", "Intermediate", "Oldest"]
@@ -182,16 +223,18 @@ class TestDatasetOptionalFields:
         ],
     )
     async def test_optional_fields_missing_uses_defaults(
-        self, client: httpx.AsyncClient, field: str, default: Any
+        self, client: httpx.AsyncClient, temp_user: TestUser, field: str, default: Any
     ) -> None:
         payload = CREATE_DATASET_PAYLOAD.copy()
         payload.pop(field)
-        response = await client.post("/datasets/", json=payload)
+        response = await client.post("/datasets/", json=payload, auth=temp_user.auth)
         assert response.status_code == 201
         dataset = response.json()
         assert dataset[field] == default
 
-    async def test_optional_fields_invalid(self, client: httpx.AsyncClient) -> None:
+    async def test_optional_fields_invalid(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
         response = await client.post(
             "/datasets/",
             json={
@@ -201,6 +244,7 @@ class TestDatasetOptionalFields:
                 "update_frequency": "not_in_enum",
                 "last_updated_at": "not_a_datetime",
             },
+            auth=temp_user.auth,
         )
         assert response.status_code == 422
         (
@@ -221,19 +265,26 @@ class TestDatasetOptionalFields:
 
 @pytest.mark.asyncio
 class TestDatasetUpdate:
-    async def test_not_found(self, client: httpx.AsyncClient) -> None:
+    async def test_not_found(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
         response = await client.put(
             f"/datasets/{id_factory()}/",
             json=CREATE_DATASET_PAYLOAD,
+            auth=temp_user.auth,
         )
         assert response.status_code == 404
 
-    async def test_full_entity_expected(self, client: httpx.AsyncClient) -> None:
+    async def test_full_entity_expected(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
         bus = resolve(MessageBus)
         dataset_id = await bus.execute(CREATE_ANY_DATASET)
 
         # Apply PUT semantics, which expect a full entity.
-        response = await client.put(f"/datasets/{dataset_id}/", json={})
+        response = await client.put(
+            f"/datasets/{dataset_id}/", json={}, auth=temp_user.auth
+        )
         assert response.status_code == 422
         fields = [
             "title",
@@ -254,7 +305,9 @@ class TestDatasetUpdate:
             assert error["loc"] == ["body", field], field
             assert error["type"] == "value_error.missing", field
 
-    async def test_fields_empty_invalid(self, client: httpx.AsyncClient) -> None:
+    async def test_fields_empty_invalid(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
         bus = resolve(MessageBus)
         dataset_id = await bus.execute(CREATE_ANY_DATASET)
 
@@ -273,6 +326,7 @@ class TestDatasetUpdate:
                 "last_updated_at": known_date.isoformat(),
                 "published_url": "",
             },
+            auth=temp_user.auth,
         )
         assert response.status_code == 422
 
@@ -299,7 +353,7 @@ class TestDatasetUpdate:
         assert err_published_url["loc"] == ["body", "published_url"]
         assert "empty" in err_service["msg"]
 
-    async def test_update(self, client: httpx.AsyncClient) -> None:
+    async def test_update(self, client: httpx.AsyncClient, temp_user: TestUser) -> None:
         bus = resolve(MessageBus)
         dataset_id = await bus.execute(CREATE_ANY_DATASET)
 
@@ -320,6 +374,7 @@ class TestDatasetUpdate:
                 "last_updated_at": other_known_date.isoformat(),
                 "published_url": "https://data.gouv.fr/datasets/other",
             },
+            auth=temp_user.auth,
         )
         assert response.status_code == 200
 
@@ -359,7 +414,9 @@ class TestDatasetUpdate:
 
 @pytest.mark.asyncio
 class TestFormats:
-    async def test_formats_add(self, client: httpx.AsyncClient) -> None:
+    async def test_formats_add(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
         bus = resolve(MessageBus)
         dataset_id = await bus.execute(CREATE_ANY_DATASET)
 
@@ -370,12 +427,15 @@ class TestFormats:
                 "geographical_coverage": CREATE_ANY_DATASET.geographical_coverage.value,
                 "formats": ["website", "api", "file_gis"],
             },
+            auth=temp_user.auth,
         )
 
         assert response.status_code == 200
         assert sorted(response.json()["formats"]) == ["api", "file_gis", "website"]
 
-    async def test_formats_remove(self, client: httpx.AsyncClient) -> None:
+    async def test_formats_remove(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
         bus = resolve(MessageBus)
         dataset_id = await bus.execute(CREATE_ANY_DATASET)
 
@@ -386,6 +446,7 @@ class TestFormats:
                 "geographical_coverage": CREATE_ANY_DATASET.geographical_coverage.value,
                 "formats": ["website"],
             },
+            auth=temp_user.auth,
         )
 
         assert response.status_code == 200
@@ -395,18 +456,12 @@ class TestFormats:
 @pytest.mark.asyncio
 class TestDeleteDataset:
     async def test_delete(
-        self, client: httpx.AsyncClient, temp_user: TestUser, admin_user: TestUser
+        self, client: httpx.AsyncClient, admin_user: TestUser
     ) -> None:
         bus = resolve(MessageBus)
 
         dataset_id = await bus.execute(CREATE_ANY_DATASET)
         dataset = await bus.execute(GetDatasetByID(id=dataset_id))
-
-        # Permissions
-        response = await client.delete(f"/datasets/{dataset_id}/")
-        assert response.status_code == 401
-        response = await client.delete(f"/datasets/{dataset_id}/", auth=temp_user.auth)
-        assert response.status_code == 403
 
         response = await client.delete(f"/datasets/{dataset_id}/", auth=admin_user.auth)
         assert response.status_code == 204
