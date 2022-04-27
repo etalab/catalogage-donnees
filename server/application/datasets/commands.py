@@ -23,6 +23,7 @@ class CreateDataset(Command[ID]):
     contact_emails: List[str] = Field(default_factory=list)
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
+    published_url: Optional[str] = None
 
 
 class UpdateDataset(Command[None]):
@@ -37,6 +38,7 @@ class UpdateDataset(Command[None]):
     contact_emails: List[str]
     update_frequency: Optional[UpdateFrequency] = Field(...)
     last_updated_at: Optional[dt.datetime] = Field(...)
+    published_url: Optional[str] = Field(...)
 
 
 class DeleteDataset(Command[None]):
