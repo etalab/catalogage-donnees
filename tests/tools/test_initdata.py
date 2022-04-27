@@ -1,9 +1,10 @@
+import json
 from pathlib import Path
 
 import pytest
 
 from server.application.auth.commands import DeleteUser
-from server.application.auth.queries import GetUserByEmail
+from server.application.auth.queries import Login
 from server.application.datasets.commands import UpdateDataset
 from server.application.datasets.queries import GetAllDatasets, GetDatasetByID
 from server.config.di import resolve
@@ -28,7 +29,36 @@ async def test_initdata_empty(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
-async def test_initdata_admin_password(
+@pytest.mark.parametrize(
+    "value",
+    [
+        pytest.param('{"missingquote: "pwd"}', id="invalid-json"),
+        pytest.param('["email", "pwd"]', id="not-dict"),
+    ],
+)
+async def test_initdata_env_password_invalid(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, value: str
+) -> None:
+    path = tmp_path / "initdata.yml"
+    path.write_text(
+        """
+        users:
+          - id: 9c2cefce-ea47-4e6e-8c79-8befd4495f45
+            params:
+              email: test@admin.org
+              password: __env__
+        datasets: []
+        """
+    )
+
+    monkeypatch.setenv("TOOLS_PASSWORDS", value)
+
+    with pytest.raises(ValueError):
+        await initdata.main(path, no_input=True)
+
+
+@pytest.mark.asyncio
+async def test_initdata_env_password(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     bus = resolve(MessageBus)
@@ -40,26 +70,26 @@ async def test_initdata_admin_password(
           - id: 9c2cefce-ea47-4e6e-8c79-8befd4495f45
             params:
               email: test@admin.org
-            extras:
-              role: ADMIN
+              password: __env__
         datasets: []
         """
     )
 
-    # Env variable is used to create the admin user.
-    monkeypatch.setenv("TOOLS_ADMIN_PASSWORD", "test-admin")
+    # Env variable is used to create the user.
+    monkeypatch.setenv("TOOLS_PASSWORDS", json.dumps({"test@admin.org": "testpwd"}))
     await initdata.main(path, no_input=True)
-    # (Ensure user exists,
-    user = await bus.execute(GetUserByEmail(email="test@admin.org"))
-    # then delete it to prevent email collision below.)
+
+    user = await bus.execute(Login(email="test@admin.org", password="testpwd"))
+
+    # (Delete user to prevent email collision below.)
     await bus.execute(DeleteUser(id=user.id))
 
     # If not set, it would be prompted in the terminal.
-    monkeypatch.delenv("TOOLS_ADMIN_PASSWORD")
+    monkeypatch.delenv("TOOLS_PASSWORDS")
     with pytest.raises(RuntimeError) as ctx:
         await initdata.main(path, no_input=True)
     assert "would prompt" in str(ctx.value)
-    assert "TOOLS_ADMIN_PASSWORD" in str(ctx.value)
+    assert "TOOLS_PASSWORDS" in str(ctx.value)
 
 
 @pytest.mark.asyncio
@@ -68,7 +98,9 @@ async def test_repo_initdata(
 ) -> None:
     bus = resolve(MessageBus)
     path = Path("tools", "initdata.yml")
-    monkeypatch.setenv("TOOLS_ADMIN_PASSWORD", "test")
+    monkeypatch.setenv(
+        "TOOLS_PASSWORDS", json.dumps({"admin@catalogue.data.gouv.fr": "test"})
+    )
 
     await initdata.main(path, no_input=True)
     captured = capsys.readouterr()

@@ -40,21 +40,49 @@ Si celles-ci ont changé (suite à des manipulations manuelles dans le frontend,
 make initdatareset
 ```
 
-Les données à charger sont définies dans le fichier YAML `tools/initdata.yml`. Sa structure est ad-hoc. Elle est fortement corrélée au traitement réalisé par le script.
+Ces commandes `make` sont branchées sur le fichier `tools/initdata.yml`. Pour utiliser un fichier différent, invoquer le script Python directement :
+
+```
+venv/bin/python -m tools.initdata <file>
+```
+
+La structure d'un fichier d'initdata est ad-hoc, et fortement corrélée au traitement réalisé par le script.
+
+Structure :
+
+* `users` - list
+  * `id` - str - UUID
+  * `params` - dict
+    * `email` - str
+    * `password` - str - Utiliser `__env__` pour tirer le mot de passe de `TOOLS_PASSWORDS`
+  * `extras` - _Optionnel_, dict
+    * `role` - str, `USER | ADMIN`
+* `datasets` - list
+  * `id` - str - UUID
+  * `params` - dict
+    * title, description, et autres champs de [`DatasetCreate` (API docs)](https://demo.catalogue.multi.coop/api/docs)
+
+Il est possible de passer des mots de passe utilisateur secrets en utilisant la valeur spéciale `password: __env__`. Le mot de passe correspondant à l'email doit alors être défini dans un objet JSON via la variable d'environnement `TOOLS_PASSWORD` :
+
+```bash
+TOOLS_PASSWORDS='{"email1": "password1", "email2": "password2", ...}' venv/bin/python -m tools.initdata /path/to/initdata.yml
+```
+
+Exemple :
 
 ```yaml
 users:
   - # Utilisateur standard.
     id: "<UUID>"
     params:
-      email: "<email>"
-      password: "<password>"
+      email: "john.doe@example.org"
+      password: "example"
   - # Utilisateur admin.
-    # Mot de passe défini par $TOOLS_ADMIN_PASSWORD,
-    # ou demandé en ligne de commande si vide.
+    # Mot de passe défini par $TOOLS_PASSWORDS, ou demandé en ligne de commande si vide.
     id: "<UUID>"
     params:
-      email: "<email>"
+      email: "sarah.conor@example.org"
+      password: __env__
     extras:
       role: ADMIN
   - # ...
@@ -66,16 +94,23 @@ datasets:
       description: "<description>"
       formats:
         - "<format>"
+      # ...
   - # ...
 ```
 
-Avant de créer chaque entité, le script s'assure qu'elle n'existe pas déjà en base.
+Utilisation :
 
-(Lire le code source pour les détails.)
+```
+TOOLS_PASSWORDS='{"sarah.conor@example.org": "sarahpwd"}' venv/bin/python -m tools.initdata /path/to/initdata.yml
+```
 
-## Générer un ID
+N.B. : Avant de créer chaque entité, le script s'assure qu'elle n'existe pas déjà en base. En passant le flag `--reset` (intégré dans `make initdatareset`), les champs des entités existantes sont réinitialisées à leurs valeurs définies dans le fichier YAML.
 
-Pour générer un ID d'entité, lancer :
+Pour plus de détails, lire le code source.
+
+## Générer un UUID
+
+Pour générer un UUID d'entité, lancer :
 
 ```
 make id
