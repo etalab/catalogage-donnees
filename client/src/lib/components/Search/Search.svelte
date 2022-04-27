@@ -1,20 +1,15 @@
 <script lang="ts">
+  import type { SelectOption } from "src/definitions/form";
+
   import { createEventDispatcher } from "svelte";
 
-  const dispatch = createEventDispatcher();
-  type SelectOption = {
-    label: string;
-    value: string;
-  };
+  const dispatch = createEventDispatcher<{ search: SelectOption }>();
 
   export let name: string;
-
-  let searchTerm = "";
-
   export let id = `${name}-label`;
   export let options: Array<SelectOption> = [];
 
-  let myInput: HTMLInputElement;
+  let searchInput: HTMLInputElement;
 
   const listName = `${name}-list`;
 
@@ -25,7 +20,7 @@
 
     if (selectedOption) {
       dispatch("search", selectedOption);
-      myInput.value = "";
+      searchInput.value = "";
     }
   };
 </script>
@@ -37,7 +32,7 @@
     list={listName}
     {id}
     {name}
-    bind:this={myInput}
+    bind:this={searchInput}
     on:input|stopPropagation|preventDefault={handleInput}
   />
 
@@ -49,6 +44,7 @@
 </div>
 
 <style>
+  /* See https://stackoverflow.com/questions/20937475/remove-datalist-dropdown-arrow-in-chrome */
   :global(input::-webkit-calendar-picker-indicator) {
     display: none !important;
   }

@@ -1,5 +1,5 @@
 import type { Dataset, DatasetFormData } from "src/definitions/datasets";
-import { buildFakeTag } from "./tag";
+import { buildFakeTag } from "./tags";
 
 export const getFakeDataset = (dataset: Partial<Dataset> = {}): Dataset => {
   return {

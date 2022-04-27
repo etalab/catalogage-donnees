@@ -12,13 +12,13 @@
 
   export let selectedTags: TagType[] = [];
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ change: TagType[] }>();
 
   const handleSearch = (e: CustomEvent<SelectOption>) => {
-    const tag = tags.find((item) => item.id.toString() === e.detail.value);
+    const tag = tags.find((item) => item.id === e.detail.value);
 
     const tagHasBeenAlreadySelected = selectedTags.find(
-      (item) => item.id.toString() === e.detail.value
+      (item) => item.id === e.detail.value
     );
 
     if (!tag || tagHasBeenAlreadySelected) return;
@@ -33,19 +33,17 @@
   };
 </script>
 
-<div>
-  <Search
-    on:search={handleSearch}
-    {id}
-    {name}
-    options={tags.map(transformTagToSelectOption)}
-  />
+<Search
+  on:search={handleSearch}
+  {id}
+  {name}
+  options={tags.map(transformTagToSelectOption)}
+/>
 
-  <div role="list">
-    {#each selectedTags as { id, name }}
-      <Tag role={"listitem"} on:click={handleSelectTag} {name} {id} />
-    {/each}
-  </div>
+<div role="list">
+  {#each selectedTags as { id, name }}
+    <Tag role={"listitem"} on:click={handleSelectTag} {name} {id} />
+  {/each}
 </div>
 
 <style>

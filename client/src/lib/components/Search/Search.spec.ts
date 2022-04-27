@@ -2,27 +2,25 @@ import "@testing-library/jest-dom";
 
 import Search from "./Search.svelte";
 import { render, fireEvent } from "@testing-library/svelte";
+import type { SelectOption } from "src/definitions/form";
 
 describe("Test the Search", () => {
   test("should return the selected option", async () => {
+    const searchedOption = {
+      label: "Architecture",
+      value: "uuid-1",
+    };
     const { getByRole, component } = render(Search, {
       name: "my-list",
       options: [
+        searchedOption,
         {
-          label: "foo",
-          value: "value",
-        },
-        {
-          label: "tata",
-          value: "toto",
+          label: "Maison",
+          value: "uui-2",
         },
       ],
     });
 
-    type SelectOption = {
-      label: string;
-      value: string;
-    };
     let option: SelectOption;
 
     component.$on("search", (e: CustomEvent<SelectOption>) => {
@@ -33,35 +31,29 @@ describe("Test the Search", () => {
 
     await fireEvent.input(input, {
       target: {
-        value: "tata",
+        value: searchedOption.label,
       },
     });
 
-    expect(option).toEqual({
-      label: "tata",
-      value: "toto",
-    });
+    expect(option).toEqual(searchedOption);
   });
 
   test("should NOT return the selected option if no matching option found", async () => {
+    const searchedOption = {
+      label: "Architecture",
+      value: "architecture",
+    };
     const { getByRole, component } = render(Search, {
       name: "my-list",
       options: [
+        searchedOption,
         {
-          label: "foo",
-          value: "value",
-        },
-        {
-          label: "tata",
-          value: "toto",
+          label: "Maison",
+          value: "maison",
         },
       ],
     });
 
-    type SelectOption = {
-      label: string;
-      value: string;
-    };
     let option: SelectOption;
 
     component.$on("search", (e: CustomEvent<SelectOption>) => {
@@ -72,10 +64,10 @@ describe("Test the Search", () => {
 
     await fireEvent.input(input, {
       target: {
-        currentValue: "lol",
+        value: "not-a-value",
       },
     });
 
-    expect(option).toBeUndefined();
+    expect(option).toBe(undefined);
   });
 });

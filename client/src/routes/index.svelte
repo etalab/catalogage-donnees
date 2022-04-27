@@ -21,7 +21,7 @@
   import { toQueryString } from "$lib/util/urls";
   import { Maybe } from "$lib/util/maybe";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
-  import SearchForm from "src/lib/components/SearchForm/SearchForm.svelte";
+  import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import paths from "$lib/paths";
 
   export let datasets: Maybe<Dataset[]>;

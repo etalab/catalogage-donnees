@@ -1,13 +1,11 @@
 import "@testing-library/jest-dom";
 
 import DatasetForm from "./DatasetForm.svelte";
-import {
-  render,
-  fireEvent,
-} from "@testing-library/svelte";
+import { render, fireEvent } from "@testing-library/svelte";
 import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
 import { login, logout } from "$lib/stores/auth";
 import { buildFakeTag } from "src/tests/factories/tag";
+
 
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
@@ -50,10 +48,10 @@ describe("Test the dataset form", () => {
 
   test('The "tags" field is present', async () => {
     const { getByLabelText } = render(DatasetForm);
-    const technicalSource = getByLabelText("Mot-clés", {
+    const tags = getByLabelText("Mot-clés", {
       exact: false,
     });
-    expect(technicalSource).toBeInTheDocument();
+    expect(tags).toBeInTheDocument();
   });
 
   test("At least one format is required", async () => {
@@ -114,6 +112,7 @@ describe("Test the dataset form", () => {
   });
 
   test("The fields are initialized with initial values", async () => {
+    const fakeTag = buildFakeTag({ name: "Architecture" });
     const initial: DatasetFormData = {
       title: "Titre initial",
       description: "Description initiale",
@@ -126,7 +125,7 @@ describe("Test the dataset form", () => {
       geographicalCoverage: "europe",
       technicalSource: "foo/bar",
       publishedUrl: "https://data.gouv.fr/datasets/example",
-      tags: [buildFakeTag()],
+      tags: [fakeTag],
     };
     const props = { initial };
 
@@ -184,7 +183,7 @@ describe("Test the dataset form", () => {
       exact: false,
     }) as HTMLSelectElement;
     expect(publishedUrl.value).toBe("https://data.gouv.fr/datasets/example");
-    const tags = getAllByText("my-tag");
+    const tags = getAllByText(fakeTag.name);
     expect(tags).toHaveLength(1);
   });
 

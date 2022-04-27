@@ -43,7 +43,8 @@ test.describe("Edit dataset", () => {
     expect(await page.isChecked("input[value=database]")).toBeTruthy();
 
     const selectedTag = page.locator("text=services");
-    expect(selectedTag).toBeDefined();
+    await selectedTag.waitFor();
+
     const tags = page.locator("form [name=tags]");
     await tags.fill("environnement");
 

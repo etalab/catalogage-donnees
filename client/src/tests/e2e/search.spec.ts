@@ -8,11 +8,11 @@ test.describe("Search", () => {
   test("Performs a search from the home page", async ({ page, dataset }) => {
     await page.goto("/");
 
-    const search = page.locator("[name=q]");
+    const search = page.locator("form [name=q]");
     await search.fill("title");
     expect(await search.inputValue()).toBe("title");
 
-    const button = page.locator("button:has-text('Rechercher')");
+    const button = page.locator("button[type='submit']");
     const [request, response] = await Promise.all([
       page.waitForRequest("**/datasets/?q=title&highlight=true"),
       page.waitForResponse("**/datasets/?q=title&highlight=true"),
@@ -45,11 +45,11 @@ test.describe("Search", () => {
 
     // First search.
 
-    let search = page.locator("[name=q]");
+    let search = page.locator("form [name=q]");
     await search.fill("title");
     expect(await search.inputValue()).toBe("title");
 
-    const button = page.locator("button:has-text('Rechercher')");
+    const button = page.locator("button[type='submit']");
     let [request, response] = await Promise.all([
       page.waitForRequest("**/datasets/?q=title&highlight=true"),
       page.waitForResponse("**/datasets/?q=title&highlight=true"),
@@ -67,7 +67,7 @@ test.describe("Search", () => {
 
     // Second search. Aim at getting no results.
 
-    search = page.locator("[name=q]");
+    search = page.locator("form [name=q]");
     await search.fill("noresultsexpected");
     expect(await search.inputValue()).toBe("noresultsexpected");
 

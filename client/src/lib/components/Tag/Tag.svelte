@@ -1,10 +1,12 @@
 <script lang="ts">
+  import type { Tag } from "src/definitions/tag";
+
   import { createEventDispatcher } from "svelte";
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ click: Tag }>();
 
   export let name: string;
-  export let id: number | string;
+  export let id: string;
   export let role = "listitem";
 
   let handleClickTag = () => {

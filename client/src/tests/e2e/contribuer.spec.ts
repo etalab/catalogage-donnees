@@ -87,9 +87,9 @@ test.describe("Basic form submission", () => {
     const tags = page.locator("form [name=tags]");
 
     await tags.fill(tagName);
-    const selectedTag = page.locator("text=services");
 
-    expect(selectedTag).toBeDefined();
+    const selectedTag = page.locator("text=services");
+    await selectedTag.waitFor();
 
     const button = page.locator("button[type='submit']");
     const [request, response] = await Promise.all([

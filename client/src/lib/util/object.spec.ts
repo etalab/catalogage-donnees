@@ -1,4 +1,4 @@
-import { omit } from "./miscellaneous";
+import { omit } from "./object";
 
 describe("miscalleneous", () => {
   describe("omit", () => {

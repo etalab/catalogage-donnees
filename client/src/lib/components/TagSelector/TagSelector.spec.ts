@@ -53,7 +53,7 @@ describe("Test the TagSelector", () => {
     expect(tag).toHaveTextContent("toto");
   });
 
-  test("should remove one tag form tag list", async () => {
+  test("should remove one tag from tag list", async () => {
     const { getByRole, getAllByRole, queryAllByRole } = render(TagSelector, {
       name: "my-list",
       selectedTags: [],
@@ -95,7 +95,12 @@ describe("Test the TagSelector", () => {
           name: "toto",
         },
       ],
-      tags: [],
+      tags: [
+        {
+          id: "uuid",
+          name: "toto",
+        },
+      ],
     });
 
     const tags = getAllByRole("listitem");

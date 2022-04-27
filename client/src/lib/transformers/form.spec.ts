@@ -1,6 +1,6 @@
 import { toSelectOptions } from "./form";
 import { transformTagToSelectOption } from "./form";
-import { buildFakeTag } from "src/tests/factories/tag";
+import { buildFakeTag } from "src/tests/factories/tags";
 
 describe("transformers -- form", () => {
   test("should transform an object to SelectOption", () => {
