@@ -21,6 +21,7 @@ class DatasetCreate(BaseModel):
     contact_emails: List[EmailStr] = Field(default_factory=list)
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
+    published_url: Optional[str] = None
 
     @validator("formats")
     def check_formats_at_least_one(cls, value: List[DataFormat]) -> List[DataFormat]:
@@ -40,6 +41,7 @@ class DatasetUpdate(BaseModel):
     contact_emails: List[EmailStr]
     update_frequency: Optional[UpdateFrequency] = Field(...)
     last_updated_at: Optional[dt.datetime] = Field(...)
+    published_url: Optional[str] = Field(...)
 
     @validator("title")
     def check_title_not_empty(cls, value: str) -> str:
@@ -63,4 +65,10 @@ class DatasetUpdate(BaseModel):
     def check_formats_at_least_one(cls, value: List[DataFormat]) -> List[DataFormat]:
         if not value:
             raise ValueError("formats must contain at least one item")
+        return value
+
+    @validator("published_url")
+    def check_published_url_not_empty(cls, value: Optional[str]) -> Optional[str]:
+        if value is not None and not value:
+            raise ValueError("published_url must not be empty")
         return value

@@ -7,6 +7,7 @@ users:
   - id: "4c2cefce-ea47-4e6e-8c79-8befd4495f45"
     params:
       email: admin@catalogue.data.gouv.fr
+      password: __env__
     extras:
       role: ADMIN
 
@@ -27,6 +28,7 @@ datasets:
       contact_emails: []
       update_frequency: null
       last_updated_at: null
+      published_url: "https://www.data.gouv.fr/fr/datasets/donnees-brutes-de-l-inventaire-forestier/"
 
   -  # Mimicks: https://www.data.gouv.fr/fr/datasets/ensemble-des-lieux-de-restauration-des-crous-france-entiere-1/
     id: "4370d027-1447-4e1b-9452-781233be7f5a"
@@ -43,6 +45,7 @@ datasets:
       contact_emails: []
       update_frequency: null
       last_updated_at: null
+      published_url: "https://www.data.gouv.fr/fr/datasets/ensemble-des-lieux-de-restauration-des-crous-france-entiere-1/"
 
   - # Mimicks: https://www.data.gouv.fr/fr/datasets/catalogue-des-enquetes-realisees-par-la-dares-2012-572205/
     id: "40abb40f-af83-4a3b-b926-78428402688f"
@@ -59,3 +62,4 @@ datasets:
       contact_emails: []
       update_frequency: null
       last_updated_at: null
+      published_url: "https://www.data.gouv.fr/fr/datasets/catalogue-des-enquetes-realisees-par-la-dares-2012-572205/"
