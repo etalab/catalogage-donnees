@@ -22,3 +22,6 @@ provision:
 
 deploy:
 	${bin}ansible-playbook ${vault-password} ${env-opts} -t deploy ansible/playbook.yml $(extra_opts)
+
+initdata:
+	${bin}ansible-playbook ${vault-password} ${env-opts} -t initdata ansible/playbook.yml $(extra_opts)

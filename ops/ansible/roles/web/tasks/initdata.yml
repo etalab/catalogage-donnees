@@ -1,0 +1,13 @@
+- name: Ensure initdata.yml file is up to date
+  copy:
+    src: "{{ initdata_src }}"
+    dest: "{{ workdir }}/ops/run/initdata.yml"
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+
+- name: Run init data
+  shell:
+    cmd: venv/bin/python -m tools.initdata --no-input "{{ workdir }}/ops/run/initdata.yml"
+    chdir: "{{ workdir }}"

@@ -24,6 +24,8 @@ make currentmigration
 
 ## Données initiales
 
+_Pour l'utilisation dans les environnements de déploiement, voir [Opérations - Données initiales](./ops.md#données-initiales)._
+
 Le script `tools/initdata.py` permet de définir des données initiales à charger en base.
 
 Il peut être lancé comme suit :

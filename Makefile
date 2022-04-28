@@ -119,11 +119,17 @@ check-server: #- Run server code checks
 check-client: #- Run client code checks
 	cd client && npm run lint && npm run check
 
-install-ops: #- Install ops dependencies
+ops-install: #- Install ops dependencies
 	cd ops && make install
 
-provision: #- Provision environment
+ops-secrets: #- Edit environment secrets
+	cd ops && make secrets env=$(env)
+
+ops-provision: #- Provision environment
 	cd ops && make provision env=$(env)
 
-deploy: #- Deploy environment
+ops-deploy: #- Deploy environment
 	cd ops && make deploy env=$(env)
+
+ops-initdata: #- Run initdata in environment
+	cd ops && make initdata env=$(env)
