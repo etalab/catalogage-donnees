@@ -20,7 +20,7 @@
   import Select from "../Select/Select.svelte";
   import { toSelectOptions } from "src/lib/transformers/form";
   import { handleSelectChange } from "src/lib/util/form";
-  import { DropMaybe, Maybe, AddMaybe } from "$lib/util/maybe";
+  import { type DropMaybe, Maybe, type AddMaybe } from "$lib/util/maybe";
 
   export let submitLabel = "Publier ce jeu de données";
   export let loadingLabel = "Publication en cours...";
@@ -525,7 +525,10 @@
   </div>
 
   <div class="fr-input-group button--container fr-mb-6w">
-    <button type="submit" class="fr-btn fr-icon-upload-fill fr-btn--icon-right">
+    <button
+      type="submit"
+      class="fr-btn  fr-fi-upload-2-line fr-btn--icon-right"
+    >
       {saveBtnLabel}
     </button>
   </div>

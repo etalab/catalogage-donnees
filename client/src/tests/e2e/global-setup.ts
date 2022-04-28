@@ -1,4 +1,10 @@
-import { Browser, expect, firefox, FullConfig } from "@playwright/test";
+import {
+  expect,
+  firefox,
+  type FullConfig,
+  type Browser,
+} from "@playwright/test";
+
 import {
   ADMIN_EMAIL,
   STATE_AUTHENTICATED,
