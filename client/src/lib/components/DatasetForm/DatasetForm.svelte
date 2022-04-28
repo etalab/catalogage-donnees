@@ -166,206 +166,210 @@
   data-bitwarden-watching="1"
   aria-label="Informations sur le jeu de données"
 >
-  <h2 class="fr-mb-5w">Informations générales</h2>
+  <h2 id="information-generales" class="fr-mb-5w">Informations générales</h2>
 
-  <div
-    class="fr-input-group fr-mb-4w {$errors.title
-      ? 'fr-input-group--error'
-      : ''}"
-  >
-    <label class="fr-label" for="title">
-      Nom du jeu de la donnée
-      <RequiredMarker />
-      <span class="fr-hint-text" id="title-desc-hint">
-        Ce nom doit aller à l'essentiel et permettre d'indiquer en quelques mots
-        les informations que l'on peut y trouver.
-      </span>
-    </label>
-    <input
-      class="fr-input {$errors.title ? 'fr-input--error' : ''}"
-      aria-describedby={$errors.title ? "title-desc-error" : null}
-      type="text"
-      id="title"
-      name="title"
-      required
-      on:change={handleChange}
-      on:blur={handleChange}
-      bind:value={$form.title}
-    />
-    {#if $errors.title}
-      <p id="title-desc-error" class="fr-error-text">
-        {$errors.title}
-      </p>
-    {/if}
-  </div>
-
-  <div
-    class="fr-input-group fr-my-4w {$errors.description
-      ? 'fr-input-group--error'
-      : ''}"
-  >
-    <label class="fr-label" for="description">
-      Description du jeu de données
-      <RequiredMarker />
-      <span class="fr-hint-text" id="description-desc-hint">
-        Quel type de données sont contenues dans ce jeu de données ? Les
-        informations saisies ici seront utilisées par le moteur de recherche.
-      </span>
-    </label>
-    <textarea
-      class="fr-input {$errors.description ? 'fr-input--error' : ''}"
-      aria-describedby={$errors.description ? "description-desc-error" : null}
-      id="description"
-      name="description"
-      required
-      on:change={handleChange}
-      on:blur={handleChange}
-      bind:value={$form.description}
-    />
-    {#if $errors.description}
-      <p id="description-desc-error" class="fr-error-text">
-        {$errors.description}
-      </p>
-    {/if}
-  </div>
-
-  <div
-    class="fr-input-group fr-my-4w {$errors.service
-      ? 'fr-input-group--error'
-      : ''}"
-  >
-    <label class="fr-label" for="service">
-      Service producteur de la donnée
-      <RequiredMarker />
-    </label>
-    <input
-      class="fr-input {$errors.service ? 'fr-input--error' : ''}"
-      aria-describedby={$errors.service
-        ? "entrypoint-service-desc-error"
-        : null}
-      type="text"
-      id="service"
-      name="service"
-      required
-      on:change={handleChange}
-      on:blur={handleChange}
-      bind:value={$form.service}
-    />
-
-    {#if $errors.service}
-      <p id="title-desc-error" class="fr-error-text">
-        {$errors.service}
-      </p>
-    {/if}
-  </div>
-
-  <Select
-    options={toSelectOptions(GEOGRAPHICAL_COVERAGE_LABELS)}
-    id="geographicalCoverage"
-    name="geographicalCoverage"
-    hintText="Quelle est l'étendue de la zone couverte par votre jeu de données ?"
-    required
-    label="Couverture géographique"
-    placeholder="Sélectionnez une couverture géographique..."
-    bind:value={$form.geographicalCoverage}
-    on:change={(event) =>
-      handleSelectChange(
-        "geographicalCoverage",
-        event,
-        handleChange,
-        updateValidateField
-      )}
-    on:blur={(event) =>
-      handleSelectChange(
-        "geographicalCoverage",
-        event,
-        handleChange,
-        updateValidateField
-      )}
-    error={$errors.geographicalCoverage}
-  />
-
-  <h2 class="fr-mt-6w fr-mb-5w">Sources et formats</h2>
-
-  <fieldset
-    class="fr-fieldset {hasError($errors.dataFormats)
-      ? 'fr-fieldset--error'
-      : ''}"
-    aria-describedby={hasError($errors.dataFormats)
-      ? "dataformats-desc-error"
-      : null}
-    role="group"
-  >
-    <legend
-      class="fr-fieldset__legend fr-text--regular"
-      id="dataformats-hint-legend"
+  <div class="form--content fr-mb-8w">
+    <div
+      class="fr-input-group fr-mb-4w {$errors.title
+        ? 'fr-input-group--error'
+        : ''}"
     >
-      Format(s) des données
-      <RequiredMarker />
-      <span class="fr-hint-text" id="select-hint-dataformats-hint">
-        Sélectionnez ici les différents formats de données qu'un réutilisateur
-        potentiel pourrait exploiter.
-      </span>
-    </legend>
-    <div class="fr-fieldset__content">
-      {#each dataFormatChoices as { value, label }, index (value)}
-        {@const id = `dataformats-${value}`}
-        <div class="fr-checkbox-group">
-          <input
-            type="checkbox"
-            {id}
-            name="dataformats"
-            {value}
-            required={dataFormatsValue.every((checked) => !checked)}
-            checked={dataFormatsValue[index]}
-            on:blur={(event) => handleDataformatChange(event, index)}
-            on:change={(event) => handleDataformatChange(event, index)}
-          />
-          <label for={id}>
-            {label}
-          </label>
-        </div>
-      {/each}
+      <label class="fr-label" for="title">
+        Nom du jeu de la donnée
+        <RequiredMarker />
+        <span class="fr-hint-text" id="title-desc-hint">
+          Ce nom doit aller à l'essentiel et permettre d'indiquer en quelques
+          mots les informations que l'on peut y trouver.
+        </span>
+      </label>
+      <input
+        class="fr-input {$errors.title ? 'fr-input--error' : ''}"
+        aria-describedby={$errors.title ? "title-desc-error" : null}
+        type="text"
+        id="title"
+        name="title"
+        required
+        on:change={handleChange}
+        on:blur={handleChange}
+        bind:value={$form.title}
+      />
+      {#if $errors.title}
+        <p id="title-desc-error" class="fr-error-text">
+          {$errors.title}
+        </p>
+      {/if}
     </div>
-    {#if hasError($errors.dataFormats)}
-      <p id="dataformats-desc-error" class="fr-error-text">
-        {$errors.dataFormats}
-      </p>
-    {/if}
-  </fieldset>
 
-  <div
-    class="fr-input-group fr-my-4w {$errors.technicalSource
-      ? 'fr-input-group--error'
-      : ''}"
-  >
-    <label class="fr-label" for="technicalSource">
-      Système d'information source
-      <span class="fr-hint-text" id="technicalSource-desc-hint">
-        De quelle sources proviennent ces données ? Séparez leur nom par des “/”
-        lorsqu'il y en a plusieurs.
-      </span>
-    </label>
-    <input
-      class="fr-input {$errors.technicalSource ? 'fr-input--error' : ''}"
-      aria-describedby={$errors.technicalSource
-        ? "technicalSource-desc-error"
-        : null}
-      type="text"
-      id="technicalSource"
-      name="technicalSource"
-      on:change={handleChange}
-      on:blur={handleChange}
-      bind:value={$form.technicalSource}
+    <div
+      class="fr-input-group fr-my-4w {$errors.description
+        ? 'fr-input-group--error'
+        : ''}"
+    >
+      <label class="fr-label" for="description">
+        Description du jeu de données
+        <RequiredMarker />
+        <span class="fr-hint-text" id="description-desc-hint">
+          Quel type de données sont contenues dans ce jeu de données ? Les
+          informations saisies ici seront utilisées par le moteur de recherche.
+        </span>
+      </label>
+      <textarea
+        class="fr-input {$errors.description ? 'fr-input--error' : ''}"
+        aria-describedby={$errors.description ? "description-desc-error" : null}
+        id="description"
+        name="description"
+        required
+        on:change={handleChange}
+        on:blur={handleChange}
+        bind:value={$form.description}
+      />
+      {#if $errors.description}
+        <p id="description-desc-error" class="fr-error-text">
+          {$errors.description}
+        </p>
+      {/if}
+    </div>
+
+    <div
+      class="fr-input-group fr-my-4w {$errors.service
+        ? 'fr-input-group--error'
+        : ''}"
+    >
+      <label class="fr-label" for="service">
+        Service producteur de la donnée
+        <RequiredMarker />
+      </label>
+      <input
+        class="fr-input {$errors.service ? 'fr-input--error' : ''}"
+        aria-describedby={$errors.service
+          ? "entrypoint-service-desc-error"
+          : null}
+        type="text"
+        id="service"
+        name="service"
+        required
+        on:change={handleChange}
+        on:blur={handleChange}
+        bind:value={$form.service}
+      />
+
+      {#if $errors.service}
+        <p id="title-desc-error" class="fr-error-text">
+          {$errors.service}
+        </p>
+      {/if}
+    </div>
+
+    <Select
+      options={toSelectOptions(GEOGRAPHICAL_COVERAGE_LABELS)}
+      id="geographicalCoverage"
+      name="geographicalCoverage"
+      hintText="Quelle est l'étendue de la zone couverte par votre jeu de données ?"
+      required
+      label="Couverture géographique"
+      placeholder="Sélectionnez une couverture géographique..."
+      bind:value={$form.geographicalCoverage}
+      on:change={(event) =>
+        handleSelectChange(
+          "geographicalCoverage",
+          event,
+          handleChange,
+          updateValidateField
+        )}
+      on:blur={(event) =>
+        handleSelectChange(
+          "geographicalCoverage",
+          event,
+          handleChange,
+          updateValidateField
+        )}
+      error={$errors.geographicalCoverage}
     />
-    {#if $errors.technicalSource}
-      <p id="technicalSource-desc-error" class="fr-error-text">
-        {$errors.technicalSource}
-      </p>
-    {/if}
   </div>
 
-  <h2 class="fr-mt-6w fr-mb-5w">Contacts</h2>
+  <h2 id="source-formats" class="fr-mt-6w fr-mb-5w">Sources et formats</h2>
+
+  <div class="form--content fr-mb-8w">
+    <fieldset
+      class="fr-fieldset {hasError($errors.dataFormats)
+        ? 'fr-fieldset--error'
+        : ''}"
+      aria-describedby={hasError($errors.dataFormats)
+        ? "dataformats-desc-error"
+        : null}
+      role="group"
+    >
+      <legend
+        class="fr-fieldset__legend fr-text--regular"
+        id="dataformats-hint-legend"
+      >
+        Format(s) des données
+        <RequiredMarker />
+        <span class="fr-hint-text" id="select-hint-dataformats-hint">
+          Sélectionnez ici les différents formats de données qu'un réutilisateur
+          potentiel pourrait exploiter.
+        </span>
+      </legend>
+      <div class="fr-fieldset__content">
+        {#each dataFormatChoices as { value, label }, index (value)}
+          {@const id = `dataformats-${value}`}
+          <div class="fr-checkbox-group">
+            <input
+              type="checkbox"
+              {id}
+              name="dataformats"
+              {value}
+              required={dataFormatsValue.every((checked) => !checked)}
+              checked={dataFormatsValue[index]}
+              on:blur={(event) => handleDataformatChange(event, index)}
+              on:change={(event) => handleDataformatChange(event, index)}
+            />
+            <label for={id}>
+              {label}
+            </label>
+          </div>
+        {/each}
+      </div>
+      {#if hasError($errors.dataFormats)}
+        <p id="dataformats-desc-error" class="fr-error-text">
+          {$errors.dataFormats}
+        </p>
+      {/if}
+    </fieldset>
+
+    <div
+      class="fr-input-group fr-my-4w {$errors.technicalSource
+        ? 'fr-input-group--error'
+        : ''}"
+    >
+      <label class="fr-label" for="technicalSource">
+        Système d'information source
+        <span class="fr-hint-text" id="technicalSource-desc-hint">
+          De quelle sources proviennent ces données ? Séparez leur nom par des
+          “/” lorsqu'il y en a plusieurs.
+        </span>
+      </label>
+      <input
+        class="fr-input {$errors.technicalSource ? 'fr-input--error' : ''}"
+        aria-describedby={$errors.technicalSource
+          ? "technicalSource-desc-error"
+          : null}
+        type="text"
+        id="technicalSource"
+        name="technicalSource"
+        on:change={handleChange}
+        on:blur={handleChange}
+        bind:value={$form.technicalSource}
+      />
+      {#if $errors.technicalSource}
+        <p id="technicalSource-desc-error" class="fr-error-text">
+          {$errors.technicalSource}
+        </p>
+      {/if}
+    </div>
+  </div>
+
+  <h2 id="contacts" class="fr-mt-6w fr-mb-5w">Contacts</h2>
 
   <p class="fr-mb-6w">
     Dans un soucis de traçabilité et de facilité de mise à jour, il est
@@ -374,48 +378,50 @@
     l'ensemble des adresses e-mail saisies recevront la notification.
   </p>
 
-  <div
-    class="fr-input-group fr-my-4w {$errors.entrypointEmail
-      ? 'fr-input-group--error'
-      : ''}"
-  >
-    <label class="fr-label" for="entrypointEmail">
-      Adresse e-mail fonctionnelle
-      <RequiredMarker />
-      <span class="fr-hint-text" id="entrypointEmail-desc-hint">
-        Il est fortement conseillé d'avoir une adresse e-mail accessible à
-        plusieurs personnes afin de rendre la prise de contact possible quelle
-        que soit les personnes en responsabilité.
-      </span>
-    </label>
-    <input
-      class="fr-input {$errors.entrypointEmail ? 'fr-input--error' : ''}"
-      aria-describedby={$errors.entrypointEmail
-        ? "entrypointEmail-desc-error"
-        : null}
-      type="email"
-      id="entrypointEmail"
-      name="entrypointEmail"
-      required
-      on:change={handleChange}
+  <div class="form--content fr-mb-8w">
+    <div
+      class="fr-input-group fr-my-4w {$errors.entrypointEmail
+        ? 'fr-input-group--error'
+        : ''}"
+    >
+      <label class="fr-label" for="entrypointEmail">
+        Adresse e-mail fonctionnelle
+        <RequiredMarker />
+        <span class="fr-hint-text" id="entrypointEmail-desc-hint">
+          Il est fortement conseillé d'avoir une adresse e-mail accessible à
+          plusieurs personnes afin de rendre la prise de contact possible quelle
+          que soit les personnes en responsabilité.
+        </span>
+      </label>
+      <input
+        class="fr-input {$errors.entrypointEmail ? 'fr-input--error' : ''}"
+        aria-describedby={$errors.entrypointEmail
+          ? "entrypointEmail-desc-error"
+          : null}
+        type="email"
+        id="entrypointEmail"
+        name="entrypointEmail"
+        required
+        on:change={handleChange}
+        on:blur={handleChange}
+        bind:value={$form.entrypointEmail}
+      />
+      {#if $errors.entrypointEmail}
+        <p id="entrypoint-email-desc-error" class="fr-error-text">
+          {$errors.entrypointEmail}
+        </p>
+      {/if}
+    </div>
+
+    <ContactEmailsField
+      bind:errors={emailErrors}
+      bind:contactEmails={$form.contactEmails}
       on:blur={handleChange}
-      bind:value={$form.entrypointEmail}
+      on:change={handleChange}
     />
-    {#if $errors.entrypointEmail}
-      <p id="entrypoint-email-desc-error" class="fr-error-text">
-        {$errors.entrypointEmail}
-      </p>
-    {/if}
   </div>
 
-  <ContactEmailsField
-    bind:errors={emailErrors}
-    bind:contactEmails={$form.contactEmails}
-    on:blur={handleChange}
-    on:change={handleChange}
-  />
-
-  <h2 class="fr-mt-6w fr-mb-5w">Mise à jour</h2>
+  <h2 id="mise-a-jour" class="fr-mt-6w fr-mb-5w">Mise à jour</h2>
 
   <p class="fr-mb-5w">
     A moins qu'il ne soit une production ponctuelle, un jeu de donnée n'est
@@ -424,96 +430,102 @@
     jour.
   </p>
 
-  <div
-    class="fr-input-group fr-my-4w {$errors.lastUpdatedAt
-      ? 'fr-input-group--error'
-      : ''}"
-  >
-    <label class="fr-label" for="lastUpdatedAt">
-      Date de la dernière mise à jour (JJ / MM / AAAA)
-    </label>
+  <div class="form--content fr-mb-8w">
+    <div
+      class="fr-input-group fr-my-4w {$errors.lastUpdatedAt
+        ? 'fr-input-group--error'
+        : ''}"
+    >
+      <label class="fr-label" for="lastUpdatedAt">
+        Date de la dernière mise à jour (JJ / MM / AAAA)
+      </label>
 
-    <div class="fr-input-wrap fr-fi-calendar-line">
+      <div class="fr-input-wrap fr-fi-calendar-line">
+        <input
+          class="fr-input {$errors.lastUpdatedAt ? 'fr-input--error' : ''}"
+          aria-describedby={$errors.lastUpdatedAt
+            ? "entrypoint-service-desc-error"
+            : null}
+          type="date"
+          id="lastUpdatedAt"
+          name="lastUpdatedAt"
+          on:change={handleLastUpdatedAtChange}
+          on:blur={handleLastUpdatedAtChange}
+          bind:value={$form.lastUpdatedAt}
+        />
+
+        {#if $errors.lastUpdatedAt}
+          <p id="title-desc-error" class="fr-error-text">
+            {$errors.lastUpdatedAt}
+          </p>
+        {/if}
+      </div>
+    </div>
+
+    <Select
+      options={toSelectOptions(UPDATE_FREQUENCY_LABELS)}
+      id="updateFrequency"
+      name="updateFrequency"
+      placeholder="Sélectionner une option"
+      label="Fréquence de mise à jour"
+      bind:value={$form.updateFrequency}
+      on:change={(event) =>
+        handleSelectChange(
+          "updateFrequency",
+          event,
+          handleChange,
+          updateValidateField
+        )}
+      on:blur={(event) =>
+        handleSelectChange(
+          "updateFrequency",
+          event,
+          handleChange,
+          updateValidateField
+        )}
+      error={$errors.updateFrequency}
+    />
+  </div>
+
+  <h2 id="ouverture" class="fr-mt-6w fr-mb-5w">Ouverture</h2>
+
+  <div class="form--content fr-mb-8w">
+    <div
+      class="fr-input-group fr-my-4w"
+      class:fr-input-group--error={$errors.publishedUrl}
+    >
+      <label class="fr-label" for="publishedUrl">
+        Page open data
+        <span class="fr-hint-text" id="publishedUrl-desc-hint">
+          Si le jeu de données est publié en open data, saisissez ici le lien de
+          la page web associée.
+        </span>
+      </label>
+
       <input
-        class="fr-input {$errors.lastUpdatedAt ? 'fr-input--error' : ''}"
-        aria-describedby={$errors.lastUpdatedAt
-          ? "entrypoint-service-desc-error"
+        class="fr-input"
+        class:fr-input--error={$errors.lastUpdatedAt}
+        aria-describedby={$errors.publishedUrl
+          ? "publishedUrl-desc-error"
           : null}
-        type="date"
-        id="lastUpdatedAt"
-        name="lastUpdatedAt"
-        on:change={handleLastUpdatedAtChange}
-        on:blur={handleLastUpdatedAtChange}
-        bind:value={$form.lastUpdatedAt}
+        type="text"
+        id="publishedUrl"
+        name="publishedUrl"
+        on:change={handleChange}
+        on:blur={handleChange}
+        bind:value={$form.publishedUrl}
       />
 
-      {#if $errors.lastUpdatedAt}
-        <p id="title-desc-error" class="fr-error-text">
-          {$errors.lastUpdatedAt}
+      {#if $errors.publishedUrl}
+        <p id="publishedUrl-desc-error" class="fr-error-text">
+          {$errors.publishedUrl}
         </p>
       {/if}
     </div>
   </div>
 
-  <Select
-    options={toSelectOptions(UPDATE_FREQUENCY_LABELS)}
-    id="updateFrequency"
-    name="updateFrequency"
-    placeholder="Sélectionner une option"
-    label="Fréquence de mise à jour"
-    bind:value={$form.updateFrequency}
-    on:change={(event) =>
-      handleSelectChange(
-        "updateFrequency",
-        event,
-        handleChange,
-        updateValidateField
-      )}
-    on:blur={(event) =>
-      handleSelectChange(
-        "updateFrequency",
-        event,
-        handleChange,
-        updateValidateField
-      )}
-    error={$errors.updateFrequency}
-  />
-
-  <h2 class="fr-mt-6w fr-mb-5w">Ouverture</h2>
-
-  <div
-    class="fr-input-group fr-my-4w"
-    class:fr-input-group--error={$errors.publishedUrl}
-  >
-    <label class="fr-label" for="publishedUrl">
-      Page open data
-      <span class="fr-hint-text" id="publishedUrl-desc-hint">
-        Si le jeu de données est publié en open data, saisissez ici le lien de
-        la page web associée.
-      </span>
-    </label>
-
-    <input
-      class="fr-input"
-      class:fr-input--error={$errors.lastUpdatedAt}
-      aria-describedby={$errors.publishedUrl ? "publishedUrl-desc-error" : null}
-      type="text"
-      id="publishedUrl"
-      name="publishedUrl"
-      on:change={handleChange}
-      on:blur={handleChange}
-      bind:value={$form.publishedUrl}
-    />
-
-    {#if $errors.publishedUrl}
-      <p id="publishedUrl-desc-error" class="fr-error-text">
-        {$errors.publishedUrl}
-      </p>
-    {/if}
-  </div>
-
-  <div class="fr-input-group fr-mt-8w">
-    <button type="submit" class="fr-btn">
+  <div class="fr-input-group button--container fr-mb-6w">
+    <button type="submit" class="fr-btn fr-icon-upload-fill fr-btn--icon-right">
       {saveBtnLabel}
     </button>
   </div>
@@ -522,5 +534,16 @@
 <style>
   textarea {
     resize: vertical;
+  }
+
+  .button--container {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .form--content {
+    width: 80%;
+    padding: auto;
+    margin: auto;
   }
 </style>
