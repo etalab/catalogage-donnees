@@ -150,6 +150,14 @@
     return typeof error === "string" && Boolean(error);
   };
 
+  // the tag error returned by could be a string or an object with the same shape of Tag
+  const hasTagsError = (error: string | Tag[]) => {
+    return (
+      (error as unknown as string[]).length > 0 ||
+      (typeof error == "string" && error !== "")
+    );
+  };
+
   const handleDataformatChange = (event: Event, index: number) => {
     const { checked } = event.target as HTMLInputElement;
     dataFormatsValue[index] = checked;
