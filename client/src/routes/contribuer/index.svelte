@@ -9,6 +9,7 @@
   import { apiToken } from "$lib/stores/auth";
   import DatasetForm from "$lib/components/DatasetForm/DatasetForm.svelte";
   import { createDataset } from "$lib/repositories/datasets";
+  import { Maybe } from "$lib/util/maybe";
 
   let loading = false;
 
@@ -22,7 +23,9 @@
         data: event.detail,
       });
 
-      await goto(paths.datasetDetail({ id: dataset.id }));
+      if (Maybe.Some(dataset)) {
+        await goto(paths.datasetDetail({ id: dataset.id }));
+      }
     } finally {
       loading = false;
     }

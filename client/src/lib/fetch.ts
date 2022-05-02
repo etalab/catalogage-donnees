@@ -1,5 +1,8 @@
 import { browser } from "$app/env";
 import { API_BROWSER_URL, API_SSR_URL } from "src/env";
+import type { Fetch } from "src/definitions/fetch";
+import type { Maybe } from "./util/maybe";
+import { pushApiError } from "./stores/errors";
 
 /**
  * Return the base API URL to be used for `fetch()` requests by the client.
@@ -88,3 +91,17 @@ const ensureHasOrigin = (origin: string, value: string) => {
 export const getHeaders = (apiToken?: string): [string, string][] => {
   return apiToken ? [["authorization", `Bearer ${apiToken}`]] : [];
 };
+
+export async function makeApiRequest(
+  fetch: Fetch,
+  request: Request
+): Promise<Maybe<Response>> {
+  const response = await fetch(request);
+
+  if (response.status >= 400) {
+    pushApiError(response);
+    return null;
+  }
+
+  return response;
+}

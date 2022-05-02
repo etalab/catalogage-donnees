@@ -19,10 +19,19 @@
   import svgFavicon from "@gouvfr/dsfr/dist/favicon/favicon.svg";
   import icoFavicon from "@gouvfr/dsfr/dist/favicon/favicon.ico";
   import manifest from "@gouvfr/dsfr/dist/favicon/manifest.webmanifest";
+  import LayoutProviders from "$lib/providers/LayoutProviders.svelte";
+  import { user } from "$lib/stores/auth";
+  import { checkLogin } from "$lib/repositories/auth";
+  import { Maybe } from "$lib/util/maybe";
 
   onMount(async () => {
     // Load the DSFR asynchronously, and only on the browser (not in SSR).
     await import("@gouvfr/dsfr/dist/dsfr/dsfr.module.min.js");
+
+    if (Maybe.Some($user)) {
+      // Ensure user session is still valid.
+      await checkLogin({ fetch, apiToken: $user.apiToken });
+    }
   });
 </script>
 
@@ -35,26 +44,28 @@
   <link rel="manifest" href={manifest} crossorigin="use-credentials" />
 </svelte:head>
 
-<div class="fr-skiplinks">
-  <nav class="fr-container" role="navigation" aria-label="Accès rapide">
-    <ul class="fr-skiplinks__list">
-      <li>
-        <a class="fr-nav__link" href="#contenu">Contenu</a>
-      </li>
-      <li>
-        <a class="fr-nav__link" href="#header-navigation">Menu</a>
-      </li>
-      <li>
-        <a class="fr-nav__link" href="#footer">Pied de page</a>
-      </li>
-    </ul>
-  </nav>
-</div>
+<LayoutProviders>
+  <div class="fr-skiplinks">
+    <nav class="fr-container" role="navigation" aria-label="Accès rapide">
+      <ul class="fr-skiplinks__list">
+        <li>
+          <a class="fr-nav__link" href="#contenu">Contenu</a>
+        </li>
+        <li>
+          <a class="fr-nav__link" href="#header-navigation">Menu</a>
+        </li>
+        <li>
+          <a class="fr-nav__link" href="#footer">Pied de page</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 
-<Header />
+  <Header />
 
-<main id="contenu" role="main">
-  <slot />
-</main>
+  <main id="contenu" role="main">
+    <slot />
+  </main>
 
-<Footer />
+  <Footer />
+</LayoutProviders>

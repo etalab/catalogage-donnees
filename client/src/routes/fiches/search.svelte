@@ -29,9 +29,10 @@
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import { pluralize } from "$lib/util/format";
   import { toQueryString } from "$lib/util/urls";
+  import { Maybe } from "$lib/util/maybe";
 
   export let q: string;
-  export let datasets: Dataset[];
+  export let datasets: Maybe<Dataset[]>;
 
   const updateSearch = (event: CustomEvent<string>) => {
     const q = event.detail;
@@ -45,17 +46,19 @@
   <title>Rechercher un jeu de données</title>
 </svelte:head>
 
-<section class="fr-container fr-mt-9w">
-  <div class="fr-col-6">
-    <h2>Rechercher un jeu de données</h2>
+{#if Maybe.Some(datasets)}
+  <section class="fr-container fr-mt-9w">
+    <div class="fr-col-6">
+      <h2>Rechercher un jeu de données</h2>
 
-    <SearchForm value={q} on:submit={updateSearch} />
-  </div>
+      <SearchForm value={q} on:submit={updateSearch} />
+    </div>
 
-  <h4 class="fr-mt-6w">
-    {datasets.length}
-    {pluralize(datasets.length, "résultat", "résultats")}
-  </h4>
+    <h4 class="fr-mt-6w">
+      {datasets.length}
+      {pluralize(datasets.length, "résultat", "résultats")}
+    </h4>
 
-  <DatasetList {datasets} />
-</section>
+    <DatasetList {datasets} />
+  </section>
+{/if}

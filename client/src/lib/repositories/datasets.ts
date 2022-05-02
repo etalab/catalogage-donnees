@@ -4,15 +4,16 @@ import type {
   DatasetUpdateData,
 } from "src/definitions/datasets";
 import type { Fetch } from "src/definitions/fetch";
-import { getHeaders, getApiUrl } from "$lib/fetch";
+import { getHeaders, getApiUrl, makeApiRequest } from "$lib/fetch";
 import { toQueryString } from "$lib/util/urls";
 import { toDataset, toPayload } from "$lib/transformers/dataset";
+import { Maybe } from "$lib/util/maybe";
 
 type GetDatasetByID = (opts: {
   fetch: Fetch;
   apiToken: string;
   id: string;
-}) => Promise<Dataset>;
+}) => Promise<Maybe<Dataset>>;
 
 export const getDatasetByID: GetDatasetByID = async ({
   fetch,
@@ -23,15 +24,19 @@ export const getDatasetByID: GetDatasetByID = async ({
   const request = new Request(url, {
     headers: new Headers(getHeaders(apiToken)),
   });
-  const response = await fetch(request);
-  return toDataset(await response.json());
+
+  const response = await makeApiRequest(fetch, request);
+
+  return Maybe.map(response, async (response) =>
+    toDataset(await response.json())
+  );
 };
 
 type GetDatasets = (opts: {
   fetch: Fetch;
   apiToken: string;
   q?: string;
-}) => Promise<Dataset[]>;
+}) => Promise<Maybe<Dataset[]>>;
 
 export const getDatasets: GetDatasets = async ({ fetch, apiToken, q }) => {
   const queryItems: [string, string][] = [];
@@ -43,16 +48,20 @@ export const getDatasets: GetDatasets = async ({ fetch, apiToken, q }) => {
   const request = new Request(url, {
     headers: new Headers(getHeaders(apiToken)),
   });
-  const response = await fetch(request);
-  const items: any[] = await response.json();
-  return items.map((item) => toDataset(item));
+
+  const response = await makeApiRequest(fetch, request);
+
+  return Maybe.map(response, async (response) => {
+    const items: any[] = await response.json();
+    return items.map((item) => toDataset(item));
+  });
 };
 
 type CreateDataset = (opts: {
   fetch: Fetch;
   apiToken: string;
   data: DatasetCreateData;
-}) => Promise<Dataset>;
+}) => Promise<Maybe<Dataset>>;
 
 export const createDataset: CreateDataset = async ({
   fetch,
@@ -69,8 +78,12 @@ export const createDataset: CreateDataset = async ({
     ]),
     body,
   });
-  const response = await fetch(request);
-  return toDataset(await response.json());
+
+  const response = await makeApiRequest(fetch, request);
+
+  return Maybe.map(response, async (response) =>
+    toDataset(await response.json())
+  );
 };
 
 type UpdateDataset = (opts: {
@@ -78,7 +91,7 @@ type UpdateDataset = (opts: {
   apiToken: string;
   id: string;
   data: DatasetUpdateData;
-}) => Promise<Dataset>;
+}) => Promise<Maybe<Dataset>>;
 
 export const updateDataset: UpdateDataset = async ({
   fetch,
@@ -96,8 +109,12 @@ export const updateDataset: UpdateDataset = async ({
     ]),
     body,
   });
-  const response = await fetch(request);
-  return toDataset(await response.json());
+
+  const response = await makeApiRequest(fetch, request);
+
+  return Maybe.map(response, async (response) =>
+    toDataset(await response.json())
+  );
 };
 
 type DeleteDataset = (opts: {
@@ -112,8 +129,5 @@ export const deleteDataset: DeleteDataset = async ({ fetch, apiToken, id }) => {
     method: "DELETE",
     headers: new Headers(getHeaders(apiToken)),
   });
-  const response = await fetch(request);
-  if (!response.ok) {
-    throw new Error(await response.text());
-  }
+  await makeApiRequest(fetch, request);
 };
