@@ -37,6 +37,7 @@
   on:search={handleSearch}
   {id}
   {name}
+  placeholder="Rechercher..."
   options={tags.map(transformTagToSelectOption)}
 />
 

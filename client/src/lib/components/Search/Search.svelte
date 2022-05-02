@@ -8,6 +8,7 @@
   export let name: string;
   export let id = `${name}-label`;
   export let options: Array<SelectOption> = [];
+  export let placeholder = "";
 
   let searchInput: HTMLInputElement;
 
@@ -29,6 +30,7 @@
   <input
     role="search"
     class="fr-select"
+    {placeholder}
     list={listName}
     {id}
     {name}
