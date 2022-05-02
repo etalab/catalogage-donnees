@@ -4,7 +4,7 @@
   export const load: ErrorLoad = ({ error, status }) => {
     return {
       props: {
-        title: `${status}: ${error.message}`,
+        title: `${status}: ${error ? error.message : "unknown error"}`,
       },
     };
   };

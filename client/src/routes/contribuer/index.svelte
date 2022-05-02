@@ -6,7 +6,7 @@
   import { goto } from "$app/navigation";
   import type { DatasetFormData } from "src/definitions/datasets";
   import paths from "$lib/paths";
-  import { user } from "$lib/stores/auth";
+  import { apiToken } from "$lib/stores/auth";
   import DatasetForm from "$lib/components/DatasetForm/DatasetForm.svelte";
   import { createDataset } from "$lib/repositories/datasets";
 
@@ -18,7 +18,7 @@
 
       const dataset = await createDataset({
         fetch,
-        apiToken: $user.apiToken,
+        apiToken: $apiToken,
         data: event.detail,
       });
 

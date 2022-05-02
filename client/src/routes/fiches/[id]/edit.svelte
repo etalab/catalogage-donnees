@@ -6,7 +6,7 @@
   export const load: Load = async ({ fetch, params }) => {
     const dataset = await getDatasetByID({
       fetch,
-      apiToken: get(user).apiToken,
+      apiToken: get(apiToken),
       id: params.id,
     });
 
@@ -24,7 +24,7 @@
   import type { Dataset, DatasetFormData } from "src/definitions/datasets";
   import DatasetForm from "$lib/components/DatasetForm/DatasetForm.svelte";
   import paths from "$lib/paths";
-  import { isAdmin, user } from "$lib/stores/auth";
+  import { isAdmin, apiToken } from "$lib/stores/auth";
   import { deleteDataset } from "$lib/repositories/datasets";
 
   export let dataset: Dataset;
@@ -37,7 +37,7 @@
       loading = true;
       await updateDataset({
         fetch,
-        apiToken: $user.apiToken,
+        apiToken: $apiToken,
         id,
         data: event.detail,
       });
@@ -56,7 +56,7 @@
       return;
     }
 
-    await deleteDataset({ fetch, apiToken: $user.apiToken, id: dataset.id });
+    await deleteDataset({ fetch, apiToken: $apiToken, id: dataset.id });
     await goto(paths.home);
   };
 </script>

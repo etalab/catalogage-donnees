@@ -20,19 +20,20 @@
   import Select from "../Select/Select.svelte";
   import { toSelectOptions } from "src/lib/transformers/form";
   import { handleSelectChange } from "src/lib/util/form";
+  import { DropMaybe, Maybe, AddMaybe } from "$lib/util/maybe";
 
   export let submitLabel = "Publier ce jeu de données";
   export let loadingLabel = "Publication en cours...";
   export let loading = false;
 
-  export let initial: DatasetFormData = {
+  export let initial: AddMaybe<DatasetFormData, "geographicalCoverage"> = {
     title: "",
     description: "",
     service: "",
     formats: [],
     entrypointEmail: "",
     contactEmails: [$user?.email || ""],
-    geographicalCoverage: null,
+    geographicalCoverage: null, // Allow select null option upon creation
     lastUpdatedAt: null,
     updateFrequency: null,
     technicalSource: "",
@@ -48,7 +49,7 @@
     dataFormats: boolean[];
     entrypointEmail: string;
     contactEmails: string[];
-    geographicalCoverage: GeographicalCoverage;
+    geographicalCoverage: Maybe<GeographicalCoverage>;
     lastUpdatedAt: string | null;
     updateFrequency: UpdateFrequency | null;
     technicalSource: string | null;
@@ -101,16 +102,21 @@
           ),
         lastUpdatedAt: yup.date().nullable(),
         updateFrequency: yup.string().nullable(),
-        geographicalCoverage: yup.string().required("Ce champs est requis"),
+        geographicalCoverage: yup
+          .string()
+          .nullable()
+          .required("Ce champs est requis"),
         technicalSource: yup.string().nullable(),
         publishedUrl: yup.string().nullable(),
       }),
-      onSubmit: (values) => {
+      onSubmit: (
+        values: DropMaybe<DatasetFormValues, "geographicalCoverage">
+      ) => {
         const formats = values.dataFormats
           .map((checked, index) =>
             checked ? dataFormatChoices[index].value : null
           )
-          .filter(Boolean);
+          .filter(Maybe.Some);
 
         const contactEmails = values.contactEmails.filter(Boolean);
 

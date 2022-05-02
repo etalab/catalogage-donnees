@@ -34,7 +34,7 @@ type GetDatasets = (opts: {
 }) => Promise<Dataset[]>;
 
 export const getDatasets: GetDatasets = async ({ fetch, apiToken, q }) => {
-  const queryItems = [];
+  const queryItems: [string, string][] = [];
   if (typeof q === "string") {
     queryItems.push(["q", q], ["highlight", "true"]);
   }

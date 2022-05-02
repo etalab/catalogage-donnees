@@ -1,8 +1,9 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { isLoggedIn, logout, user } from "$lib/stores/auth";
+  import { logout, user } from "$lib/stores/auth";
   import paths from "$lib/paths";
+  import { Maybe } from "$lib/util/maybe";
 
   type NavItem = {
     label: string;
@@ -70,7 +71,7 @@
         </div>
         <div class="fr-header__tools">
           <div class="fr-header__tools-links">
-            {#if $isLoggedIn}
+            {#if Maybe.Some($user)}
               <p>
                 {$user.email}
               </p>
@@ -113,7 +114,7 @@
 
       <div class="fr-header__menu-links" />
 
-      {#if $isLoggedIn}
+      {#if Maybe.Some($user)}
         <nav
           class="fr-nav"
           role="navigation"

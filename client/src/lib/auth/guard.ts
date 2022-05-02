@@ -1,7 +1,8 @@
 import { get } from "svelte/store";
 import type { LoadOutput } from "@sveltejs/kit";
-import { isLoggedIn } from "../stores/auth";
+import { user } from "../stores/auth";
 import { PUBLIC_PAGES } from "src/constants";
+import { Maybe } from "$lib/util/maybe";
 
 /**
  * Force-redirect to the login page if an unauthenticated user
@@ -12,7 +13,7 @@ export const authGuard = (url: URL): LoadOutput => {
     return {};
   }
 
-  if (get(isLoggedIn)) {
+  if (Maybe.Some(get(user))) {
     return {};
   }
 

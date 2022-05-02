@@ -11,7 +11,7 @@
   export let hintText = "";
   export let required = false;
   export let error = "";
-  export let value = "";
+  export let value: string | null = null;
 </script>
 
 <div class="fr-select-group" class:fr-select-group--error={error}>

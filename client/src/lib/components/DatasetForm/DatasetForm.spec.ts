@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 
 import DatasetForm from "./DatasetForm.svelte";
-import { render, fireEvent, waitFor } from "@testing-library/svelte";
+import { render, fireEvent } from "@testing-library/svelte";
 import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
 
 describe("Test the dataset form", () => {
@@ -200,11 +200,11 @@ describe("Test the dataset form", () => {
     await fireEvent.blur(lastUpdatedAt);
     await fireEvent.blur(updateFrequency);
 
-    let submittedValue: DatasetFormData;
-    component.$on("save", (event) => (submittedValue = event.detail));
     const form = getByRole("form");
     await fireEvent.submit(form);
-    await waitFor(() => expect(submittedValue).toBeDefined());
+    const submittedValue = await new Promise<DatasetFormData>((resolve) => {
+      component.$on("save", (event) => resolve(event.detail));
+    });
     expect(submittedValue.lastUpdatedAt).toBe(null);
     expect(submittedValue.updateFrequency).toBe(null);
     expect(submittedValue.publishedUrl).toBe(null);

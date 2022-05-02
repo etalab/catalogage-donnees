@@ -2,14 +2,14 @@
   import type { Load } from "@sveltejs/kit";
   import { get } from "svelte/store";
   import { getDatasets } from "$lib/repositories/datasets";
-  import { user } from "$lib/stores/auth";
+  import { apiToken } from "$lib/stores/auth";
 
   export const load: Load = async ({ fetch, url }) => {
     const q = url.searchParams.get("q") || "";
 
     const datasets = await getDatasets({
       fetch,
-      apiToken: get(user).apiToken,
+      apiToken: get(apiToken),
       q,
     });
 
