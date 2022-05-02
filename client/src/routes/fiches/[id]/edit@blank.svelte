@@ -2,8 +2,15 @@
   import type { Load } from "@sveltejs/kit";
   import { get } from "svelte/store";
   import { getDatasetByID, updateDataset } from "$lib/repositories/datasets";
+  import type { Tag } from "src/definitions/tag";
+  import { getTags } from "src/lib/repositories/tags";
 
   export const load: Load = async ({ fetch, params }) => {
+    const tags = await getTags({
+      fetch,
+      apiToken: get(apiToken),
+    });
+
     const dataset = await getDatasetByID({
       fetch,
       apiToken: get(apiToken),
@@ -13,6 +20,7 @@
     return {
       props: {
         dataset,
+        tags,
       },
     };
   };
@@ -29,6 +37,7 @@
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
 
   export let dataset: Maybe<Dataset>;
+  export let tags: Tag[];
 
   let loading = false;
 
@@ -37,6 +46,8 @@
       return;
     }
 
+    const tagIds = event.detail.tags.map((item) => item.id);
+
     try {
       loading = true;
 
@@ -44,7 +55,7 @@
         fetch,
         apiToken: $apiToken,
         id: dataset.id,
-        data: event.detail,
+        data: { ...event.detail, tagIds },
       });
 
       if (Maybe.Some(updatedDataset)) {
@@ -73,7 +84,7 @@
   };
 </script>
 
-{#if Maybe.Some(dataset)}
+{#if Maybe.Some(dataset) && Maybe.Some(tags)}
   <header class="fr-m-4w">
     <h5>Modifier le jeu de donnée</h5>
 
@@ -88,6 +99,7 @@
   </header>
   <DatasetFormLayout>
     <DatasetForm
+      {tags}
       initial={dataset}
       {loading}
       submitLabel="Modifier ce jeu de données"

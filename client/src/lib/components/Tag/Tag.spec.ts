@@ -1,7 +1,8 @@
 import "@testing-library/jest-dom";
 
-import Tag from "./Tag.svelte";
 import { render, fireEvent } from "@testing-library/svelte";
+import type { Tag as TagType } from "src/definitions/tag";
+import Tag from "./Tag.svelte";
 
 describe("Tag component", () => {
   test("A tag should have a name", async () => {
@@ -22,7 +23,10 @@ describe("Tag component", () => {
     });
     const button = getByText(buttonText);
 
-    let tag: Tag;
+    let tag: TagType = {
+      name: "",
+      id: "",
+    };
 
     component.$on("click", (event) => {
       tag = event.detail;

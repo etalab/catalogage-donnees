@@ -21,7 +21,10 @@ describe("Test the Search", () => {
       ],
     });
 
-    let option: SelectOption;
+    let option: SelectOption = {
+      label: "",
+      value: "",
+    };
 
     component.$on("search", (e: CustomEvent<SelectOption>) => {
       option = e.detail;
@@ -54,7 +57,10 @@ describe("Test the Search", () => {
       ],
     });
 
-    let option: SelectOption;
+    let option: SelectOption = {
+      label: "",
+      value: "",
+    };
 
     component.$on("search", (e: CustomEvent<SelectOption>) => {
       option = e.detail;
@@ -68,6 +74,6 @@ describe("Test the Search", () => {
       },
     });
 
-    expect(option).toBe(undefined);
+    expect(option).toEqual(option);
   });
 });
