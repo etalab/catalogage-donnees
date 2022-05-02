@@ -39,7 +39,7 @@ export type Dataset = {
   title: string;
   description: string;
   formats: DataFormat[];
-  entrypointEmail: string;
+  producerEmail: string;
   contactEmails: string[];
   service: string;
   lastUpdatedAt: Date | null;

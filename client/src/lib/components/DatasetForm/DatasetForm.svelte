@@ -31,7 +31,7 @@
     description: "",
     service: "",
     formats: [],
-    entrypointEmail: "",
+    producerEmail: "",
     contactEmails: [$user?.email || ""],
     geographicalCoverage: null, // Allow select null option upon creation
     lastUpdatedAt: null,
@@ -47,7 +47,7 @@
     description: string;
     service: string;
     dataFormats: boolean[];
-    entrypointEmail: string;
+    producerEmail: string;
     contactEmails: string[];
     geographicalCoverage: Maybe<GeographicalCoverage>;
     lastUpdatedAt: string | null;
@@ -67,7 +67,7 @@
     dataFormats: dataFormatChoices.map(
       ({ value }) => !!initial.formats.find((v) => v === value)
     ),
-    entrypointEmail: initial.entrypointEmail,
+    producerEmail: initial.producerEmail,
     contactEmails: initial.contactEmails,
     lastUpdatedAt: initial.lastUpdatedAt
       ? formatHTMLDate(initial.lastUpdatedAt)
@@ -89,7 +89,7 @@
         description: yup.string().required("Ce champs est requis"),
         service: yup.string().required("Ce champs est requis"),
         dataFormats: yup.array(yup.boolean()).length(dataFormatsValue.length),
-        entrypointEmail: yup
+        producerEmail: yup
           .string()
           .email("Ce champ doit contenir une adresse e-mail valide")
           .required("Ce champs est requis"),
@@ -380,35 +380,35 @@
 
   <div class="form--content fr-mb-8w">
     <div
-      class="fr-input-group fr-my-4w {$errors.entrypointEmail
+      class="fr-input-group fr-my-4w {$errors.producerEmail
         ? 'fr-input-group--error'
         : ''}"
     >
-      <label class="fr-label" for="entrypointEmail">
+      <label class="fr-label" for="producerEmail">
         Adresse e-mail fonctionnelle
         <RequiredMarker />
-        <span class="fr-hint-text" id="entrypointEmail-desc-hint">
+        <span class="fr-hint-text" id="producerEmail-desc-hint">
           Il est fortement conseillé d'avoir une adresse e-mail accessible à
           plusieurs personnes afin de rendre la prise de contact possible quelle
           que soit les personnes en responsabilité.
         </span>
       </label>
       <input
-        class="fr-input {$errors.entrypointEmail ? 'fr-input--error' : ''}"
-        aria-describedby={$errors.entrypointEmail
-          ? "entrypointEmail-desc-error"
+        class="fr-input {$errors.producerEmail ? 'fr-input--error' : ''}"
+        aria-describedby={$errors.producerEmail
+          ? "producerEmail-desc-error"
           : null}
         type="email"
-        id="entrypointEmail"
-        name="entrypointEmail"
+        id="producerEmail"
+        name="producerEmail"
         required
         on:change={handleChange}
         on:blur={handleChange}
-        bind:value={$form.entrypointEmail}
+        bind:value={$form.producerEmail}
       />
-      {#if $errors.entrypointEmail}
+      {#if $errors.producerEmail}
         <p id="entrypoint-email-desc-error" class="fr-error-text">
-          {$errors.entrypointEmail}
+          {$errors.producerEmail}
         </p>
       {/if}
     </div>

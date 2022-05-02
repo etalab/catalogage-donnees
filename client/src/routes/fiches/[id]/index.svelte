@@ -69,7 +69,7 @@
           <a
             class="fr-btn fr-btn--secondary fr-fi-mail-line"
             title="Contacter le producter du jeu de données par email"
-            href="mailto:{dataset.entrypointEmail}"
+            href="mailto:{dataset.producerEmail}"
           >
             Contacter le producteur
           </a>

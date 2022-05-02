@@ -104,6 +104,7 @@ def make_entity(instance: DatasetModel) -> Dataset:
     kwargs = {
         "catalog_record": make_catalog_record_entity(instance.catalog_record),
         "formats": [fmt.name for fmt in instance.formats],
+        "producer_email": instance.entrypoint_email,
     }
 
     kwargs.update(
@@ -121,19 +122,26 @@ def make_instance(
     formats: List[DataFormatModel],
 ) -> DatasetModel:
     return DatasetModel(
-        **entity.dict(exclude={"catalog_record", "formats"}),
+        **entity.dict(exclude={"catalog_record", "formats", "producer_email"}),
         catalog_record=catalog_record,
         formats=formats,
+        entrypoint_email=entity.producer_email,
     )
 
 
 def update_instance(
     instance: DatasetModel, entity: Dataset, formats: List[DataFormatModel]
 ) -> None:
-    for field in set(Dataset.__fields__) - {"id", "catalog_record", "formats"}:
+    for field in set(Dataset.__fields__) - {
+        "id",
+        "catalog_record",
+        "formats",
+        "producer_email",
+    }:
         setattr(instance, field, getattr(entity, field))
 
     instance.formats = formats
+    instance.entrypoint_email = entity.producer_email
 
 
 class SqlDatasetRepository(DatasetRepository):

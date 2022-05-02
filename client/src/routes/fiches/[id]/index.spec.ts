@@ -9,7 +9,7 @@ const dataset = getFakeDataset({
   title: "foo",
   description: "bar baz crux",
   formats: ["other"],
-  entrypointEmail: "service@mydomain.org",
+  producerEmail: "service@mydomain.org",
   contactEmails: ["service@mydomain.org"],
 });
 
@@ -32,7 +32,7 @@ describe("Dataset detail page action buttons", () => {
     const contactButton = getByText("Contacter le producteur");
     expect(contactButton).toBeInTheDocument();
     expect(contactButton.getAttribute("href")).toContain(
-      dataset.entrypointEmail
+      dataset.producerEmail
     );
   });
 });

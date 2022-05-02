@@ -11,7 +11,7 @@ test.describe("Basic form submission", () => {
   test("Visits the contribution page", async ({ page }) => {
     const titleText = "Un nom de jeu de données";
     const descriptionText = "Une longue\ndescription de jeu\nde données";
-    const entrypointEmailText = "un.service@exemple.gouv.fr";
+    const producerEmailText = "un.service@exemple.gouv.fr";
     const contactEmail1Text = "contact1@mydomain.org";
     const contactEmail2Text = "contact2@mydomain.org";
     const lastUpdatedAtDate = "2000-05-05";
@@ -52,9 +52,9 @@ test.describe("Basic form submission", () => {
     await service.fill(serviceText);
     expect(await service.inputValue()).toBe(serviceText);
 
-    const entrypointEmail = page.locator("label[for=entrypointEmail]");
-    await entrypointEmail.fill(entrypointEmailText);
-    expect(await entrypointEmail.inputValue()).toBe(entrypointEmailText);
+    const producerEmail = page.locator("label[for=producerEmail]");
+    await producerEmail.fill(producerEmailText);
+    expect(await producerEmail.inputValue()).toBe(producerEmailText);
 
     const contactEmail1 = page.locator("[id='contactEmails-0']");
     await contactEmail1.fill(contactEmail1Text);
@@ -95,7 +95,7 @@ test.describe("Basic form submission", () => {
     expect(json.description).toBe(descriptionText);
     expect(json.geographical_coverage).toBe("europe");
     expect(json.formats).toStrictEqual(["api"]);
-    expect(json.entrypoint_email).toBe(entrypointEmailText);
+    expect(json.producer_email).toBe(producerEmailText);
     expect(json.contact_emails).toEqual([contactEmail1Text, contactEmail2Text]);
     expect(json).toHaveProperty("id");
     expect(json.technical_source).toBe(technicalSourceText);

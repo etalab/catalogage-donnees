@@ -57,12 +57,12 @@ describe("Test the dataset form", () => {
 
   test('The "entrypoint email" field is present', () => {
     const { getByLabelText } = render(DatasetForm);
-    const entrypointEmail = getByLabelText("Adresse e-mail fonctionnelle", {
+    const producerEmail = getByLabelText("Adresse e-mail fonctionnelle", {
       exact: false,
     });
-    expect(entrypointEmail).toBeInTheDocument();
-    expect(entrypointEmail).toBeRequired();
-    expect(entrypointEmail).toHaveAttribute("type", "email");
+    expect(producerEmail).toBeInTheDocument();
+    expect(producerEmail).toBeRequired();
+    expect(producerEmail).toHaveAttribute("type", "email");
   });
 
   test('The "contact emails" field is present', () => {
@@ -102,7 +102,7 @@ describe("Test the dataset form", () => {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
-      entrypointEmail: "service.initial@mydomain.org",
+      producerEmail: "service.initial@mydomain.org",
       contactEmails: ["person@mydomain.org"],
       service: "A nice service",
       lastUpdatedAt: new Date("2022-02-01"),
@@ -137,10 +137,10 @@ describe("Test the dataset form", () => {
     expect(getFormatCheckbox("website")).toBeChecked();
     expect(getFormatCheckbox("other")).not.toBeChecked();
 
-    const entrypointEmail = getByLabelText("Adresse e-mail fonctionnelle", {
+    const producerEmail = getByLabelText("Adresse e-mail fonctionnelle", {
       exact: false,
     }) as HTMLInputElement;
-    expect(entrypointEmail.value).toBe("service.initial@mydomain.org");
+    expect(producerEmail.value).toBe("service.initial@mydomain.org");
 
     const contactEmails = getAllByLabelText(/Contact \d/);
     expect(contactEmails.length).toBe(1);
@@ -172,7 +172,7 @@ describe("Test the dataset form", () => {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
-      entrypointEmail: "service.initial@mydomain.org",
+      producerEmail: "service.initial@mydomain.org",
       contactEmails: ["person@mydomain.org"],
       service: "A nice service",
       lastUpdatedAt: null,

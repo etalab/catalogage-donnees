@@ -36,7 +36,7 @@ from ..helpers import TestUser, approx_datetime
                     "type": "value_error.missing",
                 },
                 {"loc": ["body", "formats"], "type": "value_error.missing"},
-                {"loc": ["body", "entrypoint_email"], "type": "value_error.missing"},
+                {"loc": ["body", "producer_email"], "type": "value_error.missing"},
             ],
             id="missing-fields",
         ),
@@ -47,7 +47,7 @@ from ..helpers import TestUser, approx_datetime
                 "service": "Service",
                 "geographical_coverage": "national",
                 "formats": [],
-                "entrypoint_email": "service@mydomain.org",
+                "producer_email": "service@mydomain.org",
             },
             [
                 {
@@ -85,7 +85,7 @@ CREATE_DATASET_PAYLOAD = {
     "geographical_coverage": "national",
     "formats": ["website"],
     "technical_source": "Example database",
-    "entrypoint_email": "example.service@mydomain.org",
+    "producer_email": "example.service@mydomain.org",
     "contact_emails": ["example.person@mydomain.org"],
     "update_frequency": "weekly",
     "last_updated_at": known_date.isoformat(),
@@ -98,7 +98,7 @@ CREATE_ANY_DATASET = CreateDataset(
     service="Example service",
     geographical_coverage=GeographicalCoverage.NATIONAL,
     formats=[DataFormat.WEBSITE, DataFormat.API],
-    entrypoint_email="service@mydomain.org",
+    producer_email="service@mydomain.org",
 )
 
 
@@ -132,7 +132,7 @@ async def test_dataset_crud(
         "geographical_coverage": "national",
         "formats": ["website"],
         "technical_source": "Example database",
-        "entrypoint_email": "example.service@mydomain.org",
+        "producer_email": "example.service@mydomain.org",
         "contact_emails": ["example.person@mydomain.org"],
         "update_frequency": "weekly",
         "last_updated_at": known_date.isoformat(),
@@ -293,7 +293,7 @@ class TestDatasetUpdate:
             "geographical_coverage",
             "formats",
             "technical_source",
-            "entrypoint_email",
+            "producer_email",
             "contact_emails",
             "update_frequency",
             "last_updated_at",
@@ -319,7 +319,7 @@ class TestDatasetUpdate:
                 "service": "",
                 "formats": [],
                 "geographical_coverage": "national",
-                "entrypoint_email": "service@mydomain.org",
+                "producer_email": "service@mydomain.org",
                 "technical_source": "",
                 "contact_emails": [],
                 "update_frequency": "weekly",
@@ -368,7 +368,7 @@ class TestDatasetUpdate:
                 "geographical_coverage": "region",
                 "formats": ["database"],
                 "technical_source": "Other information system",
-                "entrypoint_email": "other.service@mydomain.org",
+                "producer_email": "other.service@mydomain.org",
                 "contact_emails": ["other.person@mydomain.org"],
                 "update_frequency": "weekly",
                 "last_updated_at": other_known_date.isoformat(),
@@ -389,7 +389,7 @@ class TestDatasetUpdate:
             "geographical_coverage": "region",
             "formats": ["database"],
             "technical_source": "Other information system",
-            "entrypoint_email": "other.service@mydomain.org",
+            "producer_email": "other.service@mydomain.org",
             "contact_emails": ["other.person@mydomain.org"],
             "update_frequency": "weekly",
             "last_updated_at": other_known_date.isoformat(),
@@ -405,7 +405,7 @@ class TestDatasetUpdate:
         assert dataset.geographical_coverage == GeographicalCoverage.REGION
         assert dataset.formats == [DataFormat.DATABASE]
         assert dataset.technical_source == "Other information system"
-        assert dataset.entrypoint_email == "other.service@mydomain.org"
+        assert dataset.producer_email == "other.service@mydomain.org"
         assert dataset.contact_emails == ["other.person@mydomain.org"]
         assert dataset.update_frequency == UpdateFrequency.WEEKLY
         assert dataset.last_updated_at == other_known_date
