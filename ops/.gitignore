@@ -1,5 +1,5 @@
 ansible/vault-password
 ansible/environments/test
 
-run/
+run/*
 !run/.gitkeep
