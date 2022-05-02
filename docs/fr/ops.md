@@ -57,7 +57,7 @@ Par ailleurs :
 Installez les dépendances supplémentaires pour interagir avec les outils d'infrastructure :
 
 ```
-make install-ops
+make ops-install
 ```
 
 Placez le mot de passe de déploiement dans :
@@ -74,6 +74,8 @@ Vérifiez ensuite votre configuration avec :
 cd ops && make ping env=staging
 ```
 
+Vous devriez recevoir un "pong".
+
 ## Usage
 
 ### Déployer
@@ -81,19 +83,19 @@ cd ops && make ping env=staging
 Pour déployer l'environnement `<ENV>`, lancez :
 
 ```
-make deploy env=<ENV>
+make ops-deploy env=<ENV>
 ```
 
 Exemple :
 
 ```
-make deploy env=staging
+make ops-deploy env=staging
 ```
 
 Si vous souhaitez déployer depuis une branche (dans le cadre d'une _pull request_, par exemple), utilisez :
 
 ```
-make deploy env=<ENV> extra_opts="-e git_version=<BRANCH>"
+make ops-deploy env=<ENV> extra_opts="-e git_version=<BRANCH>"
 ```
 
 > **Tip** : `git_version` accepte n'importe quelle [référence git](https://git-scm.com/book/fr/v2/Les-tripes-de-Git-R%C3%A9f%C3%A9rences-Git) (branche, tag...) ou commit hash.
@@ -113,7 +115,7 @@ Les fichiers suivants sont attendus :
 Quand tout semble prêt, initialisez l'environnement `<ENV>` :
 
 ```
-make provision env=<ENV>
+make ops-provision env=<ENV>
 ```
 
 Vous pouvez ensuite [déployer](#déployer).
@@ -125,7 +127,39 @@ La gestion des secrets s'appuie sur [Ansible Vault](https://docs.ansible.com/ans
 Pour modifier le fichier de secrets d'un environnement, lancez :
 
 ```
-cd ops && make secrets env=<ENV>
+make ops-secrets env=<ENV>
+```
+
+Rappel : vous pouvez aussi [chiffrer un fichier quelconque avec Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html#encrypting-files-with-ansible-vault) :
+
+```
+venv/bin/ansible-vault encrypt <FILE> --vault-password-file ops/ansible/vault-password
+```
+
+Pour modifier un fichier chiffré, utilisez :
+
+```
+venv/bin/ansible-vault edit <FILE> --vault-password-file ops/ansible/vault-password
+```
+
+### Données initiales
+
+[L'outil de données initiales](./outils.md#données-initiales) peut être utilisé pour déployer des données initiales dans chaque environnement.
+
+Pour cela :
+
+- Ajouter un fichier d'initdata dans l'environnement, par exemple dans `ops/ansible/environments/<ENV>/assets/initdata.yml`
+- _(Optionnel)_ Si le contenu de l'initdata est sensible, chiffrer le fichier (voir [Secrets](#secrets)).
+- Ajouter une variable `initdata_src` dans `ops/ansible/environments/<ENV>/group_vars/web.yml` qui pointe vers le fichier d'initdata. Pour l'exemple ci-dessus, il conviendrait d'utiliser :
+
+    ```yaml
+    initdata_src: "{{ inventory_dir }}/assets/initdata.yml"
+    ```
+
+Vous pouvez alors lancer un initdata avec :
+
+```
+make ops-initdata env=<ENV>
 ```
 
 ## Tests
@@ -208,7 +242,7 @@ web-test | SUCCESS => { ... }
 Lancez le _provisioning_ :
 
 ```
-make provision env=test
+make ops-provision env=test
 ```
 
 Vérifier la bonne exécution en inspectant dans la VM les différents outils et services attendus :
@@ -252,7 +286,7 @@ $ systemctl status supervisor
 Puis déployez :
 
 ```
-make deploy env=test
+make ops-deploy env=test
 ```
 
 Vérifiez le bon déploiement en accédant au site sur http://localhost:3080.

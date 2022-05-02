@@ -126,8 +126,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("path", type=pathlib.Path)
     parser.add_argument("--reset", action="store_true")
+    parser.add_argument("--no-input", action="store_true")
     args = parser.parse_args()
 
     bootstrap()
 
-    asyncio.run(main(path=args.path, reset=args.reset))
+    asyncio.run(main(path=args.path, reset=args.reset, no_input=args.no_input))

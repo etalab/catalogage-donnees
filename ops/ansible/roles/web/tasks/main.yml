@@ -24,3 +24,7 @@
 
   - name: Sync Supervisor
     import_tasks: supervisor.yml
+
+- name: Sync initdata
+  tags: initdata
+  import_tasks: initdata.yml
