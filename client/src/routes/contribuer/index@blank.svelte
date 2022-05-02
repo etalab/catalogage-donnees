@@ -10,6 +10,7 @@
   import DatasetForm from "$lib/components/DatasetForm/DatasetForm.svelte";
   import { createDataset } from "$lib/repositories/datasets";
   import { Maybe } from "$lib/util/maybe";
+  import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
 
   let loading = false;
 
@@ -32,14 +33,24 @@
   };
 </script>
 
-<svelte:head>
-  <title>Contribuer</title>
-</svelte:head>
+<header class="fr-m-4w">
+  <h5>Modifier le jeu de donnée</h5>
+  <a
+    aria-label="go to home page"
+    href="/"
+    class="fr-btn fr-fi-close-line fr-btn--icon fr-btn--secondary"
+  >
+    {""}
+  </a>
+</header>
 
-<section class="fr-container fr-mt-9w">
-  <h1 class="fr-text--lg">Contribuer un jeu de données</h1>
+<DatasetFormLayout>
+  <DatasetForm {loading} on:save={onSave} />
+</DatasetFormLayout>
 
-  <div class="fr-col-lg-8">
-    <DatasetForm {loading} on:save={onSave} />
-  </div>
-</section>
+<style>
+  header {
+    display: flex;
+    justify-content: space-between;
+  }
+</style>

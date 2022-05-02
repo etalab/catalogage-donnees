@@ -4,7 +4,6 @@ import type {
 } from "src/definitions/auth";
 import type { ApiResponse, Fetch } from "src/definitions/fetch";
 import { getApiUrl, getHeaders, makeApiRequest } from "../fetch";
-import { Maybe } from "../util/maybe";
 
 type Login = (opts: {
   fetch: Fetch;
