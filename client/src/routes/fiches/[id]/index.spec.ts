@@ -31,9 +31,7 @@ describe("Dataset detail page action buttons", () => {
     const { getByText } = render(index, { dataset });
     const contactButton = getByText("Contacter le producteur");
     expect(contactButton).toBeInTheDocument();
-    expect(contactButton.getAttribute("href")).toContain(
-      dataset.producerEmail
-    );
+    expect(contactButton.getAttribute("href")).toContain(dataset.producerEmail);
   });
 });
 

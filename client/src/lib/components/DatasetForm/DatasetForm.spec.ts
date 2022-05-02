@@ -55,13 +55,16 @@ describe("Test the dataset form", () => {
     checkboxes.forEach((checkbox) => expect(checkbox).not.toBeRequired());
   });
 
-  test('The "entrypoint email" field is present', () => {
+  test('The "producerEmail" field is present', () => {
     const { getByLabelText } = render(DatasetForm);
-    const producerEmail = getByLabelText("Adresse e-mail fonctionnelle", {
-      exact: false,
-    });
+    const producerEmail = getByLabelText(
+      "Adresse e-mail du service producteur",
+      {
+        exact: false,
+      }
+    );
     expect(producerEmail).toBeInTheDocument();
-    expect(producerEmail).toBeRequired();
+    expect(producerEmail).not.toBeRequired();
     expect(producerEmail).toHaveAttribute("type", "email");
   });
 
@@ -69,7 +72,7 @@ describe("Test the dataset form", () => {
     const { getAllByLabelText } = render(DatasetForm);
     const inputs = getAllByLabelText(/Contact \d/);
     expect(inputs.length).toBe(1);
-    expect(inputs[0]).not.toBeRequired();
+    expect(inputs[0]).toBeRequired();
     expect(inputs[0]).toHaveAttribute("type", "email");
   });
 
@@ -137,14 +140,18 @@ describe("Test the dataset form", () => {
     expect(getFormatCheckbox("website")).toBeChecked();
     expect(getFormatCheckbox("other")).not.toBeChecked();
 
-    const producerEmail = getByLabelText("Adresse e-mail fonctionnelle", {
-      exact: false,
-    }) as HTMLInputElement;
+    const producerEmail = getByLabelText(
+      "Adresse e-mail du service producteur",
+      {
+        exact: false,
+      }
+    ) as HTMLInputElement;
     expect(producerEmail.value).toBe("service.initial@mydomain.org");
 
     const contactEmails = getAllByLabelText(/Contact \d/);
     expect(contactEmails.length).toBe(1);
     expect(contactEmails[0]).toHaveValue("person@mydomain.org");
+    expect(contactEmails[0]).not.toBeRequired();
 
     const lastUpdatedAt = getByLabelText("Date de la dernière mise à jour", {
       exact: false,
@@ -172,7 +179,7 @@ describe("Test the dataset form", () => {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
-      producerEmail: "service.initial@mydomain.org",
+      producerEmail: null,
       contactEmails: ["person@mydomain.org"],
       service: "A nice service",
       lastUpdatedAt: null,
@@ -207,6 +214,7 @@ describe("Test the dataset form", () => {
     });
     expect(submittedValue.lastUpdatedAt).toBe(null);
     expect(submittedValue.updateFrequency).toBe(null);
+    expect(submittedValue.producerEmail).toBe(null);
     expect(submittedValue.publishedUrl).toBe(null);
   });
 });

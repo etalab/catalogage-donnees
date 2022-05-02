@@ -80,7 +80,7 @@ class DatasetModel(Base):
         secondary=dataset_dataformat,
     )
     technical_source = Column(String)
-    entrypoint_email = Column(String, nullable=False)
+    producer_email = Column(String, nullable=False)
     contact_emails = Column(ARRAY(String), server_default="{}", nullable=False)
     update_frequency = Column(Enum(UpdateFrequency, enum="update_frequency_enum"))
     last_updated_at = Column(DateTime(timezone=True))
@@ -104,7 +104,6 @@ def make_entity(instance: DatasetModel) -> Dataset:
     kwargs = {
         "catalog_record": make_catalog_record_entity(instance.catalog_record),
         "formats": [fmt.name for fmt in instance.formats],
-        "producer_email": instance.entrypoint_email,
     }
 
     kwargs.update(
@@ -122,26 +121,19 @@ def make_instance(
     formats: List[DataFormatModel],
 ) -> DatasetModel:
     return DatasetModel(
-        **entity.dict(exclude={"catalog_record", "formats", "producer_email"}),
+        **entity.dict(exclude={"catalog_record", "formats"}),
         catalog_record=catalog_record,
         formats=formats,
-        entrypoint_email=entity.producer_email,
     )
 
 
 def update_instance(
     instance: DatasetModel, entity: Dataset, formats: List[DataFormatModel]
 ) -> None:
-    for field in set(Dataset.__fields__) - {
-        "id",
-        "catalog_record",
-        "formats",
-        "producer_email",
-    }:
+    for field in set(Dataset.__fields__) - {"id", "catalog_record", "formats"}:
         setattr(instance, field, getattr(entity, field))
 
     instance.formats = formats
-    instance.entrypoint_email = entity.producer_email
 
 
 class SqlDatasetRepository(DatasetRepository):

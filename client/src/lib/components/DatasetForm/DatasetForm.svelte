@@ -15,7 +15,6 @@
   } from "src/constants";
   import { formatHTMLDate } from "$lib/util/format";
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
-  import { user } from "src/lib/stores/auth";
   import ContactEmailsField from "../ContactEmailsField/ContactEmailsField.svelte";
   import Select from "../Select/Select.svelte";
   import { toSelectOptions } from "src/lib/transformers/form";
@@ -32,7 +31,7 @@
     service: "",
     formats: [],
     producerEmail: "",
-    contactEmails: [$user?.email || ""],
+    contactEmails: [""],
     geographicalCoverage: null, // Allow select null option upon creation
     lastUpdatedAt: null,
     updateFrequency: null,
@@ -47,7 +46,7 @@
     description: string;
     service: string;
     dataFormats: boolean[];
-    producerEmail: string;
+    producerEmail: string | null;
     contactEmails: string[];
     geographicalCoverage: Maybe<GeographicalCoverage>;
     lastUpdatedAt: string | null;
@@ -92,14 +91,15 @@
         producerEmail: yup
           .string()
           .email("Ce champ doit contenir une adresse e-mail valide")
-          .required("Ce champs est requis"),
+          .nullable(),
         contactEmails: yup
           .array()
           .of(
             yup
               .string()
               .email("Ce champ doit contenir une adresse e-mail valide")
-          ),
+          )
+          .min(1),
         lastUpdatedAt: yup.date().nullable(),
         updateFrequency: yup.string().nullable(),
         geographicalCoverage: yup
@@ -118,6 +118,11 @@
           )
           .filter(Maybe.Some);
 
+        // Ensure "" becomes null.
+        const producerEmail = values.producerEmail
+          ? values.producerEmail
+          : null;
+
         const contactEmails = values.contactEmails.filter(Boolean);
 
         const lastUpdatedAt = values.lastUpdatedAt
@@ -127,6 +132,7 @@
         const data: DatasetFormData = {
           ...values,
           formats,
+          producerEmail,
           contactEmails,
           lastUpdatedAt,
         };
@@ -385,12 +391,13 @@
         : ''}"
     >
       <label class="fr-label" for="producerEmail">
-        Adresse e-mail fonctionnelle
-        <RequiredMarker />
+        Adresse e-mail du service producteur
         <span class="fr-hint-text" id="producerEmail-desc-hint">
-          Il est fortement conseillé d'avoir une adresse e-mail accessible à
-          plusieurs personnes afin de rendre la prise de contact possible quelle
-          que soit les personnes en responsabilité.
+          Il est fortement conseillé d'avoir une adresse e-mail générique afin
+          de rendre la prise de contact possible quelle que soit les personnes
+          en responsabilité. Nous recommandons d'avoir une adresse différente
+          pour chaque service afin de ne pas "polluer" les boîtes e-mail de
+          chacun lorsque le catalogue grandit.
         </span>
       </label>
       <input
@@ -401,13 +408,12 @@
         type="email"
         id="producerEmail"
         name="producerEmail"
-        required
         on:change={handleChange}
         on:blur={handleChange}
         bind:value={$form.producerEmail}
       />
       {#if $errors.producerEmail}
-        <p id="entrypoint-email-desc-error" class="fr-error-text">
+        <p id="producerEmail-desc-error" class="fr-error-text">
           {$errors.producerEmail}
         </p>
       {/if}

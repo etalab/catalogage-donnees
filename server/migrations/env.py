@@ -26,6 +26,8 @@ database_url = (
 
 config.set_main_option("sqlalchemy.url", database_url)
 
+config.set_main_option("sqlalchemy.echo", str(settings.sql_debug))
+
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 assert config.config_file_name

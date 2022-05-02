@@ -2,8 +2,6 @@ import datetime as dt
 import enum
 from typing import List, Optional
 
-from pydantic import Field
-
 from server.seedwork.domain.entities import Entity
 
 from ..catalog_records.entities import CatalogRecord
@@ -48,8 +46,8 @@ class Dataset(Entity):
     geographical_coverage: GeographicalCoverage
     formats: List[DataFormat]
     technical_source: Optional[str]
-    producer_email: str
-    contact_emails: List[str] = Field(default_factory=list)
+    producer_email: Optional[str]
+    contact_emails: List[str]
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
     published_url: Optional[str] = None
@@ -65,7 +63,7 @@ class Dataset(Entity):
         geographical_coverage: GeographicalCoverage,
         formats: List[DataFormat],
         technical_source: Optional[str],
-        producer_email: str,
+        producer_email: Optional[str],
         contact_emails: List[str],
         update_frequency: Optional[UpdateFrequency],
         last_updated_at: Optional[dt.datetime],

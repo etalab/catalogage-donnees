@@ -36,7 +36,7 @@ from ..helpers import TestUser, approx_datetime
                     "type": "value_error.missing",
                 },
                 {"loc": ["body", "formats"], "type": "value_error.missing"},
-                {"loc": ["body", "producer_email"], "type": "value_error.missing"},
+                {"loc": ["body", "contact_emails"], "type": "value_error.missing"},
             ],
             id="missing-fields",
         ),
@@ -47,7 +47,7 @@ from ..helpers import TestUser, approx_datetime
                 "service": "Service",
                 "geographical_coverage": "national",
                 "formats": [],
-                "producer_email": "service@mydomain.org",
+                "contact_emails": ["person@mydomain.org"],
             },
             [
                 {
@@ -56,6 +56,23 @@ from ..helpers import TestUser, approx_datetime
                 }
             ],
             id="formats-empty",
+        ),
+        pytest.param(
+            {
+                "title": "Title",
+                "description": "Description",
+                "service": "Service",
+                "geographical_coverage": "national",
+                "formats": ["api"],
+                "contact_emails": [],
+            },
+            [
+                {
+                    "loc": ["body", "contact_emails"],
+                    "msg": "contact_emails must contain at least one item",
+                }
+            ],
+            id="contact_emails-empty",
         ),
     ],
 )
@@ -98,7 +115,7 @@ CREATE_ANY_DATASET = CreateDataset(
     service="Example service",
     geographical_coverage=GeographicalCoverage.NATIONAL,
     formats=[DataFormat.WEBSITE, DataFormat.API],
-    producer_email="service@mydomain.org",
+    contact_emails=["person@mydomain.org"],
 )
 
 
@@ -217,7 +234,7 @@ class TestDatasetOptionalFields:
         "field, default",
         [
             pytest.param("technical_source", None),
-            pytest.param("contact_emails", []),
+            pytest.param("producer_email", None),
             pytest.param("update_frequency", None),
             pytest.param("last_updated_at", None),
         ],
@@ -317,11 +334,11 @@ class TestDatasetUpdate:
                 "title": "",
                 "description": "",
                 "service": "",
-                "formats": [],
+                "formats": ["website", "api"],
                 "geographical_coverage": "national",
-                "producer_email": "service@mydomain.org",
+                "producer_email": None,
                 "technical_source": "",
-                "contact_emails": [],
+                "contact_emails": ["person@mydomain.org"],
                 "update_frequency": "weekly",
                 "last_updated_at": known_date.isoformat(),
                 "published_url": "",
@@ -334,7 +351,6 @@ class TestDatasetUpdate:
             err_title,
             err_description,
             err_service,
-            err_formats,
             err_published_url,
         ) = response.json()["detail"]
 
@@ -346,9 +362,6 @@ class TestDatasetUpdate:
 
         assert err_service["loc"] == ["body", "service"]
         assert "empty" in err_service["msg"]
-
-        assert err_formats["loc"] == ["body", "formats"]
-        assert "at least one" in err_formats["msg"].lower()
 
         assert err_published_url["loc"] == ["body", "published_url"]
         assert "empty" in err_service["msg"]

@@ -19,8 +19,8 @@ class CreateDataset(Command[ID]):
     geographical_coverage: GeographicalCoverage
     formats: List[DataFormat]
     technical_source: Optional[str] = None
-    producer_email: str
-    contact_emails: List[str] = Field(default_factory=list)
+    producer_email: Optional[str] = None
+    contact_emails: List[str]
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
     published_url: Optional[str] = None
@@ -34,7 +34,7 @@ class UpdateDataset(Command[None]):
     geographical_coverage: GeographicalCoverage
     formats: List[DataFormat]
     technical_source: Optional[str] = Field(...)
-    producer_email: str
+    producer_email: Optional[str] = Field(...)
     contact_emails: List[str]
     update_frequency: Optional[UpdateFrequency] = Field(...)
     last_updated_at: Optional[dt.datetime] = Field(...)

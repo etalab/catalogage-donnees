@@ -23,7 +23,7 @@ class DatasetView(BaseModel):
     geographical_coverage: GeographicalCoverage
     formats: List[DataFormat]
     technical_source: Optional[str]
-    producer_email: str
+    producer_email: Optional[str]
     contact_emails: List[str]
     update_frequency: Optional[UpdateFrequency]
     last_updated_at: Optional[dt.datetime]

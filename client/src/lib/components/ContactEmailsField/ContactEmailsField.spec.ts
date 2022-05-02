@@ -13,6 +13,7 @@ describe("ContactEmailsField component", () => {
     const inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(1);
     expect(inputs[0]).toHaveValue("");
+    expect(inputs[0]).toBeRequired();
     expect(inputs[0]).toHaveAttribute("type", "email");
   });
 
@@ -22,20 +23,30 @@ describe("ContactEmailsField component", () => {
     await fireEvent.input(inputs[0], {
       target: { value: "contact@mydomain.org" },
     });
-    expect((inputs[0] as HTMLInputElement).value).toBe("contact@mydomain.org");
+    const input = inputs[0] as HTMLInputElement;
+    expect(input.value).toBe("contact@mydomain.org");
+    expect(input).not.toBeRequired();
   });
 
   test("I can add a few inputs", async () => {
     const { getAllByTestId, getByRole } = render(ContactEmailsField);
     let inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(1);
+
     const addButton = getByRole("button", { name: /Ajouter/i });
+
     await fireEvent.click(addButton);
     inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(2);
+    expect(inputs[0]).toBeRequired();
+    expect(inputs[1]).toBeRequired();
+
     await fireEvent.click(addButton);
     inputs = getAllByTestId("contactEmails", { exact: false });
     expect(inputs.length).toBe(3);
+    expect(inputs[0]).toBeRequired();
+    expect(inputs[1]).toBeRequired();
+    expect(inputs[2]).toBeRequired();
   });
 
   test("I can update an input value", async () => {
@@ -51,6 +62,9 @@ describe("ContactEmailsField component", () => {
     });
     expect((inputs[0] as HTMLInputElement).value).toBe("");
     expect((inputs[2] as HTMLInputElement).value).toBe("contact@mydomain.org");
+    expect(inputs[0]).not.toBeRequired();
+    expect(inputs[1]).not.toBeRequired();
+    expect(inputs[2]).not.toBeRequired();
   });
 
   test("I can remove an input by clicking on delete button", async () => {
@@ -104,5 +118,22 @@ describe("ContactEmailsField component", () => {
     });
 
     expect((inputs[1] as HTMLInputElement).value).toBe("contact@mydomain.org");
+  });
+
+  test("I can clear sole input by clicking on delete button", async () => {
+    const { getAllByTestId } = render(ContactEmailsField, {
+      contactEmails: ["hello@foo.com"],
+    });
+
+    const inputs = getAllByTestId("contactEmails", {
+      exact: false,
+    }) as HTMLInputElement[];
+    const removeButton = getByRoleIn(inputs[0].parentElement!, "button", {
+      name: /Supprimer/i,
+    });
+
+    await fireEvent.click(removeButton);
+    expect(inputs[0].value).toBe("");
+    expect(inputs[0]).toBeRequired();
   });
 });
