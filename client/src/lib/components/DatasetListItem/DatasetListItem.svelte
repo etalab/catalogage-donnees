@@ -79,7 +79,7 @@
         )}
       </p>
 
-      <span> Voir </span>
+      <span class="fr-fi-arrow-right-line" />
     </div>
   </a>
 </li>
@@ -108,7 +108,7 @@
     column-gap: 0.5rem;
   }
 
-  .metadata-items [class*="fr-fi"] {
+  [class*="fr-fi"] {
     color: var(--text-action-high-blue-france);
     display: inline-block;
   }
