@@ -6,7 +6,7 @@
   const dispatch = createEventDispatcher<{ search: SelectOption }>();
 
   export let name: string;
-  export let id = `${name}-label`;
+  export let id = name;
   export let options: Array<SelectOption> = [];
   export let placeholder = "";
 

@@ -46,14 +46,9 @@ describe("Test the Search", () => {
   });
 
   test("should NOT return the selected option if no matching option found", async () => {
-    const searchedOption = {
-      label: "Architecture",
-      value: "architecture",
-    };
     const { getByRole, component } = render(SearchInput, {
       name: "my-list",
       options: [
-        searchedOption,
         {
           label: "Maison",
           value: "maison",

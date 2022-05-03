@@ -161,26 +161,11 @@
 
   $: emailErrors = $errors.contactEmails as unknown as string[];
 
+  // the tag error returned by yup could be a string, an array of string,  or an object with the same shape of Tag
+  $: hasTagsError = typeof $errors.tags === "string" && !!$errors.tags;
+
   const hasError = (error: string | string[]) => {
     return typeof error === "string" && Boolean(error);
-  };
-
-  // the tag error returned by yup could be a string, an array of string,  or an object with the same shape of Tag
-  const hasTagsError = (error: string | Tag[] | string[]): boolean => {
-    if (typeof error == "string" && error === "") return false;
-    if (typeof error == "string" && error !== "") {
-      return true;
-    }
-
-    const errorArray = error as unknown as Tag[];
-
-    if (
-      errorArray.findIndex((item) => item.id !== "" || item.name !== "") !== -1
-    ) {
-      return true;
-    }
-
-    return false;
   };
 
   const handleDataformatChange = (event: Event, index: number) => {
@@ -380,36 +365,6 @@
         </p>
       {/if}
     </fieldset>
-  </div>
-  <h2 class="fr-mb-5w">Mot-clés thématiques</h2>
-  <div class="form--content fr-mb-8w">
-    <div
-      class={`fr-input-group fr-mt-8w ${
-        hasTagsError($errors.tags) ? "fr-input-group--error" : ""
-      } `}
-    >
-      <label class="fr-label" for="tags">
-        Mot-clés <RequiredMarker />
-        <span class="fr-hint-text" id="technicalSource-desc-hint">
-          Les mot-clés seront utilisés par les réutilisateurs pour affiner leur
-          recherche. Sélectionnez ceux qui vous semblent les plus représentatifs
-          de vos données.
-        </span>
-      </label>
-
-      <TagSelector
-        selectedTags={initial.tags}
-        on:change={handleTagsChange}
-        name="tags"
-        {tags}
-      />
-
-      {#if hasTagsError($errors.tags)}
-        <p id="dataformats-desc-error" class="fr-error-text">
-          {$errors.tags}
-        </p>
-      {/if}
-    </div>
 
     <div
       class="fr-input-group fr-my-4w {$errors.technicalSource
@@ -438,6 +393,36 @@
       {#if $errors.technicalSource}
         <p id="technicalSource-desc-error" class="fr-error-text">
           {$errors.technicalSource}
+        </p>
+      {/if}
+    </div>
+  </div>
+  <h2 class="fr-mb-5w">Mot-clés thématiques</h2>
+  <div class="form--content fr-mb-8w">
+    <div
+      class={`fr-input-group fr-mt-8w ${
+        hasTagsError ? "fr-input-group--error" : ""
+      } `}
+    >
+      <label class="fr-label" for="tags">
+        Mot-clés <RequiredMarker />
+        <span class="fr-hint-text" id="tags-desc-hint">
+          Les mot-clés seront utilisés par les réutilisateurs pour affiner leur
+          recherche. Sélectionnez ceux qui vous semblent les plus représentatifs
+          de vos données.
+        </span>
+      </label>
+
+      <TagSelector
+        selectedTags={initial.tags}
+        on:change={handleTagsChange}
+        name="tags"
+        {tags}
+      />
+
+      {#if hasTagsError}
+        <p id="tags-desc-error" class="fr-error-text">
+          {$errors.tags}
         </p>
       {/if}
     </div>

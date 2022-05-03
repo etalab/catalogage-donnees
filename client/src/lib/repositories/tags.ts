@@ -8,7 +8,7 @@ type GetTags = (opts: {
   apiToken: string;
 }) => Promise<Maybe<Tag[]>>;
 export const getTags: GetTags = async ({ fetch, apiToken }) => {
-  const url = `${getApiUrl()}/tags`;
+  const url = `${getApiUrl()}/tags/`;
   const request = new Request(url, {
     headers: getHeaders(apiToken),
   });
