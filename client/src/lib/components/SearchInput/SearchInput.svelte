@@ -29,7 +29,8 @@
 <div class="fr-select-group">
   <input
     role="search"
-    class="fr-select"
+    autocomplete="off"
+    class="fr-input"
     {placeholder}
     list={listName}
     {id}
@@ -49,5 +50,9 @@
   /* See https://stackoverflow.com/questions/20937475/remove-datalist-dropdown-arrow-in-chrome */
   :global(input::-webkit-calendar-picker-indicator) {
     display: none !important;
+  }
+
+  input:focus::placeholder {
+    color: transparent;
   }
 </style>

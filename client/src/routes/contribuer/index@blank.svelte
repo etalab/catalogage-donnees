@@ -30,7 +30,7 @@
 
   let loading = false;
 
-  export let tags: Tag[];
+  export let tags: Maybe<Tag[]>;
 
   const onSave = async (event: CustomEvent<DatasetFormData>) => {
     try {
@@ -62,9 +62,11 @@
   </a>
 </header>
 
-<DatasetFormLayout>
-  <DatasetForm {tags} {loading} on:save={onSave} />
-</DatasetFormLayout>
+{#if Maybe.Some(tags)}
+  <DatasetFormLayout>
+    <DatasetForm {tags} {loading} on:save={onSave} />
+  </DatasetFormLayout>
+{/if}
 
 <style>
   header {

@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 
-import Search from "./Search.svelte";
+import Search from "./SearchInput.svelte";
 import { render, fireEvent } from "@testing-library/svelte";
 import type { SelectOption } from "src/definitions/form";
 
@@ -68,7 +68,7 @@ describe("Test the Search", () => {
 
     const input = getByRole("search");
 
-    await fireEvent.input(input, {
+    await fireEvent.Sinput(input, {
       target: {
         value: "not-a-value",
       },

@@ -58,7 +58,7 @@
     updateFrequency: UpdateFrequency | null;
     technicalSource: string | null;
     publishedUrl: string | null;
-    tags: Tag[];
+    tags: TagType[];
   };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
@@ -165,16 +165,23 @@
     return typeof error === "string" && Boolean(error);
   };
 
-  // the tag error returned by could be a string or an object with the same shape of Tag
-  const hasTagsError = (error: string | Tag[]) => {
-    console.log({ error });
-    return (
-      (error as unknown as string[]).length > 0 ||
-      (typeof error == "string" && error !== "")
-    );
-  };
+  // the tag error returned by yup could be a string, an array of string,  or an object with the same shape of Tag
+  const hasTagsError = (error: string | Tag[] | string[]): boolean => {
+    if (typeof error == "string" && error === "") return false;
+    if (typeof error == "string" && error !== "") {
+      return true;
+    }
 
-  $: console.log($errors.tags);
+    const errorArray = error as unknown as Tag[];
+
+    if (
+      errorArray.findIndex((item) => item.id !== "" || item.name !== "") !== -1
+    ) {
+      return true;
+    }
+
+    return false;
+  };
 
   const handleDataformatChange = (event: Event, index: number) => {
     const { checked } = event.target as HTMLInputElement;

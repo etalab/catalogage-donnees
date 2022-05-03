@@ -82,6 +82,7 @@ test.describe("Basic form submission", () => {
     const publishedUrl = page.locator("form [name=publishedUrl]");
     await publishedUrl.fill(publishedUrlText);
     expect(await publishedUrl.inputValue()).toBe(publishedUrlText);
+
     // "Mots clés" section
 
     const tags = page.locator("form [name=tags]");

@@ -3,7 +3,7 @@
   import type { Tag as TagType } from "src/definitions/tag";
   import { transformTagToSelectOption } from "src/lib/transformers/form";
   import { createEventDispatcher } from "svelte";
-  import Search from "../Search/Search.svelte";
+  import SearchInput from "../SearchInput/SearchInput.svelte";
   import Tag from "../Tag/Tag.svelte";
 
   export let tags: TagType[];
@@ -33,7 +33,7 @@
   };
 </script>
 
-<Search
+<SearchInput
   on:search={handleSearch}
   {id}
   {name}

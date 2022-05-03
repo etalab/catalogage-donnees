@@ -37,7 +37,7 @@
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
 
   export let dataset: Maybe<Dataset>;
-  export let tags: Tag[];
+  export let tags: Maybe<Tag[]>;
 
   let loading = false;
 
