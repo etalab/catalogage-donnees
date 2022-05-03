@@ -58,7 +58,7 @@
     updateFrequency: UpdateFrequency | null;
     technicalSource: string | null;
     publishedUrl: string | null;
-    tags: TagType[];
+    tags: Tag[];
   };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(

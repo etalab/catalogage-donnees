@@ -14,19 +14,30 @@
 
   const listName = `${name}-list`;
 
-  const handleInput = (e: any) => {
-    const selectedOption = options.find(
-      (item) => item.label === e.target.value
-    );
+  let selectedOption: SelectOption | undefined;
 
-    if (selectedOption) {
+  const handleInput = (e: any) => {
+    const foundOption = options.find((item) => item.label === e.target.value);
+
+    if (foundOption) {
+      selectedOption = foundOption;
+    }
+  };
+
+  const handleKeypress = (e: KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+
+    if (selectedOption && e.key === "Enter") {
       dispatch("search", selectedOption);
       searchInput.value = "";
+      selectedOption = undefined;
     }
   };
 </script>
 
-<div class="fr-select-group">
+<div class="fr-input-group">
   <input
     role="search"
     autocomplete="off"
@@ -35,6 +46,7 @@
     list={listName}
     {id}
     {name}
+    on:keypress={handleKeypress}
     bind:this={searchInput}
     on:input|stopPropagation|preventDefault={handleInput}
   />

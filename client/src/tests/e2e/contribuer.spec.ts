@@ -89,6 +89,8 @@ test.describe("Basic form submission", () => {
 
     await tags.fill(tagName);
 
+    await tags.press("Enter");
+
     const selectedTag = page.locator("text=services");
     await selectedTag.waitFor();
 

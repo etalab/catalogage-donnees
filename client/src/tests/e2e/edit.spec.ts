@@ -47,6 +47,7 @@ test.describe("Edit dataset", () => {
 
     const tags = page.locator("form [name=tags]");
     await tags.fill("environnement");
+    await tags.press("Enter");
 
     const button = page.locator("button[type='submit']");
     const [request, response] = await Promise.all([
@@ -66,6 +67,7 @@ test.describe("Edit dataset", () => {
       json.tags.findIndex((item) => item.name === "environnement") !== -1
     ).toBeTruthy();
   });
+
   test("Does not see delete button", async ({ page, dataset }) => {
     await page.goto(`/fiches/${dataset.id}/edit`);
     const deleteButton = page.locator(DELETE_DATASET_BUTTON_LOCATOR);

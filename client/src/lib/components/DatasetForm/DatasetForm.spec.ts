@@ -4,8 +4,7 @@ import DatasetForm from "./DatasetForm.svelte";
 import { render, fireEvent } from "@testing-library/svelte";
 import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
 import { login, logout } from "$lib/stores/auth";
-import { buildFakeTag } from "src/tests/factories/tag";
-
+import { buildFakeTag } from "src/tests/factories/tags";
 
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {

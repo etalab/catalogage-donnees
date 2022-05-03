@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 
-import Search from "./SearchInput.svelte";
+import SearchInput from "./SearchInput.svelte";
 import { render, fireEvent } from "@testing-library/svelte";
 import type { SelectOption } from "src/definitions/form";
 
@@ -10,7 +10,7 @@ describe("Test the Search", () => {
       label: "Architecture",
       value: "uuid-1",
     };
-    const { getByRole, component } = render(Search, {
+    const { getByRole, component } = render(SearchInput, {
       name: "my-list",
       options: [
         searchedOption,
@@ -38,6 +38,10 @@ describe("Test the Search", () => {
       },
     });
 
+    await fireEvent.keyPress(input, {
+      key: "Enter",
+    });
+
     expect(option).toEqual(searchedOption);
   });
 
@@ -46,7 +50,7 @@ describe("Test the Search", () => {
       label: "Architecture",
       value: "architecture",
     };
-    const { getByRole, component } = render(Search, {
+    const { getByRole, component } = render(SearchInput, {
       name: "my-list",
       options: [
         searchedOption,
@@ -68,10 +72,14 @@ describe("Test the Search", () => {
 
     const input = getByRole("search");
 
-    await fireEvent.Sinput(input, {
+    await fireEvent.input(input, {
       target: {
         value: "not-a-value",
       },
+    });
+
+    await fireEvent.keyDown(input, {
+      key: "Enter",
     });
 
     expect(option).toEqual(option);

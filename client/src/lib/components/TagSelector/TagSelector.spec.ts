@@ -47,6 +47,10 @@ describe("Test the TagSelector", () => {
       },
     });
 
+    await fireEvent.keyPress(input, {
+      key: "Enter",
+    });
+
     const tags = getAllByRole("listitem");
     expect(tags).toHaveLength(1);
     const tag = tags[0];
@@ -75,6 +79,10 @@ describe("Test the TagSelector", () => {
       target: {
         value: "toto",
       },
+    });
+
+    await fireEvent.keyPress(input, {
+      key: "Enter",
     });
 
     let tags = getAllByRole("listitem");
