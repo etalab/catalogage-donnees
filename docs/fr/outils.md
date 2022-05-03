@@ -59,6 +59,10 @@ Structure :
     * `password` - str - Utiliser `__env__` pour tirer le mot de passe de `TOOLS_PASSWORDS`
   * `extras` - _Optionnel_, dict
     * `role` - str, `USER | ADMIN`
+* `tags` - list
+  * `id` - str - UUID
+  * `params` - dict
+    * `name` - str
 * `datasets` - list
   * `id` - str - UUID
   * `params` - dict
@@ -88,6 +92,12 @@ users:
     extras:
       role: ADMIN
   - # ...
+
+tags:
+  - id: "<UUID>"
+    params:
+      name: "<name>"
+  - # ...
 
 datasets:
   - id: "<UUID>"
@@ -123,36 +133,6 @@ Exemple de sortie :
 ```
 9355b423-4417-4153-8fd6-524697f8c88f
 ```
-
-## Thesaurus de tags
-
-1. Préparez un fichier texte comprenant 1 tag par ligne.
-
-    Exemple : `/path/to/tags.txt`
-
-    ```
-    architecture
-    services
-    forets
-    ```
-
-2. Créez un fichier d'initdata :
-
-    ```
-    venv/bin/python -m tools.prepare_tags_initdata /path/to/tags.txt /path/to/tags_initdata.yml
-    ```
-
-3. Synchronisez les tags en lançant l'initdata :
-
-    ```
-    venv/bin/python -m tools.initdata /path/to/tags_initdata.yml
-    ```
-
-N.B. :
-
-- Les tags sont sensibles à la casse : `Architecture` et `architecture` sont considérés comme des tags différents.
-- Il est possible d'ajouter de nouveaux tags en répétant la procédure : modifiez le fichier texte, puis suivez les étapes 2 et 3 en réutilisant le fichier d'initdata.
-- Si vous retirez des tags du fichier texte, ils ne seront pas supprimés de la BDD. Pour les supprimer, à ce stade une intervention manuelle dans la BDD est nécessaire.
 
 ## Diagramme de la base de données
 

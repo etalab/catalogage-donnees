@@ -10,9 +10,9 @@ from server.domain.datasets.entities import (
     UpdateFrequency,
 )
 from server.domain.datasets.repositories import DatasetHeadlines
-from server.domain.tags.entities import Tag
 
 from ..catalog_records.views import CatalogRecordView
+from ..tags.views import TagView
 
 
 class DatasetView(BaseModel):
@@ -29,7 +29,7 @@ class DatasetView(BaseModel):
     update_frequency: Optional[UpdateFrequency]
     last_updated_at: Optional[dt.datetime]
     published_url: Optional[str]
-    tags: List[Tag]
+    tags: List[TagView]
 
 
 class DatasetSearchView(DatasetView):
