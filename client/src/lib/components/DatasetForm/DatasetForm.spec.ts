@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import DatasetForm from "./DatasetForm.svelte";
 import { render, fireEvent } from "@testing-library/svelte";
 import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
+import { login, logout } from "$lib/stores/auth";
 
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
@@ -216,5 +217,21 @@ describe("Test the dataset form", () => {
     expect(submittedValue.updateFrequency).toBe(null);
     expect(submittedValue.producerEmail).toBe(null);
     expect(submittedValue.publishedUrl).toBe(null);
+  });
+
+  describe("Authenticated tests", () => {
+    beforeAll(() =>
+      login({ email: "john@domain.org", role: "USER", apiToken: "abcd1234" })
+    );
+
+    afterAll(() => logout());
+
+    test("User email is used as default contact email", () => {
+      const { getAllByLabelText } = render(DatasetForm);
+      const inputs = getAllByLabelText(/Contact \d/) as HTMLInputElement[];
+      expect(inputs.length).toBe(1);
+      expect(inputs[0].value).toBe("john@domain.org");
+      expect(inputs[0]).not.toBeRequired();
+    });
   });
 });

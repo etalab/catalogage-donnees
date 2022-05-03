@@ -15,6 +15,7 @@
   } from "src/constants";
   import { formatHTMLDate } from "$lib/util/format";
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
+  import { user } from "src/lib/stores/auth";
   import ContactEmailsField from "../ContactEmailsField/ContactEmailsField.svelte";
   import Select from "../Select/Select.svelte";
   import { toSelectOptions } from "src/lib/transformers/form";
@@ -31,7 +32,7 @@
     service: "",
     formats: [],
     producerEmail: "",
-    contactEmails: [""],
+    contactEmails: [$user?.email || ""],
     geographicalCoverage: null, // Allow select null option upon creation
     lastUpdatedAt: null,
     updateFrequency: null,
