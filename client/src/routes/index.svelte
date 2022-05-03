@@ -52,9 +52,8 @@
 </section>
 
 <section class="fr-container fr-mt-8w fr-mb-15w">
-  <h2 class="fr-mb-3w">Dernières contributions</h2>
-
   {#if Maybe.Some(datasets)}
+    <h2 class="fr-mb-3w">{datasets.length} jeux de donnnées contribués</h2>
     <DatasetList {datasets} />
   {/if}
 </section>

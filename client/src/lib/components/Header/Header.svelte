@@ -60,13 +60,14 @@
             </div>
           </div>
           <div class="fr-header__service">
-            <a href={paths.home} title="Accueil - Catalogage des données">
-              <p class="fr-header__service-title">Catalogage des données</p>
+            <a
+              href={paths.home}
+              title="Accueil - Catalogue Interministériel des Données"
+            >
+              <p class="fr-header__service-title">
+                Catalogue Interministériel des Données
+              </p>
             </a>
-            <p class="fr-header__service-tagline">
-              Un outil pour cataloguer les jeux de données des différents
-              ministères
-            </p>
           </div>
         </div>
         <div class="fr-header__tools">

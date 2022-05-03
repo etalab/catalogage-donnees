@@ -82,6 +82,5 @@ test.describe("Search", () => {
     expect(json.length).toBe(0);
 
     await expect(page).toHaveURL("/fiches/search?q=noresultsexpected");
-    await page.locator("text='0 résultats'").waitFor();
   });
 });
