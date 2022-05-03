@@ -1,4 +1,5 @@
 import type { CatalogRecord } from "./catalog_records";
+import type { Tag } from "./tag";
 
 // Matches enum on the backend.
 export type DataFormat =
@@ -47,6 +48,7 @@ export type Dataset = {
   geographicalCoverage: GeographicalCoverage;
   technicalSource: string | null;
   publishedUrl: string | null;
+  tags: Tag[];
 };
 
 export type DatasetFormData = Omit<
@@ -54,5 +56,7 @@ export type DatasetFormData = Omit<
   "id" | "catalogRecord" | "headlines"
 >;
 
-export type DatasetCreateData = DatasetFormData;
+export type DatasetCreateData = Omit<DatasetFormData, "tags"> & {
+  tagIds: string[];
+};
 export type DatasetUpdateData = DatasetCreateData;

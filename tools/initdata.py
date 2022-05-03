@@ -4,7 +4,7 @@ import functools
 import json
 import os
 import pathlib
-from typing import Dict
+from typing import Any, Dict
 
 import click
 import yaml
@@ -13,10 +13,13 @@ from pydantic import BaseModel, ValidationError, parse_raw_as
 
 from server.application.auth.commands import CreateUser
 from server.application.datasets.commands import CreateDataset, UpdateDataset
+from server.application.tags.commands import CreateTag
 from server.config.di import bootstrap, resolve
 from server.domain.auth.entities import UserRole
 from server.domain.auth.repositories import UserRepository
+from server.domain.datasets.entities import Dataset
 from server.domain.datasets.repositories import DatasetRepository
+from server.domain.tags.repositories import TagRepository
 from server.seedwork.application.messages import MessageBus
 
 load_dotenv()
@@ -76,7 +79,28 @@ async def handle_user(
     print(f"{success('created')}: {command!r}")
 
 
+async def handle_tag(item: dict) -> None:
+    bus = resolve(MessageBus)
+    repository = resolve(TagRepository)
+
+    id_ = item["id"]
+    existing_tag = await repository.get_by_id(id_)
+
+    if existing_tag is not None:
+        print(f"{info('ok')}: {existing_tag!r}")
+        return
+
+    command = CreateTag(**item["params"])
+    await bus.execute(command, id_=item["id"])
+    print(f"{success('created')}: {command!r}")
+
+
 async def handle_dataset(item: dict, reset: bool = False) -> None:
+    def _get_dataset_attr(dataset: Dataset, attr: str) -> Any:
+        if attr == "tag_ids":
+            return [tag.id for tag in dataset.tags]
+        return getattr(dataset, attr)
+
     bus = resolve(MessageBus)
     repository = resolve(DatasetRepository)
 
@@ -87,7 +111,8 @@ async def handle_dataset(item: dict, reset: bool = False) -> None:
         command = UpdateDataset(id=id_, **item["params"])
 
         changed = any(
-            getattr(command, k) != getattr(existing_dataset, k) for k in item["params"]
+            getattr(command, k) != _get_dataset_attr(existing_dataset, k)
+            for k in item["params"]
         )
 
         if changed and reset:
@@ -115,6 +140,11 @@ async def main(path: pathlib.Path, reset: bool = False, no_input: bool = False) 
 
     for item in spec["users"]:
         await handle_user(item, no_input=no_input, env_passwords=env_passwords)
+
+    print("\n", ruler("Tags"))
+
+    for item in spec["tags"]:
+        await handle_tag(item)
 
     print("\n", ruler("Datasets"))
 

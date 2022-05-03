@@ -20,6 +20,7 @@ async def test_initdata_empty(tmp_path: Path) -> None:
     path.write_text(
         """
         users: []
+        tags: []
         datasets: []
         """
     )
@@ -71,6 +72,7 @@ async def test_initdata_env_password(
             params:
               email: test@admin.org
               password: __env__
+        tags: []
         datasets: []
         """
     )
@@ -102,9 +104,14 @@ async def test_repo_initdata(
         "TOOLS_PASSWORDS", json.dumps({"admin@catalogue.data.gouv.fr": "test"})
     )
 
+    num_users = 2
+    num_tags = 7
+    num_datasets = 3
+    num_entities = num_users + num_tags + num_datasets
+
     await initdata.main(path, no_input=True)
     captured = capsys.readouterr()
-    assert captured.out.count("created") == 5
+    assert captured.out.count("created") == num_entities
 
     pk = "16b398af-f8c7-48b9-898a-18ad3404f528"
     dataset = await bus.execute(GetDatasetByID(id=pk))
@@ -113,10 +120,14 @@ async def test_repo_initdata(
     # Run a second time, without changes.
     await initdata.main(path)
     captured = capsys.readouterr()
-    assert captured.out.count("ok") == 5
+    assert captured.out.count("ok") == num_entities
 
     # Make a change.
-    command = UpdateDataset(**dataset.dict(exclude={"title"}), title="Changed")
+    command = UpdateDataset(
+        **dataset.dict(exclude={"title"}),
+        tag_ids=[tag.id for tag in dataset.tags],
+        title="Changed",
+    )
     await bus.execute(command)
     dataset = await bus.execute(GetDatasetByID(id=pk))
     assert dataset.title == "Changed"
@@ -124,14 +135,14 @@ async def test_repo_initdata(
     # No reset: dataset left unchanged
     await initdata.main(path)
     captured = capsys.readouterr()
-    assert captured.out.count("ok") == 5
+    assert captured.out.count("ok") == num_entities
     dataset = await bus.execute(GetDatasetByID(id=pk))
     assert dataset.title == "Changed"
 
     # Reset: dataset goes back to initial state defined in yml file
     await initdata.main(path, reset=True)
     captured = capsys.readouterr()
-    assert captured.out.count("ok") == 4, captured.out
+    assert captured.out.count("ok") == num_entities - 1
     assert captured.out.count("reset") == 1
     dataset = await bus.execute(GetDatasetByID(id=pk))
     assert dataset.title == "Données brutes de l'inventaire forestier"
@@ -139,6 +150,6 @@ async def test_repo_initdata(
     # Reset: dataset left in initial state
     await initdata.main(path, reset=True)
     captured = capsys.readouterr()
-    assert captured.out.count("ok") == 5
+    assert captured.out.count("ok") == num_entities
     dataset = await bus.execute(GetDatasetByID(id=pk))
     assert dataset.title == "Données brutes de l'inventaire forestier"

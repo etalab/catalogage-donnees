@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, Field, validator
 
+from server.domain.common.types import ID
 from server.domain.datasets.entities import (
     DataFormat,
     GeographicalCoverage,
@@ -22,6 +23,7 @@ class DatasetCreate(BaseModel):
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
     published_url: Optional[str] = None
+    tag_ids: List[ID] = Field(default_factory=list)
 
     @validator("formats")
     def check_formats_at_least_one(cls, value: List[DataFormat]) -> List[DataFormat]:
@@ -48,6 +50,7 @@ class DatasetUpdate(BaseModel):
     update_frequency: Optional[UpdateFrequency] = Field(...)
     last_updated_at: Optional[dt.datetime] = Field(...)
     published_url: Optional[str] = Field(...)
+    tag_ids: List[ID]
 
     @validator("title")
     def check_title_not_empty(cls, value: str) -> str:

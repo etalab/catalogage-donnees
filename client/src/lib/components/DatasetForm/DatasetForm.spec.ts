@@ -4,6 +4,7 @@ import DatasetForm from "./DatasetForm.svelte";
 import { render, fireEvent } from "@testing-library/svelte";
 import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
 import { login, logout } from "$lib/stores/auth";
+import { buildFakeTag } from "src/tests/factories/tags";
 
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
@@ -42,6 +43,14 @@ describe("Test the dataset form", () => {
     });
     expect(technicalSource).toBeInTheDocument();
     expect(technicalSource).not.toBeRequired();
+  });
+
+  test('The "tags" field is present', async () => {
+    const { getByLabelText } = render(DatasetForm);
+    const tags = getByLabelText("Mot-clés", {
+      exact: false,
+    });
+    expect(tags).toBeInTheDocument();
   });
 
   test("At least one format is required", async () => {
@@ -102,6 +111,7 @@ describe("Test the dataset form", () => {
   });
 
   test("The fields are initialized with initial values", async () => {
+    const fakeTag = buildFakeTag({ name: "Architecture" });
     const initial: DatasetFormData = {
       title: "Titre initial",
       description: "Description initiale",
@@ -114,13 +124,12 @@ describe("Test the dataset form", () => {
       geographicalCoverage: "europe",
       technicalSource: "foo/bar",
       publishedUrl: "https://data.gouv.fr/datasets/example",
+      tags: [fakeTag],
     };
     const props = { initial };
 
-    const { getByLabelText, getAllByLabelText, container } = render(
-      DatasetForm,
-      { props }
-    );
+    const { getByLabelText, getAllByLabelText, container, getAllByText } =
+      render(DatasetForm, { props });
 
     const title = getByLabelText("Nom du jeu de la donnée", {
       exact: false,
@@ -173,6 +182,8 @@ describe("Test the dataset form", () => {
       exact: false,
     }) as HTMLSelectElement;
     expect(publishedUrl.value).toBe("https://data.gouv.fr/datasets/example");
+    const tags = getAllByText(fakeTag.name);
+    expect(tags).toHaveLength(1);
   });
 
   test("Null fields are correctly handled in HTML and submitted as null", async () => {
@@ -188,6 +199,7 @@ describe("Test the dataset form", () => {
       geographicalCoverage: "europe",
       technicalSource: "foo/bar",
       publishedUrl: null,
+      tags: [buildFakeTag()],
     };
     const props = { initial };
     const { getByLabelText, getByRole, component } = render(DatasetForm, {

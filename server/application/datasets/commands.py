@@ -24,6 +24,7 @@ class CreateDataset(Command[ID]):
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
     published_url: Optional[str] = None
+    tag_ids: List[ID] = Field(default_factory=list)
 
 
 class UpdateDataset(Command[None]):
@@ -39,6 +40,7 @@ class UpdateDataset(Command[None]):
     update_frequency: Optional[UpdateFrequency] = Field(...)
     last_updated_at: Optional[dt.datetime] = Field(...)
     published_url: Optional[str] = Field(...)
+    tag_ids: List[ID]
 
 
 class DeleteDataset(Command[None]):

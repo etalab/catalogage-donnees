@@ -59,6 +59,10 @@ Structure :
     * `password` - str - Utiliser `__env__` pour tirer le mot de passe de `TOOLS_PASSWORDS`
   * `extras` - _Optionnel_, dict
     * `role` - str, `USER | ADMIN`
+* `tags` - list
+  * `id` - str - UUID
+  * `params` - dict
+    * `name` - str
 * `datasets` - list
   * `id` - str - UUID
   * `params` - dict
@@ -88,6 +92,12 @@ users:
     extras:
       role: ADMIN
   - # ...
+
+tags:
+  - id: "<UUID>"
+    params:
+      name: "<name>"
+  - # ...
 
 datasets:
   - id: "<UUID>"

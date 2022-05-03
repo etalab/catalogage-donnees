@@ -1,6 +1,5 @@
 import { test as base, expect, type APIRequestContext } from "@playwright/test";
 import type { Dataset } from "src/definitions/datasets";
-import { getFakeDataset } from "src/tests/factories/dataset";
 import { toPayload } from "src/lib/transformers/dataset";
 import { ADMIN_EMAIL } from "./constants";
 
@@ -47,18 +46,25 @@ export const test = base.extend<AppTestArgs>({
   dataset: async ({ apiContext, adminApiToken }, use) => {
     const headers = { Authorization: `Bearer ${adminApiToken}` };
 
-    const data = getFakeDataset({
+    const data = {
+      id: "xxx-xxx-xxx",
       title: "Sample title",
       description: "Sample description",
-      updateFrequency: "never",
       formats: ["api"],
-      technicalSource: "foo/baz",
-      geographicalCoverage: "world",
-    });
+      entrypoint_email: "jane.doe@beta.gouv.fr",
+      contact_emails: ["contact@beta.gouv.fr"],
+      service: "La Drac",
+      technical_source: "foo/baz",
+      update_frequency: "never",
+      last_updated_at: new Date(),
+      geographical_coverage: "world",
+      tagIds: ["ceb19363-1681-4052-813c-f771d4459295"],
+    };
     let response = await apiContext.post("/datasets/", {
       data: toPayload(data),
       headers,
     });
+
     expect(response.ok()).toBeTruthy();
     const dataset = await response.json();
 

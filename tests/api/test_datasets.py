@@ -6,6 +6,8 @@ import pytest
 
 from server.application.datasets.commands import CreateDataset
 from server.application.datasets.queries import GetDatasetByID
+from server.application.tags.commands import CreateTag
+from server.application.tags.queries import GetTagByID
 from server.config.di import resolve
 from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.common import datetime as dtutil
@@ -107,6 +109,7 @@ CREATE_DATASET_PAYLOAD = {
     "update_frequency": "weekly",
     "last_updated_at": known_date.isoformat(),
     "published_url": None,
+    "tag_ids": [],
 }
 
 CREATE_ANY_DATASET = CreateDataset(
@@ -154,6 +157,7 @@ async def test_dataset_crud(
         "update_frequency": "weekly",
         "last_updated_at": known_date.isoformat(),
         "published_url": None,
+        "tags": [],
     }
 
     non_existing_id = id_factory()
@@ -315,6 +319,7 @@ class TestDatasetUpdate:
             "update_frequency",
             "last_updated_at",
             "published_url",
+            "tag_ids",
         ]
         errors = response.json()["detail"]
         assert len(errors) == len(fields)
@@ -342,6 +347,7 @@ class TestDatasetUpdate:
                 "update_frequency": "weekly",
                 "last_updated_at": known_date.isoformat(),
                 "published_url": "",
+                "tag_ids": [],
             },
             auth=temp_user.auth,
         )
@@ -386,6 +392,7 @@ class TestDatasetUpdate:
                 "update_frequency": "weekly",
                 "last_updated_at": other_known_date.isoformat(),
                 "published_url": "https://data.gouv.fr/datasets/other",
+                "tag_ids": [],
             },
             auth=temp_user.auth,
         )
@@ -407,6 +414,7 @@ class TestDatasetUpdate:
             "update_frequency": "weekly",
             "last_updated_at": other_known_date.isoformat(),
             "published_url": "https://data.gouv.fr/datasets/other",
+            "tags": [],
         }
 
         # Entity was indeed updated
@@ -464,6 +472,63 @@ class TestFormats:
 
         assert response.status_code == 200
         assert response.json()["formats"] == ["website"]
+
+
+@pytest.mark.asyncio
+class TestTags:
+    async def test_tags_add(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
+        bus = resolve(MessageBus)
+
+        dataset_id = await bus.execute(CREATE_ANY_DATASET)
+        tag_architecture_id = await bus.execute(CreateTag(name="Architecture"))
+        tag_architecture = await bus.execute(GetTagByID(id=tag_architecture_id))
+
+        response = await client.put(
+            f"/datasets/{dataset_id}/",
+            json={
+                **CREATE_ANY_DATASET.dict(),
+                "geographical_coverage": CREATE_ANY_DATASET.geographical_coverage.value,
+                "formats": [fmt.value for fmt in CREATE_ANY_DATASET.formats],
+                "tag_ids": [str(tag_architecture.id)],
+            },
+            auth=temp_user.auth,
+        )
+        assert response.status_code == 200
+        assert response.json()["tags"] == [
+            {"id": str(tag_architecture.id), "name": "Architecture"},
+        ]
+
+        dataset = await bus.execute(GetDatasetByID(id=dataset_id))
+        assert dataset.tags == [tag_architecture]
+
+    async def test_tags_remove(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
+        bus = resolve(MessageBus)
+
+        tag_architecture_id = await bus.execute(CreateTag(name="Architecture"))
+        tag_architecture = await bus.execute(GetTagByID(id=tag_architecture_id))
+        dataset_id = await bus.execute(
+            CREATE_ANY_DATASET.copy(update={"tag_ids": [str(tag_architecture.id)]})
+        )
+
+        response = await client.put(
+            f"/datasets/{dataset_id}/",
+            json={
+                **CREATE_ANY_DATASET.dict(),
+                "geographical_coverage": CREATE_ANY_DATASET.geographical_coverage.value,
+                "formats": [fmt.value for fmt in CREATE_ANY_DATASET.formats],
+                "tag_ids": [],
+            },
+            auth=temp_user.auth,
+        )
+        assert response.status_code == 200
+        assert response.json()["tags"] == []
+
+        dataset = await bus.execute(GetDatasetByID(id=dataset_id))
+        assert dataset.tags == []
 
 
 @pytest.mark.asyncio

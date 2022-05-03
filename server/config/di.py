@@ -71,6 +71,7 @@ from server.application.auth.passwords import PasswordEncoder
 from server.domain.auth.repositories import UserRepository
 from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.datasets.repositories import DatasetRepository
+from server.domain.tags.repositories import TagRepository
 from server.infrastructure.adapters.messages import MessageBusAdapter
 from server.infrastructure.auth.passwords import Argon2PasswordEncoder
 from server.infrastructure.auth.repositories import SqlUserRepository
@@ -79,6 +80,7 @@ from server.infrastructure.catalog_records.repositories import (
 )
 from server.infrastructure.database import Database
 from server.infrastructure.datasets.repositories import SqlDatasetRepository
+from server.infrastructure.tags.repositories import SqlTagRepository
 from server.seedwork.application.messages import MessageBus
 from server.seedwork.application.modules import Module
 
@@ -91,6 +93,7 @@ T = TypeVar("T")
 # They are imported lazily later on, to avoid circular dependencies.
 MODULES = [
     "server.infrastructure.datasets.module.DatasetsModule",
+    "server.infrastructure.tags.module.TagsModule",
     "server.infrastructure.auth.module.AuthModule",
 ]
 
@@ -153,6 +156,7 @@ def create_container() -> punq.Container:
     container.register(UserRepository, SqlUserRepository)
     container.register(CatalogRecordRepository, SqlCatalogRecordRepository)
     container.register(DatasetRepository, SqlDatasetRepository)
+    container.register(TagRepository, SqlTagRepository)
 
     return container
 

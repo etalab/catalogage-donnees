@@ -42,6 +42,13 @@ test.describe("Edit dataset", () => {
     await databaseFormat.check();
     expect(await page.isChecked("input[value=database]")).toBeTruthy();
 
+    const selectedTag = page.locator("text=services");
+    await selectedTag.waitFor();
+
+    const tags = page.locator("form [name=tags]");
+    await tags.fill("environnement");
+    await tags.press("Enter");
+
     const button = page.locator("button[type='submit']");
     const [request, response] = await Promise.all([
       page.waitForRequest(`**/datasets/${dataset.id}/`),
@@ -55,6 +62,10 @@ test.describe("Edit dataset", () => {
     expect(json.title).toBe(newTitleText);
     expect(json.description).toBe(newDescriptionText);
     expect(json.formats).toStrictEqual(["database", "website"]);
+
+    expect(
+      json.tags.findIndex((item) => item.name === "environnement") !== -1
+    ).toBeTruthy();
   });
 
   test("Does not see delete button", async ({ page, dataset }) => {
