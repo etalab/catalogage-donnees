@@ -25,7 +25,7 @@
       {@html "Ministère<br />de la culture"}
     </p>
 
-    <div class="fr-container">
+    <div class="container">
       <p class="fr-m-0">
         {#if dataset.headlines}
           <strong data-testid="headlines-title">
@@ -45,7 +45,9 @@
       <div class="metadata-items fr-mt-1w">
         <div>
           <span class="fr-fi fr-fi-x-map-2-line" aria-hidden="true" />
-          <p class="fr-text--xs fr-my-0">
+          <p
+            class="fr-text--xs fr-my-0 fr-px-1w metadata-geographical-coverage"
+          >
             <span class="fr-text-mention--grey">Couverture géographique</span>
             <br />
             <span
@@ -73,7 +75,7 @@
     </div>
 
     <div class="actions">
-      <p class="fr-mb-2w fr-text--sm">
+      <p class="fr-text--sm">
         {capitalize(
           formatDaysMonthsOrYearsToNow(dataset.catalogRecord.createdAt)
         )}
@@ -85,6 +87,12 @@
 </li>
 
 <style>
+  li,
+  a,
+  .container {
+    width: 100%;
+  }
+
   a {
     display: flex;
     width: 100%;
@@ -95,25 +103,27 @@
 
   .metadata-items {
     display: flex;
+    justify-content: space-between;
     flex-wrap: wrap;
     margin: 0 -2em;
+    width: 60%;
   }
 
   .metadata-items > * {
-    flex: 0 1 auto;
     margin: 0 2em;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    column-gap: 0.5rem;
+    display: flex;
   }
 
   [class*="fr-fi"] {
     color: var(--text-action-high-blue-france);
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 0.5rem;
   }
 
   .actions {
+    width: 10%;
     text-align: right;
   }
   [href] {
