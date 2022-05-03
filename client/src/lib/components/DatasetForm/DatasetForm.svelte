@@ -21,10 +21,13 @@
   import { toSelectOptions } from "src/lib/transformers/form";
   import { handleSelectChange } from "src/lib/util/form";
   import { type DropMaybe, Maybe, type AddMaybe } from "$lib/util/maybe";
+  import TagSelector from "../TagSelector/TagSelector.svelte";
+  import type { Tag } from "src/definitions/tag";
 
   export let submitLabel = "Publier ce jeu de données";
   export let loadingLabel = "Publication en cours...";
   export let loading = false;
+  export let tags: Tag[] = [];
 
   export let initial: AddMaybe<DatasetFormData, "geographicalCoverage"> = {
     title: "",
@@ -38,6 +41,7 @@
     updateFrequency: null,
     technicalSource: "",
     publishedUrl: null,
+    tags: [],
   };
 
   const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
@@ -54,6 +58,7 @@
     updateFrequency: UpdateFrequency | null;
     technicalSource: string | null;
     publishedUrl: string | null;
+    tags: Tag[];
   };
 
   const dataFormatChoices = Object.entries(DATA_FORMAT_LABELS).map(
@@ -76,6 +81,7 @@
     updateFrequency: initial.updateFrequency,
     technicalSource: initial.technicalSource,
     publishedUrl: initial.publishedUrl,
+    tags: initial.tags,
   };
 
   // Handle this value manually.
@@ -109,6 +115,15 @@
           .required("Ce champs est requis"),
         technicalSource: yup.string().nullable(),
         publishedUrl: yup.string().nullable(),
+        tags: yup
+          .array()
+          .of(
+            yup.object().shape({
+              name: yup.string(),
+              id: yup.string(),
+            })
+          )
+          .min(1, "Veuillez séléctionner au moins 1 mot-clé"),
       }),
       onSubmit: (
         values: DropMaybe<DatasetFormValues, "geographicalCoverage">
@@ -146,6 +161,9 @@
 
   $: emailErrors = $errors.contactEmails as unknown as string[];
 
+  // the tag error returned by yup could be a string, an array of string,  or an object with the same shape of Tag
+  $: hasTagsError = typeof $errors.tags === "string" && !!$errors.tags;
+
   const hasError = (error: string | string[]) => {
     return typeof error === "string" && Boolean(error);
   };
@@ -165,6 +183,10 @@
     } else {
       await handleChange(event);
     }
+  };
+
+  const handleTagsChange = async (event: CustomEvent<Tag[]>) => {
+    updateValidateField("tags", event.detail);
   };
 </script>
 
@@ -371,6 +393,36 @@
       {#if $errors.technicalSource}
         <p id="technicalSource-desc-error" class="fr-error-text">
           {$errors.technicalSource}
+        </p>
+      {/if}
+    </div>
+  </div>
+  <h2 class="fr-mb-5w">Mot-clés thématiques</h2>
+  <div class="form--content fr-mb-8w">
+    <div
+      class={`fr-input-group fr-mt-8w ${
+        hasTagsError ? "fr-input-group--error" : ""
+      } `}
+    >
+      <label class="fr-label" for="tags">
+        Mot-clés <RequiredMarker />
+        <span class="fr-hint-text" id="tags-desc-hint">
+          Les mot-clés seront utilisés par les réutilisateurs pour affiner leur
+          recherche. Sélectionnez ceux qui vous semblent les plus représentatifs
+          de vos données.
+        </span>
+      </label>
+
+      <TagSelector
+        selectedTags={initial.tags}
+        on:change={handleTagsChange}
+        name="tags"
+        {tags}
+      />
+
+      {#if hasTagsError}
+        <p id="tags-desc-error" class="fr-error-text">
+          {$errors.tags}
         </p>
       {/if}
     </div>

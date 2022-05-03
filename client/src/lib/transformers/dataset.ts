@@ -1,5 +1,5 @@
-import _ from "lodash";
 import type { Dataset } from "src/definitions/datasets";
+import { omit } from "../util/object";
 
 export const camelToUnderscore = (key: string): string => {
   return key.replace(/([A-Z])/g, "_$1").toLowerCase();
@@ -19,7 +19,7 @@ export const transformKeysToUnderscoreCase = (object: {
 export const toPayload = (
   data: Partial<Record<keyof Dataset, any>>
 ): { [K: string]: unknown } => {
-  return transformKeysToUnderscoreCase(_.omit(data, "catalogRecord"));
+  return transformKeysToUnderscoreCase(omit(data, ["catalogRecord"]));
 };
 
 export const toDataset = (item: any): Dataset => {
