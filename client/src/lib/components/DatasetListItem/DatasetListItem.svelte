@@ -18,6 +18,7 @@
 
 <li class="fr-p-3w container">
   <a
+    data-test-id={`${dataset.title}`}
     href={paths.datasetDetail({ id: dataset.id })}
     title="Consulter cette fiche de données"
   >
