@@ -17,8 +17,8 @@ class DatasetCreate(BaseModel):
     geographical_coverage: GeographicalCoverage
     formats: List[DataFormat]
     technical_source: Optional[str] = None
-    entrypoint_email: EmailStr
-    contact_emails: List[EmailStr] = Field(default_factory=list)
+    producer_email: Optional[EmailStr] = None
+    contact_emails: List[EmailStr]
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
     published_url: Optional[str] = None
@@ -29,6 +29,12 @@ class DatasetCreate(BaseModel):
             raise ValueError("formats must contain at least one item")
         return value
 
+    @validator("contact_emails")
+    def check_contact_emails_at_least_one(cls, value: List[str]) -> List[str]:
+        if not value:
+            raise ValueError("contact_emails must contain at least one item")
+        return value
+
 
 class DatasetUpdate(BaseModel):
     title: str
@@ -37,7 +43,7 @@ class DatasetUpdate(BaseModel):
     geographical_coverage: GeographicalCoverage
     formats: List[DataFormat]
     technical_source: Optional[str] = Field(...)
-    entrypoint_email: EmailStr
+    producer_email: Optional[EmailStr] = Field(...)
     contact_emails: List[EmailStr]
     update_frequency: Optional[UpdateFrequency] = Field(...)
     last_updated_at: Optional[dt.datetime] = Field(...)
@@ -65,6 +71,12 @@ class DatasetUpdate(BaseModel):
     def check_formats_at_least_one(cls, value: List[DataFormat]) -> List[DataFormat]:
         if not value:
             raise ValueError("formats must contain at least one item")
+        return value
+
+    @validator("contact_emails")
+    def check_contact_emails_at_least_one(cls, value: List[str]) -> List[str]:
+        if not value:
+            raise ValueError("contact_emails must contain at least one item")
         return value
 
     @validator("published_url")

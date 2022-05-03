@@ -36,7 +36,7 @@ async def add_corpus(items: List[Tuple[str, str]] = None) -> None:
             service="Service",
             geographical_coverage=GeographicalCoverage.NATIONAL,
             formats=[DataFormat.FILE_TABULAR],
-            entrypoint_email="service@mydomain.org",
+            contact_emails=["person@mydomain.org"],
         )
         pk = await bus.execute(command)
         query = GetDatasetByID(id=pk)
@@ -179,7 +179,7 @@ async def test_search_results_change_when_data_changes(
         service="Service",
         geographical_coverage=GeographicalCoverage.DEPARTMENT,
         formats=[DataFormat.OTHER],
-        entrypoint_email="service@mydomain.org",
+        contact_emails=["person@mydomain.org"],
     )
     pk = await bus.execute(command)
     # New dataset is returned in search results
@@ -201,8 +201,8 @@ async def test_search_results_change_when_data_changes(
         geographical_coverage=GeographicalCoverage.DEPARTMENT,
         formats=[DataFormat.OTHER],
         technical_source=None,
-        entrypoint_email="service@mydomain.org",
-        contact_emails=[],
+        producer_email=None,
+        contact_emails=["person@mydomain.org"],
         update_frequency=None,
         last_updated_at=None,
         published_url=None,
@@ -227,8 +227,8 @@ async def test_search_results_change_when_data_changes(
         geographical_coverage=GeographicalCoverage.DEPARTMENT,
         formats=[DataFormat.OTHER],
         technical_source=None,
-        entrypoint_email="service@mydomain.org",
-        contact_emails=[],
+        producer_email=None,
+        contact_emails=["person@mydomain.org"],
         update_frequency=None,
         last_updated_at=None,
         published_url=None,

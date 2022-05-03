@@ -80,7 +80,7 @@ class DatasetModel(Base):
         secondary=dataset_dataformat,
     )
     technical_source = Column(String)
-    entrypoint_email = Column(String, nullable=False)
+    producer_email = Column(String, nullable=False)
     contact_emails = Column(ARRAY(String), server_default="{}", nullable=False)
     update_frequency = Column(Enum(UpdateFrequency, enum="update_frequency_enum"))
     last_updated_at = Column(DateTime(timezone=True))

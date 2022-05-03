@@ -25,7 +25,7 @@ export const toPayload = (
 export const toDataset = (item: any): Dataset => {
   const {
     catalog_record,
-    entrypoint_email,
+    producer_email,
     contact_emails,
     update_frequency,
     last_updated_at,
@@ -40,7 +40,7 @@ export const toDataset = (item: any): Dataset => {
     catalogRecord: {
       createdAt: new Date(created_at),
     },
-    entrypointEmail: entrypoint_email,
+    producerEmail: producer_email,
     contactEmails: contact_emails,
     updateFrequency: update_frequency,
     geographicalCoverage: geographical_coverage,

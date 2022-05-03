@@ -24,7 +24,7 @@ datasets:
       formats:
         - website
       technical_source: SIG national de l'IGN
-      entrypoint_email: service@example.org
+      producer_email: service@example.org
       contact_emails: []
       update_frequency: null
       last_updated_at: null
@@ -41,7 +41,7 @@ datasets:
       formats:
         - file_tabular
       technical_source: Système d'information central du CROUS
-      entrypoint_email: service@example.org
+      producer_email: service@example.org
       contact_emails: []
       update_frequency: null
       last_updated_at: null
@@ -58,7 +58,7 @@ datasets:
       formats:
         - other
       technical_source: Catalogue des fiches de la DARES
-      entrypoint_email: service@example.org
+      producer_email: service@example.org
       contact_emails: []
       update_frequency: null
       last_updated_at: null

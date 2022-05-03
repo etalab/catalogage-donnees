@@ -31,7 +31,7 @@
     description: "",
     service: "",
     formats: [],
-    entrypointEmail: "",
+    producerEmail: "",
     contactEmails: [$user?.email || ""],
     geographicalCoverage: null, // Allow select null option upon creation
     lastUpdatedAt: null,
@@ -47,7 +47,7 @@
     description: string;
     service: string;
     dataFormats: boolean[];
-    entrypointEmail: string;
+    producerEmail: string | null;
     contactEmails: string[];
     geographicalCoverage: Maybe<GeographicalCoverage>;
     lastUpdatedAt: string | null;
@@ -67,7 +67,7 @@
     dataFormats: dataFormatChoices.map(
       ({ value }) => !!initial.formats.find((v) => v === value)
     ),
-    entrypointEmail: initial.entrypointEmail,
+    producerEmail: initial.producerEmail,
     contactEmails: initial.contactEmails,
     lastUpdatedAt: initial.lastUpdatedAt
       ? formatHTMLDate(initial.lastUpdatedAt)
@@ -89,17 +89,18 @@
         description: yup.string().required("Ce champs est requis"),
         service: yup.string().required("Ce champs est requis"),
         dataFormats: yup.array(yup.boolean()).length(dataFormatsValue.length),
-        entrypointEmail: yup
+        producerEmail: yup
           .string()
           .email("Ce champ doit contenir une adresse e-mail valide")
-          .required("Ce champs est requis"),
+          .nullable(),
         contactEmails: yup
           .array()
           .of(
             yup
               .string()
               .email("Ce champ doit contenir une adresse e-mail valide")
-          ),
+          )
+          .min(1),
         lastUpdatedAt: yup.date().nullable(),
         updateFrequency: yup.string().nullable(),
         geographicalCoverage: yup
@@ -118,6 +119,11 @@
           )
           .filter(Maybe.Some);
 
+        // Ensure "" becomes null.
+        const producerEmail = values.producerEmail
+          ? values.producerEmail
+          : null;
+
         const contactEmails = values.contactEmails.filter(Boolean);
 
         const lastUpdatedAt = values.lastUpdatedAt
@@ -127,6 +133,7 @@
         const data: DatasetFormData = {
           ...values,
           formats,
+          producerEmail,
           contactEmails,
           lastUpdatedAt,
         };
@@ -380,35 +387,35 @@
 
   <div class="form--content fr-mb-8w">
     <div
-      class="fr-input-group fr-my-4w {$errors.entrypointEmail
+      class="fr-input-group fr-my-4w {$errors.producerEmail
         ? 'fr-input-group--error'
         : ''}"
     >
-      <label class="fr-label" for="entrypointEmail">
-        Adresse e-mail fonctionnelle
-        <RequiredMarker />
-        <span class="fr-hint-text" id="entrypointEmail-desc-hint">
-          Il est fortement conseillé d'avoir une adresse e-mail accessible à
-          plusieurs personnes afin de rendre la prise de contact possible quelle
-          que soit les personnes en responsabilité.
+      <label class="fr-label" for="producerEmail">
+        Adresse e-mail du service producteur
+        <span class="fr-hint-text" id="producerEmail-desc-hint">
+          Il est fortement conseillé d'avoir une adresse e-mail générique afin
+          de rendre la prise de contact possible quelle que soit les personnes
+          en responsabilité. Nous recommandons d'avoir une adresse différente
+          pour chaque service afin de ne pas "polluer" les boîtes e-mail de
+          chacun lorsque le catalogue grandit.
         </span>
       </label>
       <input
-        class="fr-input {$errors.entrypointEmail ? 'fr-input--error' : ''}"
-        aria-describedby={$errors.entrypointEmail
-          ? "entrypointEmail-desc-error"
+        class="fr-input {$errors.producerEmail ? 'fr-input--error' : ''}"
+        aria-describedby={$errors.producerEmail
+          ? "producerEmail-desc-error"
           : null}
         type="email"
-        id="entrypointEmail"
-        name="entrypointEmail"
-        required
+        id="producerEmail"
+        name="producerEmail"
         on:change={handleChange}
         on:blur={handleChange}
-        bind:value={$form.entrypointEmail}
+        bind:value={$form.producerEmail}
       />
-      {#if $errors.entrypointEmail}
-        <p id="entrypoint-email-desc-error" class="fr-error-text">
-          {$errors.entrypointEmail}
+      {#if $errors.producerEmail}
+        <p id="producerEmail-desc-error" class="fr-error-text">
+          {$errors.producerEmail}
         </p>
       {/if}
     </div>

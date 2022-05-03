@@ -36,7 +36,7 @@ from ..helpers import TestUser, approx_datetime
                     "type": "value_error.missing",
                 },
                 {"loc": ["body", "formats"], "type": "value_error.missing"},
-                {"loc": ["body", "entrypoint_email"], "type": "value_error.missing"},
+                {"loc": ["body", "contact_emails"], "type": "value_error.missing"},
             ],
             id="missing-fields",
         ),
@@ -47,7 +47,7 @@ from ..helpers import TestUser, approx_datetime
                 "service": "Service",
                 "geographical_coverage": "national",
                 "formats": [],
-                "entrypoint_email": "service@mydomain.org",
+                "contact_emails": ["person@mydomain.org"],
             },
             [
                 {
@@ -56,6 +56,23 @@ from ..helpers import TestUser, approx_datetime
                 }
             ],
             id="formats-empty",
+        ),
+        pytest.param(
+            {
+                "title": "Title",
+                "description": "Description",
+                "service": "Service",
+                "geographical_coverage": "national",
+                "formats": ["api"],
+                "contact_emails": [],
+            },
+            [
+                {
+                    "loc": ["body", "contact_emails"],
+                    "msg": "contact_emails must contain at least one item",
+                }
+            ],
+            id="contact_emails-empty",
         ),
     ],
 )
@@ -85,7 +102,7 @@ CREATE_DATASET_PAYLOAD = {
     "geographical_coverage": "national",
     "formats": ["website"],
     "technical_source": "Example database",
-    "entrypoint_email": "example.service@mydomain.org",
+    "producer_email": "example.service@mydomain.org",
     "contact_emails": ["example.person@mydomain.org"],
     "update_frequency": "weekly",
     "last_updated_at": known_date.isoformat(),
@@ -98,7 +115,7 @@ CREATE_ANY_DATASET = CreateDataset(
     service="Example service",
     geographical_coverage=GeographicalCoverage.NATIONAL,
     formats=[DataFormat.WEBSITE, DataFormat.API],
-    entrypoint_email="service@mydomain.org",
+    contact_emails=["person@mydomain.org"],
 )
 
 
@@ -132,7 +149,7 @@ async def test_dataset_crud(
         "geographical_coverage": "national",
         "formats": ["website"],
         "technical_source": "Example database",
-        "entrypoint_email": "example.service@mydomain.org",
+        "producer_email": "example.service@mydomain.org",
         "contact_emails": ["example.person@mydomain.org"],
         "update_frequency": "weekly",
         "last_updated_at": known_date.isoformat(),
@@ -217,7 +234,7 @@ class TestDatasetOptionalFields:
         "field, default",
         [
             pytest.param("technical_source", None),
-            pytest.param("contact_emails", []),
+            pytest.param("producer_email", None),
             pytest.param("update_frequency", None),
             pytest.param("last_updated_at", None),
         ],
@@ -293,7 +310,7 @@ class TestDatasetUpdate:
             "geographical_coverage",
             "formats",
             "technical_source",
-            "entrypoint_email",
+            "producer_email",
             "contact_emails",
             "update_frequency",
             "last_updated_at",
@@ -317,11 +334,11 @@ class TestDatasetUpdate:
                 "title": "",
                 "description": "",
                 "service": "",
-                "formats": [],
+                "formats": ["website", "api"],
                 "geographical_coverage": "national",
-                "entrypoint_email": "service@mydomain.org",
+                "producer_email": None,
                 "technical_source": "",
-                "contact_emails": [],
+                "contact_emails": ["person@mydomain.org"],
                 "update_frequency": "weekly",
                 "last_updated_at": known_date.isoformat(),
                 "published_url": "",
@@ -334,7 +351,6 @@ class TestDatasetUpdate:
             err_title,
             err_description,
             err_service,
-            err_formats,
             err_published_url,
         ) = response.json()["detail"]
 
@@ -346,9 +362,6 @@ class TestDatasetUpdate:
 
         assert err_service["loc"] == ["body", "service"]
         assert "empty" in err_service["msg"]
-
-        assert err_formats["loc"] == ["body", "formats"]
-        assert "at least one" in err_formats["msg"].lower()
 
         assert err_published_url["loc"] == ["body", "published_url"]
         assert "empty" in err_service["msg"]
@@ -368,7 +381,7 @@ class TestDatasetUpdate:
                 "geographical_coverage": "region",
                 "formats": ["database"],
                 "technical_source": "Other information system",
-                "entrypoint_email": "other.service@mydomain.org",
+                "producer_email": "other.service@mydomain.org",
                 "contact_emails": ["other.person@mydomain.org"],
                 "update_frequency": "weekly",
                 "last_updated_at": other_known_date.isoformat(),
@@ -389,7 +402,7 @@ class TestDatasetUpdate:
             "geographical_coverage": "region",
             "formats": ["database"],
             "technical_source": "Other information system",
-            "entrypoint_email": "other.service@mydomain.org",
+            "producer_email": "other.service@mydomain.org",
             "contact_emails": ["other.person@mydomain.org"],
             "update_frequency": "weekly",
             "last_updated_at": other_known_date.isoformat(),
@@ -405,7 +418,7 @@ class TestDatasetUpdate:
         assert dataset.geographical_coverage == GeographicalCoverage.REGION
         assert dataset.formats == [DataFormat.DATABASE]
         assert dataset.technical_source == "Other information system"
-        assert dataset.entrypoint_email == "other.service@mydomain.org"
+        assert dataset.producer_email == "other.service@mydomain.org"
         assert dataset.contact_emails == ["other.person@mydomain.org"]
         assert dataset.update_frequency == UpdateFrequency.WEEKLY
         assert dataset.last_updated_at == other_known_date

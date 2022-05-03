@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import DatasetForm from "./DatasetForm.svelte";
 import { render, fireEvent } from "@testing-library/svelte";
 import type { DataFormat, DatasetFormData } from "src/definitions/datasets";
+import { login, logout } from "$lib/stores/auth";
 
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
@@ -55,21 +56,24 @@ describe("Test the dataset form", () => {
     checkboxes.forEach((checkbox) => expect(checkbox).not.toBeRequired());
   });
 
-  test('The "entrypoint email" field is present', () => {
+  test('The "producerEmail" field is present', () => {
     const { getByLabelText } = render(DatasetForm);
-    const entrypointEmail = getByLabelText("Adresse e-mail fonctionnelle", {
-      exact: false,
-    });
-    expect(entrypointEmail).toBeInTheDocument();
-    expect(entrypointEmail).toBeRequired();
-    expect(entrypointEmail).toHaveAttribute("type", "email");
+    const producerEmail = getByLabelText(
+      "Adresse e-mail du service producteur",
+      {
+        exact: false,
+      }
+    );
+    expect(producerEmail).toBeInTheDocument();
+    expect(producerEmail).not.toBeRequired();
+    expect(producerEmail).toHaveAttribute("type", "email");
   });
 
   test('The "contact emails" field is present', () => {
     const { getAllByLabelText } = render(DatasetForm);
     const inputs = getAllByLabelText(/Contact \d/);
     expect(inputs.length).toBe(1);
-    expect(inputs[0]).not.toBeRequired();
+    expect(inputs[0]).toBeRequired();
     expect(inputs[0]).toHaveAttribute("type", "email");
   });
 
@@ -102,7 +106,7 @@ describe("Test the dataset form", () => {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
-      entrypointEmail: "service.initial@mydomain.org",
+      producerEmail: "service.initial@mydomain.org",
       contactEmails: ["person@mydomain.org"],
       service: "A nice service",
       lastUpdatedAt: new Date("2022-02-01"),
@@ -137,14 +141,18 @@ describe("Test the dataset form", () => {
     expect(getFormatCheckbox("website")).toBeChecked();
     expect(getFormatCheckbox("other")).not.toBeChecked();
 
-    const entrypointEmail = getByLabelText("Adresse e-mail fonctionnelle", {
-      exact: false,
-    }) as HTMLInputElement;
-    expect(entrypointEmail.value).toBe("service.initial@mydomain.org");
+    const producerEmail = getByLabelText(
+      "Adresse e-mail du service producteur",
+      {
+        exact: false,
+      }
+    ) as HTMLInputElement;
+    expect(producerEmail.value).toBe("service.initial@mydomain.org");
 
     const contactEmails = getAllByLabelText(/Contact \d/);
     expect(contactEmails.length).toBe(1);
     expect(contactEmails[0]).toHaveValue("person@mydomain.org");
+    expect(contactEmails[0]).not.toBeRequired();
 
     const lastUpdatedAt = getByLabelText("Date de la dernière mise à jour", {
       exact: false,
@@ -172,7 +180,7 @@ describe("Test the dataset form", () => {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
-      entrypointEmail: "service.initial@mydomain.org",
+      producerEmail: null,
       contactEmails: ["person@mydomain.org"],
       service: "A nice service",
       lastUpdatedAt: null,
@@ -207,6 +215,23 @@ describe("Test the dataset form", () => {
     });
     expect(submittedValue.lastUpdatedAt).toBe(null);
     expect(submittedValue.updateFrequency).toBe(null);
+    expect(submittedValue.producerEmail).toBe(null);
     expect(submittedValue.publishedUrl).toBe(null);
+  });
+
+  describe("Authenticated tests", () => {
+    beforeAll(() =>
+      login({ email: "john@domain.org", role: "USER", apiToken: "abcd1234" })
+    );
+
+    afterAll(() => logout());
+
+    test("User email is used as default contact email", () => {
+      const { getAllByLabelText } = render(DatasetForm);
+      const inputs = getAllByLabelText(/Contact \d/) as HTMLInputElement[];
+      expect(inputs.length).toBe(1);
+      expect(inputs[0].value).toBe("john@domain.org");
+      expect(inputs[0]).not.toBeRequired();
+    });
   });
 });

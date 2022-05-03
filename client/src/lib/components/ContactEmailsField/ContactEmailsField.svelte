@@ -1,6 +1,10 @@
 <script lang="ts">
+  import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
+
   export let contactEmails: string[] = [""];
   export let errors: string[] = [];
+
+  $: hasAtLeastOneEmail = contactEmails.some((email) => !!email);
 
   const add = () => {
     contactEmails = contactEmails.concat("");
@@ -11,9 +15,14 @@
     contactEmails = contactEmails.filter((_, itemIndex) => {
       return i !== itemIndex;
     });
+
     errors = errors.filter((_, itemIndex) => {
       return i !== itemIndex;
     });
+
+    if (contactEmails.length === 0) {
+      add();
+    }
   };
 </script>
 
@@ -22,11 +31,11 @@
     class="fr-fieldset__legend fr-text--regular"
     id="contactEmails-legend"
   >
-    E-mail(s) de contact
+    E-mail(s) personnel(s)
+    <RequiredMarker />
     <span class="fr-hint-text" id="contactEmails-desc-hint">
-      Vous pouvez ajouter des adresses e-mail personnelles en complément l'
-      adresse fonctionnelle. Ces emails seront régulièrement vérifiés afin
-      d'assurer la bonne maintenabilité des jeux de données.
+      Au moins une adresse e-mail est demandée. Ces emails seront régulièrement
+      vérifiés afin d'assurer la bonne maintenabilité des jeux de données.
     </span>
   </legend>
 
@@ -46,6 +55,7 @@
             data-testid="contactEmails"
             placeholder="Adresse e-mail"
             name={contactEmails[i]}
+            required={!hasAtLeastOneEmail}
             on:change
             on:blur
             bind:value={contactEmails[i]}
@@ -59,7 +69,7 @@
         </div>
 
         {#if errors[i]}
-          <p id="entrypoint-email-desc-error" class="fr-error-text">
+          <p id="contactEmails-{i}-desc-error" class="fr-error-text">
             {errors[i]}
           </p>
         {/if}
