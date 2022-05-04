@@ -11,7 +11,7 @@ test.describe("Catalog list", () => {
     await expect(page).toHaveTitle("Catalogue");
 
     await page
-      .locator("data-test-id=Catalogue des enquêtes réalisées par la DARES")
+      .locator("title=Consulter cette fiche de données")
       .first()
       .click();
 

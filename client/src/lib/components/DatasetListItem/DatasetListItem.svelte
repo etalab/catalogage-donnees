@@ -16,13 +16,13 @@
   };
 </script>
 
-<li class="fr-p-3w container">
+<li>
   <a
-    data-test-id={`${dataset.title}`}
+    class="fr-p-3w"
     href={paths.datasetDetail({ id: dataset.id })}
     title="Consulter cette fiche de données"
   >
-    <p class="fr-logo fr-logo--sm fr-p-0" title="république française">
+    <p class="fr-logo fr-logo--sm fr-p-0 logo" title="république française">
       {@html "Ministère<br />de la culture"}
     </p>
 
@@ -46,9 +46,7 @@
       <div class="metadata-items fr-mt-1w">
         <div>
           <span class="fr-fi fr-fi-x-map-2-line" aria-hidden="true" />
-          <p
-            class="fr-text--xs fr-my-0 fr-px-1w metadata-geographical-coverage"
-          >
+          <p class="fr-text--xs fr-my-0 fr-px-1w">
             <span class="fr-text-mention--grey">Couverture géographique</span>
             <br />
             <span
@@ -60,7 +58,7 @@
         </div>
         <div>
           <span class="fr-fi fr-fi-file-line" aria-hidden="true" />
-          <p class="fr-text--xs fr-my-0">
+          <p class="fr-text--xs fr-my-0 fr-px-1w">
             <span class="fr-text-mention--grey">Formats</span> <br />
             <span>{formatFormats(dataset)}</span>
           </p>
@@ -82,21 +80,35 @@
         )}
       </p>
 
-      <span class="fr-fi-arrow-right-line" />
+      <span class="fr-fi-arrow-right-line fr-text-label--blue-france" />
     </div>
   </a>
 </li>
 
 <style>
   li,
-  a,
-  .container {
+  a {
     width: 100%;
+    height: 100%;
+  }
+
+  .container {
+    flex-grow: 1;
+  }
+
+  .logo {
+    width: 15%;
   }
 
   a {
     display: flex;
+    align-items: center;
     width: 100%;
+  }
+
+  a:hover {
+    --a: 0.3;
+    --blend-size: 100%;
   }
   li:not(:last-child) {
     border-bottom: 1px solid var(--border-default-grey);
@@ -107,7 +119,6 @@
     justify-content: space-between;
     flex-wrap: wrap;
     margin: 0 -2em;
-    width: 60%;
   }
 
   .metadata-items > * {
@@ -115,7 +126,7 @@
     display: flex;
   }
 
-  [class*="fr-fi"] {
+  .metadata-items [class*="fr-fi"] {
     color: var(--text-action-high-blue-france);
     display: flex;
     justify-content: center;
@@ -124,9 +135,10 @@
   }
 
   .actions {
-    width: 10%;
+    width: 35%;
     text-align: right;
   }
+
   [href] {
     box-shadow: none;
   }
