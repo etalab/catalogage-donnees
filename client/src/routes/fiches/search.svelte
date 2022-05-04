@@ -54,10 +54,12 @@
       <SearchForm value={q} on:submit={updateSearch} />
     </div>
 
-    <h4 class="fr-mt-6w">
-      {datasets.length}
-      {pluralize(datasets.length, "résultat", "résultats")}
-    </h4>
+    {#if datasets.length > 0}
+      <h4 class="fr-mt-6w">
+        {datasets.length}
+        {pluralize(datasets.length, "résultat", "résultats")}
+      </h4>
+    {/if}
 
     <DatasetList {datasets} />
   </section>
