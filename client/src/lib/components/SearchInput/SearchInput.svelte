@@ -17,18 +17,10 @@
   let selectedOption: SelectOption | undefined;
 
   const handleInput = (e: any) => {
-    const foundOption = options.filter((item) =>
-      item.label.match(e.target.value)
-    );
+    const foundOption = options.find((item) => item.label === e.target.value);
 
-    if (foundOption.length > 0) {
-      selectedOption = foundOption[0];
-    }
-
-    if (foundOption.length === 1) {
-      dispatch("search", selectedOption);
-      searchInput.value = "";
-      selectedOption = undefined;
+    if (foundOption) {
+      selectedOption = foundOption;
     }
   };
 
