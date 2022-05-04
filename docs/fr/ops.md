@@ -20,6 +20,7 @@ Les différents déploiements sont organisés en _environnements_ (copies de l'i
 |---|---|
 | demo | Environnement de démo |
 | staging | Environnement de staging |
+| sandbox | Environnement "bac à sable" destiné à des utilisateurs test |
 
 Il y a un seul _groupe_ Ansible : `web`.
 
