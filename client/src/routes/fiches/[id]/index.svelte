@@ -52,7 +52,9 @@
           </h1>
           <div class="header-headlines-tags fr-mt-2w">
             {#each dataset.tags as tag}
-              <span class="fr-tag"> {tag.name}</span>
+              <span class="fr-badge fr-badge--info fr-badge--no-icon">
+                {tag.name}</span
+              >
             {/each}
           </div>
         </div>
