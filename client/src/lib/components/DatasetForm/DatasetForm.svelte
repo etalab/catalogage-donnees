@@ -397,7 +397,7 @@
       {/if}
     </div>
   </div>
-  <h2 class="fr-mb-5w">Mot-clés thématiques</h2>
+  <h2 id="mot-cles" class="fr-mb-5w">Mot-clés thématiques</h2>
   <div class="form--content fr-mb-8w">
     <div
       class={`fr-input-group fr-mt-8w ${

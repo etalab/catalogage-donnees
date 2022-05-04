@@ -46,10 +46,6 @@
 </script>
 
 <div class="fr-input-group">
-  <p class="fr-hint-text fr-my-2w">
-    <span class="fr-fi-information-line" aria-hidden="true" />
-    Appuyez sur <kbd>Enter</kbd> pour ajouter votre mot-clé
-  </p>
   <input
     role="search"
     autocomplete="off"
@@ -78,29 +74,5 @@
 
   input:focus::placeholder {
     color: transparent;
-  }
-
-  kbd {
-    background-color: #eee;
-    border-radius: 4px;
-    font-size: 0.5rem;
-    font-weight: 800;
-    border-top: 3px solid rgba(255, 255, 255, 0.5);
-    border-left: 3px solid rgba(255, 255, 255, 0.5);
-    border-right: 3px solid rgba(0, 0, 0, 0.2);
-    border-bottom: 3px solid rgba(0, 0, 0, 0.2);
-    color: #555;
-    margin: 0 0.5rem;
-  }
-
-  p {
-    display: flex;
-    align-items: center;
-  }
-
-  p > span {
-    width: auto;
-    height: 25px;
-    padding-right: 5px;
   }
 </style>

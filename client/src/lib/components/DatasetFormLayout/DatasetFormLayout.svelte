@@ -26,6 +26,7 @@
                   target="_self">Informations générales</a
                 >
               </li>
+
               <li class="fr-sidemenu__item">
                 <a
                   on:click={() => (segment = "source-formats")}
@@ -35,6 +36,16 @@
                   class="fr-sidemenu__link"
                   href="#source-formats"
                   target="_self">Sources et formats</a
+                >
+              </li>
+
+              <li class="fr-sidemenu__item">
+                <a
+                  on:click={() => (segment = "mot-cles")}
+                  aria-current={segment === "mot-cles" ? "page" : undefined}
+                  class="fr-sidemenu__link"
+                  href="#mot-cles"
+                  target="_self">Mot-clés thématiques</a
                 >
               </li>
               <li class="fr-sidemenu__item">
