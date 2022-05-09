@@ -170,8 +170,8 @@ async def test_dataset_crud(
     assert response.json() == data
 
     response = await client.get("/datasets/", auth=temp_user.auth)
-    assert response.status_code == 200
-    assert response.json() == [data]
+    assert response.status_code == 200, response.json()
+    assert response.json()["items"] == [data]
 
     response = await client.delete(f"/datasets/{pk}/", auth=admin_user.auth)
     assert response.status_code == 204
@@ -181,7 +181,7 @@ async def test_dataset_crud(
 
     response = await client.get("/datasets/", auth=temp_user.auth)
     assert response.status_code == 200
-    assert response.json() == []
+    assert response.json()["items"] == []
 
 
 @pytest.mark.asyncio
@@ -217,6 +217,103 @@ class TestDatasetPermissions:
         assert response.status_code == 403
 
 
+async def add_dataset_pagination_corpus(n: int) -> None:
+    bus = resolve(MessageBus)
+
+    for k in range(1, n + 1):
+        await bus.execute(CREATE_ANY_DATASET.copy(update={"title": f"Dataset {k}"}))
+
+
+@pytest.mark.asyncio
+class TestDatasetPagination:
+    async def test_default(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
+        await add_dataset_pagination_corpus(n=13)
+
+        response = await client.get("/datasets/", auth=temp_user.auth)
+        assert response.status_code == 200
+        data = response.json()
+        assert set(data) == {"items", "total_items", "page_size"}
+        assert len(data["items"]) == 10
+        assert data["total_items"] == 13
+        assert data["page_size"] == 10
+
+    async def test_page_number(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
+        await add_dataset_pagination_corpus(n=13)
+
+        params = {"page_number": 2}
+        response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+        assert response.status_code == 200
+        data = response.json()
+
+        assert len(data["items"]) == 3
+        assert data["total_items"] == 13
+        assert data["page_size"] == 10
+
+        titles = [item["title"] for item in data["items"]]
+        assert titles == [
+            "Dataset 3",
+            "Dataset 2",
+            "Dataset 1",
+        ]
+
+    async def test_page_size(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
+        await add_dataset_pagination_corpus(n=13)
+
+        # Explicit page size
+        params = {"page_size": 3}
+        response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+        assert response.status_code == 200
+        data = response.json()
+
+        assert len(data["items"]) == 3
+        assert data["total_items"] == 13
+        assert data["page_size"] == 3
+
+        titles = [item["title"] for item in data["items"]]
+        assert titles == ["Dataset 13", "Dataset 12", "Dataset 11"]
+
+    async def test_page_number_and_size(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
+        await add_dataset_pagination_corpus(n=13)
+
+        params = {"page_number": 5, "page_size": 3}
+        response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+        assert response.status_code == 200
+        data = response.json()
+
+        assert len(data["items"]) == 1
+        assert data["total_items"] == 13
+        assert data["page_size"] == 3
+
+        titles = [item["title"] for item in data["items"]]
+        assert titles == ["Dataset 1"]
+
+    async def test_exceed_total_items(
+        self, client: httpx.AsyncClient, temp_user: TestUser
+    ) -> None:
+        await add_dataset_pagination_corpus(n=5)
+
+        params = {
+            "page_number": 3,
+            "page_size": 3,
+        }  # -> Items 6 to 9, but only 5 in total
+
+        response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+        assert response.status_code == 200
+        data = response.json()
+
+        assert len(data["items"]) == 0
+        assert data["total_items"] == 5
+        assert data["page_size"] == 3
+
+
 @pytest.mark.asyncio
 async def test_dataset_get_all_uses_reverse_chronological_order(
     client: httpx.AsyncClient, temp_user: TestUser
@@ -228,7 +325,7 @@ async def test_dataset_get_all_uses_reverse_chronological_order(
 
     response = await client.get("/datasets/", auth=temp_user.auth)
     assert response.status_code == 200
-    titles = [dataset["title"] for dataset in response.json()]
+    titles = [dataset["title"] for dataset in response.json()["items"]]
     assert titles == ["Newest", "Intermediate", "Oldest"]
 
 

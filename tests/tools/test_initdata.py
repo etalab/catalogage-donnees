@@ -26,7 +26,8 @@ async def test_initdata_empty(tmp_path: Path) -> None:
     )
     await initdata.main(path)
 
-    assert await bus.execute(GetAllDatasets()) == []
+    pagination = await bus.execute(GetAllDatasets())
+    assert pagination.items == []
 
 
 @pytest.mark.asyncio

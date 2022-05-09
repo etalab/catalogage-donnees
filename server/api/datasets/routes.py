@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Union
 
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
@@ -18,6 +18,7 @@ from server.application.datasets.queries import (
 from server.application.datasets.views import DatasetView
 from server.config.di import resolve
 from server.domain.auth.entities import UserRole
+from server.domain.common.pagination import Page, Pagination
 from server.domain.common.types import ID
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
@@ -31,19 +32,21 @@ router = APIRouter(prefix="/datasets", tags=["datasets"])
 @router.get(
     "/",
     dependencies=[Depends(IsAuthenticated())],
-    response_model=List[DatasetView],
+    response_model=Pagination[DatasetView],
 )
 async def list_datasets(
     params: DatasetListParams = Depends(),
-) -> Union[JSONResponse, List[DatasetView]]:
+) -> Union[JSONResponse, Pagination[DatasetView]]:
     bus = resolve(MessageBus)
 
-    if params.q is not None:
-        query = SearchDatasets(q=params.q, highlight=params.highlight)
-        views = await bus.execute(query)
-        return JSONResponse(jsonable_encoder(views))
+    page = Page(number=params.page_number, size=params.page_size)
 
-    query = GetAllDatasets()
+    if params.q is not None:
+        query = SearchDatasets(q=params.q, highlight=params.highlight, page=page)
+        pagination = await bus.execute(query)
+        return JSONResponse(jsonable_encoder(pagination))
+
+    query = GetAllDatasets(page=page)
     return await bus.execute(query)
 
 
