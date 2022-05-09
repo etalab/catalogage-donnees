@@ -106,7 +106,7 @@ async def test_search(
     )
     assert response.status_code == 200
     data = response.json()
-    titles = [item["title"] for item in data]
+    titles = [item["title"] for item in data["items"]]
     assert titles == expected_titles
 
 
@@ -138,7 +138,7 @@ async def test_search_robustness(
     )
     assert response.status_code == 200
     data = response.json()
-    reference_titles = [item["title"] for item in data]
+    reference_titles = [item["title"] for item in data["items"]]
     assert reference_titles
 
     response = await client.get(
@@ -148,7 +148,7 @@ async def test_search_robustness(
     )
     assert response.status_code == 200
     data = response.json()
-    other_titles = [item["title"] for item in data]
+    other_titles = [item["title"] for item in data["items"]]
 
     assert reference_titles == other_titles
 
@@ -170,7 +170,7 @@ async def test_search_results_change_when_data_changes(
     )
     assert response.status_code == 200
     data = response.json()
-    assert not data
+    assert not data["items"]
 
     # Add new dataset
     command = CreateDataset(
@@ -189,7 +189,7 @@ async def test_search_results_change_when_data_changes(
         auth=temp_user.auth,
     )
     assert response.status_code == 200
-    (dataset,) = response.json()
+    (dataset,) = response.json()["items"]
     assert dataset["id"] == str(pk)
 
     # Update dataset title
@@ -216,7 +216,7 @@ async def test_search_results_change_when_data_changes(
         auth=temp_user.auth,
     )
     assert response.status_code == 200
-    (dataset,) = response.json()
+    (dataset,) = response.json()["items"]
     assert dataset["id"] == str(pk)
 
     # Same on description
@@ -242,7 +242,7 @@ async def test_search_results_change_when_data_changes(
         auth=temp_user.auth,
     )
     assert response.status_code == 200
-    (dataset,) = response.json()
+    (dataset,) = response.json()["items"]
     assert dataset["id"] == str(pk)
 
     # Deleted dataset is not returned in search results anymore
@@ -255,7 +255,7 @@ async def test_search_results_change_when_data_changes(
     )
     assert response.status_code == 200
     data = response.json()
-    assert not data
+    assert not data["items"]
 
 
 @pytest.mark.asyncio
@@ -281,7 +281,7 @@ async def test_search_ranking(client: httpx.AsyncClient, temp_user: TestUser) ->
     response = await client.get("/datasets/", params={"q": q}, auth=temp_user.auth)
     assert response.status_code == 200
     data = response.json()
-    titles = [item["title"] for item in data]
+    titles = [item["title"] for item in data["items"]]
     assert titles == expected_titles
 
 
@@ -320,7 +320,7 @@ async def test_search_highlight(
         auth=temp_user.auth,
     )
     assert response.status_code == 200
-    data = response.json()
-    assert len(data) == 1
+    items = response.json()["items"]
+    assert len(items) == 1
 
-    assert data[0]["headlines"] == expected_headlines
+    assert items[0]["headlines"] == expected_headlines

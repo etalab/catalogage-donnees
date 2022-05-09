@@ -20,13 +20,13 @@ test.describe("Search", () => {
     ]);
     expect(request.method()).toBe("GET");
     expect(response.status()).toBe(200);
-    const json = await response.json();
-    expect(json.length).toBeGreaterThanOrEqual(1);
-    expect(json[0].title).toBe(dataset.title);
+    const { items } = await response.json();
+    expect(items.length).toBeGreaterThanOrEqual(1);
+    expect(items[0].title).toBe(dataset.title);
 
     await expect(page).toHaveTitle("Rechercher un jeu de données");
     await expect(page).toHaveURL("/fiches/search?q=title");
-    await page.locator(`text=/${json.length} résultat(s)?/i`).waitFor();
+    await page.locator(`text=/${items.length} résultat(s)?/i`).waitFor();
     await page.locator(`:has-text('${dataset.title}')`).first().waitFor();
   });
 
@@ -57,12 +57,12 @@ test.describe("Search", () => {
     ]);
     expect(request.method()).toBe("GET");
     expect(response.status()).toBe(200);
-    let json = await response.json();
-    expect(json.length).toBeGreaterThanOrEqual(1);
-    expect(json[0].title).toBe(dataset.title);
+    let { items } = await response.json();
+    expect(items.length).toBeGreaterThanOrEqual(1);
+    expect(items[0].title).toBe(dataset.title);
 
     await expect(page).toHaveURL("/fiches/search?q=title");
-    await page.locator(`text=/${json.length} résultat(s)?/i`).waitFor();
+    await page.locator(`text=/${items.length} résultat(s)?/i`).waitFor();
     await page.locator(`:has-text('${dataset.title}')`).first().waitFor();
 
     // Second search. Aim at getting no results.
@@ -78,8 +78,8 @@ test.describe("Search", () => {
     ]);
     expect(request.method()).toBe("GET");
     expect(response.status()).toBe(200);
-    json = await response.json();
-    expect(json.length).toBe(0);
+    ({ items } = await response.json());
+    expect(items.length).toBe(0);
 
     await expect(page).toHaveURL("/fiches/search?q=noresultsexpected");
   });
