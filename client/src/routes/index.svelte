@@ -42,11 +42,7 @@
   <div class="fr-container fr-grid-row fr-grid-row--center fr-py-6w">
     <div class="fr-col-10">
       <h1>Recherchez un jeu de données</h1>
-      <SearchForm
-        size="lg"
-        placeholder="Ex : taux de contamination COVID, nombre de naissances en France, ..."
-        on:submit={submitSearch}
-      />
+      <SearchForm on:submit={submitSearch} />
     </div>
   </div>
 </section>
