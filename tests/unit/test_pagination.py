@@ -56,12 +56,12 @@ def test_default_page() -> None:
             id="size-min-exceeded-neg",
         ),
         pytest.param(
-            lambda: Page(size=100),
+            lambda: Page(size=1000),
             None,
             id="size-max",
         ),
         pytest.param(
-            lambda: Page(size=101),
+            lambda: Page(size=1001),
             ValidationError,
             id="size-max-exceeded",
         ),

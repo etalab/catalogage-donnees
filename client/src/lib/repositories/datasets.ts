@@ -3,7 +3,7 @@ import type {
   DatasetCreateData,
   DatasetUpdateData,
 } from "src/definitions/datasets";
-import type { Fetch } from "src/definitions/fetch";
+import type { ApiPagination, Fetch } from "src/definitions/fetch";
 import { getHeaders, getApiUrl, makeApiRequest } from "$lib/fetch";
 import { toQueryString } from "$lib/util/urls";
 import { toDataset, toPayload } from "$lib/transformers/dataset";
@@ -52,7 +52,7 @@ export const getDatasets: GetDatasets = async ({ fetch, apiToken, q }) => {
   const response = await makeApiRequest(fetch, request);
 
   return Maybe.map(response, async (response) => {
-    const items: any[] = await response.json();
+    const { items }: ApiPagination = await response.json();
     return items.map((item) => toDataset(item));
   });
 };
