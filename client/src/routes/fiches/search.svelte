@@ -56,10 +56,12 @@
 
 <section class="fr-container fr-mt-8w fr-mb-15w">
   {#if Maybe.Some(datasets)}
-    <h2 class="fr-mb-3w">
-      {datasets.length}
-      {pluralize(datasets.length, "résultat", "résultats")}
-    </h2>
+    {#if q}
+      <h2 class="fr-mb-3w">
+        {datasets.length}
+        {pluralize(datasets.length, "résultat", "résultats")}
+      </h2>
+    {/if}
     <DatasetList {datasets} />
   {/if}
 </section>
