@@ -1,6 +1,7 @@
 import datetime as dt
 from typing import List, Optional
 
+from fastapi import Query
 from pydantic import BaseModel, EmailStr, Field, validator
 
 from server.domain.common.types import ID
@@ -9,6 +10,11 @@ from server.domain.datasets.entities import (
     GeographicalCoverage,
     UpdateFrequency,
 )
+
+
+class DatasetListParams(BaseModel):
+    q: str = Query(None)
+    highlight: bool = Query(False)
 
 
 class DatasetCreate(BaseModel):

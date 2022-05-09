@@ -23,7 +23,7 @@ from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
 from ..auth.dependencies import HasRole, IsAuthenticated
-from .schemas import DatasetCreate, DatasetUpdate
+from .schemas import DatasetCreate, DatasetListParams, DatasetUpdate
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
@@ -34,12 +34,12 @@ router = APIRouter(prefix="/datasets", tags=["datasets"])
     response_model=List[DatasetView],
 )
 async def list_datasets(
-    q: str = None, highlight: bool = False
+    params: DatasetListParams = Depends(),
 ) -> Union[JSONResponse, List[DatasetView]]:
     bus = resolve(MessageBus)
 
-    if q is not None:
-        query = SearchDatasets(q=q, highlight=highlight)
+    if params.q is not None:
+        query = SearchDatasets(q=params.q, highlight=params.highlight)
         views = await bus.execute(query)
         return JSONResponse(jsonable_encoder(views))
 
