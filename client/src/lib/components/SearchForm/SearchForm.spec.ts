@@ -26,17 +26,6 @@ describe("Test the search form", () => {
     expect(search.value).toBe("initial");
   });
 
-  test("The 'search' placeholder can be set", async () => {
-    const { getByPlaceholderText, rerender } = render(SearchForm);
-    expect(getByPlaceholderText("Rechercher")).toBeInTheDocument();
-
-    const props = { placeholder: "Rechercher un jeu de données" };
-    rerender({ props });
-    expect(
-      getByPlaceholderText("Rechercher un jeu de données")
-    ).toBeInTheDocument();
-  });
-
   test("The form submits the search value", async () => {
     const { getByRole, component } = render(SearchForm);
 
@@ -55,12 +44,8 @@ describe("Test the search form", () => {
     expect(submittedValues.pop()).toBe("Forêt");
   });
 
-  test("The form can be large", async () => {
-    const { getByRole, rerender } = render(SearchForm);
-    expect(getByRole("search")).not.toHaveClass("fr-search-bar--lg");
-
-    const props = { size: "lg" };
-    rerender({ props });
+  test("The form must be large", async () => {
+    const { getByRole } = render(SearchForm);
     expect(getByRole("search")).toHaveClass("fr-search-bar--lg");
   });
 });
