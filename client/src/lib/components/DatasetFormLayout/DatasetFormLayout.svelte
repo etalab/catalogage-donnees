@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
 
   let segment = "";
 
-  let container = undefined;
-  let positions = undefined;
-  let anchors = [];
+  let container: Element | undefined = undefined;
+  let positions: number[] = [];
+  let anchors: Element[] = [];
 
   const handleScroll = () => {
     if (anchors === undefined || positions === undefined) return;
@@ -19,7 +19,7 @@
     const top = window.scrollY;
 
     let i = anchors.length;
-    let lastId = undefined;
+    let lastId = "";
     while (i--) {
       if (positions[i] - top < 40) {
         const { id } = anchors[i];
@@ -34,13 +34,15 @@
   };
 
   const onresize = () => {
+    if (container === undefined) return;
     const { top } = container.getBoundingClientRect();
-    positions = [].map.call(anchors, (anchor) => {
+    positions = anchors.map((anchor) => {
       return anchor.getBoundingClientRect().top - top;
     });
   };
 
   onMount(() => {
+    if (container === undefined) return;
     container.querySelectorAll("h2").forEach((anchor) => {
       if (anchor.id !== "") anchors.push(anchor);
     });
