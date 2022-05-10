@@ -42,12 +42,16 @@ test.describe("Edit dataset", () => {
     await databaseFormat.check();
     expect(await page.isChecked("input[value=database]")).toBeTruthy();
 
-    const selectedTag = page.locator("text=services");
+    const selectedTag = page.locator(
+      'button[role="listitem"]:has-text("services")'
+    );
     await selectedTag.waitFor();
 
     const tags = page.locator("form [name=tags]");
-    await tags.fill("environnement");
-    await tags.press("Enter");
+
+    await tags.selectOption({
+      label: "environnement",
+    });
 
     const button = page.locator("button[type='submit']");
     const [request, response] = await Promise.all([

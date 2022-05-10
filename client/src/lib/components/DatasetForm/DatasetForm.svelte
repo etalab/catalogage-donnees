@@ -161,9 +161,6 @@
 
   $: emailErrors = $errors.contactEmails as unknown as string[];
 
-  // the tag error returned by yup could be a string, an array of string,  or an object with the same shape of Tag
-  $: hasTagsError = typeof $errors.tags === "string" && !!$errors.tags;
-
   const hasError = (error: string | string[]) => {
     return typeof error === "string" && Boolean(error);
   };
@@ -399,33 +396,13 @@
   </div>
   <h2 id="mot-cles" class="fr-mb-5w">Mot-clés thématiques</h2>
   <div class="form--content fr-mb-8w">
-    <div
-      class={`fr-input-group fr-mt-8w ${
-        hasTagsError ? "fr-input-group--error" : ""
-      } `}
-    >
-      <label class="fr-label" for="tags">
-        Mot-clés <RequiredMarker />
-        <span class="fr-hint-text" id="tags-desc-hint">
-          Les mot-clés seront utilisés par les réutilisateurs pour affiner leur
-          recherche. Sélectionnez ceux qui vous semblent les plus représentatifs
-          de vos données.
-        </span>
-      </label>
-
-      <TagSelector
-        selectedTags={initial.tags}
-        on:change={handleTagsChange}
-        name="tags"
-        {tags}
-      />
-
-      {#if hasTagsError}
-        <p id="tags-desc-error" class="fr-error-text">
-          {$errors.tags}
-        </p>
-      {/if}
-    </div>
+    <TagSelector
+      error={typeof $errors.tags === "string" ? $errors.tags : ""}
+      selectedTags={initial.tags}
+      on:change={handleTagsChange}
+      name="tags"
+      {tags}
+    />
   </div>
 
   <h2 id="contacts" class="fr-mt-6w fr-mb-5w">Contacts</h2>
