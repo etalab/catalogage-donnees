@@ -50,6 +50,13 @@
           <h1 class="fr-mb-0">
             {dataset.title}
           </h1>
+          <div class="header-headlines-tags fr-mt-2w">
+            {#each dataset.tags as tag}
+              <span class="fr-badge fr-badge--info fr-badge--no-icon">
+                {tag.name}</span
+              >
+            {/each}
+          </div>
         </div>
       </div>
 
@@ -191,5 +198,10 @@
 
   .aside-entry p {
     margin-bottom: 0;
+  }
+
+  .header-headlines-tags {
+    display: flex;
+    gap: 10px;
   }
 </style>
