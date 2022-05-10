@@ -4,12 +4,22 @@
   import { apiToken } from "$lib/stores/auth";
   import { getDatasets } from "$lib/repositories/datasets";
 
-  export const load: Load = async ({ fetch }) => {
-    const datasets = await getDatasets({ fetch, apiToken: get(apiToken) });
+  export const load: Load = async ({ fetch, url }) => {
+    const page = +(url.searchParams.get("page") || 1);
+    const pageSize = +(url.searchParams.get("page_size") || 3);
+
+    const paginatedDatasets = await getDatasets({
+      fetch,
+      apiToken: get(apiToken),
+      page,
+      pageSize,
+    });
 
     return {
       props: {
-        datasets,
+        paginatedDatasets,
+        currentPage: page,
+        pageSize,
       },
     };
   };
@@ -17,20 +27,42 @@
 
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import { page as pageStore } from "$app/stores";
   import type { Dataset } from "src/definitions/datasets";
-  import { toQueryString } from "$lib/util/urls";
+  import type { GetPageLink, Paginated } from "src/definitions/pagination";
+  import { patchQueryString, toQueryString } from "$lib/util/urls";
   import { Maybe } from "$lib/util/maybe";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
+  import Pagination from "$lib/components/Pagination/Pagination.svelte";
+  import PageSizeSelect from "$lib/components/PageSizeSelect/PageSizeSelect.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import paths from "$lib/paths";
 
-  export let datasets: Maybe<Dataset[]>;
+  export let paginatedDatasets: Maybe<Paginated<Dataset>>;
+  export let currentPage: number;
+  export let pageSize: number;
 
   const submitSearch = (event: CustomEvent<string>) => {
     const q = event.detail;
     const queryString = toQueryString([["q", q]]);
     const href = `${paths.datasetSearch}${queryString}`;
     goto(href);
+  };
+
+  const getPageLink: GetPageLink = (page) => {
+    const queryString = patchQueryString($pageStore.url.searchParams, [
+      ["page", page.toString()],
+      ["page_size", pageSize.toString()],
+    ]);
+    return `${queryString}`;
+  };
+
+  const onPageSizeChange = (event: Event) => {
+    const target = event.target as HTMLSelectElement;
+    const queryString = patchQueryString($pageStore.url.searchParams, [
+      ["page_size", target.value],
+    ]);
+    goto(queryString);
   };
 </script>
 
@@ -48,8 +80,35 @@
 </section>
 
 <section class="fr-container fr-mt-8w fr-mb-15w">
-  {#if Maybe.Some(datasets)}
-    <h2 class="fr-mb-3w">{datasets.length} jeux de donnnées contribués</h2>
-    <DatasetList {datasets} />
+  <div class="search-tools">
+    <PageSizeSelect value={pageSize} on:change={onPageSizeChange} />
+  </div>
+
+  {#if Maybe.Some(paginatedDatasets)}
+    <h2 class="fr-mb-3w">
+      {paginatedDatasets.totalItems} jeux de donnnées contribués
+    </h2>
+
+    <DatasetList datasets={paginatedDatasets.items} />
+
+    <div class="pagination-container">
+      <Pagination
+        {currentPage}
+        totalPages={paginatedDatasets.totalPages}
+        {getPageLink}
+      />
+    </div>
   {/if}
 </section>
+
+<style>
+  .pagination-container {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .search-tools {
+    display: flex;
+    justify-content: flex-end;
+  }
+</style>

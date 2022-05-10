@@ -3,10 +3,12 @@ import type {
   DatasetCreateData,
   DatasetUpdateData,
 } from "src/definitions/datasets";
-import type { ApiPagination, Fetch } from "src/definitions/fetch";
+import type { Fetch } from "src/definitions/fetch";
+import type { Paginated } from "src/definitions/pagination";
 import { getHeaders, getApiUrl, makeApiRequest } from "$lib/fetch";
 import { toQueryString } from "$lib/util/urls";
 import { toDataset, toPayload } from "$lib/transformers/dataset";
+import { toPaginated } from "$lib/transformers/pagination";
 import { Maybe } from "$lib/util/maybe";
 
 type GetDatasetByID = (opts: {
@@ -35,16 +37,30 @@ export const getDatasetByID: GetDatasetByID = async ({
 type GetDatasets = (opts: {
   fetch: Fetch;
   apiToken: string;
+  page: number;
+  pageSize: number;
   q?: string;
-}) => Promise<Maybe<Dataset[]>>;
+}) => Promise<Maybe<Paginated<Dataset>>>;
 
-export const getDatasets: GetDatasets = async ({ fetch, apiToken, q }) => {
-  const queryItems: [string, string][] = [];
+export const getDatasets: GetDatasets = async ({
+  fetch,
+  apiToken,
+  page,
+  pageSize,
+  q,
+}) => {
+  const queryItems: [string, string][] = [
+    ["page_number", page.toString()],
+    ["page_size", pageSize.toString()],
+  ];
+
   if (typeof q === "string") {
     queryItems.push(["q", q], ["highlight", "true"]);
   }
+
   const queryString = toQueryString(queryItems);
   const url = `${getApiUrl()}/datasets/${queryString}`;
+
   const request = new Request(url, {
     headers: new Headers(getHeaders(apiToken)),
   });
@@ -52,8 +68,8 @@ export const getDatasets: GetDatasets = async ({ fetch, apiToken, q }) => {
   const response = await makeApiRequest(fetch, request);
 
   return Maybe.map(response, async (response) => {
-    const { items }: ApiPagination = await response.json();
-    return items.map((item) => toDataset(item));
+    const data = await response.json();
+    return toPaginated(data, (item) => toDataset(item));
   });
 };
 

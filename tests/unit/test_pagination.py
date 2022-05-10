@@ -3,7 +3,7 @@ from typing import Callable, Optional
 import pytest
 from pydantic import ValidationError
 
-from server.domain.common.pagination import Page
+from server.domain.common.pagination import Page, Pagination
 
 
 def test_default_page() -> None:
@@ -56,12 +56,12 @@ def test_default_page() -> None:
             id="size-min-exceeded-neg",
         ),
         pytest.param(
-            lambda: Page(size=1000),
+            lambda: Page(size=100),
             None,
             id="size-max",
         ),
         pytest.param(
-            lambda: Page(size=1001),
+            lambda: Page(size=101),
             ValidationError,
             id="size-max-exceeded",
         ),
@@ -73,3 +73,22 @@ def test_page(pagefunc: Callable, exc: Optional[type]) -> None:
     else:
         with pytest.raises(exc):
             pagefunc()
+
+
+def test_pagination_total_pages() -> None:
+    items = [1, 2, 3]
+
+    pagination = Pagination(items=items, total_items=0, page_size=3)
+    assert pagination.total_pages == 0
+
+    pagination = Pagination(items=items, total_items=2, page_size=3)
+    assert pagination.total_pages == 1
+
+    pagination = Pagination(items=items, total_items=3, page_size=3)
+    assert pagination.total_pages == 1
+
+    pagination = Pagination(items=items, total_items=4, page_size=3)
+    assert pagination.total_pages == 2
+
+    pagination = Pagination(items=items, total_items=7, page_size=3)
+    assert pagination.total_pages == 3

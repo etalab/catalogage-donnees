@@ -21,3 +21,5 @@ describe("toQueryString", () => {
     expect(toQueryString(items)).toBe(expected);
   });
 });
+
+// TODO patchQueryString
