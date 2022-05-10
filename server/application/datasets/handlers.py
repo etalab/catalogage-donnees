@@ -1,8 +1,7 @@
-from typing import List
-
 from server.config.di import resolve
 from server.domain.catalog_records.entities import CatalogRecord
 from server.domain.catalog_records.repositories import CatalogRecordRepository
+from server.domain.common.pagination import Pagination
 from server.domain.common.types import ID
 from server.domain.datasets.entities import Dataset
 from server.domain.datasets.exceptions import DatasetDoesNotExist
@@ -60,10 +59,11 @@ async def delete_dataset(command: DeleteDataset) -> None:
     await repository.delete(command.id)
 
 
-async def get_all_datasets(query: GetAllDatasets) -> List[DatasetView]:
+async def get_all_datasets(query: GetAllDatasets) -> Pagination[DatasetView]:
     repository = resolve(DatasetRepository)
-    datasets = await repository.get_all()
-    return [DatasetView(**dataset.dict()) for dataset in datasets]
+    datasets, count = await repository.get_all(page=query.page)
+    views = [DatasetView(**dataset.dict()) for dataset in datasets]
+    return Pagination(items=views, total_items=count, page_size=query.page.size)
 
 
 async def get_dataset_by_id(query: GetDatasetByID) -> DatasetView:
@@ -78,15 +78,21 @@ async def get_dataset_by_id(query: GetDatasetByID) -> DatasetView:
     return DatasetView(**dataset.dict())
 
 
-async def search_datasets(query: SearchDatasets) -> List[DatasetSearchView]:
+async def search_datasets(query: SearchDatasets) -> Pagination[DatasetSearchView]:
     repository = resolve(DatasetRepository)
 
-    items = await repository.search(q=query.q, highlight=query.highlight)
+    items, count = await repository.search(
+        q=query.q,
+        highlight=query.highlight,
+        page=query.page,
+    )
 
-    return [
+    views = [
         DatasetSearchView(
             **dataset.dict(),
             headlines=headlines,
         )
         for dataset, headlines in items
     ]
+
+    return Pagination(items=views, total_items=count, page_size=query.page.size)

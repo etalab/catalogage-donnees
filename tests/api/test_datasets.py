@@ -1,5 +1,5 @@
 import datetime as dt
-from typing import Any
+from typing import Any, List
 
 import httpx
 import pytest
@@ -171,7 +171,7 @@ async def test_dataset_crud(
 
     response = await client.get("/datasets/", auth=temp_user.auth)
     assert response.status_code == 200
-    assert response.json() == [data]
+    assert response.json()["items"] == [data]
 
     response = await client.delete(f"/datasets/{pk}/", auth=admin_user.auth)
     assert response.status_code == 204
@@ -181,7 +181,7 @@ async def test_dataset_crud(
 
     response = await client.get("/datasets/", auth=temp_user.auth)
     assert response.status_code == 200
-    assert response.json() == []
+    assert response.json()["items"] == []
 
 
 @pytest.mark.asyncio
@@ -217,6 +217,69 @@ class TestDatasetPermissions:
         assert response.status_code == 403
 
 
+async def add_dataset_pagination_corpus(n: int) -> None:
+    bus = resolve(MessageBus)
+
+    for k in range(1, n + 1):
+        await bus.execute(CREATE_ANY_DATASET.copy(update={"title": f"Dataset {k}"}))
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "params, num_items, dataset_titles",
+    [
+        pytest.param(
+            {},
+            13,
+            ["__skip__"],
+            id="default",
+        ),
+        pytest.param(
+            {"page_size": 3},
+            3,
+            ["Dataset 13", "Dataset 12", "Dataset 11"],
+            id="first-page",
+        ),
+        pytest.param(
+            {"page_size": 3, "page_number": 4},
+            3,
+            ["Dataset 4", "Dataset 3", "Dataset 2"],
+            id="some-middle-page",
+        ),
+        pytest.param(
+            {"page_size": 3, "page_number": 5},
+            1,
+            ["Dataset 1"],
+            id="last-page",
+        ),
+        pytest.param(
+            {"page_size": 3, "page_number": 6},
+            0,
+            [],
+            id="beyond-last-page",
+        ),
+    ],
+)
+async def test_dataset_pagination(
+    client: httpx.AsyncClient,
+    temp_user: TestUser,
+    params: dict,
+    num_items: int,
+    dataset_titles: List[str],
+) -> None:
+    await add_dataset_pagination_corpus(n=13)
+
+    response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+    assert response.status_code == 200
+    data = response.json()
+
+    assert len(data["items"]) == num_items
+    assert data["total_items"] == 13
+    assert data["page_size"] == params.get("page_size", 1000)
+    if "__skip__" not in dataset_titles:
+        assert [item["title"] for item in data["items"]] == dataset_titles
+
+
 @pytest.mark.asyncio
 async def test_dataset_get_all_uses_reverse_chronological_order(
     client: httpx.AsyncClient, temp_user: TestUser
@@ -228,7 +291,7 @@ async def test_dataset_get_all_uses_reverse_chronological_order(
 
     response = await client.get("/datasets/", auth=temp_user.auth)
     assert response.status_code == 200
-    titles = [dataset["title"] for dataset in response.json()]
+    titles = [dataset["title"] for dataset in response.json()["items"]]
     assert titles == ["Newest", "Intermediate", "Oldest"]
 
 

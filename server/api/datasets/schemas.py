@@ -1,14 +1,27 @@
 import datetime as dt
 from typing import List, Optional
 
+from fastapi import Query
 from pydantic import BaseModel, EmailStr, Field, validator
 
+from server.domain.common.pagination import (
+    PAGE_NUMBER_CONSTR,
+    PAGE_SIZE_CONSTR,
+    TEMP_VERY_HIGH_MAX_PAGE_SIZE,
+)
 from server.domain.common.types import ID
 from server.domain.datasets.entities import (
     DataFormat,
     GeographicalCoverage,
     UpdateFrequency,
 )
+
+
+class DatasetListParams(BaseModel):
+    q: str = Query(None)
+    highlight: bool = Query(False)
+    page_number: int = Query(1, **PAGE_NUMBER_CONSTR)
+    page_size: int = Query(TEMP_VERY_HIGH_MAX_PAGE_SIZE, **PAGE_SIZE_CONSTR)
 
 
 class DatasetCreate(BaseModel):

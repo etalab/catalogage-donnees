@@ -21,6 +21,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, relationship, selectinload
 
+from server.domain.common.pagination import Page
 from server.domain.common.types import ID
 from server.domain.datasets.entities import (
     DataFormat,
@@ -28,12 +29,13 @@ from server.domain.datasets.entities import (
     GeographicalCoverage,
     UpdateFrequency,
 )
-from server.domain.datasets.repositories import DatasetHeadlines, DatasetRepository
+from server.domain.datasets.repositories import DatasetRepository, SearchResult
 from server.domain.tags.entities import Tag
 
 from ..catalog_records.repositories import CatalogRecordModel
 from ..catalog_records.repositories import make_entity as make_catalog_record_entity
 from ..database import Base, Database
+from ..helpers.sqlalchemy import get_count_from, to_limit_offset
 from ..tags.repositories import TagModel
 from ..tags.repositories import make_entity as make_tag_entity
 
@@ -158,7 +160,9 @@ class SqlDatasetRepository(DatasetRepository):
     def __init__(self, db: Database) -> None:
         self._db = db
 
-    async def get_all(self) -> List[Dataset]:
+    async def get_all(self, page: Page = Page()) -> Tuple[List[Dataset], int]:
+        limit, offset = to_limit_offset(page)
+
         async with self._db.session() as session:
             stmt = (
                 select(DatasetModel)
@@ -170,13 +174,20 @@ class SqlDatasetRepository(DatasetRepository):
                 .join(DatasetModel.catalog_record)
                 .order_by(CatalogRecordModel.created_at.desc())
             )
-            result = await session.execute(stmt)
+            count = await get_count_from(stmt, session)
+            result = await session.execute(stmt.limit(limit).offset(offset))
             instances = result.scalars().all()
-            return [make_entity(instance) for instance in instances]
+            items = [make_entity(instance) for instance in instances]
+            return items, count
 
     async def search(
-        self, q: str, highlight: bool = False
-    ) -> List[Tuple[Dataset, Optional[DatasetHeadlines]]]:
+        self,
+        q: str,
+        highlight: bool = False,
+        page: Page = Page(),
+    ) -> Tuple[List[SearchResult], int]:
+        limit, offset = to_limit_offset(page)
+
         async with self._db.session() as session:
             query_col = func.plainto_tsquery(text("'french'"), q)
 
@@ -235,9 +246,11 @@ class SqlDatasetRepository(DatasetRepository):
                 .order_by(desc(text("rank")))
             )
 
-            result = await session.execute(stmt)
+            count = await get_count_from(stmt, session)
 
-            return [
+            result = await session.execute(stmt.limit(limit).offset(offset))
+
+            items: List[SearchResult] = [
                 (
                     make_entity(instance),
                     {"title": headlines[0], "description": headlines[1]}
@@ -246,6 +259,8 @@ class SqlDatasetRepository(DatasetRepository):
                 )
                 for (instance, _, *headlines) in result
             ]
+
+            return items, count
 
     async def _maybe_get_by_id(
         self, session: AsyncSession, id: ID

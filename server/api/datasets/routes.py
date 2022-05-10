@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Union
 
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
@@ -18,12 +18,13 @@ from server.application.datasets.queries import (
 from server.application.datasets.views import DatasetView
 from server.config.di import resolve
 from server.domain.auth.entities import UserRole
+from server.domain.common.pagination import Page, Pagination
 from server.domain.common.types import ID
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
 from ..auth.dependencies import HasRole, IsAuthenticated
-from .schemas import DatasetCreate, DatasetUpdate
+from .schemas import DatasetCreate, DatasetListParams, DatasetUpdate
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
@@ -31,19 +32,21 @@ router = APIRouter(prefix="/datasets", tags=["datasets"])
 @router.get(
     "/",
     dependencies=[Depends(IsAuthenticated())],
-    response_model=List[DatasetView],
+    response_model=Pagination[DatasetView],
 )
 async def list_datasets(
-    q: str = None, highlight: bool = False
-) -> Union[JSONResponse, List[DatasetView]]:
+    params: DatasetListParams = Depends(),
+) -> Union[JSONResponse, Pagination[DatasetView]]:
     bus = resolve(MessageBus)
 
-    if q is not None:
-        query = SearchDatasets(q=q, highlight=highlight)
-        views = await bus.execute(query)
-        return JSONResponse(jsonable_encoder(views))
+    page = Page(number=params.page_number, size=params.page_size)
 
-    query = GetAllDatasets()
+    if params.q is not None:
+        query = SearchDatasets(q=params.q, highlight=params.highlight, page=page)
+        pagination = await bus.execute(query)
+        return JSONResponse(jsonable_encoder(pagination))
+
+    query = GetAllDatasets(page=page)
     return await bus.execute(query)
 
 

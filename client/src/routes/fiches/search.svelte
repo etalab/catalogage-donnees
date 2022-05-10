@@ -27,9 +27,9 @@
   import type { Dataset } from "src/definitions/datasets";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
-  import { pluralize } from "$lib/util/format";
   import { toQueryString } from "$lib/util/urls";
   import { Maybe } from "$lib/util/maybe";
+  import { pluralize } from "src/lib/util/format";
 
   export let q: string;
   export let datasets: Maybe<Dataset[]>;
@@ -45,22 +45,23 @@
 <svelte:head>
   <title>Rechercher un jeu de données</title>
 </svelte:head>
-
-{#if Maybe.Some(datasets)}
-  <section class="fr-container fr-mt-9w">
-    <div class="fr-col-6">
-      <h2>Rechercher un jeu de données</h2>
-
+<section class="fr-background-alt--grey fr-mb-6w">
+  <div class="fr-container fr-grid-row fr-grid-row--center fr-py-6w">
+    <div class="fr-col-10">
+      <h1>Recherchez un jeu de données</h1>
       <SearchForm value={q} on:submit={updateSearch} />
     </div>
+  </div>
+</section>
 
-    {#if datasets.length > 0}
-      <h4 class="fr-mt-6w">
+<section class="fr-container fr-mt-8w fr-mb-15w">
+  {#if Maybe.Some(datasets)}
+    {#if q}
+      <h2 class="fr-mb-3w">
         {datasets.length}
         {pluralize(datasets.length, "résultat", "résultats")}
-      </h4>
+      </h2>
     {/if}
-
     <DatasetList {datasets} />
-  </section>
-{/if}
+  {/if}
+</section>
