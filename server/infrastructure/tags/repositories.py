@@ -39,6 +39,7 @@ class SqlTagRepository(TagRepository):
             stmt = select(TagModel)
             if ids is not None:
                 stmt = stmt.where(TagModel.id.in_(ids))
+            stmt = stmt.order_by(TagModel.name)
             result = await session.execute(stmt)
             return [make_entity(instance) for instance in result.scalars().all()]
 

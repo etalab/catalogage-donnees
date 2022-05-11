@@ -16,14 +16,19 @@ async def test_tags_list(client: httpx.AsyncClient, temp_user: TestUser) -> None
     assert response.status_code == 200
     assert response.json() == []
 
-    id_ = await bus.execute(CreateTag(name="architecture"))
+    id_services = await bus.execute(CreateTag(name="services"))
+    id_architecture = await bus.execute(CreateTag(name="architecture"))
 
     response = await client.get("/tags/", auth=temp_user.auth)
     assert response.status_code == 200
     assert response.json() == [
         {
-            "id": str(id_),
+            "id": str(id_architecture),
             "name": "architecture",
+        },
+        {
+            "id": str(id_services),
+            "name": "services",
         },
     ]
 

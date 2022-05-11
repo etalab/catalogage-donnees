@@ -1,29 +1,31 @@
 <script lang="ts">
-  import type { SelectOption } from "src/definitions/form";
   import type { Tag as TagType } from "src/definitions/tag";
   import { transformTagToSelectOption } from "src/lib/transformers/form";
   import { createEventDispatcher } from "svelte";
-  import SearchInput from "../SearchInput/SearchInput.svelte";
+  import Select from "../Select/Select.svelte";
   import Tag from "../Tag/Tag.svelte";
 
   export let tags: TagType[];
   export let name: string;
   export let id: string = name;
-
+  export let error = "";
   export let selectedTags: TagType[] = [];
 
   const dispatch = createEventDispatcher<{ change: TagType[] }>();
 
-  const handleSearch = (e: CustomEvent<SelectOption>) => {
-    const tag = tags.find((item) => item.id === e.detail.value);
+  const handleChange = (e: FocusEvent) => {
+    const { value: tagId } = e.target as HTMLSelectElement;
 
     const tagHasBeenAlreadySelected = selectedTags.find(
-      (item) => item.id === e.detail.value
+      (tag) => tag.id === tagId
     );
+    if (tagHasBeenAlreadySelected) return;
 
-    if (!tag || tagHasBeenAlreadySelected) return;
+    const tag = tags.find((item) => item.id === tagId);
+    if (!tag) return;
 
     selectedTags = [...selectedTags, tag];
+
     dispatch("change", selectedTags);
   };
 
@@ -33,11 +35,16 @@
   };
 </script>
 
-<SearchInput
-  on:search={handleSearch}
+<Select
+  {error}
+  on:change={handleChange}
+  on:blur={handleChange}
+  required
+  label={"Mot-clés"}
+  hintText="Les mot-clés seront utilisés par les réutilisateurs pour affiner leur recherche. Sélectionnez ceux qui vous semblent les plus représentatifs de vos données."
   {id}
   {name}
-  placeholder="Rechercher..."
+  placeholder="Sélectionner un mot-clé"
   options={tags.map(transformTagToSelectOption)}
 />
 
