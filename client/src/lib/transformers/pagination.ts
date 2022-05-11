@@ -1,8 +1,14 @@
 import type { Paginated } from "src/definitions/pagination";
 
-export const toPaginated = <T>(
-  data: any,
-  mapItem: (item: any) => T
+type ApiPaginatedData<T> = {
+  items: T[];
+  total_items: number;
+  total_pages: number;
+};
+
+export const toPaginated = <I, T>(
+  data: ApiPaginatedData<I>,
+  mapItem: (item: I) => T = (item) => item as unknown as T
 ): Paginated<T> => {
   const { items, total_items, total_pages } = data;
 

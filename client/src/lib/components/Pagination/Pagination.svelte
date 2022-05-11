@@ -10,7 +10,7 @@
 </script>
 
 <nav role="navigation" class="fr-pagination" aria-label="Pagination">
-  <ul class="fr-pagination__list">
+  <ul class="fr-pagination__list" data-testid="pagination-list">
     <li>
       <a
         class="fr-pagination__link fr-pagination__link--first"
@@ -46,8 +46,8 @@
     {/if}
 
     {#if pager.hasLeftTruncature}
-      <li>
-        <a class="fr-pagination__link fr-displayed-lg"> … </a>
+      <li data-testid="left-truncature">
+        <a class="fr-pagination__link fr-displayed-lg"> ... </a>
       </li>
     {/if}
 
@@ -68,8 +68,8 @@
     {/each}
 
     {#if pager.hasRightTruncature}
-      <li>
-        <a class="fr-pagination__link fr-displayed-lg"> … </a>
+      <li data-testid="right-truncature">
+        <a class="fr-pagination__link fr-displayed-lg"> ... </a>
       </li>
     {/if}
 
