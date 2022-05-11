@@ -6,20 +6,17 @@
 
   export const load: Load = async ({ fetch, url }) => {
     const page = +(url.searchParams.get("page") || 1);
-    const pageSize = +(url.searchParams.get("page_size") || 3);
 
     const paginatedDatasets = await getDatasets({
       fetch,
       apiToken: get(apiToken),
       page,
-      pageSize,
     });
 
     return {
       props: {
         paginatedDatasets,
         currentPage: page,
-        pageSize,
       },
     };
   };
@@ -34,13 +31,11 @@
   import { Maybe } from "$lib/util/maybe";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
   import Pagination from "$lib/components/Pagination/Pagination.svelte";
-  import PageSizeSelect from "$lib/components/PageSizeSelect/PageSizeSelect.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import paths from "$lib/paths";
 
   export let paginatedDatasets: Maybe<Paginated<Dataset>>;
   export let currentPage: number;
-  export let pageSize: number;
 
   const submitSearch = (event: CustomEvent<string>) => {
     const q = event.detail;
@@ -52,17 +47,8 @@
   const getPageLink: GetPageLink = (page) => {
     const queryString = patchQueryString($pageStore.url.searchParams, [
       ["page", page.toString()],
-      ["page_size", pageSize.toString()],
     ]);
     return `${queryString}`;
-  };
-
-  const onPageSizeChange = (event: Event) => {
-    const target = event.target as HTMLSelectElement;
-    const queryString = patchQueryString($pageStore.url.searchParams, [
-      ["page_size", target.value],
-    ]);
-    goto(queryString);
   };
 </script>
 
@@ -80,10 +66,6 @@
 </section>
 
 <section class="fr-container fr-mt-8w fr-mb-15w">
-  <div class="search-tools">
-    <PageSizeSelect value={pageSize} on:change={onPageSizeChange} />
-  </div>
-
   {#if Maybe.Some(paginatedDatasets)}
     <h2 class="fr-mb-3w">
       {paginatedDatasets.totalItems} jeux de donnnées contribués

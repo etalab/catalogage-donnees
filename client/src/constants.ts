@@ -45,3 +45,5 @@ export const GEOGRAPHICAL_COVERAGE_LABELS: {
   europe: "Européenne",
   world: "Monde",
 };
+
+export const DATASETS_PER_PAGE = 50;

@@ -5,6 +5,7 @@ import type {
 } from "src/definitions/datasets";
 import type { Fetch } from "src/definitions/fetch";
 import type { Paginated } from "src/definitions/pagination";
+import { DATASETS_PER_PAGE } from "src/constants";
 import { getHeaders, getApiUrl, makeApiRequest } from "$lib/fetch";
 import { toQueryString } from "$lib/util/urls";
 import { toDataset, toPayload } from "$lib/transformers/dataset";
@@ -38,7 +39,6 @@ type GetDatasets = (opts: {
   fetch: Fetch;
   apiToken: string;
   page: number;
-  pageSize: number;
   q?: string;
 }) => Promise<Maybe<Paginated<Dataset>>>;
 
@@ -46,12 +46,11 @@ export const getDatasets: GetDatasets = async ({
   fetch,
   apiToken,
   page,
-  pageSize,
   q,
 }) => {
   const queryItems: [string, string][] = [
     ["page_number", page.toString()],
-    ["page_size", pageSize.toString()],
+    ["page_size", DATASETS_PER_PAGE.toString()],
   ];
 
   if (typeof q === "string") {
