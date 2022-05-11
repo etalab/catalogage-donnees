@@ -11,20 +11,18 @@
   export let error = "";
   export let selectedTags: TagType[] = [];
 
-  $: tags = tags.sort((a, b) => a.name.localeCompare(b.name));
-
   const dispatch = createEventDispatcher<{ change: TagType[] }>();
 
   const handleChange = (e: FocusEvent) => {
-    const target = e.target as HTMLInputElement;
-
-    const tag = tags.find((item) => item.id === target.value);
+    const { value: tagId } = e.target as HTMLSelectElement;
 
     const tagHasBeenAlreadySelected = selectedTags.find(
-      (item) => item.id === target.value
+      (tag) => tag.id === tagId
     );
+    if (tagHasBeenAlreadySelected) return;
 
-    if (!tag || tagHasBeenAlreadySelected) return;
+    const tag = tags.find((item) => item.id === tagId);
+    if (!tag) return;
 
     selectedTags = [...selectedTags, tag];
 
@@ -43,10 +41,10 @@
   on:blur={handleChange}
   required
   label={"Mot-clés"}
-  hintText={"Les mot-clés seront utilisés par les réutilisateurs pour affiner leur recherche. Sélectionnez ceux qui vous semblent les plus représentatifs de vos données."}
+  hintText="Les mot-clés seront utilisés par les réutilisateurs pour affiner leur recherche. Sélectionnez ceux qui vous semblent les plus représentatifs de vos données."
   {id}
   {name}
-  placeholder="Rechercher un mot clé"
+  placeholder="Sélectionner un mot-clé"
   options={tags.map(transformTagToSelectOption)}
 />
 
