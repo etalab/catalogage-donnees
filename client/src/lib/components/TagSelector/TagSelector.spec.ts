@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import "@testing-library/jest-dom";
 
 import TagSelector from "./TagSelector.svelte";
