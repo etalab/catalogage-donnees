@@ -9,7 +9,7 @@ from server.domain.auth.exceptions import (
 from server.domain.auth.repositories import UserRepository
 from server.domain.common.types import ID
 
-from .commands import CreateUser, DeleteUser
+from .commands import ChangePassword, CreateUser, DeleteUser
 from .passwords import PasswordEncoder, generate_api_token
 from .queries import GetUserByAPIToken, GetUserByEmail, Login
 
@@ -87,3 +87,19 @@ async def get_user_by_api_token(query: GetUserByAPIToken) -> UserView:
         raise UserDoesNotExist("__token__")
 
     return UserView(**user.dict())
+
+
+async def change_password(command: ChangePassword) -> None:
+    repository = resolve(UserRepository)
+    password_encoder = resolve(PasswordEncoder)
+
+    email = command.email
+    user = await repository.get_by_email(email)
+
+    if user is None:
+        raise UserDoesNotExist(email)
+
+    user.update_password(password_encoder.hash(command.password))
+    user.update_api_token(generate_api_token())  # Require new login
+
+    await repository.update(user)

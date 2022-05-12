@@ -17,5 +17,11 @@ class User(Entity):
     role: UserRole
     api_token: str
 
+    def update_password(self, password_hash: str) -> None:
+        self.password_hash = password_hash
+
+    def update_api_token(self, api_token: str) -> None:
+        self.api_token = api_token
+
     class Config:
         orm_mode = True
