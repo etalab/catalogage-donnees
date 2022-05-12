@@ -111,7 +111,7 @@ describe("Test the pagination", () => {
         expect(firstPage).toBeInTheDocument();
         expect(firstPage).toHaveAttribute("href", "?page=1");
         expect(hiddenOnMobile(firstPage)).toBeFalsy();
-        
+
         const lastPage = getByRole("link", { description: "Page 9" });
         expect(lastPage).toBeInTheDocument();
         expect(lastPage).toHaveAttribute("href", "?page=9");
