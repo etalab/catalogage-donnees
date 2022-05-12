@@ -79,12 +79,18 @@ Vous devriez recevoir un "pong".
 
 ## Usage
 
-### Déployer
+### Déployer sur staging
 
-Pour déployer l'environnement `<ENV>`, lancez :
+Pour déployer sur staging, vous pouvez suivre les étapes suivantes
+
+`git checkout staging` - Se mettre sur la branche staging
+`git pull --rebase origin/staging` - S'assurer qu'elle est à jour
+`git merge <branch> staging` - Y ajouter les changements à tester
+
+Et enfin pour déployer l'environnement `<ENV>`, lancez :
 
 ```
-make ops-deploy env=<ENV>
+make ops-deploy env=staging
 ```
 
 Exemple :
@@ -93,7 +99,9 @@ Exemple :
 make ops-deploy env=staging
 ```
 
-Si vous souhaitez déployer depuis une branche (dans le cadre d'une _pull request_, par exemple), utilisez :
+#### Déployer depuis autre branche
+
+Si vous souhaitez déployer depuis une autre branche (dans le cadre d'une _pull request_, par exemple), utilisez :
 
 ```
 make ops-deploy env=<ENV> extra_opts="-e git_version=<BRANCH>"
