@@ -1,3 +1,4 @@
 tls_enabled: true
 
 initdata_src: "{{ inventory_dir }}/assets/initdata.yml"
+git_version: staging
