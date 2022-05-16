@@ -14,11 +14,14 @@ test.describe("Search", () => {
 
     const button = page.locator("button[type='submit']");
     const [request, response] = await Promise.all([
-      page.waitForRequest("**/datasets/?q=title&highlight=true"),
-      page.waitForResponse("**/datasets/?q=title&highlight=true"),
+      page.waitForRequest((req) => req.url().includes("/datasets/")),
+      page.waitForResponse((resp) => resp.url().includes("/datasets/")),
       button.click(),
     ]);
     expect(request.method()).toBe("GET");
+    const searchParams = new URLSearchParams(request.url());
+    expect(searchParams.get("q")).toBe("title");
+    expect(searchParams.get("highlight")).toBe("true");
     expect(response.status()).toBe(200);
     const { items } = await response.json();
     expect(items.length).toBeGreaterThanOrEqual(1);
@@ -51,11 +54,14 @@ test.describe("Search", () => {
 
     const button = page.locator("button[type='submit']");
     let [request, response] = await Promise.all([
-      page.waitForRequest("**/datasets/?q=title&highlight=true"),
-      page.waitForResponse("**/datasets/?q=title&highlight=true"),
+      page.waitForRequest((req) => req.url().includes("/datasets/")),
+      page.waitForResponse((resp) => resp.url().includes("/datasets/")),
       button.click(),
     ]);
     expect(request.method()).toBe("GET");
+    const searchParams = new URLSearchParams(request.url());
+    expect(searchParams.get("q")).toBe("title");
+    expect(searchParams.get("highlight")).toBe("true");
     expect(response.status()).toBe(200);
     let { items } = await response.json();
     expect(items.length).toBeGreaterThanOrEqual(1);
@@ -72,10 +78,13 @@ test.describe("Search", () => {
     expect(await search.inputValue()).toBe("noresultsexpected");
 
     [request, response] = await Promise.all([
-      page.waitForRequest("**/datasets/?q=noresultsexpected&highlight=true"),
-      page.waitForResponse("**/datasets/?q=noresultsexpected&highlight=true"),
+      page.waitForRequest((req) => req.url().includes("/datasets/")),
+      page.waitForResponse((resp) => resp.url().includes("/datasets/")),
       button.click(),
     ]);
+    expect(new URLSearchParams(request.url()).get("q")).toBe(
+      "noresultsexpected"
+    );
     expect(request.method()).toBe("GET");
     expect(response.status()).toBe(200);
     ({ items } = await response.json());

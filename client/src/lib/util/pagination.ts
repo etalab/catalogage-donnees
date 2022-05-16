@@ -1,74 +1,53 @@
 import { range } from "./array";
 
-export type PagerOptions = {
+export type PaginationOptions = {
   currentPage: number;
   totalPages: number;
   numSiblings: number;
 };
 
-export class Pager {
-  private readonly currentPage: number;
-  private readonly totalPages: number;
-  private readonly leftSibling: number;
-  private readonly rightSibling: number;
+type Pagination = {
+  firstPage: number;
+  hasPrevious: boolean;
+  previousPage: number;
+  hasFirstPageLandmark: boolean;
+  hasLeftTruncature: boolean;
+  windowPages: number[];
+  hasRightTruncature: boolean;
+  hasLastPageLandmark: boolean;
+  hasNext: boolean;
+  nextPage: number;
+  lastPage: number;
+};
 
-  public readonly windowPages: number[];
+export const makePagination = (options: PaginationOptions): Pagination => {
+  const { currentPage, totalPages, numSiblings } = options;
 
-  constructor(options: PagerOptions) {
-    this.currentPage = options.currentPage;
-    this.totalPages = options.totalPages;
+  // Example result with { currentPage: 6, totalPages: 13, numSiblings: 2 }:
+  //
+  //                  ┌ currentPage
+  // |<  <  1 ... 4 5 6 7 8 ... 13  >  >|
+  //  leftSibling ┘       └ rightSibling
+  //
 
-    //                  ┌ currentPage
-    // |<  <  1 ... 4 5 6 7 8 ... 13  >  >|
-    //  leftSibling ┘       └ rightSibling
-    //
+  const firstPage = 1;
+  const lastPage = totalPages;
 
-    // 5 pages max in window, as per DSFR.
-    // => 2 pages on the left, 2 pages on the right.
-    const numSiblings = 2;
+  const leftSibling = Math.max(currentPage - numSiblings, firstPage);
+  const rightSibling = Math.min(currentPage + numSiblings, lastPage);
+  const windowPages = range(leftSibling, rightSibling + 1);
 
-    this.leftSibling = Math.max(this.currentPage - numSiblings, this.firstPage);
-    this.rightSibling = Math.min(this.currentPage + numSiblings, this.lastPage);
-    this.windowPages = range(this.leftSibling, this.rightSibling + 1);
-  }
-
-  get firstPage(): number {
-    return 1;
-  }
-
-  get hasPrevious(): boolean {
-    return this.currentPage > this.firstPage;
-  }
-
-  get previousPage(): number {
-    return this.currentPage - 1;
-  }
-
-  get hasFirstPageLandmark(): boolean {
-    return this.leftSibling >= this.firstPage + 1;
-  }
-
-  get hasLeftTruncature(): boolean {
-    return this.leftSibling - this.firstPage >= 2;
-  }
-
-  get hasRightTruncature(): boolean {
-    return this.totalPages - this.rightSibling >= 2;
-  }
-
-  get hasLastPageLandmark(): boolean {
-    return this.rightSibling <= this.totalPages - 1;
-  }
-
-  get hasNext(): boolean {
-    return this.currentPage < this.lastPage;
-  }
-
-  get nextPage(): number {
-    return this.currentPage + 1;
-  }
-
-  get lastPage(): number {
-    return this.totalPages;
-  }
-}
+  return {
+    firstPage,
+    hasPrevious: currentPage > firstPage,
+    previousPage: currentPage - 1,
+    hasFirstPageLandmark: leftSibling >= firstPage + 1,
+    hasLeftTruncature: leftSibling >= firstPage + 2,
+    windowPages,
+    hasRightTruncature: rightSibling <= lastPage - 2,
+    hasLastPageLandmark: rightSibling <= lastPage - 1,
+    hasNext: currentPage < lastPage,
+    nextPage: currentPage + 1,
+    lastPage,
+  };
+};
