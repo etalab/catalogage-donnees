@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import { fireEvent } from "@testing-library/dom";
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/svelte";
