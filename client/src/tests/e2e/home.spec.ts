@@ -15,7 +15,7 @@ test.describe("Catalog list", () => {
     await page.locator("text='Modifier'").waitFor();
   });
 
-  test.only("Sees the pagination", async ({ page }) => {
+  test("Sees the pagination", async ({ page }) => {
     await page.goto("/");
 
     // Page size is 50 items, only 1 page during E2E tests.
