@@ -136,3 +136,8 @@ ops-deploy: #- Deploy environment
 
 ops-initdata: #- Run initdata in environment
 	cd ops && make initdata env=$(env)
+
+ops-staging: #- Sync staging branch with changes from current branch 
+	git checkout staging 
+	git pull --rebase origin staging
+	git merge --ff-only --no-edit $(git_current_ref)
