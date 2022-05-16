@@ -43,7 +43,7 @@ e.g. in command or query handlers:
         ...
     ```
 
-Or in FastAPI routes:
+Or in routes:
 
     ```python
     # server/api/todos/routes.py
@@ -53,7 +53,6 @@ Or in FastAPI routes:
 
     ...
 
-    @router.get(...)
     async def create_todo(...):
         bus = resolve(MessageBus)
         command = CreateTodo(...)

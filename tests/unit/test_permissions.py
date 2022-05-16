@@ -1,6 +1,6 @@
 import httpx
 import pytest
-from fastapi import Depends, FastAPI
+from xpresso import App, Depends, Path
 
 from server.api.auth.dependencies import HasRole, IsAuthenticated
 from server.domain.auth.entities import UserRole
@@ -10,11 +10,15 @@ from ..helpers import TestUser
 
 @pytest.mark.asyncio
 async def test_is_authenticated(temp_user: TestUser) -> None:
-    app = FastAPI()
-
-    @app.get("/", dependencies=[Depends(IsAuthenticated())])
-    async def index() -> str:
-        return "OK"
+    app = App(
+        routes=[
+            Path(
+                "/",
+                get=lambda: "OK",
+                dependencies=[Depends(IsAuthenticated())],
+            ),
+        ],
+    )
 
     async with httpx.AsyncClient(app=app, base_url="http://testserver") as client:
         response = await client.get("/")
@@ -27,11 +31,15 @@ async def test_is_authenticated(temp_user: TestUser) -> None:
 
 @pytest.mark.asyncio
 async def test_has_role(temp_user: TestUser, admin_user: TestUser) -> None:
-    app = FastAPI()
-
-    @app.get("/", dependencies=[Depends(HasRole(UserRole.ADMIN))])
-    async def index() -> str:
-        return "OK"
+    app = App(
+        routes=[
+            Path(
+                "/",
+                get=lambda: "OK",
+                dependencies=[Depends(HasRole(UserRole.ADMIN))],
+            ),
+        ],
+    )
 
     async with httpx.AsyncClient(app=app, base_url="http://testserver") as client:
         response = await client.get("/")

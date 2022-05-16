@@ -1,8 +1,9 @@
 import datetime as dt
 from typing import List, Optional
 
-from fastapi import Query
 from pydantic import BaseModel, EmailStr, Field, validator
+from xpresso import QueryParam
+from xpresso.typing import Annotated
 
 from server.domain.common.pagination import PAGE_NUMBER_CONSTR, PAGE_SIZE_CONSTR
 from server.domain.common.types import ID
@@ -14,10 +15,10 @@ from server.domain.datasets.entities import (
 
 
 class DatasetListParams(BaseModel):
-    q: str = Query(None)
-    highlight: bool = Query(False)
-    page_number: int = Query(1, **PAGE_NUMBER_CONSTR)
-    page_size: int = Query(10, **PAGE_SIZE_CONSTR)
+    q: Optional[str] = None
+    highlight: bool = False
+    page_number: Annotated[int, QueryParam(), Field(**PAGE_NUMBER_CONSTR)] = 1
+    page_size: Annotated[int, QueryParam(), Field(**PAGE_SIZE_CONSTR)] = 10
 
 
 class DatasetCreate(BaseModel):

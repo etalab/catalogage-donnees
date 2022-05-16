@@ -1,9 +1,15 @@
 from typing import Union
 
-from fastapi import APIRouter, Depends
-from fastapi.encoders import jsonable_encoder
-from fastapi.exceptions import HTTPException
-from fastapi.responses import JSONResponse
+from xpresso import (
+    Depends,
+    FromJson,
+    FromPath,
+    FromQuery,
+    HTTPException,
+    Operation,
+    Path,
+)
+from xpresso.responses import ResponseSpec
 
 from server.application.datasets.commands import (
     CreateDataset,
@@ -15,7 +21,7 @@ from server.application.datasets.queries import (
     GetDatasetByID,
     SearchDatasets,
 )
-from server.application.datasets.views import DatasetView
+from server.application.datasets.views import DatasetSearchView, DatasetView
 from server.config.di import resolve
 from server.domain.auth.entities import UserRole
 from server.domain.common.pagination import Page, Pagination
@@ -26,37 +32,23 @@ from server.seedwork.application.messages import MessageBus
 from ..auth.dependencies import HasRole, IsAuthenticated
 from .schemas import DatasetCreate, DatasetListParams, DatasetUpdate
 
-router = APIRouter(prefix="/datasets", tags=["datasets"])
 
-
-@router.get(
-    "/",
-    dependencies=[Depends(IsAuthenticated())],
-    response_model=Pagination[DatasetView],
-)
 async def list_datasets(
-    params: DatasetListParams = Depends(),
-) -> Union[JSONResponse, Pagination[DatasetView]]:
+    params: FromQuery[DatasetListParams],
+) -> Union[Pagination[DatasetSearchView], Pagination[DatasetView]]:
     bus = resolve(MessageBus)
 
     page = Page(number=params.page_number, size=params.page_size)
 
     if params.q is not None:
         query = SearchDatasets(q=params.q, highlight=params.highlight, page=page)
-        pagination = await bus.execute(query)
-        return JSONResponse(jsonable_encoder(pagination))
+        return await bus.execute(query)
 
     query = GetAllDatasets(page=page)
     return await bus.execute(query)
 
 
-@router.get(
-    "/{id}/",
-    dependencies=[Depends(IsAuthenticated())],
-    response_model=DatasetView,
-    responses={404: {}},
-)
-async def get_dataset_by_id(id: ID) -> DatasetView:
+async def get_dataset_by_id(id: FromPath[ID]) -> DatasetView:
     bus = resolve(MessageBus)
 
     query = GetDatasetByID(id=id)
@@ -66,13 +58,7 @@ async def get_dataset_by_id(id: ID) -> DatasetView:
         raise HTTPException(404)
 
 
-@router.post(
-    "/",
-    dependencies=[Depends(IsAuthenticated())],
-    response_model=DatasetView,
-    status_code=201,
-)
-async def create_dataset(data: DatasetCreate) -> DatasetView:
+async def create_dataset(data: FromJson[DatasetCreate]) -> DatasetView:
     bus = resolve(MessageBus)
 
     command = CreateDataset(**data.dict())
@@ -83,13 +69,9 @@ async def create_dataset(data: DatasetCreate) -> DatasetView:
     return await bus.execute(query)
 
 
-@router.put(
-    "/{id}/",
-    dependencies=[Depends(IsAuthenticated())],
-    response_model=DatasetView,
-    responses={404: {}},
-)
-async def update_dataset(id: ID, data: DatasetUpdate) -> DatasetView:
+async def update_dataset(
+    id: FromPath[ID], data: FromJson[DatasetUpdate]
+) -> DatasetView:
     bus = resolve(MessageBus)
 
     command = UpdateDataset(id=id, **data.dict())
@@ -103,13 +85,40 @@ async def update_dataset(id: ID, data: DatasetUpdate) -> DatasetView:
     return await bus.execute(query)
 
 
-@router.delete(
-    "/{id}/",
-    dependencies=[Depends(IsAuthenticated()), Depends(HasRole(UserRole.ADMIN))],
-    status_code=204,
-)
-async def delete_dataset(id: ID) -> None:
+async def delete_dataset(id: FromPath[ID]) -> None:
     bus = resolve(MessageBus)
 
     command = DeleteDataset(id=id)
     await bus.execute(command)
+
+
+routes = [
+    Path(
+        "/",
+        dependencies=[Depends(IsAuthenticated())],
+        get=Operation(
+            list_datasets,
+        ),
+        post=Operation(
+            create_dataset,
+            response_status_code=201,
+        ),
+    ),
+    Path(
+        "/{id}/",
+        dependencies=[Depends(IsAuthenticated())],
+        get=Operation(
+            get_dataset_by_id,
+            responses={404: ResponseSpec()},
+        ),
+        put=Operation(
+            update_dataset,
+            responses={404: ResponseSpec()},
+        ),
+        delete=Operation(
+            delete_dataset,
+            dependencies=[Depends(HasRole(UserRole.ADMIN))],
+            response_status_code=204,
+        ),
+    ),
+]

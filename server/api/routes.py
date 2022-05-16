@@ -1,22 +1,28 @@
-from fastapi import APIRouter, Depends, Request
 from starlette.datastructures import URLPath
+from starlette.requests import Request
 from starlette.responses import RedirectResponse
+from starlette.routing import Mount
+from xpresso import Operation, Path
 
 from server.config import Settings
 from server.config.di import resolve
 
 from . import auth, datasets, tags
 
-router = APIRouter()
 
-
-@router.get("/", response_class=RedirectResponse, include_in_schema=False)
-def index(
-    request: Request, settings: Settings = Depends(lambda: resolve(Settings))
-) -> str:
+def index(request: Request) -> str:
+    settings = resolve(Settings)
     return URLPath(settings.docs_url).make_absolute_url(request.base_url)
 
 
-router.include_router(auth.router)
-router.include_router(datasets.router)
-router.include_router(tags.router)
+routes = [
+    Path(
+        "/",
+        get=Operation(
+            index, response_factory=RedirectResponse, include_in_schema=False
+        ),
+    ),
+    Mount("/auth", routes=auth.routes),
+    Mount("/datasets", routes=datasets.routes),
+    Mount("/tags", routes=tags.routes),
+]

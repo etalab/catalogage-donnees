@@ -1,38 +1,33 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
+from starlette.types import ASGIApp
+from xpresso import App
 
 from server.config import Settings
 from server.config.di import resolve
 
-from .routes import router
+from .routes import routes
 
 origins = [
     "http://localhost:3000",
 ]
 
 
-def create_app() -> FastAPI:
+def create_app() -> ASGIApp:
     settings = resolve(Settings)
 
-    app = FastAPI(
+    app = App(
+        routes=routes,
         docs_url=settings.docs_url,
+        middleware=[
+            Middleware(
+                CORSMiddleware,
+                allow_origins=origins,
+                allow_credentials=True,
+                allow_methods=["*"],
+                allow_headers=["*"],
+            )
+        ],
     )
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
-    app.include_router(router)
 
     return app

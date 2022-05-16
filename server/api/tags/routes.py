@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from xpresso import Depends, Operation, Path
 
 from server.application.tags.queries import GetAllTags
 from server.application.tags.views import TagView
@@ -9,14 +9,18 @@ from server.seedwork.application.messages import MessageBus
 
 from ..auth.dependencies import IsAuthenticated
 
-router = APIRouter(prefix="/tags", tags=["tags"])
 
-
-@router.get(
-    "/",
-    dependencies=[Depends(IsAuthenticated())],
-    response_model=List[TagView],
-)
 async def list_tags() -> List[TagView]:
     bus = resolve(MessageBus)
     return await bus.execute(GetAllTags())
+
+
+routes = [
+    Path(
+        "/",
+        get=Operation(
+            list_tags,
+            dependencies=[Depends(IsAuthenticated())],
+        ),
+    )
+]

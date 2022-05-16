@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from xpresso import Depends, FromJson, FromPath, HTTPException, Operation, Path
 
 from server.application.auth.commands import CreateUser, DeleteUser
 from server.application.auth.queries import GetUserByEmail, Login
@@ -12,16 +12,8 @@ from server.seedwork.application.messages import MessageBus
 from .dependencies import HasRole, IsAuthenticated
 from .schemas import CheckAuthResponse, UserCreate, UserLogin
 
-router = APIRouter(prefix="/auth", tags=["auth"])
 
-
-@router.post(
-    "/users/",
-    dependencies=[Depends(IsAuthenticated()), Depends(HasRole(UserRole.ADMIN))],
-    response_model=UserView,
-    status_code=201,
-)
-async def create_user(data: UserCreate) -> UserView:
+async def create_user(data: FromJson[UserCreate]) -> UserView:
     bus = resolve(MessageBus)
 
     command = CreateUser(email=data.email, password=data.password)
@@ -35,8 +27,7 @@ async def create_user(data: UserCreate) -> UserView:
     return await bus.execute(query)
 
 
-@router.post("/login/", response_model=AuthenticatedUserView)
-async def login(data: UserLogin) -> AuthenticatedUserView:
+async def login(data: FromJson[UserLogin]) -> AuthenticatedUserView:
     bus = resolve(MessageBus)
 
     query = Login(email=data.email, password=data.password)
@@ -47,18 +38,40 @@ async def login(data: UserLogin) -> AuthenticatedUserView:
         raise HTTPException(401, detail=str(exc))
 
 
-@router.delete(
-    "/users/{id}/",
-    dependencies=[Depends(IsAuthenticated()), Depends(HasRole(UserRole.ADMIN))],
-    status_code=204,
-)
-async def delete_user(id: ID) -> None:
+async def delete_user(id: FromPath[ID]) -> None:
     bus = resolve(MessageBus)
 
     command = DeleteUser(id=id)
     await bus.execute(command)
 
 
-@router.get("/check/", dependencies=[Depends(IsAuthenticated())])
 async def check_auth() -> CheckAuthResponse:
     return CheckAuthResponse()
+
+
+routes = [
+    Path(
+        "/users/",
+        post=Operation(
+            create_user,
+            dependencies=[Depends(IsAuthenticated()), Depends(HasRole(UserRole.ADMIN))],
+            response_status_code=201,
+        ),
+    ),
+    Path("/login/", post=Operation(login)),
+    Path(
+        "/users/{id}/",
+        delete=Operation(
+            delete_user,
+            dependencies=[Depends(IsAuthenticated()), Depends(HasRole(UserRole.ADMIN))],
+            response_status_code=204,
+        ),
+    ),
+    Path(
+        "/check/",
+        get=Operation(
+            check_auth,
+            dependencies=[Depends(IsAuthenticated())],
+        ),
+    ),
+]
