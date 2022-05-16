@@ -4,7 +4,7 @@ Dependency injection (DI) setup.
 Allows decoupling interfaces used by the application from their
 concrete implementation, which might be configured on init.
 
-Uses: https://punq.readthedocs.io/
+Uses: https://www.adriangb.com/di/
 
 Usage
 -----
@@ -25,7 +25,7 @@ Then, register dependencies in `create_container` below:
     from server.domain.todos.repositories import TodoRepository
     from server.infrastructure.todos.repositories import SqlTodoRepository
 
-    container.register(TodoRepository, SqlTodoRepository)
+    register(TodoRepository, SqlTodoRepository)
     ```
 
 Then, you can resolve dependencies elsewhere in the project,
@@ -61,10 +61,15 @@ Or in routes:
     ```
 """
 import contextlib
+import functools
 import importlib
-from typing import Iterator, List, Type, TypeVar
+from typing import Any, List, Optional, Type, TypeVar, cast
 
-import punq
+from di.api.providers import CallableProvider
+from di.container import Container as ContainerImpl
+from di.container import ContainerState, bind_by_type
+from di.dependant import Dependant
+from di.executors import SyncExecutor
 
 from server.application.auth.passwords import PasswordEncoder
 from server.domain.auth.repositories import UserRepository
@@ -106,22 +111,27 @@ def get_modules() -> List[Module]:
     return modules
 
 
-def create_container() -> punq.Container:
+def _create_container() -> ContainerImpl:
     """
     Configure the Dependency Injection (DI) container.
 
     NOTE: Edit this as appropriate to register dependencies.
     """
-    container = punq.Container()
+    container = ContainerImpl()
+
+    def register_instance(dependency: Type[T], instance: T) -> None:
+        container.bind(
+            bind_by_type(Dependant(lambda: instance, scope="global"), dependency)
+        )
 
     # Application-wide configuration
 
     settings = Settings()
-    container.register(Settings, instance=settings)
+    register_instance(Settings, settings)
 
     # Common services
 
-    container.register(PasswordEncoder, instance=Argon2PasswordEncoder())
+    register_instance(PasswordEncoder, Argon2PasswordEncoder())
 
     # Event handling (Commands, queries, and the message bus)
 
@@ -140,46 +150,50 @@ def create_container() -> punq.Container:
     }
 
     bus = MessageBusAdapter(command_handlers, query_handlers)
-
-    container.register(MessageBus, instance=bus)
+    register_instance(MessageBus, bus)
 
     # Databases
 
-    container.register(
-        Database,
-        instance=Database(url=settings.env_database_url, debug=settings.sql_debug),
-    )
+    db = Database(url=settings.env_database_url, debug=settings.sql_debug)
+    register_instance(Database, db)
 
     # Repositories
 
-    container.register(UserRepository, SqlUserRepository)
-    container.register(CatalogRecordRepository, SqlCatalogRecordRepository)
-    container.register(DatasetRepository, SqlDatasetRepository)
-    container.register(TagRepository, SqlTagRepository)
+    register_instance(UserRepository, SqlUserRepository(db))
+    register_instance(CatalogRecordRepository, SqlCatalogRecordRepository(db))
+    register_instance(DatasetRepository, SqlDatasetRepository(db))
+    register_instance(TagRepository, SqlTagRepository(db))
 
     return container
 
 
-_CONTAINER_STACK: List[punq.Container] = []
+class Container:
+    def __init__(self) -> None:
+        self._impl: Optional[ContainerImpl] = None
+        self._executor = SyncExecutor()
+        self._stack = contextlib.ExitStack()
+        self._state: Optional[ContainerState] = None
+
+    def get_impl(self) -> ContainerImpl:
+        if self._impl is None:
+            raise RuntimeError("Container not ready. Please call bootstrap()")
+        return self._impl
+
+    def bootstrap(self) -> None:
+        self._impl = _create_container()
+        self._state = self._stack.enter_context(self._impl.enter_scope("global"))
+
+    def resolve(self, type_: Type[T]) -> T:
+        container = self.get_impl()
+        assert self._state is not None
+        solved = container.solve(Dependant(type_, scope="global"), scopes=["global"])
+        return container.execute_sync(
+            solved, executor=self._executor, state=self._state
+        )
 
 
-def bootstrap() -> None:
-    _CONTAINER_STACK.clear()
-    _CONTAINER_STACK.append(create_container())
+_CONTAINER = Container()
 
-
-def resolve(type: Type[T]) -> T:
-    return _CONTAINER_STACK[-1].resolve(type)
-
-
-@contextlib.contextmanager
-def override() -> Iterator[punq.Container]:
-    """
-    Override certain dependencies on the DI container, e.g. for testing purposes.
-    """
-    container = create_container()
-    _CONTAINER_STACK.append(container)
-    try:
-        yield container
-    finally:
-        _CONTAINER_STACK.pop(0)
+get_app_container = _CONTAINER.get_impl
+bootstrap = _CONTAINER.bootstrap
+resolve = _CONTAINER.resolve

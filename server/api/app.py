@@ -4,7 +4,7 @@ from starlette.types import ASGIApp
 from xpresso import App
 
 from server.config import Settings
-from server.config.di import resolve
+from server.config.di import get_app_container, resolve
 
 from .routes import routes
 
@@ -17,6 +17,7 @@ def create_app() -> ASGIApp:
     settings = resolve(Settings)
 
     app = App(
+        container=get_app_container(),
         routes=routes,
         docs_url=settings.docs_url,
         middleware=[
