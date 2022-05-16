@@ -11,3 +11,8 @@ class CreateUser(Command[ID]):
 
 class DeleteUser(Command[None]):
     id: ID
+
+
+class ChangePassword(Command[None]):
+    email: str
+    password: SecretStr
