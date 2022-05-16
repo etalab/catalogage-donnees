@@ -226,34 +226,39 @@ async def add_dataset_pagination_corpus(n: int) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "params, num_items, dataset_titles",
+    "params, expected_total_pages, expected_num_items, expected_dataset_titles",
     [
         pytest.param(
             {},
-            13,
+            2,
+            10,
             ["__skip__"],
             id="default",
         ),
         pytest.param(
             {"page_size": 3},
+            5,
             3,
             ["Dataset 13", "Dataset 12", "Dataset 11"],
             id="first-page",
         ),
         pytest.param(
             {"page_size": 3, "page_number": 4},
+            5,
             3,
             ["Dataset 4", "Dataset 3", "Dataset 2"],
             id="some-middle-page",
         ),
         pytest.param(
             {"page_size": 3, "page_number": 5},
+            5,
             1,
             ["Dataset 1"],
             id="last-page",
         ),
         pytest.param(
             {"page_size": 3, "page_number": 6},
+            5,
             0,
             [],
             id="beyond-last-page",
@@ -264,8 +269,9 @@ async def test_dataset_pagination(
     client: httpx.AsyncClient,
     temp_user: TestUser,
     params: dict,
-    num_items: int,
-    dataset_titles: List[str],
+    expected_total_pages: int,
+    expected_num_items: int,
+    expected_dataset_titles: List[str],
 ) -> None:
     await add_dataset_pagination_corpus(n=13)
 
@@ -273,11 +279,12 @@ async def test_dataset_pagination(
     assert response.status_code == 200
     data = response.json()
 
-    assert len(data["items"]) == num_items
+    assert len(data["items"]) == expected_num_items
     assert data["total_items"] == 13
-    assert data["page_size"] == params.get("page_size", 1000)
-    if "__skip__" not in dataset_titles:
-        assert [item["title"] for item in data["items"]] == dataset_titles
+    assert data["page_size"] == params.get("page_size", 10)
+    if "__skip__" not in expected_dataset_titles:
+        assert [item["title"] for item in data["items"]] == expected_dataset_titles
+    assert data["total_pages"] == expected_total_pages
 
 
 @pytest.mark.asyncio
