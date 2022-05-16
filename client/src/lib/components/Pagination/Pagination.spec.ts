@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/svelte";
 import type { GetPageLink } from "src/definitions/pagination";
