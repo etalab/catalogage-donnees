@@ -63,7 +63,7 @@
 
   <Header />
 
-  <main id="contenu" role="main">
+  <main id="contenu" class="fr-mb-8w">
     <slot />
   </main>
 

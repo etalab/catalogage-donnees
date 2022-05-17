@@ -16,104 +16,131 @@
   };
 </script>
 
-<li class="fr-p-3w">
-  <p class="fr-logo fr-logo--sm fr-p-0" title="république française">
-    {@html "Ministère<br />de la culture"}
-  </p>
+<li>
+  <a
+    data-test-id="dataset-list-item"
+    class="fr-p-3w"
+    href={paths.datasetDetail({ id: dataset.id })}
+    title="Consulter cette fiche de données"
+  >
+    <p class="fr-logo fr-logo--sm fr-p-0 logo" title="république française">
+      {@html "Ministère<br />de la culture"}
+    </p>
 
-  <div class="fr-container">
-    <p class="fr-m-0">
+    <div class="container">
+      <p class="fr-m-0">
+        {#if dataset.headlines}
+          <strong data-testid="headlines-title">
+            {@html dataset.headlines.title}
+          </strong>
+        {:else}
+          <strong>
+            {dataset.title}
+          </strong>
+        {/if}
+      </p>
+
+      <p class="fr-m-0 fr-text--sm fr-text-mention--grey">
+        {dataset.service}
+      </p>
+
+      <div class="metadata-items fr-mt-1w">
+        <div>
+          <span class="fr-fi fr-fi-x-map-2-line" aria-hidden="true" />
+          <p class="fr-text--xs fr-my-0 fr-px-1w">
+            <span class="fr-text-mention--grey">Couverture géographique</span>
+            <br />
+            <span
+              >{GEOGRAPHICAL_COVERAGE_LABELS[
+                dataset.geographicalCoverage
+              ]}</span
+            >
+          </p>
+        </div>
+        <div>
+          <span class="fr-fi fr-fi-file-line" aria-hidden="true" />
+          <p class="fr-text--xs fr-my-0 fr-px-1w">
+            <span class="fr-text-mention--grey">Formats</span> <br />
+            <span>{formatFormats(dataset)}</span>
+          </p>
+        </div>
+      </div>
       {#if dataset.headlines}
-        <strong data-testid="headlines-title">
-          {@html dataset.headlines.title}
-        </strong>
-      {:else}
-        <strong>
-          {dataset.title}
-        </strong>
-      {/if}
-    </p>
-
-    <p class="fr-m-0 fr-text--sm fr-text-mention--grey">
-      {dataset.service}
-    </p>
-
-    <div class="metadata-items fr-mt-1w">
-      <div>
-        <span class="fr-fi fr-fi-x-map-2-line" aria-hidden="true" />
-        <p class="fr-text--xs fr-my-0">
-          <span class="fr-text-mention--grey">Couverture géographique</span>
-          <br />
-          <span
-            >{GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage]}</span
+        <p class="fr-mb-0 fr-mt-1w fr-text--sm fr-text-mention--grey">
+          <em data-testid="headlines-description"
+            >... {@html dataset.headlines.description} ...</em
           >
         </p>
-      </div>
-      <div>
-        <span class="fr-fi fr-fi-file-line" aria-hidden="true" />
-        <p class="fr-text--xs fr-my-0">
-          <span class="fr-text-mention--grey">Formats</span> <br />
-          <span>{formatFormats(dataset)}</span>
-        </p>
-      </div>
+      {/if}
     </div>
-    {#if dataset.headlines}
-      <p class="fr-mb-0 fr-mt-1w fr-text--sm fr-text-mention--grey">
-        <em data-testid="headlines-description"
-          >... {@html dataset.headlines.description} ...</em
-        >
-      </p>
-    {/if}
-  </div>
 
-  <div class="actions">
-    <p class="fr-mb-2w fr-text--sm fr-text-mention--grey">
-      {capitalize(
-        formatDaysMonthsOrYearsToNow(dataset.catalogRecord.createdAt)
-      )}
-    </p>
-    <a
-      href={paths.datasetDetail({ id: dataset.id })}
-      class="fr-link fr-fi-arrow-right-line fr-link--icon-right"
-      title="Consulter cette fiche de données"
-    >
-      Voir
-    </a>
-  </div>
+    <div class="actions">
+      <p class="fr-text--sm">
+        {capitalize(
+          formatDaysMonthsOrYearsToNow(dataset.catalogRecord.createdAt)
+        )}
+      </p>
+
+      <span class="fr-fi-arrow-right-line fr-text-label--blue-france" />
+    </div>
+  </a>
 </li>
 
 <style>
-  li {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    column-gap: 2rem;
+  li,
+  a {
+    width: 100%;
+    height: 100%;
   }
 
+  .container {
+    flex-grow: 1;
+  }
+
+  .logo {
+    width: 15%;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  a:hover {
+    --a: 0.3;
+    --blend-size: 100%;
+  }
   li:not(:last-child) {
     border-bottom: 1px solid var(--border-default-grey);
   }
 
   .metadata-items {
     display: flex;
+    justify-content: space-between;
     flex-wrap: wrap;
     margin: 0 -2em;
   }
 
   .metadata-items > * {
-    flex: 0 1 auto;
     margin: 0 2em;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    column-gap: 0.5rem;
+    display: flex;
   }
 
   .metadata-items [class*="fr-fi"] {
     color: var(--text-action-high-blue-france);
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 0.5rem;
   }
 
   .actions {
+    width: 35%;
     text-align: right;
+  }
+
+  [href] {
+    box-shadow: none;
   }
 </style>

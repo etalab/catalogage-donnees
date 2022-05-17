@@ -10,8 +10,8 @@ test.describe("Catalog list", () => {
 
     await expect(page).toHaveTitle("Catalogue");
 
-    const link = page.locator("text='Voir'").first();
-    await link.click();
+    await page.locator("data-test-id=dataset-list-item").first().click();
+
     await page.locator("text='Modifier'").waitFor();
   });
 

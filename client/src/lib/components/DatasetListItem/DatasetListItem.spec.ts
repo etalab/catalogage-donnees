@@ -34,7 +34,6 @@ describe("Test the dataset list item", () => {
       props: { dataset },
     });
     const detailLink = getByRole("link");
-    expect(detailLink).toHaveTextContent("Voir");
     expect(detailLink).toHaveAttribute("href", "/fiches/uuid1");
     expect(detailLink).toHaveAttribute("title");
   });

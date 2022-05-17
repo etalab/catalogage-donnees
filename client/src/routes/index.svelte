@@ -65,32 +65,31 @@
   </div>
 </section>
 
-<section class="fr-container fr-mt-8w fr-mb-15w">
-  {#if Maybe.Some(paginatedDatasets)}
-    <h2 class="fr-mb-3w">
-      {paginatedDatasets.totalItems} jeux de donnnées contribués
-    </h2>
+<section class="fr-container">
+  <div class="fr-grid-row">
+    <div class="fr-col-12">
+      {#if Maybe.Some(paginatedDatasets)}
+        <h2 class="fr-mb-3w">
+          {paginatedDatasets.totalItems} jeux de donnnées contribués
+        </h2>
 
-    <DatasetList datasets={paginatedDatasets.items} />
+        <DatasetList datasets={paginatedDatasets.items} />
 
-    <div class="pagination-container">
-      <Pagination
-        {currentPage}
-        totalPages={paginatedDatasets.totalPages}
-        {getPageLink}
-      />
+        <div class="pagination-container">
+          <Pagination
+            {currentPage}
+            totalPages={paginatedDatasets.totalPages}
+            {getPageLink}
+          />
+        </div>
+      {/if}
     </div>
-  {/if}
+  </div>
 </section>
 
 <style>
   .pagination-container {
     display: flex;
     justify-content: space-around;
-  }
-
-  .search-tools {
-    display: flex;
-    justify-content: flex-end;
   }
 </style>
