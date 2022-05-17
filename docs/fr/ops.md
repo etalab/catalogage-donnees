@@ -109,6 +109,8 @@ Pour cela :
     make ops-staging
     ```
 
+> **Important** : les commits d'une PR ajoutés à staging ne doivent plus être modifiés. Autrement dit, le travail sur la PR doit continuer en ajoutant de nouveaux commits. Cela implique de ne plus faire de _rebase_ (pour récupérer des changements de `master`, par exemple) ni de _commit --amend_ sur les commits déjà synchronisés. En effet, la synchronisation avec staging se fait par _fast-forward merge_, qui échouera si les commits sont réécrits.
+
 Vous devez ensuite déployer staging :
 
 ```
