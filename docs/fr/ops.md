@@ -16,11 +16,11 @@ Le déploiement et la gestion des serveurs distants est réalisée à l'aide de 
 
 Les différents déploiements sont organisés en _environnements_ (copies de l'infrastructure) :
 
-| Nom | Description |
-|---|---|
-| demo | Environnement de démo |
-| staging | Environnement de staging |
-| sandbox | Environnement "bac à sable" destiné à des utilisateurs test |
+| Nom     | Description | Déploie la branche |
+|---------|-------------|--------------------|
+| demo    | Environnement de démo | `master` |
+| sandbox | Environnement "bac à sable" destiné à des utilisateurs test | `master` |
+| staging | Environnement de staging | `staging` |
 
 Il y a un seul _groupe_ Ansible : `web`.
 
@@ -87,21 +87,49 @@ Pour déployer l'environnement `<ENV>`, lancez :
 make ops-deploy env=<ENV>
 ```
 
-Exemple :
+En cas de problème, voir [Débogage](#débogage).
+
+#### Déployer sur staging
+
+L'environnement staging déploie la branche `staging`. Cette branche d'environnement a pour objet d'accueillir des changements de _pull requests_ afin de les valider et/ou prévisualiser.
+
+Pour déployer les changements d'une _pull request_, il faut donc d'abord les ajouter à `staging`.
+
+Pour cela :
+
+1. Placez-vous sur la branche cible, par exemple :
+
+    ```
+    git checkout my-pr-branch
+    ```
+
+2. Ajoutez vos changements sur la branche staging en lançant :
+
+    ```
+    make ops-staging
+    ```
+
+Vous devez ensuite déployer staging :
 
 ```
 make ops-deploy env=staging
 ```
 
-Si vous souhaitez déployer depuis une branche (dans le cadre d'une _pull request_, par exemple), utilisez :
+**N.B.** Tous les changements finalement adoptés dans `master` ne seront pas ajoutés à `staging`. La branche de staging devrait donc être régulièrement resynchronisée avec `master`. Pour cela, lancez :
 
 ```
-make ops-deploy env=<ENV> extra_opts="-e git_version=<BRANCH>"
+make ops-staging-sync
 ```
 
-> **Tip** : `git_version` accepte n'importe quelle [référence git](https://git-scm.com/book/fr/v2/Les-tripes-de-Git-R%C3%A9f%C3%A9rences-Git) (branche, tag...) ou commit hash.
+### (Avancé) Déployer une version quelconque
 
-En cas de problème, voir [Débogage](#débogage).
+Si vous avez besoin de déployer une branche ou un commit particulier, par exemple pour rétablir une version particulière, lancez :
+
+```
+make ops-deploy env=<ENV> extra_opts="-e git_version=<GIT_VERSION>"
+```
+
+où `<GIT_VERSION>` peut être n'importe quelle [référence git](https://git-scm.com/book/fr/v2/Les-tripes-de-Git-R%C3%A9f%C3%A9rences-Git) : branche, tag, ou commit hash.
 
 ### Ajouter un nouvel environnement
 

@@ -6,6 +6,7 @@ bin = ${venv}/bin/
 python = ${bin}python
 pip = ${bin}pip
 pysources = server/ tools/ tests/
+git_current_ref = $(shell git rev-parse --verify --short HEAD)
 
 install: install-server install-client #- Install all dependencies (server and client)
 
@@ -141,3 +142,10 @@ ops-staging: #- Sync staging branch with changes from current branch
 	git checkout staging 
 	git pull --rebase origin staging
 	git merge --ff-only --no-edit $(git_current_ref)
+
+ops-staging-sync: #- Sync staging branch with master
+	git checkout staging
+	git diff --no-prefix staging..master | patch -p0
+	git add -A
+	git commit -m "Sync staging with master"
+	@echo "Success. Push when ready"
