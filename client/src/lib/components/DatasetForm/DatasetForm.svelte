@@ -608,8 +608,4 @@
     padding: auto;
     margin: auto;
   }
-
-  #ouverture {
-    padding-top: 10px;
-  }
 </style>

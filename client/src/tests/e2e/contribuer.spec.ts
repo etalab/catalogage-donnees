@@ -24,6 +24,11 @@ test.describe("Basic form submission", () => {
 
     // "Information Générales" section
 
+    expect(
+      page
+        .locator("a.fr-sidemenu__link", { hasText: "Informations générales" })
+        .first()
+    ).toHaveAttribute("aria-current", "page");
     const title = page.locator("form [name=title]");
     await title.fill(titleText);
     expect(await title.inputValue()).toBe(titleText);
@@ -38,6 +43,8 @@ test.describe("Basic form submission", () => {
     await geographicalCoverage.selectOption({
       label: GEOGRAPHICAL_COVERAGE_LABELS.europe,
     });
+
+    // "Sources et formats" section
 
     const apiFormat = page.locator("label[for=dataformats-api]");
     await apiFormat.check();
@@ -65,6 +72,9 @@ test.describe("Basic form submission", () => {
     const contactEmail2 = page.locator("[id='contactEmails-1']");
     await contactEmail2.fill(contactEmail2Text);
     expect(await contactEmail2.inputValue()).toBe(contactEmail2Text);
+    expect(
+      page.locator("a.fr-sidemenu__link", { hasText: "Contacts" }).first()
+    ).toHaveAttribute("aria-current", "page");
 
     // "Mise à jour" section
 
@@ -100,6 +110,9 @@ test.describe("Basic form submission", () => {
       page.waitForResponse("**/datasets/"),
       button.click(),
     ]);
+    expect(
+      page.locator("a.fr-sidemenu__link", { hasText: "Ouverture" }).first()
+    ).toHaveAttribute("aria-current", "page");
     expect(request.method()).toBe("POST");
     expect(response.status()).toBe(201);
     const json = await response.json();

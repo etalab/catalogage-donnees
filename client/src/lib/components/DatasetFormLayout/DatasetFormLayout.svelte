@@ -1,52 +1,38 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  type Anchor = { element: Element; y: number };
 
   let segment = "";
 
-  let container: Element | undefined = undefined;
-  let positions: number[] = [];
-  let anchors: Element[] = [];
+  let container: Element;
+  let anchors: Anchor[] = [];
 
   const handleScroll = () => {
-    if (anchors === undefined || positions === undefined) return;
-
-    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
-      // scrolled to bottom
-      segment = anchors[anchors.length - 1].id;
+    const hasReachedBottom =
+      window.pageYOffset + window.innerHeight >= document.body.offsetHeight;
+    if (hasReachedBottom) {
+      segment = anchors[0].element.id;
       return;
     }
 
-    const top = window.scrollY;
+    const firstAnchorAboveHere = anchors.find(
+      (anchor) => anchor.y < window.pageYOffset + window.innerHeight / 2
+    );
 
-    let i = anchors.length;
-    let lastId = "";
-    while (i--) {
-      if (positions[i] - top < 40) {
-        const { id } = anchors[i];
-
-        if (id !== lastId) {
-          segment = id;
-          lastId = id;
-        }
-        return;
-      }
+    if (firstAnchorAboveHere) {
+      segment = firstAnchorAboveHere.element.id;
     }
   };
 
-  const onresize = () => {
-    if (container === undefined) return;
-    const { top } = container.getBoundingClientRect();
-    positions = anchors.map((anchor) => {
-      return anchor.getBoundingClientRect().top - top;
-    });
-  };
+  const getY = (element: Element) => element.getBoundingClientRect().top;
+
+  const onresize = () =>
+    anchors.forEach((anchor) => (anchor.y = getY(anchor.element)));
 
   onMount(() => {
-    if (container === undefined) return;
-    container.querySelectorAll("h2").forEach((anchor) => {
-      if (anchor.id !== "") anchors.push(anchor);
+    container.querySelectorAll("h2[id]").forEach((anchor) => {
+      anchors.unshift({ element: anchor, y: getY(anchor) });
     });
-    onresize();
   });
 </script>
 
@@ -95,6 +81,7 @@
               </li>
               <li class="fr-sidemenu__item">
                 <a
+                  on:click={() => (segment = "mise-a-jour")}
                   aria-current={segment === "mise-a-jour" ? "page" : undefined}
                   class="fr-sidemenu__link"
                   href="#mise-a-jour"
