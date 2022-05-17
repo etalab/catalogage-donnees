@@ -86,24 +86,45 @@
       </section>
     </header>
 
-    <div class="fr-grid-row">
+    <div class="fr-grid-row fr-grid-row--gutters">
       <aside class="fr-col-4">
         <h6 class="fr-mb-2w">Ouverture</h6>
-        {#if !dataset.publishedUrl}
-          <a href={dataset.publishedUrl} target="_blank" class="aside-entry">
-            <span class="fr-fi--lg fr-fi-x-open-data" aria-hidden="true" />
-            <p>
-              <span class="fr-text--xs">Accessibilité aux données</span><br />
-              <span> Ouverte </span>
-            </p>
-          </a>
-        {:else}
-          <div class="aside-entry">
-            <span class="fr-fi--lg fr-fi-x-open-data" aria-hidden="true" />
+        {#if dataset.publishedUrl}
+          <div class="fr-mb-2w">
+            <div class="aside-entry">
+              <span class="fr-fi--lg fr-fi-x-open-data" aria-hidden="true" />
+              <p>
+                <span class="fr-text--xs">Accessibilité aux données</span><br />
+                <span> Ouverte </span>
+              </p>
+            </div>
 
-            <p>
-              <span class="fr-text--xs">Accessibilité aux données</span><br />
-              <span> Restreinte </span>
+            <a
+              class="fr-btn fr-btn--icon-right fr-fi-external-link-line"
+              title={dataset.publishedUrl}
+              href={dataset.publishedUrl}
+              target="_blank"
+            >
+              Voir les données
+            </a>
+          </div>
+        {:else}
+          <div>
+            <div class="aside-entry">
+              <span
+                class="fr-fi--lg fr-fi-x-restricted-data"
+                aria-hidden="true"
+              />
+
+              <p>
+                <span class="fr-text--xs">Accessibilité aux données</span><br />
+                <span> Restreinte </span>
+              </p>
+            </div>
+
+            <p class="fr-text--xs">
+              Veuillez prendre contact avec le producteur afin d’obtenir l’accès
+              au jeu de données.
             </p>
           </div>
         {/if}

@@ -83,18 +83,14 @@
 
     <div class="opening">
       {#if dataset.publishedUrl}
-        <a
-          href={dataset.publishedUrl}
-          target="_blank"
-          class="opening__open-data-status"
-        >
+        <div class="opening__open-data-status">
           <span class="fr-fi-x-open-data fr-text-label--blue-france" />
           <p class="fr-text--xs fr-my-0 fr-px-1w">
             <span class="fr-text-mention--grey">Ouverture</span>
             <br />
             <span>Open data</span>
           </p>
-        </a>
+        </div>
       {:else}
         <div class="opening__open-data-status">
           <span class="fr-fi-x-open-data fr-text-label--blue-france" />
