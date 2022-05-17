@@ -142,10 +142,11 @@ ops-staging: #- Sync staging branch with changes from current branch
 	git checkout staging 
 	git pull --rebase origin staging
 	git merge --ff-only --no-edit $(git_current_ref)
+	@echo "Success. You may now push and deploy"
 
 ops-staging-sync: #- Sync staging branch with master
 	git checkout staging
 	git diff --no-prefix staging..master | patch -p0
 	git add -A
 	git commit -m "Sync staging with master"
-	@echo "Success. Push when ready"
+	@echo "Success. You may now push and deploy"
