@@ -89,6 +89,27 @@
         aria-label="Métadonnées sur ce jeu de données"
         class="fr-container"
       >
+        <h6 class="fr-mb-2w">Ouverture</h6>
+
+        {#if !dataset.publishedUrl}
+          <a href={dataset.publishedUrl} target="_blank" class="aside-entry">
+            <span class="fr-fi--lg fr-fi-x-open-data" aria-hidden="true" />
+            <p>
+              <span class="fr-text--xs">Accessibilité aux données</span><br />
+              <span> Ouverte </span>
+            </p>
+          </a>
+        {:else}
+          <div class="aside-entry">
+            <span class="fr-fi--lg fr-fi-x-open-data" aria-hidden="true" />
+
+            <p>
+              <span class="fr-text--xs">Accessibilité aux données</span><br />
+              <span> Restreinte </span>
+            </p>
+          </div>
+        {/if}
+
         <h6 class="fr-mb-2w">Informations générales</h6>
 
         <div class="aside-entry">

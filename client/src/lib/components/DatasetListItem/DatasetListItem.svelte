@@ -131,6 +131,11 @@
     height: 100%;
   }
 
+  a[data-test-id="dataset-list-item"]:hover {
+    --a: 0.3;
+    --blend-size: 100%;
+  }
+
   .logo {
     width: 10%;
     display: flex;
@@ -169,10 +174,6 @@
     align-items: center;
   }
 
-  a:hover {
-    --a: 0.3;
-    --blend-size: 100%;
-  }
   li:not(:last-child) {
     border-bottom: 1px solid var(--border-default-grey);
   }
