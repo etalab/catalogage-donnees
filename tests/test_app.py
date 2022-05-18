@@ -9,6 +9,14 @@ async def test_index(client: httpx.AsyncClient) -> None:
     assert response.headers["Location"] == "http://testserver/docs"
 
 
+@pytest.mark.asyncio
+async def test_api_docs(client: httpx.AsyncClient) -> None:
+    response = await client.get("/docs")
+    assert response.status_code == 200
+    response = await client.get("/openapi.json")
+    assert response.status_code == 200
+
+
 @pytest.mark.parametrize("origin", ["http://localhost:3000"])
 @pytest.mark.asyncio
 async def test_cors(client: httpx.AsyncClient, origin: str) -> None:
