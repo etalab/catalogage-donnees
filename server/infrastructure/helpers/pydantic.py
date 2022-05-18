@@ -1,5 +1,5 @@
-from types import SimpleNamespace
-from typing import Callable, Generic, Iterator, TypeVar, Union
+import math
+from typing import Generic, Iterator, TypeVar, Union
 
 from pydantic.fields import ModelField
 
@@ -13,13 +13,18 @@ class Computed(Generic[T]):
     Usage:
         class Model(BaseModel):
             x: float
-            x_squared: Computed[float] = Field(lambda self: self.x ** 2)
+            x_squared: Computed[float] = Field(Computed.Expr("x ** 2"))
 
-    Limitation: does not support re-computing when dependant fields such.
+    Limitation: does not support re-computing when dependant fields change.
 
     Inspired by:
         https://github.com/samuelcolvin/pydantic/issues/935#issuecomment-961591416
     """
+
+    class Expr(str):
+        pass
+
+    __expr_globals__ = {"math": math}
 
     validate_always = True
 
@@ -28,14 +33,18 @@ class Computed(Generic[T]):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v: Union[T, Callable], field: ModelField, values: dict) -> T:
-        if not callable(v):
+    def __modify_schema__(cls, field_schema: dict, field: ModelField) -> None:
+        field_schema["default"] = f"Computed({field.default})"
+
+    @classmethod
+    def validate(cls, v: Union[T, Expr], field: ModelField, values: dict) -> T:
+        if not isinstance(v, cls.Expr):
             return v
 
         assert field.sub_fields
-        result = v(SimpleNamespace(**values))
+        result = eval(v, cls.__expr_globals__, values)
         typ = field.sub_fields[0]
-        validated, error = typ.validate(result, {}, loc="Expr")
+        validated, error = typ.validate(result, {}, loc=field.alias)
         if error:
             raise ValueError(error)
         assert validated is not None
