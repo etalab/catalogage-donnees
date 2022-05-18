@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import "@testing-library/jest-dom";
 
 import TagSelector from "./TagSelector.svelte";
@@ -39,16 +42,12 @@ describe("Test the TagSelector", () => {
       ],
     });
 
-    const input = getByRole("search");
+    const select = getByRole("combobox");
 
-    await fireEvent.input(input, {
+    await fireEvent.change(select, {
       target: {
-        value: "toto",
+        value: "uuid2",
       },
-    });
-
-    await fireEvent.keyPress(input, {
-      key: "Enter",
     });
 
     const tags = getAllByRole("listitem");
@@ -73,16 +72,12 @@ describe("Test the TagSelector", () => {
       ],
     });
 
-    const input = getByRole("search");
+    const select = getByRole("combobox");
 
-    await fireEvent.input(input, {
+    await fireEvent.change(select, {
       target: {
-        value: "toto",
+        value: "uuid2",
       },
-    });
-
-    await fireEvent.keyPress(input, {
-      key: "Enter",
     });
 
     let tags = getAllByRole("listitem");

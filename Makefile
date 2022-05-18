@@ -6,6 +6,7 @@ bin = ${venv}/bin/
 python = ${bin}python
 pip = ${bin}pip
 pysources = server/ tools/ tests/
+git_current_ref = $(shell git rev-parse --verify --short HEAD)
 
 install: install-server install-client #- Install all dependencies (server and client)
 
@@ -60,6 +61,9 @@ initdatareset: #- Initialize data, resetting any changed target entities
 
 id: #- Generate an ID suitable for use in database entities
 	${bin}python -m tools.makeid
+
+changepassword: #- Change password of a user account
+	${bin}python -m tools.changepassword
 
 dbdiagram: #- Generate database diagram image
 	${bin}python -m tools.erd docs/db.erd.json -o docs/db.dot
@@ -133,3 +137,16 @@ ops-deploy: #- Deploy environment
 
 ops-initdata: #- Run initdata in environment
 	cd ops && make initdata env=$(env)
+
+ops-staging: #- Sync staging branch with changes from current branch 
+	git checkout staging 
+	git pull --rebase origin staging
+	git merge --ff-only --no-edit $(git_current_ref)
+	@echo "Success. You may now push and deploy"
+
+ops-staging-sync: #- Sync staging branch with master
+	git checkout staging
+	git diff --no-prefix staging..master | patch -p0
+	git add -A
+	git commit -m "Sync staging with master"
+	@echo "Success. You may now push and deploy"

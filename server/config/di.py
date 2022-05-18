@@ -9,26 +9,22 @@ Uses: https://punq.readthedocs.io/
 Usage
 -----
 
-The DI container should first be initialized in entrypoints:
+Register dependencies in `configure()` below.
+
+The DI container should be initialized in entrypoints:
 
     ```python
     from server.config.di import bootstrap
 
     def main():
-        bootstrap()
         ...
+
+    if __name__ == "__main__":
+        bootstrap()
+        main()
     ```
 
-Then, register dependencies in `create_container` below:
-
-    ```python
-    from server.domain.todos.repositories import TodoRepository
-    from server.infrastructure.todos.repositories import SqlTodoRepository
-
-    container.register(TodoRepository, SqlTodoRepository)
-    ```
-
-Then, you can resolve dependencies elsewhere in the project,
+You can then resolve dependencies elsewhere in the project,
 e.g. in command or query handlers:
 
     ```python
@@ -43,7 +39,7 @@ e.g. in command or query handlers:
         ...
     ```
 
-Or in FastAPI routes:
+Or in routes:
 
     ```python
     # server/api/todos/routes.py
@@ -53,19 +49,15 @@ Or in FastAPI routes:
 
     ...
 
-    @router.get(...)
     async def create_todo(...):
         bus = resolve(MessageBus)
         command = CreateTodo(...)
         todo = await bus.execute(command)
         ...
     ```
-"""
-import contextlib
-import importlib
-from typing import Iterator, List, Type, TypeVar
 
-import punq
+Or in any custom scripts as seems fit.
+"""
 
 from server.application.auth.passwords import PasswordEncoder
 from server.domain.auth.repositories import UserRepository
@@ -81,16 +73,12 @@ from server.infrastructure.catalog_records.repositories import (
 from server.infrastructure.database import Database
 from server.infrastructure.datasets.repositories import SqlDatasetRepository
 from server.infrastructure.tags.repositories import SqlTagRepository
+from server.seedwork.application.di import Container
 from server.seedwork.application.messages import MessageBus
-from server.seedwork.application.modules import Module
+from server.seedwork.application.modules import load_modules
 
 from .settings import Settings
 
-T = TypeVar("T")
-
-
-# Edit this as appropriate to register modules of command and query handlers.
-# They are imported lazily later on, to avoid circular dependencies.
 MODULES = [
     "server.infrastructure.datasets.module.DatasetsModule",
     "server.infrastructure.tags.module.TagsModule",
@@ -98,35 +86,25 @@ MODULES = [
 ]
 
 
-def get_modules() -> List[Module]:
-    modules = []
-    for classpath in MODULES:
-        modpath, _, classname = classpath.rpartition(".")
-        mod = importlib.import_module(modpath)
-        modules.append(getattr(mod, classname))
-    return modules
-
-
-def create_container() -> punq.Container:
+def configure(container: "Container") -> None:
     """
     Configure the Dependency Injection (DI) container.
 
     NOTE: Edit this as appropriate to register dependencies.
     """
-    container = punq.Container()
 
     # Application-wide configuration
 
     settings = Settings()
-    container.register(Settings, instance=settings)
+    container.register_instance(Settings, settings)
 
     # Common services
 
-    container.register(PasswordEncoder, instance=Argon2PasswordEncoder())
+    container.register_instance(PasswordEncoder, Argon2PasswordEncoder())
 
     # Event handling (Commands, queries, and the message bus)
 
-    modules = get_modules()
+    modules = load_modules(MODULES)
 
     command_handlers = {
         command: handler
@@ -141,46 +119,22 @@ def create_container() -> punq.Container:
     }
 
     bus = MessageBusAdapter(command_handlers, query_handlers)
-
-    container.register(MessageBus, instance=bus)
+    container.register_instance(MessageBus, bus)
 
     # Databases
 
-    container.register(
-        Database,
-        instance=Database(url=settings.env_database_url, debug=settings.sql_debug),
-    )
+    db = Database(url=settings.env_database_url, debug=settings.sql_debug)
+    container.register_instance(Database, db)
 
     # Repositories
 
-    container.register(UserRepository, SqlUserRepository)
-    container.register(CatalogRecordRepository, SqlCatalogRecordRepository)
-    container.register(DatasetRepository, SqlDatasetRepository)
-    container.register(TagRepository, SqlTagRepository)
-
-    return container
+    container.register_instance(UserRepository, SqlUserRepository(db))
+    container.register_instance(CatalogRecordRepository, SqlCatalogRecordRepository(db))
+    container.register_instance(DatasetRepository, SqlDatasetRepository(db))
+    container.register_instance(TagRepository, SqlTagRepository(db))
 
 
-_CONTAINER_STACK: List[punq.Container] = []
+_CONTAINER = Container(configure)
 
-
-def bootstrap() -> None:
-    _CONTAINER_STACK.clear()
-    _CONTAINER_STACK.append(create_container())
-
-
-def resolve(type: Type[T]) -> T:
-    return _CONTAINER_STACK[-1].resolve(type)
-
-
-@contextlib.contextmanager
-def override() -> Iterator[punq.Container]:
-    """
-    Override certain dependencies on the DI container, e.g. for testing purposes.
-    """
-    container = create_container()
-    _CONTAINER_STACK.append(container)
-    try:
-        yield container
-    finally:
-        _CONTAINER_STACK.pop(0)
+bootstrap = _CONTAINER.bootstrap
+resolve = _CONTAINER.resolve

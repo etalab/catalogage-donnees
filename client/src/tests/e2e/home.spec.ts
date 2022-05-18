@@ -10,8 +10,22 @@ test.describe("Catalog list", () => {
 
     await expect(page).toHaveTitle("Catalogue");
 
-    const link = page.locator("text='Voir'").first();
-    await link.click();
+    await page.locator("data-test-id=dataset-list-item").first().click();
+
     await page.locator("text='Modifier'").waitFor();
+  });
+
+  test("Sees the pagination", async ({ page }) => {
+    await page.goto("/");
+
+    // Page size is 50 items, only 1 page during E2E tests.
+    const currentPage = page.locator(
+      "[data-testid='pagination-list'] [aria-current='page']"
+    );
+    await expect(page.locator("text=Première page")).toBeDisabled();
+    await expect(page.locator("text=Page précédente")).toBeDisabled();
+    await expect(currentPage).toHaveText("1");
+    await expect(page.locator("text=Page suivante")).toBeDisabled();
+    await expect(page.locator("text=Dernière page")).toBeDisabled();
   });
 });

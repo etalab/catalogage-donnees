@@ -18,7 +18,7 @@ test.describe("Basic form submission", () => {
     const serviceText = "Ministère de l'écologie";
     const technicalSourceText = "foo/bar";
     const publishedUrlText = "https://data.gouv.fr/datasets/example";
-    const tagName = "services";
+    const tagName = "services des eaux";
 
     await page.goto("/contribuer");
 
@@ -97,11 +97,13 @@ test.describe("Basic form submission", () => {
 
     const tags = page.locator("form [name=tags]");
 
-    await tags.fill(tagName);
+    await tags.selectOption({
+      label: tagName,
+    });
 
-    await tags.press("Enter");
-
-    const selectedTag = page.locator("text=services");
+    const selectedTag = page.locator(
+      'button[role="listitem"]:has-text("services des eaux")'
+    );
     await selectedTag.waitFor();
 
     const button = page.locator("button[type='submit']");

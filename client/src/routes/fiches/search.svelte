@@ -7,11 +7,14 @@
   export const load: Load = async ({ fetch, url }) => {
     const q = url.searchParams.get("q") || "";
 
-    const datasets = await getDatasets({
+    const pagination = await getDatasets({
       fetch,
       apiToken: get(apiToken),
+      page: 1,
       q,
     });
+
+    const datasets = Maybe.map(pagination, ({ items }) => items);
 
     return {
       props: {

@@ -13,7 +13,13 @@ class UserRepository(Repository):
     async def get_by_email(self, email: str) -> Optional[User]:
         raise NotImplementedError  # pragma: no cover
 
+    async def get_by_api_token(self, api_token: str) -> Optional[User]:
+        raise NotImplementedError  # pragma: no cover
+
     async def insert(self, entity: User) -> ID:
+        raise NotImplementedError  # pragma: no cover
+
+    async def update(self, entity: User) -> None:
         raise NotImplementedError  # pragma: no cover
 
     async def delete(self, id: ID) -> None:
