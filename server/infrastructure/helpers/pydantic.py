@@ -13,9 +13,9 @@ class Computed(Generic[T]):
     Usage:
         class Model(BaseModel):
             x: float
-            x_squared: Computed[float] = Field("lambda self: self.x ** 2")
+            x_squared: Computed[float] = Field(Computed.Expr("x ** 2"))
 
-    Limitation: does not support re-computing when dependant fields such.
+    Limitation: does not support re-computing when dependant fields change.
 
     Inspired by:
         https://github.com/samuelcolvin/pydantic/issues/935#issuecomment-961591416
@@ -44,7 +44,7 @@ class Computed(Generic[T]):
         assert field.sub_fields
         result = eval(v, cls.__expr_globals__, values)
         typ = field.sub_fields[0]
-        validated, error = typ.validate(result, {}, loc="Computed")
+        validated, error = typ.validate(result, {}, loc=field.alias)
         if error:
             raise ValueError(error)
         assert validated is not None
