@@ -173,7 +173,7 @@ Le projet est configurable à l'aide des variables d'environnement suivantes.
 | Variable | Description | Valeur par défaut |
 |---|---|---|
 | `APP_DATABASE_URL` | URL vers la base de données PostgreSQL | `postgresql+asyncpg://localhost:5432/catalogage` |
-| `APP_SQL_DEBUG` | Active les journeaux de débogage (_debug logs_) des requêtes SQL effectuées par le serveur | `False` |
+| `APP_DEBUG` | Active le mode debug : _debug logs_ SQL, [_debug toolbar_](https://github.com/mongkok/fastapi-debug-toolbar) dans la doc d'API | `False` |
 
 Définissez les valeurs spécifiques à votre situation dans un fichier `.env` placé à la racine du projet, que vous pouvez créer à partir du modèle `.env.example` :
 
@@ -186,7 +186,7 @@ Les variables peuvent aussi être passées en arguments, elles sont alors utilis
 Par exemple :
 
 ```bash
-APP_SQL_DEBUG=1 make serve
+APP_DEBUG=1 make serve
 ```
 
 Des paramètres avancés (principalement dédiés au déploiement - voir [Opérations](./ops.md)) sont également disponibles :

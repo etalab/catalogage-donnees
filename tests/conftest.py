@@ -8,6 +8,7 @@ import pytest_asyncio
 from alembic import command
 from alembic.config import Config
 from asgi_lifespan import LifespanManager
+from fastapi import FastAPI
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from server.application.datasets.queries import GetAllDatasets
@@ -17,7 +18,7 @@ from server.domain.auth.entities import UserRole
 from server.infrastructure.database import Database
 from server.seedwork.application.messages import MessageBus
 
-from .helpers import TestUser, create_test_user
+from .helpers import TestUser, create_client, create_test_user
 
 os.environ["APP_TESTING"] = "True"
 
@@ -69,14 +70,19 @@ def event_loop() -> Iterator[asyncio.AbstractEventLoop]:
 
 
 @pytest_asyncio.fixture(scope="session")
-async def client() -> AsyncIterator[httpx.AsyncClient]:
+async def app() -> AsyncIterator[FastAPI]:
     from server.api.app import create_app
 
     app = create_app()
 
     async with LifespanManager(app):
-        async with httpx.AsyncClient(app=app, base_url="http://testserver") as client:
-            yield client
+        yield app
+
+
+@pytest_asyncio.fixture(scope="session")
+async def client(app: FastAPI) -> AsyncIterator[httpx.AsyncClient]:
+    async with create_client(app) as client:
+        yield client
 
 
 @pytest_asyncio.fixture(name="temp_user")

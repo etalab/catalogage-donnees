@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     host: str = "localhost"
     port: int = 3579
     docs_url: str = "/docs"
-    sql_debug: bool = False
+    debug: bool = False
     testing: bool = False
 
     class Config:

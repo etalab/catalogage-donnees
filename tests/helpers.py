@@ -1,4 +1,5 @@
 import itertools
+from typing import Callable
 
 import httpx
 
@@ -7,6 +8,10 @@ from server.config.di import resolve
 from server.domain.auth.entities import User, UserRole
 from server.domain.auth.repositories import UserRepository
 from server.seedwork.application.messages import MessageBus
+
+
+def create_client(app: Callable) -> httpx.AsyncClient:
+    return httpx.AsyncClient(app=app, base_url="http://testserver")
 
 
 class _DisablePytestCollectionMixin:
