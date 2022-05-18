@@ -101,7 +101,6 @@
 
             <a
               class="fr-btn fr-btn--icon-right fr-fi-external-link-line"
-              title={dataset.publishedUrl}
               href={dataset.publishedUrl}
               target="_blank"
             >
@@ -122,7 +121,7 @@
               </p>
             </div>
 
-            <p class="fr-text--xs">
+            <p class="fr-text--xs fr-text-mention--grey">
               Veuillez prendre contact avec le producteur afin d’obtenir l’accès
               au jeu de données.
             </p>

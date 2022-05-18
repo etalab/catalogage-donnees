@@ -19,7 +19,7 @@
 <li>
   <a
     data-test-id="dataset-list-item"
-    class="fr-p-2w"
+    class="fr-p-2w dataset-list-item"
     href={paths.datasetDetail({ id: dataset.id })}
     title="Consulter cette fiche de données"
   >
@@ -48,7 +48,7 @@
         </p>
       </div>
 
-      <div class="meta-data-coverage-format">
+      <div class="meta-data__geographical-coverage-format">
         <div class="metadata-items fr-mt-1w">
           <div>
             <span class="fr-fi fr-fi-x-map-2-line" aria-hidden="true" />
@@ -93,7 +93,7 @@
         </div>
       {:else}
         <div class="opening__open-data-status">
-          <span class="fr-fi-x-open-data fr-text-label--blue-france" />
+          <span class="fr-fi-x-restricted-data fr-text-label--blue-france" />
           <p class="fr-text--xs fr-my-0 fr-px-1w">
             <span class="fr-text-mention--grey">Ouverture</span>
             <br />
@@ -117,17 +117,17 @@
 
 <style>
   li,
-  a[data-test-id="dataset-list-item"] {
+  .dataset-list-item {
     width: 100%;
   }
 
-  a[data-test-id="dataset-list-item"] {
+  .dataset-list-item {
     display: flex;
     width: 100%;
     height: 100%;
   }
 
-  a[data-test-id="dataset-list-item"]:hover {
+  .dataset-list-item:hover {
     --a: 0.3;
     --blend-size: 100%;
   }
@@ -146,7 +146,7 @@
     justify-content: space-between;
   }
 
-  .meta-data-coverage-format {
+  .meta-data__geographical-coverage-format {
     max-width: 65%;
   }
 
