@@ -1,4 +1,3 @@
-import datetime as dt
 from typing import Any, List
 
 import httpx
@@ -20,7 +19,7 @@ from server.domain.datasets.entities import (
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
-from ..helpers import TestUser, approx_datetime
+from ..helpers import TestUser
 
 
 @pytest.mark.asyncio
@@ -135,17 +134,9 @@ async def test_dataset_crud(
     pk = data["id"]
     assert isinstance(pk, str)
 
-    created_at = data["catalog_record"]["created_at"]
-    assert dtutil.parse(created_at) == approx_datetime(
-        dtutil.now(), abs=dt.timedelta(seconds=0.2)
-    )
-
     assert data == {
         "id": pk,
-        "catalog_record": {
-            "id": data["catalog_record"]["id"],
-            "created_at": created_at,
-        },
+        "catalog_record": data["catalog_record"],
         "title": "Example title",
         "description": "Example description",
         "service": "Example service",
