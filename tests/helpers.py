@@ -1,8 +1,6 @@
-import datetime as dt
 import itertools
 
 import httpx
-from _pytest.python_api import ApproxBase
 
 from server.application.auth.commands import CreateUser
 from server.config.di import resolve
@@ -55,22 +53,3 @@ async def create_test_user(role: UserRole) -> TestUser:
     assert user is not None
 
     return TestUser(**user.dict(), password=password)
-
-
-class approx_datetime(ApproxBase):
-    """
-    An equivalent of pytest.approx() for approximating datetimes.
-
-    See: https://github.com/pytest-dev/pytest/issues/8395#issuecomment-790549327
-    """
-
-    def __init__(self, expected: dt.datetime, abs: dt.timedelta) -> None:
-        if abs < dt.timedelta(0):
-            raise ValueError(f"absolute tolerance cannot be negative: {abs}")
-        super().__init__(expected, abs=abs)
-
-    def __repr__(self) -> str:
-        return f"approx_datetime({self.expected!r} ± {self.abs!r}"
-
-    def __eq__(self, actual: object) -> bool:
-        return abs(self.expected - actual) <= self.abs
