@@ -6,15 +6,31 @@
   } from "src/constants";
   import paths from "$lib/paths";
   import { capitalize, formatDaysMonthsOrYearsToNow } from "$lib/util/format";
-  import DatasetProperty from "../DatasetProperty/DatasetProperty.svelte";
+  import DatasetPropertyList from "../DatasetPropertyList/DatasetPropertyList.svelte";
 
   export let dataset: Dataset;
 
-  const formatFormats = (dataset: Dataset) => {
-    return dataset.formats
-      .map((format) => DATA_FORMAT_SHORT_NAMES[format])
-      .join(", ");
-  };
+  $: properties = [
+    {
+      label: "Couverture géographique",
+      icon: "fr-fi-x-map-2-line",
+      value: GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage],
+    },
+    {
+      label: "Formats",
+      icon: "fr-fi-file-line",
+      value: dataset.formats
+        .map((format) => DATA_FORMAT_SHORT_NAMES[format])
+        .join(", "),
+    },
+    {
+      label: "Ouverture",
+      icon: dataset.publishedUrl
+        ? "fr-fi-x-open-data"
+        : "fr-fi-x-restricted-data",
+      value: dataset.publishedUrl ? "Open data" : "Restreint",
+    },
+  ];
 </script>
 
 <li>
@@ -47,41 +63,7 @@
         {dataset.service}
       </p>
 
-      <div class="property-list">
-        <DatasetProperty icon="fr-fi-x-map-2-line">
-          <svelte:fragment slot="label">
-            Couverture géographique
-          </svelte:fragment>
-
-          <svelte:fragment slot="value">
-            {GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage]}
-          </svelte:fragment>
-        </DatasetProperty>
-
-        <DatasetProperty icon="fr-fi-file-line">
-          <svelte:fragment slot="label">Formats</svelte:fragment>
-
-          <svelte:fragment slot="value">
-            {formatFormats(dataset)}
-          </svelte:fragment>
-        </DatasetProperty>
-
-        <DatasetProperty
-          icon={dataset.publishedUrl
-            ? "fr-fi-x-open-data"
-            : "fr-fi-x-restricted-data"}
-        >
-          <svelte:fragment slot="label">Ouverture</svelte:fragment>
-
-          <svelte:fragment slot="value">
-            {#if dataset.publishedUrl}
-              Open data
-            {:else}
-              Restreint
-            {/if}
-          </svelte:fragment>
-        </DatasetProperty>
-      </div>
+      <DatasetPropertyList {properties} />
 
       {#if dataset.headlines}
         <p class="fr-mb-0 fr-mt-1w fr-text--sm fr-text-mention--grey">
@@ -125,12 +107,6 @@
     display: flex;
     padding-right: var(--sp-1w);
     align-items: center;
-  }
-
-  .property-list {
-    display: grid;
-    column-gap: var(--sp-2w);
-    grid-template-columns: repeat(3, 1fr);
   }
 
   .item__actions {
