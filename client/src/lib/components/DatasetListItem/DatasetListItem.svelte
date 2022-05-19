@@ -6,6 +6,7 @@
   } from "src/constants";
   import paths from "$lib/paths";
   import { capitalize, formatDaysMonthsOrYearsToNow } from "$lib/util/format";
+  import DatasetProperty from "../DatasetProperty/DatasetProperty.svelte";
 
   export let dataset: Dataset;
 
@@ -19,80 +20,67 @@
 <li>
   <a
     data-test-id="dataset-list-item"
-    class="fr-p-2w dataset-list-item"
+    class="item"
     href={paths.datasetDetail({ id: dataset.id })}
     title="Consulter cette fiche de données"
   >
-    <div class="logo">
-      <p class="fr-logo fr-logo--sm fr-p-0" title="république française">
+    <div class="item__logo">
+      <p class="fr-logo fr-logo--sm">
         {@html "Ministère<br />de la culture"}
       </p>
     </div>
 
-    <div class="meta-data fr-px-2w">
-      <div class="meta-data__headlines">
-        <p class="fr-m-0">
-          {#if dataset.headlines}
-            <strong data-testid="headlines-title">
-              {@html dataset.headlines.title}
-            </strong>
-          {:else}
-            <strong>
-              {dataset.title}
-            </strong>
-          {/if}
-        </p>
+    <div>
+      <p class="fr-m-0">
+        {#if dataset.headlines}
+          <strong data-testid="headlines-title">
+            {@html dataset.headlines.title}
+          </strong>
+        {:else}
+          <strong>
+            {dataset.title}
+          </strong>
+        {/if}
+      </p>
 
-        <p class="fr-m-0 fr-text--sm fr-text-mention--grey">
-          {dataset.service}
-        </p>
-      </div>
+      <p class="fr-mb-2w fr-text--sm fr-text-mention--grey">
+        {dataset.service}
+      </p>
 
-      <div class="meta-data__items">
-        <div class="meta-data__items__geographical-coverage">
-          <span class="fr-fi fr-fi-x-map-2-line" aria-hidden="true" />
-          <p class="fr-text--xs fr-my-0 fr-px-1w">
-            <span class="fr-text-mention--grey">Couverture géographique</span>
-            <br />
-            <span
-              >{GEOGRAPHICAL_COVERAGE_LABELS[
-                dataset.geographicalCoverage
-              ]}</span
-            >
-          </p>
-        </div>
+      <div class="property-list">
+        <DatasetProperty icon="fr-fi-x-map-2-line">
+          <svelte:fragment slot="label">
+            Couverture géographique
+          </svelte:fragment>
 
-        <div class="meta-data__items__formats">
-          <span class="fr-fi fr-fi-file-line" aria-hidden="true" />
-          <p class="fr-text--xs fr-my-0 fr-px-1w">
-            <span class="fr-text-mention--grey">Formats</span> <br />
-            <span>{formatFormats(dataset)}</span>
-          </p>
-        </div>
+          <svelte:fragment slot="value">
+            {GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage]}
+          </svelte:fragment>
+        </DatasetProperty>
 
-        <div class="meta-data__items__opening">
-          {#if dataset.publishedUrl}
-            <div class="meta-data__items__opening__status">
-              <span class="fr-fi-x-open-data fr-text-label--blue-france" />
-              <p class="fr-text--xs fr-my-0 fr-px-1w">
-                <span class="fr-text-mention--grey">Ouverture</span>
-                <br />
-                <span>Open data</span>
-              </p>
-            </div>
-          {:else}
-            <div class="meta-data__items__opening__status">
-              <span
-                class="fr-fi-x-restricted-data fr-text-label--blue-france"
-              />
-              <p class="fr-text--xs fr-my-0 fr-px-1w">
-                <span class="fr-text-mention--grey">Ouverture</span>
-                <br />
-                <span>Restreint</span>
-              </p>
-            </div>
-          {/if}
-        </div>
+        <DatasetProperty icon="fr-fi-file-line">
+          <svelte:fragment slot="label">Formats</svelte:fragment>
+
+          <svelte:fragment slot="value">
+            {formatFormats(dataset)}
+          </svelte:fragment>
+        </DatasetProperty>
+
+        <DatasetProperty
+          icon={dataset.publishedUrl
+            ? "fr-fi-x-open-data"
+            : "fr-fi-x-restricted-data"}
+        >
+          <svelte:fragment slot="label">Ouverture</svelte:fragment>
+
+          <svelte:fragment slot="value">
+            {#if dataset.publishedUrl}
+              Open data
+            {:else}
+              Restreint
+            {/if}
+          </svelte:fragment>
+        </DatasetProperty>
       </div>
 
       {#if dataset.headlines}
@@ -104,7 +92,7 @@
       {/if}
     </div>
 
-    <div class="action">
+    <div class="item__actions">
       <p class="fr-text--sm">
         {capitalize(
           formatDaysMonthsOrYearsToNow(dataset.catalogRecord.createdAt)
@@ -117,84 +105,43 @@
 </li>
 
 <style>
-  li,
-  .dataset-list-item {
-    width: 100%;
+  .item {
+    display: grid;
+    column-gap: 1rem;
+    grid-template-columns: 1fr 8fr 1fr;
+    padding: var(--sp-3w) var(--sp-2w);
   }
 
-  .dataset-list-item {
-    display: flex;
-    width: 100%;
-    height: 100%;
+  .item[href] {
+    box-shadow: none;
   }
 
-  .dataset-list-item:hover {
+  .item:hover {
     --a: 0.3;
     --blend-size: 100%;
   }
 
-  .logo {
-    width: 15%;
+  .item__logo {
     display: flex;
-    justify-content: center;
+    padding-right: var(--sp-1w);
     align-items: center;
   }
 
-  .meta-data {
-    flex-grow: 1;
-    gap: 15px;
+  .property-list {
+    display: grid;
+    column-gap: var(--sp-2w);
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .item__actions {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-  }
-
-  .meta-data__items {
-    display: flex;
-    justify-content: space-between;
-    max-width: 80%;
-    align-items: center;
-  }
-
-  .meta-data__items [class*="fr-fi"] {
-    color: var(--text-action-high-blue-france);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 0.5rem;
-  }
-
-  .meta-data__items__geographical-coverage,
-  .meta-data__items__formats,
-  .meta-data__items__opening__status {
-    display: flex;
-    align-items: center;
-  }
-
-  .meta-data__items__geographical-coverage {
-    width: 30%;
-  }
-
-  .meta-data__items__opening {
-    padding: 5px;
-    display: flex;
-    align-items: center;
-  }
-
-  .action {
-    width: 10%;
-    max-height: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
   }
 
   li:not(:last-child) {
     border-bottom: 1px solid var(--border-default-grey);
-  }
-
-  [href] {
-    box-shadow: none;
   }
 
   p {
