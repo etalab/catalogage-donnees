@@ -83,7 +83,7 @@
           {:else}
             <div class="meta-data__items__opening__status">
               <span
-                class="fr-fi-x-restricted-data fr-text-label--blue-france"
+                class="fr-fi-x-indeterminate-circle-line fr-text-label--blue-france"
               />
               <p class="fr-text--xs fr-my-0 fr-px-1w">
                 <span class="fr-text-mention--grey">Ouverture</span>

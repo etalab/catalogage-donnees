@@ -89,8 +89,8 @@
     <div class="fr-grid-row fr-grid-row--gutters">
       <aside class="fr-col-4">
         <h6 class="fr-mb-2w">Ouverture</h6>
-        {#if dataset.publishedUrl}
-          <div class="fr-mb-2w">
+        <div class="fr-mb-4w">
+          {#if dataset.publishedUrl}
             <div class="aside-entry">
               <span class="fr-fi--lg fr-fi-x-open-data" aria-hidden="true" />
               <p>
@@ -106,12 +106,10 @@
             >
               Voir les données
             </a>
-          </div>
-        {:else}
-          <div>
+          {:else}
             <div class="aside-entry">
               <span
-                class="fr-fi--lg fr-fi-x-restricted-data"
+                class="fr-fi--lg fr-fi-x-indeterminate-circle-line"
                 aria-hidden="true"
               />
 
@@ -121,12 +119,12 @@
               </p>
             </div>
 
-            <p class="fr-text--xs fr-text-mention--grey">
+            <p class="fr-text--xs fr-text-mention--grey fr-mb-0">
               Veuillez prendre contact avec le producteur afin d’obtenir l’accès
               au jeu de données.
             </p>
-          </div>
-        {/if}
+          {/if}
+        </div>
 
         <h6 class="fr-mb-2w">Informations générales</h6>
 
