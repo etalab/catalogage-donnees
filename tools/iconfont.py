@@ -41,7 +41,7 @@ def _make_fontello_config(name: str, prefix: str, icons_dir: Path) -> dict:
 
     glyphs = []
 
-    for k, path in enumerate(icons_dir.iterdir()):
+    for k, path in enumerate(sorted(icons_dir.glob("**/*.svg"), key=lambda p: p.stem)):
         icon_name = path.stem
         icon_code = (
             f"e{800 + k}"  # Character codepoint, e.g. "content: '\e800';" in CSS

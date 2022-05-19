@@ -36,59 +36,96 @@
   );
 </script>
 
-{#if Maybe.Some(dataset) && Maybe.Some(editUrl)}
-  <div class="fr-container fr-mb-5w">
-    <section class="header">
-      <div class="header-headlines">
-        <p class="fr-logo" title="république française">
-          {@html "Ministère<br />de la culture"}
-        </p>
-        <div>
-          <p class="fr-m-0 fr-text-mention--grey">
-            {dataset.service}
+<section class="fr-container">
+  {#if Maybe.Some(dataset) && Maybe.Some(editUrl)}
+    <header class="fr-grid-row">
+      <section class="fr-col-12 fr-mt-5w">
+        <div class="header-headlines">
+          <p class="fr-logo" title="république française">
+            {@html "Ministère<br />de la culture"}
           </p>
-          <h1 class="fr-mb-0">
-            {dataset.title}
-          </h1>
-          <div class="header-headlines-tags fr-mt-2w">
-            {#each dataset.tags as tag}
-              <span class="fr-badge fr-badge--info fr-badge--no-icon">
-                {tag.name}</span
-              >
-            {/each}
+          <div>
+            <p class="fr-m-0 fr-text-mention--grey">
+              {dataset.service}
+            </p>
+            <h1 class="fr-mb-0">
+              {dataset.title}
+            </h1>
+            <div class="header-headlines-tags fr-mt-2w">
+              {#each dataset.tags as tag}
+                <span class="fr-badge fr-badge--info fr-badge--no-icon">
+                  {tag.name}</span
+                >
+              {/each}
+            </div>
           </div>
         </div>
-      </div>
 
-      <ul
-        class="header-toolbar fr-grid-row fr-btns-group fr-btns-group--inline fr-btns-group--icon-right fr-my-5w"
-      >
-        <li>
-          <a
-            href={editUrl}
-            class="fr-btn fr-btn--secondary fr-fi-edit-fill"
-            title="Modifier ce jeu de données"
-          >
-            Modifier
-          </a>
-        </li>
-        <li>
-          <a
-            class="fr-btn fr-btn--secondary fr-fi-mail-line"
-            title="Contacter le producter du jeu de données par email"
-            href="mailto:{dataset.producerEmail}"
-          >
-            Contacter le producteur
-          </a>
-        </li>
-      </ul>
-    </section>
+        <ul
+          class="header-toolbar fr-btns-group fr-btns-group--inline fr-btns-group--icon-right fr-my-5w"
+        >
+          <li>
+            <a
+              href={editUrl}
+              class="fr-btn fr-btn--secondary fr-fi-edit-fill"
+              title="Modifier ce jeu de données"
+            >
+              Modifier
+            </a>
+          </li>
+          <li>
+            <a
+              class="fr-btn fr-btn--secondary fr-fi-mail-line"
+              title="Contacter le producter du jeu de données par email"
+              href="mailto:{dataset.producerEmail}"
+            >
+              Contacter le producteur
+            </a>
+          </li>
+        </ul>
+      </section>
+    </header>
 
-    <section class="layout">
-      <aside
-        aria-label="Métadonnées sur ce jeu de données"
-        class="fr-container"
-      >
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <aside class="fr-col-4">
+        <h6 class="fr-mb-2w">Ouverture</h6>
+        <div class="fr-mb-4w">
+          {#if dataset.publishedUrl}
+            <div class="aside-entry">
+              <span class="fr-fi--lg fr-fi-x-open-data" aria-hidden="true" />
+              <p>
+                <span class="fr-text--xs">Accessibilité aux données</span><br />
+                <span> Ouverte </span>
+              </p>
+            </div>
+
+            <a
+              class="fr-btn fr-btn--icon-right fr-fi-external-link-line"
+              href={dataset.publishedUrl}
+              target="_blank"
+            >
+              Voir les données
+            </a>
+          {:else}
+            <div class="aside-entry">
+              <span
+                class="fr-fi--lg fr-fi-x-restricted-data"
+                aria-hidden="true"
+              />
+
+              <p>
+                <span class="fr-text--xs">Accessibilité aux données</span><br />
+                <span> Restreinte </span>
+              </p>
+            </div>
+
+            <p class="fr-text--xs fr-text-mention--grey fr-mb-0">
+              Veuillez prendre contact avec le producteur afin d’obtenir l’accès
+              au jeu de données.
+            </p>
+          {/if}
+        </div>
+
         <h6 class="fr-mb-2w">Informations générales</h6>
 
         <div class="aside-entry">
@@ -136,9 +173,8 @@
           </p>
         </div>
       </aside>
-
-      <div
-        class="fr-text--sm"
+      <section
+        class="fr-col-8 fr-text--sm"
         aria-label="Description du jeu de données"
         data-testid="dataset-description"
       >
@@ -147,16 +183,12 @@
             {text}
           </p>
         {/each}
-      </div>
-    </section>
-  </div>
-{/if}
+      </section>
+    </div>
+  {/if}
+</section>
 
 <style>
-  .header {
-    margin-top: 1.5rem;
-  }
-
   @media (min-width: 36em /* sm */) {
     .header-headlines {
       display: grid;
@@ -169,12 +201,6 @@
   @media (min-width: 48em /* md */) {
     .header-headlines {
       column-gap: 3em;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      column-gap: 3rem;
     }
 
     .header-toolbar {

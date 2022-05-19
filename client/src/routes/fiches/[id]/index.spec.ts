@@ -44,4 +44,24 @@ describe("Dataset detail description", () => {
     const description = getByTestId("dataset-description");
     expect(description).toHaveTextContent(dataset.description);
   });
+
+  test("The open data link is not present if the access is restricted", async () => {
+    const { queryByText } = render(index, { dataset });
+    const seeDataLink = queryByText("Voir les données", {
+      exact: false,
+    });
+    expect(seeDataLink).not.toBeInTheDocument();
+  });
+
+  test("The open data link is present if the access is open", async () => {
+    const { queryByText } = render(index, {
+      dataset: getFakeDataset({
+        publishedUrl: "http://foo.com",
+      }),
+    });
+    const seeDataLink = queryByText("Voir les données", {
+      exact: false,
+    });
+    expect(seeDataLink).toBeInTheDocument();
+  });
 });
