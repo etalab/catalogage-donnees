@@ -1,3 +1,4 @@
+from debug_toolbar.middleware import DebugToolbarMiddleware
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -11,12 +12,15 @@ origins = [
 ]
 
 
-def create_app() -> FastAPI:
-    settings = resolve(Settings)
+def create_app(settings: Settings = None) -> FastAPI:
+    if settings is None:
+        settings = resolve(Settings)
 
     app = FastAPI(
+        debug=settings.debug,
         docs_url=settings.docs_url,
     )
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
@@ -32,6 +36,12 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    if settings.debug:
+        app.add_middleware(
+            DebugToolbarMiddleware,
+            panels=["server.api.debugging.debug_toolbar.panels.SQLAlchemyPanel"],
+        )
 
     app.include_router(router)
 

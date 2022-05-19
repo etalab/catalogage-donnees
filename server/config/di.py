@@ -123,7 +123,7 @@ def configure(container: "Container") -> None:
 
     # Databases
 
-    db = Database(url=settings.env_database_url, debug=settings.sql_debug)
+    db = Database(url=settings.env_database_url, debug=settings.debug)
     container.register_instance(Database, db)
 
     # Repositories

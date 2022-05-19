@@ -1,7 +1,12 @@
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncTransaction, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    AsyncTransaction,
+    create_async_engine,
+)
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from .adapters import json
@@ -15,6 +20,10 @@ class Database:
         self._session_cls = sessionmaker(
             self._engine, autocommit=False, autoflush=False, class_=AsyncSession
         )
+
+    @property
+    def engine(self) -> AsyncEngine:
+        return self._engine
 
     def session(self) -> AsyncSession:
         return self._session_cls()
