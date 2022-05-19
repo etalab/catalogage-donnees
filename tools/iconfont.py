@@ -41,7 +41,7 @@ def _make_fontello_config(name: str, prefix: str, icons_dir: Path) -> dict:
 
     glyphs = []
 
-    for k, path in enumerate(icons_dir.glob("**/*.svg")):
+    for k, path in enumerate(sorted(icons_dir.glob("**/*.svg"), key=lambda p: p.stem)):
         icon_name = path.stem
         icon_code = (
             f"e{800 + k}"  # Character codepoint, e.g. "content: '\e800';" in CSS
@@ -130,7 +130,7 @@ def main(name: str, prefix: str, icons_dir: Path, output: Path) -> None:
             "font_data": base64.b64encode(woff2).decode("utf-8"),
             "icon_classes": "\n".join(
                 f"/* prettier-ignore */\n{line}"
-                for line in sorted(css.splitlines())
+                for line in css.splitlines()
                 if line.startswith(f".{prefix}")
             ),
         }

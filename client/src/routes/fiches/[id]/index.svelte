@@ -109,7 +109,7 @@
           {:else}
             <div class="aside-entry">
               <span
-                class="fr-fi--lg fr-fi-x-indeterminate-circle-line"
+                class="fr-fi--lg fr-fi-x-restricted-data"
                 aria-hidden="true"
               />
 
