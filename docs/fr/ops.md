@@ -117,7 +117,7 @@ Vous devez ensuite déployer staging :
 make ops-deploy env=staging
 ```
 
-**N.B.** Tous les changements finalement adoptés dans `master` ne seront pas ajoutés à `staging`. La branche de staging devrait donc être régulièrement resynchronisée avec `master`. Pour cela, lancez :
+**N.B.** Tous les changements finalement adoptés dans `master` ne seront pas ajoutés à `staging`. La branche de staging devrait donc être régulièrement recréée à partir `master`. Pour vous y aider, lancez :
 
 ```
 make ops-staging-sync
