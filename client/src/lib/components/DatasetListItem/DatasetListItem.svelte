@@ -87,6 +87,11 @@
 </li>
 
 <style>
+  /**
+  NOTE:
+    (!dsfr) = depends on DSFR implementation, which may change across versions
+  */
+
   .item {
     display: grid;
     column-gap: 1rem;
@@ -95,12 +100,11 @@
   }
 
   .item[href] {
-    box-shadow: none;
+    background-image: none; /* (!dsfr) */
   }
 
   .item:hover {
-    --a: 0.3;
-    --blend-size: 100%;
+    background-color: var(--background-elevated-grey-hover);
   }
 
   .item__logo {
