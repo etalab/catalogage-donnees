@@ -189,19 +189,19 @@ describe("Test the dataset form", () => {
     expect(tags).toHaveLength(1);
   });
 
-  test("Null fields are correctly handled in HTML and submitted as null", async () => {
+  test("Null or empty fields are correctly submitted as null", async () => {
     const initial: DatasetFormData = {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
-      producerEmail: null,
+      producerEmail: "",
       contactEmails: ["person@mydomain.org"],
       service: "A nice service",
       lastUpdatedAt: null,
       updateFrequency: null,
       geographicalCoverage: "europe",
       technicalSource: "foo/bar",
-      publishedUrl: null,
+      publishedUrl: "",
       tags: [buildFakeTag()],
     };
     const props = { initial };
