@@ -62,7 +62,7 @@
           />
           <button
             type="button"
-            class="fr-btn fr-btn--secondary fr-fi-delete-fill"
+            class="fr-btn fr-btn--secondary fr-icon-delete-fill"
             title="Supprimer cet e-mail de contact"
             on:click|preventDefault={() => remove(i)}
           />
@@ -79,7 +79,7 @@
 
   <button
     type="button"
-    class="fr-btn fr-btn--secondary fr-fi-edit-fill fr-btn--icon-left contact-entry-add"
+    class="fr-btn fr-btn--secondary fr-icon-edit-fill fr-btn--icon-left contact-entry-add"
     on:click|preventDefault={() => add()}
   >
     Ajouter un contact

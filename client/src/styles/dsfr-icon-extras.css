@@ -1,45 +1,45 @@
 /* GENERATED -- Do not modify */
 
-[class^="fr-fi-x-"]::before,
-[class*=" fr-fi-x-"]::before {
+[class^="fr-icon-x-"]::before,
+[class*=" fr-icon-x-"]::before {
   content: "";
 }
 
-.fr-fi-x-cake-2-line::before {
+.fr-icon-x-cake-2-line::before {
   -webkit-mask-image: url("../assets/icons/dsfr-icon-extras/cake-2-line.svg");
   mask-image: url("../assets/icons/dsfr-icon-extras/cake-2-line.svg");
 }
-.fr-fi-x-calendar-check-line::before {
+.fr-icon-x-calendar-check-line::before {
   -webkit-mask-image: url("../assets/icons/dsfr-icon-extras/calendar-check-line.svg");
   mask-image: url("../assets/icons/dsfr-icon-extras/calendar-check-line.svg");
 }
-.fr-fi-x-map-2-line::before {
+.fr-icon-x-map-2-line::before {
   -webkit-mask-image: url("../assets/icons/dsfr-icon-extras/map-2-line.svg");
   mask-image: url("../assets/icons/dsfr-icon-extras/map-2-line.svg");
 }
-.fr-fi-x-open-data::before {
+.fr-icon-x-open-data::before {
   -webkit-mask-image: url("../assets/icons/dsfr-icon-extras/custom/open-data.svg");
   mask-image: url("../assets/icons/dsfr-icon-extras/custom/open-data.svg");
 }
-.fr-fi-x-restricted-data::before {
+.fr-icon-x-restricted-data::before {
   -webkit-mask-image: url("../assets/icons/dsfr-icon-extras/custom/restricted-data.svg");
   mask-image: url("../assets/icons/dsfr-icon-extras/custom/restricted-data.svg");
 }
 
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
-  .fr-fi-x-cake-2-line::before {
+  .fr-icon-x-cake-2-line::before {
     background-image: url("../assets/icons/dsfr-icon-extras/cake-2-line.svg");
   }
-  .fr-fi-x-calendar-check-line::before {
+  .fr-icon-x-calendar-check-line::before {
     background-image: url("../assets/icons/dsfr-icon-extras/calendar-check-line.svg");
   }
-  .fr-fi-x-map-2-line::before {
+  .fr-icon-x-map-2-line::before {
     background-image: url("../assets/icons/dsfr-icon-extras/map-2-line.svg");
   }
-  .fr-fi-x-open-data::before {
+  .fr-icon-x-open-data::before {
     background-image: url("../assets/icons/dsfr-icon-extras/custom/open-data.svg");
   }
-  .fr-fi-x-restricted-data::before {
+  .fr-icon-x-restricted-data::before {
     background-image: url("../assets/icons/dsfr-icon-extras/custom/restricted-data.svg");
   }
 }

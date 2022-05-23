@@ -80,7 +80,7 @@
 
   <div class="fr-grid-row fr-grid-row--center">
     <button
-      class="fr-btn fr-btn--icon-right fr-fi-logout-box-r-line"
+      class="fr-btn fr-btn--icon-right fr-icon-logout-box-r-line"
       type="submit"
       disabled={!$isValid}
       title="Se connecter"
