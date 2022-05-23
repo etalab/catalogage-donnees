@@ -77,6 +77,26 @@ test.describe("Edit dataset", () => {
     const deleteButton = page.locator(DELETE_DATASET_BUTTON_LOCATOR);
     await expect(deleteButton).not.toBeVisible();
   });
+
+  test("Clears the publishedUrl", async ({ page, dataset }) => {
+    // Regression test: used to fail due to sending "" when server requires
+    // null to indicate "no published URL".
+    await page.goto(`/fiches/${dataset.id}/edit`);
+
+    const publishedUrl = page.locator("form [name=publishedUrl]");
+    // Simulate touching the field or unsetting a previous value.
+    await publishedUrl.fill("");
+    expect(await publishedUrl.inputValue()).toBe("");
+
+    const button = page.locator("button[type='submit']");
+    const [response] = await Promise.all([
+      page.waitForResponse(`**/datasets/${dataset.id}/`),
+      button.click(),
+    ]);
+    expect(response.status()).toBe(200);
+    const json = await response.json();
+    expect(json.published_url).toBe(null);
+  });
 });
 
 test.describe("Edit dataset as admin", () => {

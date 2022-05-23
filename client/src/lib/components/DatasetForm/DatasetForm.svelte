@@ -145,12 +145,16 @@
           ? new Date(values.lastUpdatedAt)
           : null;
 
+        // Ensure "" becomes null.
+        const publishedUrl = values.publishedUrl ? values.publishedUrl : null;
+
         const data: DatasetFormData = {
           ...values,
           formats,
           producerEmail,
           contactEmails,
           lastUpdatedAt,
+          publishedUrl,
         };
 
         dispatch("save", data);
