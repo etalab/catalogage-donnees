@@ -102,7 +102,7 @@
       {tags}
       initial={dataset}
       {loading}
-      submitLabel="Modifier ce jeu de données"
+      submitLabel="Enregistrer les modifications"
       loadingLabel="Modification en cours..."
       on:save={onSave}
     />

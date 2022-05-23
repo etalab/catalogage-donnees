@@ -11,10 +11,13 @@
   export let error = "";
   export let selectedTags: TagType[] = [];
 
+  let value: string | null = null;
+
   const dispatch = createEventDispatcher<{ change: TagType[] }>();
 
-  const handleChange = (e: FocusEvent) => {
-    const { value: tagId } = e.target as HTMLSelectElement;
+  const handleChange = () => {
+    const tagId = value;
+    value = null; // Auto-reset HTML select.
 
     const tagHasBeenAlreadySelected = selectedTags.find(
       (tag) => tag.id === tagId
@@ -37,14 +40,14 @@
 
 <Select
   {error}
+  bind:value
   on:change={handleChange}
-  on:blur={handleChange}
   required
   label={"Mot-clés"}
   hintText="Les mot-clés seront utilisés par les réutilisateurs pour affiner leur recherche. Sélectionnez ceux qui vous semblent les plus représentatifs de vos données."
   {id}
   {name}
-  placeholder="Sélectionner un mot-clé"
+  placeholder="Ajouter un mot-clé"
   options={tags.map(transformTagToSelectOption)}
 />
 
