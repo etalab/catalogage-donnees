@@ -129,7 +129,7 @@
         <h6 class="fr-mb-2w">Informations générales</h6>
 
         <div class="aside-entry">
-          <span class="fr-fi--lg fr-fi-x-bank-line" aria-hidden="true" />
+          <span class="fr-fi--lg fr-icon-bank-line" aria-hidden="true" />
           <p>
             <span class="fr-text--xs">Producteur</span><br />
             <span>{dataset.service}</span>

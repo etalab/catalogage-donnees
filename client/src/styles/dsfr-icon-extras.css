@@ -5,10 +5,6 @@
   content: "";
 }
 
-.fr-fi-x-bank-line::before {
-  -webkit-mask-image: url("../assets/icons/dsfr-icon-extras/bank-line.svg");
-  mask-image: url("../assets/icons/dsfr-icon-extras/bank-line.svg");
-}
 .fr-fi-x-cake-2-line::before {
   -webkit-mask-image: url("../assets/icons/dsfr-icon-extras/cake-2-line.svg");
   mask-image: url("../assets/icons/dsfr-icon-extras/cake-2-line.svg");
@@ -16,10 +12,6 @@
 .fr-fi-x-calendar-check-line::before {
   -webkit-mask-image: url("../assets/icons/dsfr-icon-extras/calendar-check-line.svg");
   mask-image: url("../assets/icons/dsfr-icon-extras/calendar-check-line.svg");
-}
-.fr-fi-x-heart-line::before {
-  -webkit-mask-image: url("../assets/icons/dsfr-icon-extras/heart-line.svg");
-  mask-image: url("../assets/icons/dsfr-icon-extras/heart-line.svg");
 }
 .fr-fi-x-map-2-line::before {
   -webkit-mask-image: url("../assets/icons/dsfr-icon-extras/map-2-line.svg");
@@ -35,17 +27,11 @@
 }
 
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
-  .fr-fi-x-bank-line::before {
-    background-image: url("../assets/icons/dsfr-icon-extras/bank-line.svg");
-  }
   .fr-fi-x-cake-2-line::before {
     background-image: url("../assets/icons/dsfr-icon-extras/cake-2-line.svg");
   }
   .fr-fi-x-calendar-check-line::before {
     background-image: url("../assets/icons/dsfr-icon-extras/calendar-check-line.svg");
-  }
-  .fr-fi-x-heart-line::before {
-    background-image: url("../assets/icons/dsfr-icon-extras/heart-line.svg");
   }
   .fr-fi-x-map-2-line::before {
     background-image: url("../assets/icons/dsfr-icon-extras/map-2-line.svg");
