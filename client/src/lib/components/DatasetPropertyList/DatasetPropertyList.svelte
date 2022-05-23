@@ -11,7 +11,7 @@
 <div class="property-list fr-row">
   {#each properties as { icon, label, value }}
     <div class="property-list-item fr-col-{Math.floor(12 / properties.length)}">
-      <span class="{icon}" aria-hidden="true" />
+      <span class={icon} aria-hidden="true" />
 
       <div class="fr-text--xs fr-my-0 fr-ml-1w">
         <div class="fr-text-mention--grey">

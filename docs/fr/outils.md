@@ -186,17 +186,13 @@ l'utilisation de ce DSFR.
 
 ### Icônes supplémentaires
 
-Le DSFR tire ses [icônes](https://gouvfr.atlassian.net/wiki/spaces/DB/pages/222331396/Ic+nes+-+Icons) de RemixIcon, mais seule une petite partie est incluse (pour des raisons de poids).
+Le DSFR tire ses [icônes](https://gouvfr.atlassian.net/wiki/spaces/DB/pages/222331396/Ic+nes+-+Icons) de RemixIcon, mais seule une partie est incluse (pour des raisons de poids).
 
-Des icônes supplémentaires utilisées dans ce projet sont fournies par un fichier CSS `client/src/styles/dsfr-icon-extras.css`. Celui-ci est généré par un script s'appuyant sur l'API de [Fontello](https://github.com/fontello/fontello) pour générer une fonte à partir des icônes supplémentaires.
+Des icônes supplémentaires utilisées dans ce projet sont fournies par un fichier CSS `client/src/styles/dsfr-icon-extras.css`. Celui-ci est généré par le script `tools/iconextras.py`.
 
 Pour ajouter de nouvelles icônes supplémentaires :
 
 - Récupérer le SVG (24px) sur https://remixicon.com/
 - Ajouter le fichier SVG au dossier `client/src/assets/icon/dsfr-icon-extras/`
-  - **Important** : Conformément à [Importing SVG images (Wiki Fontello)](https://github.com/fontello/fontello/wiki/How-to-use-custom-images#importing-svg-images), modifier le SVG pour retirer l'élément `<path fill="...">`. Il ne doit rester qu'un seul `<path d="...">` contenant le trait de l'icône. Exemple :
-    ```xml
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M2 20h20v2H2v-2zm2-8h2v7H4v-7zm5 0h2v7H9v-7zm4 0h2v7h-2v-7zm5 0h2v7h-2v-7zM2 7l10-5 10 5v4H2V7zm2 1.236V9h16v-.764l-8-4-8 4zM12 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
-    ```
 - Lancer `$ make dsfr-icon-extras` pour synchroniser le CSS.
-- Utiliser les icônes comme d'habitude, mais avec `fr-fi-x-<icon>` (`x` pour "extra") au lieu de `fr-fi-<icon>`.
+- Utiliser les icônes comme d'habitude, mais avec `fr-icon-x-<name>` (`x` pour "extra") au lieu de `fr-icon-<name>`.

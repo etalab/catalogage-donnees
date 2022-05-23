@@ -6,38 +6,11 @@ https://gouvfr.atlassian.net/wiki/spaces/DB/pages/222331396/Ic+nes+-+Icons#Pour-
 """
 
 import argparse
-import textwrap
 from pathlib import Path
 
-from jinja2 import Environment
+from ._utils import get_template
 
-CSS_TEMPLATE = Environment().from_string(
-    textwrap.dedent(
-        """\
-        /* GENERATED -- Do not modify */
-
-        [class^="{{ prefix }}"]::before,
-        [class*=" {{ prefix }}"]::before {
-          content: "";
-        }
-
-        {% for icon in icons -%}
-        .{{ prefix }}{{ icon.name }}::before {
-          -webkit-mask-image: url("{{ icon.url }}");
-          mask-image: url("{{ icon.url }}");
-        }
-        {% endfor %}
-
-        @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
-          {% for icon in icons -%}
-          .{{ prefix }}{{ icon.name }}::before {
-            background-image: url("{{ icon.url }}");
-          }
-          {% endfor %}
-        }
-        """
-    )
-)
+CSS_TEMPLATE = get_template("iconextras.css.j2")
 
 
 def main(prefix: str, output: Path) -> None:
