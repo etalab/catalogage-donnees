@@ -26,5 +26,4 @@ pytest-asyncio==0.18.3
 pytest-cov==3.0.0
 pyyaml==6.0
 sqlalchemy-utils==0.38.2
-svg-path-transform==1.2.1
 types-pyyaml==6.0.7

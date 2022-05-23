@@ -70,10 +70,8 @@ dbdiagram: #- Generate database diagram image
 	dot docs/db.dot -T png -o docs/db.png
 
 dsfr-icon-extras: #- Generate CSS for extra DSFR icons
-	${bin}python -m tools.iconfont \
-		--name dsfr-icon-extras \
+	${bin}python -m tools.iconextras \
 		--prefix fr-fi-x- \
-		--icons-dir client/src/assets/icons/dsfr-icon-extras \
 		--output client/src/styles/dsfr-icon-extras.css
 
 test: test-server test-client #- Run the server and client test suite

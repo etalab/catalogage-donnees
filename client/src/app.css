@@ -1,4 +1,6 @@
 @import url("@gouvfr/dsfr/dist/dsfr/dsfr.min.css");
+@import url("@gouvfr/dsfr/dist/utility/icons/icons.css");
+@import url("./styles/dsfr-icon-extras.css");
 
 mark {
   background-color: var(--background-contrast-info);
