@@ -476,7 +476,7 @@
         Date de la dernière mise à jour (JJ / MM / AAAA)
       </label>
 
-      <div class="fr-input-wrap fr-fi-calendar-line">
+      <div class="fr-input-wrap">
         <input
           class="fr-input {$errors.lastUpdatedAt ? 'fr-input--error' : ''}"
           aria-describedby={$errors.lastUpdatedAt
