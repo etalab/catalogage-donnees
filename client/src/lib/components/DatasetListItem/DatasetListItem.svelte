@@ -6,28 +6,47 @@
   } from "src/constants";
   import paths from "$lib/paths";
   import { capitalize, formatDaysMonthsOrYearsToNow } from "$lib/util/format";
+  import DatasetPropertyList from "../DatasetPropertyList/DatasetPropertyList.svelte";
 
   export let dataset: Dataset;
 
-  const formatFormats = (dataset: Dataset) => {
-    return dataset.formats
-      .map((format) => DATA_FORMAT_SHORT_NAMES[format])
-      .join(", ");
-  };
+  $: properties = [
+    {
+      label: "Couverture géographique",
+      icon: "fr-fi-x-map-2-line",
+      value: GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage],
+    },
+    {
+      label: "Formats",
+      icon: "fr-fi-file-line",
+      value: dataset.formats
+        .map((format) => DATA_FORMAT_SHORT_NAMES[format])
+        .join(", "),
+    },
+    {
+      label: "Ouverture",
+      icon: dataset.publishedUrl
+        ? "fr-fi-x-open-data"
+        : "fr-fi-x-restricted-data",
+      value: dataset.publishedUrl ? "Open data" : "Restreint",
+    },
+  ];
 </script>
 
 <li>
   <a
     data-test-id="dataset-list-item"
-    class="fr-p-3w"
+    class="item"
     href={paths.datasetDetail({ id: dataset.id })}
     title="Consulter cette fiche de données"
   >
-    <p class="fr-logo fr-logo--sm fr-p-0 logo" title="république française">
-      {@html "Ministère<br />de la culture"}
-    </p>
+    <div class="item__logo">
+      <p class="fr-logo fr-logo--sm">
+        {@html "Ministère<br />de la culture"}
+      </p>
+    </div>
 
-    <div class="container">
+    <div>
       <p class="fr-m-0">
         {#if dataset.headlines}
           <strong data-testid="headlines-title">
@@ -40,31 +59,12 @@
         {/if}
       </p>
 
-      <p class="fr-m-0 fr-text--sm fr-text-mention--grey">
+      <p class="fr-mb-2w fr-text--sm fr-text-mention--grey">
         {dataset.service}
       </p>
 
-      <div class="metadata-items fr-mt-1w">
-        <div>
-          <span class="fr-fi fr-fi-x-map-2-line" aria-hidden="true" />
-          <p class="fr-text--xs fr-my-0 fr-px-1w">
-            <span class="fr-text-mention--grey">Couverture géographique</span>
-            <br />
-            <span
-              >{GEOGRAPHICAL_COVERAGE_LABELS[
-                dataset.geographicalCoverage
-              ]}</span
-            >
-          </p>
-        </div>
-        <div>
-          <span class="fr-fi fr-fi-file-line" aria-hidden="true" />
-          <p class="fr-text--xs fr-my-0 fr-px-1w">
-            <span class="fr-text-mention--grey">Formats</span> <br />
-            <span>{formatFormats(dataset)}</span>
-          </p>
-        </div>
-      </div>
+      <DatasetPropertyList {properties} />
+
       {#if dataset.headlines}
         <p class="fr-mb-0 fr-mt-1w fr-text--sm fr-text-mention--grey">
           <em data-testid="headlines-description"
@@ -74,7 +74,7 @@
       {/if}
     </div>
 
-    <div class="actions">
+    <div class="item__actions">
       <p class="fr-text--sm">
         {capitalize(
           formatDaysMonthsOrYearsToNow(dataset.catalogRecord.createdAt)
@@ -87,60 +87,41 @@
 </li>
 
 <style>
-  li,
-  a {
-    width: 100%;
-    height: 100%;
+  .item {
+    display: grid;
+    column-gap: 1rem;
+    grid-template-columns: 1fr 8fr 1fr;
+    padding: var(--sp-3w) var(--sp-2w);
   }
 
-  .container {
-    flex-grow: 1;
+  .item[href] {
+    box-shadow: none;
   }
 
-  .logo {
-    width: 15%;
-  }
-
-  a {
-    display: flex;
-    align-items: center;
-    width: 100%;
-  }
-
-  a:hover {
+  .item:hover {
     --a: 0.3;
     --blend-size: 100%;
   }
+
+  .item__logo {
+    display: flex;
+    padding-right: var(--sp-1w);
+    align-items: center;
+  }
+
+  .item__actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
   li:not(:last-child) {
     border-bottom: 1px solid var(--border-default-grey);
   }
 
-  .metadata-items {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    margin: 0 -2em;
-  }
-
-  .metadata-items > * {
-    margin: 0 2em;
-    display: flex;
-  }
-
-  .metadata-items [class*="fr-fi"] {
-    color: var(--text-action-high-blue-france);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 0.5rem;
-  }
-
-  .actions {
-    width: 35%;
-    text-align: right;
-  }
-
-  [href] {
-    box-shadow: none;
+  p {
+    padding: 0;
+    margin: 0;
   }
 </style>

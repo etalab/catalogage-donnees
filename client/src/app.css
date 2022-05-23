@@ -13,4 +13,9 @@ mark {
   --bp-md: 48em;
   --bp-lg: 62em;
   --bp-xl: 78em;
+
+  /* Spacing */
+  --sp-1w: 0.5rem;
+  --sp-2w: 1rem;
+  --sp-3w: 1.5rem;
 }

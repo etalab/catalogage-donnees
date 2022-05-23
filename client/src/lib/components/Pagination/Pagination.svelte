@@ -51,7 +51,7 @@
 
     {#if pagination.hasLeftTruncature}
       <li data-testid="left-truncature">
-        <a class="fr-pagination__link fr-displayed-lg"> ... </a>
+        <span class="fr-pagination__link fr-displayed-lg"> ... </span>
       </li>
     {/if}
 
@@ -73,7 +73,7 @@
 
     {#if pagination.hasRightTruncature}
       <li data-testid="right-truncature">
-        <a class="fr-pagination__link fr-displayed-lg"> ... </a>
+        <span class="fr-pagination__link fr-displayed-lg"> ... </span>
       </li>
     {/if}
 

@@ -9,6 +9,9 @@ pydantic[email]==1.9.0
 uvicorn[standard]==0.17.6
 sqlalchemy[asyncio,mypy]==1.4.35
 
+# Debug
+fastapi-debug-toolbar==0.2.1
+
 # Tooling
 asgi-lifespan==1.0.1
 black==22.3.0
