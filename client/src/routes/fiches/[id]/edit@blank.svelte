@@ -92,7 +92,7 @@
       aria-label="go to fiche page"
       href="/fiches/{dataset.id}"
       title="Aller vers la jeu de donnée"
-      class="fr-btn fr-fi-close-line fr-btn--icon fr-btn--secondary"
+      class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
     >
       {""}
     </a>

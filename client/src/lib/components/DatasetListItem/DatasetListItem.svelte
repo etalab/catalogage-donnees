@@ -13,12 +13,12 @@
   $: properties = [
     {
       label: "Couverture géographique",
-      icon: "fr-fi-x-map-2-line",
+      icon: "fr-icon-x-map-2-line",
       value: GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage],
     },
     {
       label: "Formats",
-      icon: "fr-fi-file-line",
+      icon: "fr-icon-file-line",
       value: dataset.formats
         .map((format) => DATA_FORMAT_SHORT_NAMES[format])
         .join(", "),
@@ -26,8 +26,8 @@
     {
       label: "Ouverture",
       icon: dataset.publishedUrl
-        ? "fr-fi-x-open-data"
-        : "fr-fi-x-restricted-data",
+        ? "fr-icon-x-open-data"
+        : "fr-icon-x-restricted-data",
       value: dataset.publishedUrl ? "Open data" : "Restreint",
     },
   ];
@@ -81,7 +81,7 @@
         )}
       </p>
 
-      <span class="fr-fi-arrow-right-line fr-text-label--blue-france" />
+      <span class="fr-icon-arrow-right-line fr-text-label--blue-france" />
     </div>
   </a>
 </li>

@@ -71,7 +71,7 @@ dbdiagram: #- Generate database diagram image
 
 dsfr-icon-extras: #- Generate CSS for extra DSFR icons
 	${bin}python -m tools.iconextras \
-		--prefix fr-fi-x- \
+		--prefix fr-icon-x- \
 		--output client/src/styles/dsfr-icon-extras.css
 
 test: test-server test-client #- Run the server and client test suite

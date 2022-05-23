@@ -56,7 +56,7 @@
   <a
     aria-label="go to home page"
     href="/"
-    class="fr-btn fr-fi-close-line fr-btn--icon fr-btn--secondary"
+    class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
   >
     {""}
   </a>

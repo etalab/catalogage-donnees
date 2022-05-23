@@ -67,7 +67,7 @@
           <li>
             <a
               href={editUrl}
-              class="fr-btn fr-btn--secondary fr-fi-edit-fill"
+              class="fr-btn fr-btn--secondary fr-icon-edit-fill"
               title="Modifier ce jeu de données"
             >
               Modifier
@@ -75,7 +75,7 @@
           </li>
           <li>
             <a
-              class="fr-btn fr-btn--secondary fr-fi-mail-line"
+              class="fr-btn fr-btn--secondary fr-icon-mail-line"
               title="Contacter le producter du jeu de données par email"
               href="mailto:{dataset.producerEmail}"
             >
@@ -92,7 +92,10 @@
         <div class="fr-mb-4w">
           {#if dataset.publishedUrl}
             <div class="aside-entry">
-              <span class="fr-fi--lg fr-fi-x-open-data" aria-hidden="true" />
+              <span
+                class="fr-icon--lg fr-icon-x-open-data"
+                aria-hidden="true"
+              />
               <p>
                 <span class="fr-text--xs">Accessibilité aux données</span><br />
                 <span> Ouverte </span>
@@ -100,7 +103,7 @@
             </div>
 
             <a
-              class="fr-btn fr-btn--icon-right fr-fi-external-link-line"
+              class="fr-btn fr-btn--icon-right fr-icon-external-link-line"
               href={dataset.publishedUrl}
               target="_blank"
             >
@@ -109,7 +112,7 @@
           {:else}
             <div class="aside-entry">
               <span
-                class="fr-fi--lg fr-fi-x-restricted-data"
+                class="fr-icon--lg fr-icon-x-restricted-data"
                 aria-hidden="true"
               />
 
@@ -129,14 +132,14 @@
         <h6 class="fr-mb-2w">Informations générales</h6>
 
         <div class="aside-entry">
-          <span class="fr-fi--lg fr-icon-bank-line" aria-hidden="true" />
+          <span class="fr-icon--lg fr-icon-bank-line" aria-hidden="true" />
           <p>
             <span class="fr-text--xs">Producteur</span><br />
             <span>{dataset.service}</span>
           </p>
         </div>
         <div class="aside-entry">
-          <span class="fr-fi--lg fr-fi-x-map-2-line" aria-hidden="true" />
+          <span class="fr-icon--lg fr-icon-x-map-2-line" aria-hidden="true" />
           <p>
             <span class="fr-text--xs">Couverture géographique</span><br />
             <span>
@@ -149,7 +152,7 @@
 
         <div class="aside-entry">
           <span
-            class="fr-fi--lg fr-fi-x-calendar-check-line"
+            class="fr-icon--lg fr-icon-x-calendar-check-line"
             aria-hidden="true"
           />
           <p>
@@ -162,7 +165,7 @@
           </p>
         </div>
         <div class="aside-entry">
-          <span class="fr-fi--lg fr-fi-refresh-line" aria-hidden="true" />
+          <span class="fr-icon--lg fr-icon-refresh-line" aria-hidden="true" />
           <p>
             <span class="fr-text--xs">Fréquence de mise à jour</span><br />
             <span
@@ -215,7 +218,7 @@
     margin-bottom: 1rem;
   }
 
-  .aside-entry [class*="fr-fi"] {
+  .aside-entry [class*="fr-icon"] {
     color: var(--text-action-high-blue-france);
     display: inline-block;
     height: 32px;

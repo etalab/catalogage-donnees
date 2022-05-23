@@ -563,7 +563,7 @@
   <div class="fr-input-group button--container fr-mb-6w">
     <button
       type="submit"
-      class="fr-btn  fr-fi-upload-2-line fr-btn--icon-right"
+      class="fr-btn  fr-icon-upload-2-line fr-btn--icon-right"
     >
       {saveBtnLabel}
     </button>

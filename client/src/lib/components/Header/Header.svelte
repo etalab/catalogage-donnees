@@ -79,7 +79,7 @@
               <ul class="fr-btns-group">
                 <li>
                   <button
-                    class="fr-btn fr-btn--icon-left fr-fi-logout-box-r-line"
+                    class="fr-btn fr-btn--icon-left fr-icon-logout-box-r-line"
                     on:click={onClickLogout}
                   >
                     Déconnexion
