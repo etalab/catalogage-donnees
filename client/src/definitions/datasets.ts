@@ -1,3 +1,4 @@
+import type { Maybe } from "$lib/util/maybe";
 import type { CatalogRecord } from "./catalog_records";
 import type { Tag } from "./tag";
 
@@ -30,7 +31,7 @@ export type GeographicalCoverage =
 
 export interface DatasetHeadlines {
   title: string;
-  description: string;
+  description: Maybe<string>;
 }
 
 export type Dataset = {
