@@ -29,7 +29,11 @@ from server.domain.datasets.entities import (
     GeographicalCoverage,
     UpdateFrequency,
 )
-from server.domain.datasets.repositories import DatasetRepository, SearchResult
+from server.domain.datasets.repositories import (
+    DatasetHeadlines,
+    DatasetRepository,
+    SearchResult,
+)
 from server.domain.tags.entities import Tag
 
 from ..catalog_records.repositories import CatalogRecordModel
@@ -250,14 +254,19 @@ class SqlDatasetRepository(DatasetRepository):
 
             result = await session.execute(stmt.limit(limit).offset(offset))
 
+            def _make_headlines(values: list) -> DatasetHeadlines:
+                htitle, hdescription = values
+                return {
+                    "title": htitle,
+                    "description": hdescription if "<mark>" in hdescription else None,
+                }
+
             items: List[SearchResult] = [
                 (
                     make_entity(instance),
-                    {"title": headlines[0], "description": headlines[1]}
-                    if headlines
-                    else None,
+                    _make_headlines(headline_values) if headline_values else None,
                 )
-                for (instance, _, *headlines) in result
+                for instance, _, *headline_values in result
             ]
 
             return items, count

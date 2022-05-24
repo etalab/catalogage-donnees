@@ -5,6 +5,7 @@
     GEOGRAPHICAL_COVERAGE_LABELS,
   } from "src/constants";
   import paths from "$lib/paths";
+  import { Maybe } from "$lib/util/maybe";
   import { capitalize, formatDaysMonthsOrYearsToNow } from "$lib/util/format";
   import DatasetPropertyList from "../DatasetPropertyList/DatasetPropertyList.svelte";
 
@@ -48,7 +49,7 @@
 
     <div>
       <p class="fr-m-0">
-        {#if dataset.headlines}
+        {#if Maybe.Some(dataset.headlines)}
           <strong data-testid="headlines-title">
             {@html dataset.headlines.title}
           </strong>
@@ -63,15 +64,15 @@
         {dataset.service}
       </p>
 
-      <DatasetPropertyList {properties} />
-
-      {#if dataset.headlines}
-        <p class="fr-mb-0 fr-mt-1w fr-text--sm fr-text-mention--grey">
+      {#if Maybe.Some(dataset.headlines) && Maybe.Some(dataset.headlines.description)}
+        <p class="fr-mb-2w fr-text--xs fr-text-mention--grey">
           <em data-testid="headlines-description"
             >... {@html dataset.headlines.description} ...</em
           >
         </p>
       {/if}
+
+      <DatasetPropertyList {properties} />
     </div>
 
     <div class="item__actions">

@@ -287,20 +287,34 @@ async def test_search_ranking(client: httpx.AsyncClient, temp_user: TestUser) ->
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "highlight, expected_headlines",
+    "highlight, corpus, q, expected_headlines",
     [
         pytest.param(
             False,
+            [("Restaurants CROUS", "Lieux de restauration du CROUS")],
+            "restaurant",
             None,
             id="off",
         ),
         pytest.param(
             True,
+            [("Restaurants CROUS", "Lieux de restauration du CROUS")],
+            "restaurant",
             {
                 "title": "<mark>Restaurants</mark> CROUS",
                 "description": "Lieux de <mark>restauration</mark> du CROUS",
             },
             id="on",
+        ),
+        pytest.param(
+            True,
+            [("Restaurants CROUS", "Données fournies par le CROUS")],
+            "restaurant",
+            {
+                "title": "<mark>Restaurants</mark> CROUS",
+                "description": None,
+            },
+            id="on-description-without-results",
         ),
     ],
 )
@@ -308,9 +322,11 @@ async def test_search_highlight(
     client: httpx.AsyncClient,
     temp_user: TestUser,
     highlight: bool,
+    corpus: list,
+    q: str,
     expected_headlines: Optional[dict],
 ) -> None:
-    await add_corpus([("Restaurants CROUS", "Lieux de restauration du CROUS")])
+    await add_corpus(corpus)
 
     q = "restaurant"
 

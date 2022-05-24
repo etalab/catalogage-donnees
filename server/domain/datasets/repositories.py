@@ -11,7 +11,7 @@ from .entities import Dataset
 
 class DatasetHeadlines(TypedDict):
     title: str
-    description: str
+    description: Optional[str]
 
 
 SearchResult = Tuple[Dataset, Optional[DatasetHeadlines]]
