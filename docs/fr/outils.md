@@ -194,5 +194,6 @@ Pour ajouter de nouvelles icônes supplémentaires :
 
 - Récupérer le SVG (24px) sur https://remixicon.com/
 - Ajouter le fichier SVG au dossier `client/src/assets/icon/dsfr-icon-extras/`
+  - **Important** : retirer toute éventuelle propriété `fill="none"`. Le SVG ne doit contenir que le tracé, de sorte à être librement manipulable par CSS.
 - Lancer `$ make dsfr-icon-extras` pour synchroniser le CSS.
 - Utiliser les icônes comme d'habitude, mais avec `fr-icon-x-<name>` (`x` pour "extra") au lieu de `fr-icon-<name>`.
