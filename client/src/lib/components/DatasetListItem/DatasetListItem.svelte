@@ -64,15 +64,15 @@
         {dataset.service}
       </p>
 
-      <DatasetPropertyList {properties} />
-
       {#if Maybe.Some(dataset.headlines) && Maybe.Some(dataset.headlines.description)}
-        <p class="fr-mb-0 fr-mt-1w fr-text--sm fr-text-mention--grey">
+        <p class="fr-mb-2w fr-text--xs fr-text-mention--grey">
           <em data-testid="headlines-description"
             >... {@html dataset.headlines.description} ...</em
           >
         </p>
       {/if}
+
+      <DatasetPropertyList {properties} />
     </div>
 
     <div class="item__actions">
