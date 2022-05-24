@@ -45,9 +45,7 @@
             {@html "Ministère<br />de la culture"}
           </p>
           <div>
-            <p class="fr-m-0 fr-text-mention--grey">
-              {dataset.service}
-            </p>
+            <p class="fr-m-0 fr-text-mention--grey">Ministère de la culture</p>
             <h1 class="fr-mb-0">
               {dataset.title}
             </h1>
