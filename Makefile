@@ -139,7 +139,7 @@ ops-initdata: #- Run initdata in environment
 ops-staging: #- Sync staging branch with changes from current branch 
 	git checkout staging 
 	git pull --rebase origin staging
-	git merge --ff-only --no-edit $(git_current_ref)
+	git merge --no-edit $(git_current_ref)
 	@echo "Success. You may now push and deploy"
 
 ops-staging-sync: #- Sync staging branch with master
