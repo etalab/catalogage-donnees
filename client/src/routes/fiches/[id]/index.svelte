@@ -39,54 +39,54 @@
 
 <section class="fr-container">
   {#if Maybe.Some(dataset) && Maybe.Some(editUrl)}
-    <header class="fr-grid-row">
-      <section class="fr-col-12 fr-mt-5w">
-        <div class="header-headlines">
+    <header class="fr-mt-5w">
+      <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+        <div class="fr-col-sm-4 fr-col-md-3 fr-col-lg-2">
           <p class="fr-logo" title="république française">
             {@html "Ministère<br />de la culture"}
           </p>
-          <div>
-            <p class="fr-m-0 fr-text-mention--grey">Ministère de la culture</p>
-            <h1 class="fr-mb-0">
-              {dataset.title}
-            </h1>
-            <div class="header-headlines-tags fr-mt-2w">
-              {#each dataset.tags as tag}
-                <span class="fr-badge fr-badge--info fr-badge--no-icon">
-                  {tag.name}</span
-                >
-              {/each}
-            </div>
+        </div>
+        <div class="fr-col-sm-8 fr-col-md-9 fr-col-lg-10">
+          <p class="fr-m-0 fr-text-mention--grey">Ministère de la culture</p>
+          <h1 class="fr-mb-0">
+            {dataset.title}
+          </h1>
+          <div class="header__tags fr-mt-2w">
+            {#each dataset.tags as tag}
+              <span class="fr-badge fr-badge--info fr-badge--no-icon">
+                {tag.name}</span
+              >
+            {/each}
           </div>
         </div>
+      </div>
 
-        <ul
-          class="header-toolbar fr-btns-group fr-btns-group--inline fr-btns-group--icon-right fr-my-5w"
-        >
-          <li>
-            <a
-              href={editUrl}
-              class="fr-btn fr-btn--secondary fr-icon-edit-fill"
-              title="Modifier ce jeu de données"
-            >
-              Modifier
-            </a>
-          </li>
-          <li>
-            <a
-              class="fr-btn fr-btn--secondary fr-icon-mail-line"
-              title="Contacter le producter du jeu de données par email"
-              href="mailto:{dataset.producerEmail}"
-            >
-              Contacter le producteur
-            </a>
-          </li>
-        </ul>
-      </section>
+      <ul
+        class="fr-grid-row fr-grid-row--right fr-btns-group fr-btns-group--inline fr-btns-group--icon-right fr-my-5w"
+      >
+        <li>
+          <a
+            href={editUrl}
+            class="fr-btn fr-btn--secondary fr-icon-edit-fill"
+            title="Modifier ce jeu de données"
+          >
+            Modifier
+          </a>
+        </li>
+        <li>
+          <a
+            class="fr-btn fr-btn--secondary fr-icon-mail-line"
+            title="Contacter le producter du jeu de données par email"
+            href="mailto:{dataset.producerEmail}"
+          >
+            Contacter le producteur
+          </a>
+        </li>
+      </ul>
     </header>
 
     <div class="fr-grid-row fr-grid-row--gutters">
-      <aside class="fr-col-4">
+      <aside class="fr-col-md-4">
         <h6 class="fr-mb-2w">Ouverture</h6>
 
         <AsideItem
@@ -142,7 +142,7 @@
       </aside>
 
       <section
-        class="fr-col-8 fr-text--sm"
+        class="fr-col-md-8 fr-text--sm"
         aria-label="Description du jeu de données"
         data-testid="dataset-description"
       >
@@ -157,26 +157,11 @@
 </section>
 
 <style>
-  @media (min-width: 36em /* sm */) {
-    .header-headlines {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      column-gap: 1em;
-      align-items: center;
-    }
+  .fr-logo {
+    white-space: nowrap;
   }
 
-  @media (min-width: 48em /* md */) {
-    .header-headlines {
-      column-gap: 3em;
-    }
-
-    .header-toolbar {
-      justify-content: flex-end;
-    }
-  }
-
-  .header-headlines-tags {
+  .header__tags {
     display: flex;
     gap: 10px;
   }
