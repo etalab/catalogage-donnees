@@ -28,6 +28,7 @@
   import type { Dataset } from "src/definitions/datasets";
   import { formatFullDate, splitParagraphs } from "src/lib/util/format";
   import { Maybe } from "$lib/util/maybe";
+  import AsideItem from "./_AsideItem.svelte";
 
   export let dataset: Maybe<Dataset>;
 
@@ -87,93 +88,59 @@
     <div class="fr-grid-row fr-grid-row--gutters">
       <aside class="fr-col-4">
         <h6 class="fr-mb-2w">Ouverture</h6>
-        <div class="fr-mb-4w">
-          {#if dataset.publishedUrl}
-            <div class="aside-entry">
-              <span
-                class="fr-icon--lg fr-icon-x-open-data"
-                aria-hidden="true"
-              />
-              <p>
-                <span class="fr-text--xs">Accessibilité aux données</span><br />
-                <span> Ouverte </span>
-              </p>
-            </div>
 
-            <a
-              class="fr-btn fr-btn--icon-right fr-icon-external-link-line"
-              href={dataset.publishedUrl}
-              target="_blank"
-            >
-              Voir les données
-            </a>
-          {:else}
-            <div class="aside-entry">
-              <span
-                class="fr-icon--lg fr-icon-x-restricted-data"
-                aria-hidden="true"
-              />
-
-              <p>
-                <span class="fr-text--xs">Accessibilité aux données</span><br />
-                <span> Restreinte </span>
-              </p>
-            </div>
-
-            <p class="fr-text--xs fr-text-mention--grey fr-mb-0">
-              Veuillez prendre contact avec le producteur afin d’obtenir l’accès
-              au jeu de données.
-            </p>
-          {/if}
-        </div>
-
-        <h6 class="fr-mb-2w">Informations générales</h6>
-
-        <div class="aside-entry">
-          <span class="fr-icon--lg fr-icon-bank-line" aria-hidden="true" />
-          <p>
-            <span class="fr-text--xs">Producteur</span><br />
-            <span>{dataset.service}</span>
+        <AsideItem
+          icon="fr-icon-x-open-data"
+          label="Accessibilité aux données"
+          value={dataset.publishedUrl ? "Ouverte" : "Restreinte"}
+        />
+        {#if dataset.publishedUrl}
+          <a
+            class="fr-btn fr-btn--icon-right fr-icon-external-link-line"
+            href={dataset.publishedUrl}
+            target="_blank"
+          >
+            Voir les données
+          </a>
+        {:else}
+          <p class="fr-text--xs fr-text-mention--grey fr-mb-0">
+            Veuillez prendre contact avec le producteur afin d'obtenir l'accès
+            au jeu de données.
           </p>
-        </div>
-        <div class="aside-entry">
-          <span class="fr-icon--lg fr-icon-x-map-2-line" aria-hidden="true" />
-          <p>
-            <span class="fr-text--xs">Couverture géographique</span><br />
-            <span>
-              {GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage]}
-            </span>
-          </p>
-        </div>
+        {/if}
+
+        <h6 class="fr-mt-4w fr-mb-2w">Informations générales</h6>
+
+        <AsideItem
+          icon="fr-icon-bank-line"
+          label="Producteur"
+          value={dataset.service}
+        />
+
+        <AsideItem
+          icon="fr-icon-x-map-2-line"
+          label="Couverture géographique"
+          value={GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage]}
+        />
 
         <h6 class="fr-mt-4w fr-mb-2w">Mise à jour</h6>
 
-        <div class="aside-entry">
-          <span
-            class="fr-icon--lg fr-icon-x-calendar-check-line"
-            aria-hidden="true"
-          />
-          <p>
-            <span class="fr-text--xs">Date de dernière mise à jour</span><br />
-            <span
-              >{dataset.lastUpdatedAt
-                ? formatFullDate(dataset.lastUpdatedAt)
-                : "-"}</span
-            >
-          </p>
-        </div>
-        <div class="aside-entry">
-          <span class="fr-icon--lg fr-icon-refresh-line" aria-hidden="true" />
-          <p>
-            <span class="fr-text--xs">Fréquence de mise à jour</span><br />
-            <span
-              >{dataset.updateFrequency
-                ? UPDATE_FREQUENCY_LABELS[dataset.updateFrequency]
-                : "-"}</span
-            >
-          </p>
-        </div>
+        <AsideItem
+          icon="fr-icon-x-calendar-check-line"
+          label="Date de dernière mise à jour"
+          value={Maybe.map(dataset.lastUpdatedAt, (v) => formatFullDate(v))}
+        />
+
+        <AsideItem
+          icon="fr-icon-refresh-line"
+          label="Fréquence de mise à jour"
+          value={Maybe.map(
+            dataset.updateFrequency,
+            (v) => UPDATE_FREQUENCY_LABELS[v]
+          )}
+        />
       </aside>
+
       <section
         class="fr-col-8 fr-text--sm"
         aria-label="Description du jeu de données"
@@ -207,24 +174,6 @@
     .header-toolbar {
       justify-content: flex-end;
     }
-  }
-
-  .aside-entry {
-    align-items: center;
-    display: flex;
-    gap: 10px;
-    margin-bottom: 1rem;
-  }
-
-  .aside-entry [class*="fr-icon"] {
-    color: var(--text-action-high-blue-france);
-    display: inline-block;
-    height: 32px;
-    width: 32px;
-  }
-
-  .aside-entry p {
-    margin-bottom: 0;
   }
 
   .header-headlines-tags {
