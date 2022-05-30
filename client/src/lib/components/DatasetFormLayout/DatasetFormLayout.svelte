@@ -1,8 +1,44 @@
-<script>
+<script lang="ts">
+  import { onMount } from "svelte";
+  type Anchor = { element: Element; y: number };
+
   let segment = "";
+
+  let container: Element;
+  let anchors: Anchor[] = [];
+
+  const handleScroll = () => {
+    const hasReachedBottom =
+      window.pageYOffset + window.innerHeight >= document.body.offsetHeight;
+    if (hasReachedBottom) {
+      segment = anchors[0].element.id;
+      return;
+    }
+
+    const firstAnchorAboveHere = anchors.find(
+      (anchor) => anchor.y < window.pageYOffset + window.innerHeight / 2
+    );
+
+    if (firstAnchorAboveHere) {
+      segment = firstAnchorAboveHere.element.id;
+    }
+  };
+
+  const getY = (element: Element) => element.getBoundingClientRect().top;
+
+  const onresize = () =>
+    anchors.forEach((anchor) => (anchor.y = getY(anchor.element)));
+
+  onMount(() => {
+    container.querySelectorAll("h2[id]").forEach((anchor) => {
+      anchors.unshift({ element: anchor, y: getY(anchor) });
+    });
+  });
 </script>
 
-<section class="fr-container">
+<svelte:window on:scroll={handleScroll} on:resize={onresize} />
+
+<section bind:this={container} class="fr-container">
   <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-lg-3">
       <nav class="fr-sidemenu fr-sidemenu--sticky" aria-label="Menu latéral">
@@ -17,7 +53,6 @@
             <ul class="fr-sidemenu__list">
               <li class="fr-sidemenu__item">
                 <a
-                  on:click={() => (segment = "information-generales")}
                   aria-current={segment === "information-generales" || !segment
                     ? "page"
                     : undefined}
@@ -29,7 +64,6 @@
 
               <li class="fr-sidemenu__item">
                 <a
-                  on:click={() => (segment = "source-formats")}
                   aria-current={segment === "source-formats"
                     ? "page"
                     : undefined}
@@ -50,7 +84,6 @@
               </li>
               <li class="fr-sidemenu__item">
                 <a
-                  on:click={() => (segment = "contacts")}
                   aria-current={segment === "contacts" ? "page" : undefined}
                   class="fr-sidemenu__link"
                   href="#contacts"
@@ -68,7 +101,6 @@
               </li>
               <li class="fr-sidemenu__item">
                 <a
-                  on:click={() => (segment = "ouverture")}
                   aria-current={segment === "ouverture" ? "page" : undefined}
                   class="fr-sidemenu__link"
                   href="#ouverture"
