@@ -18,6 +18,9 @@ mark {
 
   /* Spacing */
   --sp-1w: 0.5rem;
+  --sp-3v: 0.75rem;
   --sp-2w: 1rem;
   --sp-3w: 1.5rem;
+
+  --icon-lg: 2rem;
 }
