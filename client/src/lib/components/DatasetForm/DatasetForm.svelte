@@ -91,10 +91,7 @@
     createForm({
       initialValues,
       validationSchema: yup.object().shape({
-        title: yup
-          .string()
-          .max(100, "Ce champ ne doit pas dépasser ${max} caractères")
-          .required("Ce champs est requis"),
+        title: yup.string().required("Ce champ est requis"),
         description: yup.string().required("Ce champs est requis"),
         service: yup.string().required("Ce champs est requis"),
         dataFormats: yup.array(yup.boolean()).length(dataFormatsValue.length),
