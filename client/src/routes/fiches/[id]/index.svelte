@@ -28,6 +28,7 @@
   import type { Dataset } from "src/definitions/datasets";
   import { formatFullDate, splitParagraphs } from "src/lib/util/format";
   import { Maybe } from "$lib/util/maybe";
+  import AsideItem from "./_AsideItem.svelte";
 
   export let dataset: Maybe<Dataset>;
 
@@ -38,144 +39,110 @@
 
 <section class="fr-container">
   {#if Maybe.Some(dataset) && Maybe.Some(editUrl)}
-    <header class="fr-grid-row">
-      <section class="fr-col-12 fr-mt-5w">
-        <div class="header-headlines">
+    <header class="fr-mt-5w">
+      <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+        <div class="fr-col-sm-4 fr-col-md-3 fr-col-lg-2">
           <p class="fr-logo" title="république française">
             {@html "Ministère<br />de la culture"}
           </p>
-          <div>
-            <p class="fr-m-0 fr-text-mention--grey">Ministère de la culture</p>
-            <h1 class="fr-mb-0">
-              {dataset.title}
-            </h1>
-            <div class="header-headlines-tags fr-mt-2w">
-              {#each dataset.tags as tag}
-                <span class="fr-badge fr-badge--info fr-badge--no-icon">
-                  {tag.name}</span
-                >
-              {/each}
-            </div>
+        </div>
+        <div class="fr-col-sm-8 fr-col-md-9 fr-col-lg-10">
+          <p class="fr-m-0 fr-text-mention--grey">Ministère de la culture</p>
+          <h1 class="fr-mb-0">
+            {dataset.title}
+          </h1>
+          <div class="header__tags fr-mt-2w">
+            {#each dataset.tags as tag}
+              <span class="fr-badge fr-badge--info fr-badge--no-icon">
+                {tag.name}</span
+              >
+            {/each}
           </div>
         </div>
+      </div>
 
-        <ul
-          class="header-toolbar fr-btns-group fr-btns-group--inline fr-btns-group--icon-right fr-my-5w"
-        >
-          <li>
-            <a
-              href={editUrl}
-              class="fr-btn fr-btn--secondary fr-icon-edit-fill"
-              title="Modifier ce jeu de données"
-            >
-              Modifier
-            </a>
-          </li>
-          <li>
-            <a
-              class="fr-btn fr-btn--secondary fr-icon-mail-line"
-              title="Contacter le producter du jeu de données par email"
-              href="mailto:{dataset.producerEmail}"
-            >
-              Contacter le producteur
-            </a>
-          </li>
-        </ul>
-      </section>
+      <ul
+        class="fr-grid-row fr-grid-row--right fr-btns-group fr-btns-group--inline fr-btns-group--icon-right fr-my-5w"
+      >
+        <li>
+          <a
+            href={editUrl}
+            class="fr-btn fr-btn--secondary fr-icon-edit-fill"
+            title="Modifier ce jeu de données"
+          >
+            Modifier
+          </a>
+        </li>
+        <li>
+          <a
+            class="fr-btn fr-btn--secondary fr-icon-mail-line"
+            title="Contacter le producter du jeu de données par email"
+            href="mailto:{dataset.producerEmail}"
+          >
+            Contacter le producteur
+          </a>
+        </li>
+      </ul>
     </header>
 
     <div class="fr-grid-row fr-grid-row--gutters">
-      <aside class="fr-col-4">
+      <aside class="fr-col-md-4">
         <h6 class="fr-mb-2w">Ouverture</h6>
-        <div class="fr-mb-4w">
-          {#if dataset.publishedUrl}
-            <div class="aside-entry">
-              <span
-                class="fr-icon--lg fr-icon-x-open-data"
-                aria-hidden="true"
-              />
-              <p>
-                <span class="fr-text--xs">Accessibilité aux données</span><br />
-                <span> Ouverte </span>
-              </p>
-            </div>
 
-            <a
-              class="fr-btn fr-btn--icon-right fr-icon-external-link-line"
-              href={dataset.publishedUrl}
-              target="_blank"
-            >
-              Voir les données
-            </a>
-          {:else}
-            <div class="aside-entry">
-              <span
-                class="fr-icon--lg fr-icon-x-restricted-data"
-                aria-hidden="true"
-              />
-
-              <p>
-                <span class="fr-text--xs">Accessibilité aux données</span><br />
-                <span> Restreinte </span>
-              </p>
-            </div>
-
-            <p class="fr-text--xs fr-text-mention--grey fr-mb-0">
-              Veuillez prendre contact avec le producteur afin d’obtenir l’accès
-              au jeu de données.
-            </p>
-          {/if}
-        </div>
-
-        <h6 class="fr-mb-2w">Informations générales</h6>
-
-        <div class="aside-entry">
-          <span class="fr-icon--lg fr-icon-bank-line" aria-hidden="true" />
-          <p>
-            <span class="fr-text--xs">Producteur</span><br />
-            <span>{dataset.service}</span>
+        <AsideItem
+          icon="fr-icon-x-open-data"
+          label="Accessibilité aux données"
+          value={dataset.publishedUrl ? "Ouverte" : "Restreinte"}
+        />
+        {#if dataset.publishedUrl}
+          <a
+            class="fr-btn fr-btn--icon-right fr-icon-external-link-line"
+            href={dataset.publishedUrl}
+            target="_blank"
+          >
+            Voir les données
+          </a>
+        {:else}
+          <p class="fr-text--xs fr-text-mention--grey fr-mb-0">
+            Veuillez prendre contact avec le producteur afin d'obtenir l'accès
+            au jeu de données.
           </p>
-        </div>
-        <div class="aside-entry">
-          <span class="fr-icon--lg fr-icon-x-map-2-line" aria-hidden="true" />
-          <p>
-            <span class="fr-text--xs">Couverture géographique</span><br />
-            <span>
-              {GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage]}
-            </span>
-          </p>
-        </div>
+        {/if}
+
+        <h6 class="fr-mt-4w fr-mb-2w">Informations générales</h6>
+
+        <AsideItem
+          icon="fr-icon-bank-line"
+          label="Producteur"
+          value={dataset.service}
+        />
+
+        <AsideItem
+          icon="fr-icon-x-map-2-line"
+          label="Couverture géographique"
+          value={GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage]}
+        />
 
         <h6 class="fr-mt-4w fr-mb-2w">Mise à jour</h6>
 
-        <div class="aside-entry">
-          <span
-            class="fr-icon--lg fr-icon-x-calendar-check-line"
-            aria-hidden="true"
-          />
-          <p>
-            <span class="fr-text--xs">Date de dernière mise à jour</span><br />
-            <span
-              >{dataset.lastUpdatedAt
-                ? formatFullDate(dataset.lastUpdatedAt)
-                : "-"}</span
-            >
-          </p>
-        </div>
-        <div class="aside-entry">
-          <span class="fr-icon--lg fr-icon-refresh-line" aria-hidden="true" />
-          <p>
-            <span class="fr-text--xs">Fréquence de mise à jour</span><br />
-            <span
-              >{dataset.updateFrequency
-                ? UPDATE_FREQUENCY_LABELS[dataset.updateFrequency]
-                : "-"}</span
-            >
-          </p>
-        </div>
+        <AsideItem
+          icon="fr-icon-x-calendar-check-line"
+          label="Date de dernière mise à jour"
+          value={Maybe.map(dataset.lastUpdatedAt, (v) => formatFullDate(v))}
+        />
+
+        <AsideItem
+          icon="fr-icon-refresh-line"
+          label="Fréquence de mise à jour"
+          value={Maybe.map(
+            dataset.updateFrequency,
+            (v) => UPDATE_FREQUENCY_LABELS[v]
+          )}
+        />
       </aside>
+
       <section
-        class="fr-col-8 fr-text--sm"
+        class="fr-col-md-8 fr-text--sm"
         aria-label="Description du jeu de données"
         data-testid="dataset-description"
       >
@@ -190,44 +157,11 @@
 </section>
 
 <style>
-  @media (min-width: 36em /* sm */) {
-    .header-headlines {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      column-gap: 1em;
-      align-items: center;
-    }
+  .fr-logo {
+    white-space: nowrap;
   }
 
-  @media (min-width: 48em /* md */) {
-    .header-headlines {
-      column-gap: 3em;
-    }
-
-    .header-toolbar {
-      justify-content: flex-end;
-    }
-  }
-
-  .aside-entry {
-    align-items: center;
-    display: flex;
-    gap: 10px;
-    margin-bottom: 1rem;
-  }
-
-  .aside-entry [class*="fr-icon"] {
-    color: var(--text-action-high-blue-france);
-    display: inline-block;
-    height: 32px;
-    width: 32px;
-  }
-
-  .aside-entry p {
-    margin-bottom: 0;
-  }
-
-  .header-headlines-tags {
+  .header__tags {
     display: flex;
     gap: 10px;
   }
