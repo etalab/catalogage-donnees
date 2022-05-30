@@ -72,9 +72,6 @@ test.describe("Basic form submission", () => {
     const contactEmail2 = page.locator("[id='contactEmails-1']");
     await contactEmail2.fill(contactEmail2Text);
     expect(await contactEmail2.inputValue()).toBe(contactEmail2Text);
-    expect(
-      page.locator("a.fr-sidemenu__link", { hasText: "Contacts" }).first()
-    ).toHaveAttribute("aria-current", "page");
 
     // "Mise à jour" section
 
@@ -135,5 +132,34 @@ test.describe("Basic form submission", () => {
     expect(hasTag).toBeTruthy();
 
     await page.locator("text='Modifier'").waitFor();
+  });
+
+  test("Navigates on page and sees active sidebar item change", async ({
+    page,
+  }) => {
+    await page.goto("/contribuer");
+
+    const activeSidebarItem = page.locator(
+      "[aria-label='Menu latéral'] [aria-current=page]"
+    );
+
+    // Initial state.
+    await expect(activeSidebarItem).toHaveText("Informations générales");
+
+    // Scroll to bottom.
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await expect(activeSidebarItem).toHaveText("Ouverture");
+
+    // Move to a particular section using click.
+    // Purposefully test a small-size section: it should become active
+    // even if the next section is fairly high on the page.
+    await page.click(
+      "[aria-label='Menu latéral'] >> text='Mot-clés thématiques'"
+    );
+    await expect(activeSidebarItem).toHaveText("Mot-clés thématiques");
+
+    // Move up 1/4th of the window, should make previous section active.
+    await page.evaluate(() => window.scrollBy(0, -window.innerHeight / 4));
+    await expect(activeSidebarItem).toHaveText("Sources et formats");
   });
 });
