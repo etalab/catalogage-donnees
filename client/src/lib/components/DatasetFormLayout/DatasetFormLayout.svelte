@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { getPageY } from "$lib/util/html";
+  import { hasItems, first, last } from "$lib/util/array";
 
   type Anchor = {
     element: HTMLElement;
@@ -9,7 +10,7 @@
     y: number;
   };
 
-  let slotContent: HTMLElement;
+  let layoutContent: HTMLElement;
   let anchors: Anchor[] = [];
   let activeAnchorId = "";
   // Make anchor active when it passes below this fraction of the screen.
@@ -20,7 +21,7 @@
       window.pageYOffset + window.innerHeight >= document.body.offsetHeight;
 
     if (hasReachedBottom) {
-      activeAnchorId = anchors[anchors.length - 1].id;
+      activeAnchorId = hasItems(anchors) ? last(anchors).id : "";
       return;
     }
 
@@ -28,8 +29,8 @@
 
     const anchorsBelowTrigger = anchors.filter((anchor) => anchor.y < triggerY);
 
-    if (anchorsBelowTrigger.length > 0) {
-      activeAnchorId = anchorsBelowTrigger[anchorsBelowTrigger.length - 1].id;
+    if (hasItems(anchorsBelowTrigger)) {
+      activeAnchorId = last(anchorsBelowTrigger).id;
     }
   };
 
@@ -37,17 +38,19 @@
     anchors.forEach((anchor) => (anchor.y = getPageY(anchor.element)));
 
   onMount(() => {
-    slotContent.querySelectorAll<HTMLElement>("h2[id]").forEach((element) => {
+    layoutContent.querySelectorAll<HTMLElement>("h2[id]").forEach((element) => {
       const anchor = {
         element,
         id: element.id,
-        label: element.textContent!,
+        label: element.textContent || "",
         y: getPageY(element),
       };
       anchors = [...anchors, anchor];
     });
 
-    activeAnchorId = anchors[0].id;
+    if (hasItems(anchors)) {
+      activeAnchorId = first(anchors).id;
+    }
   });
 </script>
 
@@ -85,7 +88,7 @@
         </div>
       </nav>
     </div>
-    <div bind:this={slotContent} class="fr-col-md-9">
+    <div bind:this={layoutContent} class="fr-col-md-9">
       <slot />
     </div>
   </div>

@@ -1,5 +1,5 @@
 /**
- * @returns The absolute Y page coordinate of an element.
+ * @returns The absolute Y page coordinate of the element.
  */
 export const getPageY = (element: HTMLElement): number => {
   let y = 0;
