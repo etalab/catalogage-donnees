@@ -91,7 +91,7 @@
     createForm({
       initialValues,
       validationSchema: yup.object().shape({
-        title: yup.string().required("Ce champs est requis"),
+        title: yup.string().required("Ce champ est requis"),
         description: yup.string().required("Ce champs est requis"),
         service: yup.string().required("Ce champs est requis"),
         dataFormats: yup.array(yup.boolean()).length(dataFormatsValue.length),
@@ -205,11 +205,12 @@
         : ''}"
     >
       <label class="fr-label" for="title">
-        Nom du jeu de la donnée
+        Nom du jeu de données
         <RequiredMarker />
         <span class="fr-hint-text" id="title-desc-hint">
           Ce nom doit aller à l'essentiel et permettre d'indiquer en quelques
-          mots les informations que l'on peut y trouver.
+          mots les informations que l'on peut y trouver. Pour des raisons
+          pratiques il est limité à 100 caractères.
         </span>
       </label>
       <input
@@ -266,14 +267,15 @@
         : ''}"
     >
       <label class="fr-label" for="service">
-        Service producteur de la donnée
+        Service producteur
         <RequiredMarker />
+        <span class="fr-hint-text" id="service-desc-hint">
+          Service producteur du jeu de données au sein de l'organisation.
+        </span>
       </label>
       <input
         class="fr-input {$errors.service ? 'fr-input--error' : ''}"
-        aria-describedby={$errors.service
-          ? "entrypoint-service-desc-error"
-          : null}
+        aria-describedby={$errors.service ? "service-desc-error" : null}
         type="text"
         id="service"
         name="service"
@@ -284,7 +286,7 @@
       />
 
       {#if $errors.service}
-        <p id="title-desc-error" class="fr-error-text">
+        <p id="service-desc-error" class="fr-error-text">
           {$errors.service}
         </p>
       {/if}
@@ -298,7 +300,7 @@
       required
       label="Couverture géographique"
       placeholder="Sélectionnez une couverture géographique..."
-      bind:value={$form.geographicalCoverage}
+      value={$form.geographicalCoverage}
       on:change={(event) =>
         handleSelectChange(
           "geographicalCoverage",
@@ -464,7 +466,7 @@
   <h2 id="mise-a-jour" class="fr-mt-6w fr-mb-5w">Mise à jour</h2>
 
   <p class="fr-mb-5w">
-    A moins qu'il ne soit une production ponctuelle, un jeu de donnée n'est
+    A moins qu'il ne soit une production ponctuelle, un jeu de données n'est
     utile que lorsqu'il est à jour ! Avec ces quelques informations nous
     pourrons indiquer à vos réutilisateurs lorsque les données seront mises à
     jour.
@@ -508,7 +510,7 @@
       name="updateFrequency"
       placeholder="Sélectionner une option"
       label="Fréquence de mise à jour"
-      bind:value={$form.updateFrequency}
+      value={$form.updateFrequency}
       on:change={(event) =>
         handleSelectChange(
           "updateFrequency",

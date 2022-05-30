@@ -12,7 +12,7 @@ import { buildFakeTag } from "src/tests/factories/tags";
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
     const { getByLabelText } = render(DatasetForm);
-    const title = getByLabelText("Nom du jeu de la donnée", { exact: false });
+    const title = getByLabelText("Nom du jeu de données", { exact: false });
     expect(title).toBeInTheDocument();
     expect(title).toBeRequired();
   });
@@ -134,7 +134,7 @@ describe("Test the dataset form", () => {
     const { getByLabelText, getAllByLabelText, container, getAllByText } =
       render(DatasetForm, { props });
 
-    const title = getByLabelText("Nom du jeu de la donnée", {
+    const title = getByLabelText("Nom du jeu de données", {
       exact: false,
     }) as HTMLInputElement;
     expect(title.value).toBe("Titre initial");

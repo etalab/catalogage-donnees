@@ -52,7 +52,7 @@
 </script>
 
 <header class="fr-m-4w">
-  <h5>Modifier le jeu de donnée</h5>
+  <h5>Créer une fiche de jeu de données</h5>
   <a
     aria-label="go to home page"
     href="/"

@@ -86,7 +86,7 @@
 
 {#if Maybe.Some(dataset) && Maybe.Some(tags)}
   <header class="fr-m-4w">
-    <h5>Modifier le jeu de donnée</h5>
+    <h5>Modifier la fiche de jeu de données</h5>
 
     <a
       aria-label="go to fiche page"
@@ -102,7 +102,7 @@
       {tags}
       initial={dataset}
       {loading}
-      submitLabel="Modifier ce jeu de données"
+      submitLabel="Enregistrer les modifications"
       loadingLabel="Modification en cours..."
       on:save={onSave}
     />

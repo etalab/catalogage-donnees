@@ -56,6 +56,17 @@ describe("Test the TagSelector", () => {
     expect(tag).toHaveTextContent("toto");
   });
 
+  test("should prompt to select another tag after selection", async () => {
+    const { getByRole } = render(TagSelector, {
+      name: "my-list",
+      tags: [{ id: "uuid1", name: "foo" }],
+    });
+
+    const select = getByRole("combobox") as HTMLSelectElement;
+    await fireEvent.change(select, { target: { value: "uuid1" } });
+    expect(select.value).toBe("null"); // Option did not remain selected
+  });
+
   test("should remove one tag from tag list", async () => {
     const { getByRole, getAllByRole, queryAllByRole } = render(TagSelector, {
       name: "my-list",
