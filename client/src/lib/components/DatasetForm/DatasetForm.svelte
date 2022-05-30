@@ -400,7 +400,9 @@
       {/if}
     </div>
   </div>
+
   <h2 id="mot-cles" class="fr-mb-5w">Mot-clés thématiques</h2>
+
   <div class="form--content fr-mb-8w">
     <TagSelector
       error={typeof $errors.tags === "string" ? $errors.tags : ""}

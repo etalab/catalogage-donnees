@@ -1,46 +1,64 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  type Anchor = { element: Element; y: number };
+  import { getPageY } from "$lib/util/html";
+  import { hasItems, first, last } from "$lib/util/array";
 
-  let segment = "";
+  type Anchor = {
+    element: HTMLElement;
+    id: string;
+    label: string;
+    y: number;
+  };
 
-  let container: Element;
+  let layoutContent: HTMLElement;
   let anchors: Anchor[] = [];
+  let activeAnchorId = "";
+  // Make anchor active when it passes below this fraction of the screen.
+  const triggerFraction = 1 / 4;
 
   const handleScroll = () => {
     const hasReachedBottom =
       window.pageYOffset + window.innerHeight >= document.body.offsetHeight;
+
     if (hasReachedBottom) {
-      segment = anchors[0].element.id;
+      activeAnchorId = hasItems(anchors) ? last(anchors).id : "";
       return;
     }
 
-    const firstAnchorAboveHere = anchors.find(
-      (anchor) => anchor.y < window.pageYOffset + window.innerHeight / 2
-    );
+    const triggerY = window.pageYOffset + window.innerHeight * triggerFraction;
 
-    if (firstAnchorAboveHere) {
-      segment = firstAnchorAboveHere.element.id;
+    const anchorsBelowTrigger = anchors.filter((anchor) => anchor.y < triggerY);
+
+    if (hasItems(anchorsBelowTrigger)) {
+      activeAnchorId = last(anchorsBelowTrigger).id;
     }
   };
 
-  const getY = (element: Element) => element.getBoundingClientRect().top;
-
   const onresize = () =>
-    anchors.forEach((anchor) => (anchor.y = getY(anchor.element)));
+    anchors.forEach((anchor) => (anchor.y = getPageY(anchor.element)));
 
   onMount(() => {
-    container.querySelectorAll("h2[id]").forEach((anchor) => {
-      anchors.unshift({ element: anchor, y: getY(anchor) });
+    layoutContent.querySelectorAll<HTMLElement>("h2[id]").forEach((element) => {
+      const anchor = {
+        element,
+        id: element.id,
+        label: element.textContent || "",
+        y: getPageY(element),
+      };
+      anchors = [...anchors, anchor];
     });
+
+    if (hasItems(anchors)) {
+      activeAnchorId = first(anchors).id;
+    }
   });
 </script>
 
 <svelte:window on:scroll={handleScroll} on:resize={onresize} />
 
-<section bind:this={container} class="fr-container">
+<section class="fr-container">
   <div class="fr-grid-row fr-grid-row--gutters">
-    <div class="fr-col-lg-3">
+    <div class="fr-col-md-3">
       <nav class="fr-sidemenu fr-sidemenu--sticky" aria-label="Menu latéral">
         <div class="fr-sidemenu__inner">
           <button
@@ -51,68 +69,26 @@
           >
           <div class="fr-collapse" id="fr-sidemenu-wrapper">
             <ul class="fr-sidemenu__list">
-              <li class="fr-sidemenu__item">
-                <a
-                  aria-current={segment === "information-generales" || !segment
-                    ? "page"
-                    : undefined}
-                  class="fr-sidemenu__link"
-                  href="#information-generales"
-                  target="_self">Informations générales</a
-                >
-              </li>
-
-              <li class="fr-sidemenu__item">
-                <a
-                  aria-current={segment === "source-formats"
-                    ? "page"
-                    : undefined}
-                  class="fr-sidemenu__link"
-                  href="#source-formats"
-                  target="_self">Sources et formats</a
-                >
-              </li>
-
-              <li class="fr-sidemenu__item">
-                <a
-                  on:click={() => (segment = "mot-cles")}
-                  aria-current={segment === "mot-cles" ? "page" : undefined}
-                  class="fr-sidemenu__link"
-                  href="#mot-cles"
-                  target="_self">Mot-clés thématiques</a
-                >
-              </li>
-              <li class="fr-sidemenu__item">
-                <a
-                  aria-current={segment === "contacts" ? "page" : undefined}
-                  class="fr-sidemenu__link"
-                  href="#contacts"
-                  target="_self">Contacts</a
-                >
-              </li>
-              <li class="fr-sidemenu__item">
-                <a
-                  on:click={() => (segment = "mise-a-jour")}
-                  aria-current={segment === "mise-a-jour" ? "page" : undefined}
-                  class="fr-sidemenu__link"
-                  href="#mise-a-jour"
-                  target="_self">Mise à jour</a
-                >
-              </li>
-              <li class="fr-sidemenu__item">
-                <a
-                  aria-current={segment === "ouverture" ? "page" : undefined}
-                  class="fr-sidemenu__link"
-                  href="#ouverture"
-                  target="_self">Ouverture</a
-                >
-              </li>
+              {#each anchors as anchor}
+                <li class="fr-sidemenu__item">
+                  <a
+                    aria-current={anchor.id === activeAnchorId
+                      ? "page"
+                      : undefined}
+                    class="fr-sidemenu__link"
+                    href="#{anchor.id}"
+                    target="_self"
+                  >
+                    {anchor.label}
+                  </a>
+                </li>
+              {/each}
             </ul>
           </div>
         </div>
       </nav>
     </div>
-    <div class="fr-col-lg-9">
+    <div bind:this={layoutContent} class="fr-col-md-9">
       <slot />
     </div>
   </div>
