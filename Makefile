@@ -70,10 +70,8 @@ dbdiagram: #- Generate database diagram image
 	dot docs/db.dot -T png -o docs/db.png
 
 dsfr-icon-extras: #- Generate CSS for extra DSFR icons
-	${bin}python -m tools.iconfont \
-		--name dsfr-icon-extras \
-		--prefix fr-fi-x- \
-		--icons-dir client/src/assets/icons/dsfr-icon-extras \
+	${bin}python -m tools.iconextras \
+		--prefix fr-icon-x- \
 		--output client/src/styles/dsfr-icon-extras.css
 
 test: test-server test-client #- Run the server and client test suite
@@ -141,12 +139,12 @@ ops-initdata: #- Run initdata in environment
 ops-staging: #- Sync staging branch with changes from current branch 
 	git checkout staging 
 	git pull --rebase origin staging
-	git merge --ff-only --no-edit $(git_current_ref)
+	git merge --no-edit $(git_current_ref)
 	@echo "Success. You may now push and deploy"
 
 ops-staging-sync: #- Sync staging branch with master
-	git checkout staging
-	git diff --no-prefix staging..master | patch -p0
-	git add -A
-	git commit -m "Sync staging with master"
-	@echo "Success. You may now push and deploy"
+	git checkout master
+	git pull --rebase origin master
+	git branch -D staging
+	git checkout -b staging
+	@echo "Almost done. You must now force-push (hint: git push --set-upstream origin staging --force)"

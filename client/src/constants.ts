@@ -27,10 +27,10 @@ export const DATA_FORMAT_SHORT_NAMES: { [K in DataFormat]: string } = {
 export const UPDATE_FREQUENCY_LABELS: { [K in UpdateFrequency]: string } = {
   never: "Aucune (contribution ponctuelle)",
   realtime: "Permanente (temps réel)",
-  daily: "Quotidienne (ou plusieures fois par jour)",
-  weekly: "Hebdomadaire (ou plusieures fois par semaine)",
-  monthly: "Mensuelle (ou plusieures fois pas mois)",
-  yearly: "Annuel (ou plusieures fois par an)",
+  daily: "Quotidienne (ou plusieurs fois par jour)",
+  weekly: "Hebdomadaire (ou plusieurs fois par semaine)",
+  monthly: "Mensuelle (ou plusieurs fois pas mois)",
+  yearly: "Annuel (ou plusieurs fois par an)",
 };
 
 export const GEOGRAPHICAL_COVERAGE_LABELS: {
@@ -41,7 +41,7 @@ export const GEOGRAPHICAL_COVERAGE_LABELS: {
   department: "Départementale",
   region: "Régionale",
   national: "Nationale (métropole)",
-  national_full_territory: "Nationale (terr Outre-mer inclus)",
+  national_full_territory: "Nationale (territoires d'Outre-mer inclus)",
   europe: "Européenne",
   world: "Monde",
 };

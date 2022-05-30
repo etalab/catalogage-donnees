@@ -76,10 +76,10 @@
               <p>
                 {$user.email}
               </p>
-              <ul class="fr-links-group">
+              <ul class="fr-btns-group">
                 <li>
                   <button
-                    class="fr-link fr-link--icon-left fr-fi-logout-box-r-line"
+                    class="fr-btn fr-btn--icon-left fr-icon-logout-box-r-line"
                     on:click={onClickLogout}
                   >
                     Déconnexion
@@ -87,9 +87,9 @@
                 </li>
               </ul>
             {:else}
-              <ul class="fr-links-group">
+              <ul class="fr-btns-group">
                 <li>
-                  <a href={paths.login} class="fr-link" title="Se connecter">
+                  <a href={paths.login} class="fr-btn" title="Se connecter">
                     Se connecter
                   </a>
                 </li>
@@ -105,10 +105,11 @@
     id="modal-menu"
     data-fr-js-modal="true"
     data-fr-js-header-modal="true"
+    aria-labelledby="fr-btn-menu-mobile"
   >
     <div class="fr-container">
       <button
-        class="fr-link--close fr-link"
+        class="fr-btn fr-btn--close"
         aria-controls="modal-menu"
         data-fr-js-modal-button="true">Fermer</button
       >

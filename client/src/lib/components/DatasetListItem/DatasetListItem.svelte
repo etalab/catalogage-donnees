@@ -5,6 +5,7 @@
     GEOGRAPHICAL_COVERAGE_LABELS,
   } from "src/constants";
   import paths from "$lib/paths";
+  import { Maybe } from "$lib/util/maybe";
   import { capitalize, formatDaysMonthsOrYearsToNow } from "$lib/util/format";
   import DatasetPropertyList from "../DatasetPropertyList/DatasetPropertyList.svelte";
 
@@ -13,12 +14,12 @@
   $: properties = [
     {
       label: "Couverture géographique",
-      icon: "fr-fi-x-map-2-line",
+      icon: "fr-icon-x-map-2-line",
       value: GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage],
     },
     {
       label: "Formats",
-      icon: "fr-fi-file-line",
+      icon: "fr-icon-file-line",
       value: dataset.formats
         .map((format) => DATA_FORMAT_SHORT_NAMES[format])
         .join(", "),
@@ -26,8 +27,8 @@
     {
       label: "Ouverture",
       icon: dataset.publishedUrl
-        ? "fr-fi-x-open-data"
-        : "fr-fi-x-restricted-data",
+        ? "fr-icon-x-open-data"
+        : "fr-icon-x-restricted-data",
       value: dataset.publishedUrl ? "Open data" : "Restreint",
     },
   ];
@@ -48,7 +49,7 @@
 
     <div>
       <p class="fr-m-0">
-        {#if dataset.headlines}
+        {#if Maybe.Some(dataset.headlines)}
           <strong data-testid="headlines-title">
             {@html dataset.headlines.title}
           </strong>
@@ -63,15 +64,15 @@
         {dataset.service}
       </p>
 
-      <DatasetPropertyList {properties} />
-
-      {#if dataset.headlines}
-        <p class="fr-mb-0 fr-mt-1w fr-text--sm fr-text-mention--grey">
+      {#if Maybe.Some(dataset.headlines) && Maybe.Some(dataset.headlines.description)}
+        <p class="fr-mb-2w fr-text--xs fr-text-mention--grey">
           <em data-testid="headlines-description"
             >... {@html dataset.headlines.description} ...</em
           >
         </p>
       {/if}
+
+      <DatasetPropertyList {properties} />
     </div>
 
     <div class="item__actions">
@@ -81,12 +82,17 @@
         )}
       </p>
 
-      <span class="fr-fi-arrow-right-line fr-text-label--blue-france" />
+      <span class="fr-icon-arrow-right-line fr-text-label--blue-france" />
     </div>
   </a>
 </li>
 
 <style>
+  /**
+  NOTE:
+    (!dsfr) = depends on DSFR implementation, which may change across versions
+  */
+
   .item {
     display: grid;
     column-gap: 1rem;
@@ -95,12 +101,11 @@
   }
 
   .item[href] {
-    box-shadow: none;
+    background-image: none; /* (!dsfr) */
   }
 
   .item:hover {
-    --a: 0.3;
-    --blend-size: 100%;
+    background-color: var(--background-elevated-grey-hover);
   }
 
   .item__logo {

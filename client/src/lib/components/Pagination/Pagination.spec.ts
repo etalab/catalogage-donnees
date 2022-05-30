@@ -11,7 +11,7 @@ import Pagination from "./Pagination.svelte";
 describe("Test the pagination", () => {
   const getPageLink: GetPageLink = (page) => `?page=${page}`;
   const hiddenOnMobile = (el: HTMLElement) =>
-    el.classList.contains("fr-displayed-lg");
+    el.classList.contains("fr-unhidden-lg");
 
   test("The pagination is shown", () => {
     const props = { currentPage: 4, totalPages: 10, getPageLink };

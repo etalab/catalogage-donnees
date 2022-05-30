@@ -12,7 +12,7 @@ import { buildFakeTag } from "src/tests/factories/tags";
 describe("Test the dataset form", () => {
   test('The "title" field is present', () => {
     const { getByLabelText } = render(DatasetForm);
-    const title = getByLabelText("Nom du jeu de la donnée", { exact: false });
+    const title = getByLabelText("Nom du jeu de données", { exact: false });
     expect(title).toBeInTheDocument();
     expect(title).toBeRequired();
   });
@@ -134,7 +134,7 @@ describe("Test the dataset form", () => {
     const { getByLabelText, getAllByLabelText, container, getAllByText } =
       render(DatasetForm, { props });
 
-    const title = getByLabelText("Nom du jeu de la donnée", {
+    const title = getByLabelText("Nom du jeu de données", {
       exact: false,
     }) as HTMLInputElement;
     expect(title.value).toBe("Titre initial");
@@ -189,19 +189,19 @@ describe("Test the dataset form", () => {
     expect(tags).toHaveLength(1);
   });
 
-  test("Null fields are correctly handled in HTML and submitted as null", async () => {
+  test("Null or empty fields are correctly submitted as null", async () => {
     const initial: DatasetFormData = {
       title: "Titre initial",
       description: "Description initiale",
       formats: ["website"],
-      producerEmail: null,
+      producerEmail: "",
       contactEmails: ["person@mydomain.org"],
       service: "A nice service",
       lastUpdatedAt: null,
       updateFrequency: null,
       geographicalCoverage: "europe",
       technicalSource: "foo/bar",
-      publishedUrl: null,
+      publishedUrl: "",
       tags: [buildFakeTag()],
     };
     const props = { initial };
