@@ -1,32 +1,24 @@
-from contextlib import contextmanager
-from typing import Iterator, List, Sequence, Tuple
-
-from fastapi.exceptions import RequestValidationError
-from pydantic import ValidationError
-from pydantic.error_wrappers import ErrorList, ErrorWrapper
-
-
-@contextmanager
-def wrap_request_validation_errors() -> Iterator[None]:
-    try:
-        yield
-    except ValidationError as exc:
-        errors = _add_loc_prefix(exc.raw_errors, ("body",))
-        raise RequestValidationError([errors])
+from fastapi.encoders import jsonable_encoder
+from pydantic import BaseConfig, ValidationError
+from pydantic.error_wrappers import flatten_errors
+from starlette.requests import Request
+from starlette.responses import JSONResponse, Response
 
 
-def _add_loc_prefix(
-    raw_errors: Sequence[ErrorList], prefix: Tuple[str, ...]
-) -> List[ErrorWrapper]:
-    errors: List[ErrorWrapper] = []
+async def handle_validation_error(_: Request, exc: ValidationError) -> Response:
+    """
+    Handle validation errors that occurred beyond at the application layer, i.e.
+    beyond basic data marshalling performed by schemas.
+    """
+    # Prepend 'body' in error locations, for consistency with API-level errors.
+    errors = list(flatten_errors(exc.raw_errors, BaseConfig, loc=("body",)))
 
-    for raw_error in raw_errors:
-        if isinstance(raw_error, ErrorWrapper):
-            errors.append(
-                ErrorWrapper(raw_error.exc, loc=(*prefix, *raw_error.loc_tuple()))
-            )
-        else:
-            assert isinstance(raw_error, list)
-            errors.extend(_add_loc_prefix(raw_error, prefix))
+    return JSONResponse(
+        status_code=422,
+        content={"detail": jsonable_encoder(errors)},
+    )
 
-    return errors
+
+exception_handlers: dict = {
+    ValidationError: handle_validation_error,
+}

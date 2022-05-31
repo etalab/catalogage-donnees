@@ -4,7 +4,6 @@ from typing import List, Optional
 from fastapi import Query
 from pydantic import BaseModel, EmailStr, Field
 
-from server.domain.common.pagination import PAGE_NUMBER_CONSTR, PAGE_SIZE_CONSTR
 from server.domain.common.types import ID
 from server.domain.datasets.entities import (
     DataFormat,
@@ -16,8 +15,8 @@ from server.domain.datasets.entities import (
 class DatasetListParams(BaseModel):
     q: str = Query(None)
     highlight: bool = Query(False)
-    page_number: int = Query(1, **PAGE_NUMBER_CONSTR)
-    page_size: int = Query(10, **PAGE_SIZE_CONSTR)
+    page_number: int = Query(1)
+    page_size: int = Query(10)
 
 
 class DatasetCreate(BaseModel):
