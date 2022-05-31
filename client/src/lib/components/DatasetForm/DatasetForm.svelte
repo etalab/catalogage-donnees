@@ -24,7 +24,7 @@
   import TagSelector from "../TagSelector/TagSelector.svelte";
   import type { Tag } from "src/definitions/tag";
 
-  export let submitLabel = "Publier ce jeu de données";
+  export let submitLabel = "Publier la fiche de données";
   export let loadingLabel = "Publication en cours...";
   export let loading = false;
   export let tags: Tag[] = [];
