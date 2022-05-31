@@ -24,6 +24,7 @@ from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
 from ..auth.dependencies import HasRole, IsAuthenticated
+from ..errors import wrap_request_validation_errors
 from .schemas import DatasetCreate, DatasetListParams, DatasetUpdate
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
@@ -75,7 +76,8 @@ async def get_dataset_by_id(id: ID) -> DatasetView:
 async def create_dataset(data: DatasetCreate) -> DatasetView:
     bus = resolve(MessageBus)
 
-    command = CreateDataset(**data.dict())
+    with wrap_request_validation_errors():
+        command = CreateDataset(**data.dict())
 
     id = await bus.execute(command)
 
@@ -92,7 +94,8 @@ async def create_dataset(data: DatasetCreate) -> DatasetView:
 async def update_dataset(id: ID, data: DatasetUpdate) -> DatasetView:
     bus = resolve(MessageBus)
 
-    command = UpdateDataset(id=id, **data.dict())
+    with wrap_request_validation_errors():
+        command = UpdateDataset(id=id, **data.dict())
 
     try:
         await bus.execute(command)

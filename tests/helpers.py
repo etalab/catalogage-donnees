@@ -2,6 +2,7 @@ import itertools
 from typing import Callable
 
 import httpx
+from pydantic import EmailStr, SecretStr
 
 from server.application.auth.commands import CreateUser
 from server.config.di import resolve
@@ -48,8 +49,8 @@ async def create_test_user(role: UserRole) -> TestUser:
     bus = resolve(MessageBus)
     user_repository = resolve(UserRepository)
 
-    email = f"temp{next(_temp_user_ids)}@mydomain.org"
-    password = "s3kr3t"
+    email = EmailStr(f"temp{next(_temp_user_ids)}@mydomain.org")
+    password = SecretStr("s3kr3t")
 
     command = CreateUser(email=email, password=password)
     await bus.execute(command, role=role)
@@ -57,4 +58,4 @@ async def create_test_user(role: UserRole) -> TestUser:
     user = await user_repository.get_by_email(email)
     assert user is not None
 
-    return TestUser(**user.dict(), password=password)
+    return TestUser(**user.dict(), password=password.get_secret_value())

@@ -3,6 +3,7 @@ from typing import List, Optional, Tuple
 
 import httpx
 import pytest
+from pydantic import EmailStr
 
 from server.application.datasets.commands import (
     CreateDataset,
@@ -179,7 +180,7 @@ async def test_search_results_change_when_data_changes(
         service="Service",
         geographical_coverage=GeographicalCoverage.DEPARTMENT,
         formats=[DataFormat.OTHER],
-        contact_emails=["person@mydomain.org"],
+        contact_emails=[EmailStr("person@mydomain.org")],
     )
     pk = await bus.execute(command)
     # New dataset is returned in search results
@@ -202,7 +203,7 @@ async def test_search_results_change_when_data_changes(
         formats=[DataFormat.OTHER],
         technical_source=None,
         producer_email=None,
-        contact_emails=["person@mydomain.org"],
+        contact_emails=[EmailStr("person@mydomain.org")],
         update_frequency=None,
         last_updated_at=None,
         published_url=None,
@@ -229,7 +230,7 @@ async def test_search_results_change_when_data_changes(
         formats=[DataFormat.OTHER],
         technical_source=None,
         producer_email=None,
-        contact_emails=["person@mydomain.org"],
+        contact_emails=[EmailStr("person@mydomain.org")],
         update_frequency=None,
         last_updated_at=None,
         published_url=None,
