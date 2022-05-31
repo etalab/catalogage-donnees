@@ -8,16 +8,10 @@ from server.infrastructure.helpers.pydantic import Computed
 
 T = TypeVar("T")
 
-PAGE_NUMBER_CONSTR: dict = {"ge": 1, "le": 10_000}
-PAGE_SIZE_CONSTR: dict = {"ge": 1, "le": 100}
-
-PageNumber = Annotated[int, Field(**PAGE_NUMBER_CONSTR)]
-PageSize = Annotated[int, Field(**PAGE_SIZE_CONSTR)]
-
 
 class Page(BaseModel):
-    number: PageNumber = 1
-    size: PageSize = 10
+    number: Annotated[int, Field(ge=1, le=10_000)] = 1
+    size: Annotated[int, Field(ge=1, le=100)] = 10
 
     class Config:
         allow_mutation = False

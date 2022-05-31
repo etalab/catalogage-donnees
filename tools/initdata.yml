@@ -53,8 +53,8 @@ datasets:
       formats:
         - website
       technical_source: SIG national de l'IGN
-      producer_email: service@example.org
-      contact_emails: []
+      producer_email: ign.service@mydomain.org
+      contact_emails: [ign.person@mydomain.org]
       update_frequency: null
       last_updated_at: null
       published_url: "https://www.data.gouv.fr/fr/datasets/donnees-brutes-de-l-inventaire-forestier/"
@@ -72,8 +72,8 @@ datasets:
       formats:
         - file_tabular
       technical_source: Système d'information central du CROUS
-      producer_email: service@example.org
-      contact_emails: []
+      producer_email: null
+      contact_emails: [crous.person@mydomain.org]
       update_frequency: null
       last_updated_at: null
       published_url: "https://www.data.gouv.fr/fr/datasets/ensemble-des-lieux-de-restauration-des-crous-france-entiere-1/"
@@ -91,8 +91,8 @@ datasets:
       formats:
         - other
       technical_source: Catalogue des fiches de la DARES
-      producer_email: service@example.org
-      contact_emails: []
+      producer_email: null
+      contact_emails: [dares.person@mydomain.org]
       update_frequency: null
       last_updated_at: null
       published_url: "https://www.data.gouv.fr/fr/datasets/catalogue-des-enquetes-realisees-par-la-dares-2012-572205/"

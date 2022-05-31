@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from server.config import Settings
 from server.config.di import resolve
 
+from . import errors
 from .routes import router
 
 origins = [
@@ -19,6 +20,7 @@ def create_app(settings: Settings = None) -> FastAPI:
     app = FastAPI(
         debug=settings.debug,
         docs_url=settings.docs_url,
+        exception_handlers=errors.exception_handlers,
     )
 
     app.add_middleware(
