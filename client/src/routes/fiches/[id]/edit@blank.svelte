@@ -85,7 +85,7 @@
 </script>
 
 {#if Maybe.Some(dataset) && Maybe.Some(tags)}
-  <header class="fr-m-4w">
+  <header class="fr-p-4w">
     <h5>Modifier la fiche de jeu de données</h5>
 
     <a
@@ -127,7 +127,12 @@
 
 <style>
   header {
+    height: 10vh;
     display: flex;
+    position: sticky;
     justify-content: space-between;
+    top: 0;
+    z-index: 55;
+    background-color: white;
   }
 </style>
