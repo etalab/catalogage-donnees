@@ -44,7 +44,8 @@
     tags: [],
   };
 
-  const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
+  const dispatch =
+    createEventDispatcher<{ save: DatasetFormData; touched: boolean }>();
 
   type DatasetFormValues = {
     title: string;
@@ -165,6 +166,11 @@
 
   $: emailErrors = $errors.contactEmails as unknown as string[];
 
+  const handleFieldChange = async (event: Event) => {
+    dispatch("touched", true);
+    handleChange(event);
+  };
+
   const hasError = (error: string | string[]) => {
     return typeof error === "string" && Boolean(error);
   };
@@ -220,8 +226,8 @@
         id="title"
         name="title"
         required
-        on:change={handleChange}
-        on:blur={handleChange}
+        on:change={handleFieldChange}
+        on:blur={handleFieldChange}
         bind:value={$form.title}
       />
       {#if $errors.title}
@@ -250,8 +256,8 @@
         id="description"
         name="description"
         required
-        on:change={handleChange}
-        on:blur={handleChange}
+        on:change={handleFieldChange}
+        on:blur={handleFieldChange}
         bind:value={$form.description}
       />
       {#if $errors.description}
@@ -280,8 +286,8 @@
         id="service"
         name="service"
         required
-        on:change={handleChange}
-        on:blur={handleChange}
+        on:change={handleFieldChange}
+        on:blur={handleFieldChange}
         bind:value={$form.service}
       />
 
@@ -305,14 +311,14 @@
         handleSelectChange(
           "geographicalCoverage",
           event,
-          handleChange,
+          handleFieldChange,
           updateValidateField
         )}
       on:blur={(event) =>
         handleSelectChange(
           "geographicalCoverage",
           event,
-          handleChange,
+          handleFieldChange,
           updateValidateField
         )}
       error={$errors.geographicalCoverage}
@@ -389,8 +395,8 @@
         type="text"
         id="technicalSource"
         name="technicalSource"
-        on:change={handleChange}
-        on:blur={handleChange}
+        on:change={handleFieldChange}
+        on:blur={handleFieldChange}
         bind:value={$form.technicalSource}
       />
       {#if $errors.technicalSource}
@@ -446,8 +452,8 @@
         type="email"
         id="producerEmail"
         name="producerEmail"
-        on:change={handleChange}
-        on:blur={handleChange}
+        on:change={handleFieldChange}
+        on:blur={handleFieldChange}
         bind:value={$form.producerEmail}
       />
       {#if $errors.producerEmail}
@@ -517,14 +523,14 @@
         handleSelectChange(
           "updateFrequency",
           event,
-          handleChange,
+          handleFieldChange,
           updateValidateField
         )}
       on:blur={(event) =>
         handleSelectChange(
           "updateFrequency",
           event,
-          handleChange,
+          handleFieldChange,
           updateValidateField
         )}
       error={$errors.updateFrequency}

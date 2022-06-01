@@ -28,7 +28,13 @@
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
   import type { Tag } from "src/definitions/tag";
 
+  import Modal from "src/lib/components/Modal/Modal.svelte";
+
+  let modalTriggerId = "confirm-stop-contributing-modal";
+
   let loading = false;
+
+  let formHasBeenTouched = false;
 
   export let tags: Maybe<Tag[]>;
 
@@ -51,26 +57,43 @@
   };
 </script>
 
-<header class="fr-m-4w">
+<header class="fr-p-4w">
   <h5>Créer une fiche de jeu de données</h5>
-  <a
-    aria-label="go to home page"
-    href="/"
+  <button
     class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
+    data-fr-opened="false"
+    aria-controls={formHasBeenTouched ? modalTriggerId : undefined}
+    on:click={() => {
+      if (!formHasBeenTouched) {
+        window.history.back();
+      }
+    }}
   >
     {""}
-  </a>
+  </button>
 </header>
+
+<Modal triggerId={modalTriggerId} />
 
 {#if Maybe.Some(tags)}
   <DatasetFormLayout>
-    <DatasetForm {tags} {loading} on:save={onSave} />
+    <DatasetForm
+      {tags}
+      {loading}
+      on:save={onSave}
+      on:touched={() => (formHasBeenTouched = true)}
+    />
   </DatasetFormLayout>
 {/if}
 
 <style>
   header {
+    height: 10vh;
     display: flex;
+    position: sticky;
     justify-content: space-between;
+    top: 0;
+    z-index: 55;
+    background-color: var(--background-default-grey);
   }
 </style>

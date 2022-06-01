@@ -35,11 +35,16 @@
   import { deleteDataset } from "$lib/repositories/datasets";
   import { Maybe } from "$lib/util/maybe";
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
+  import Modal from "src/lib/components/Modal/Modal.svelte";
 
   export let dataset: Maybe<Dataset>;
   export let tags: Maybe<Tag[]>;
 
+  let modalTriggerId = "stop-editing-form-modal";
+
   let loading = false;
+
+  let formHasBeenTouched = false;
 
   const onSave = async (event: CustomEvent<DatasetFormData>) => {
     if (!Maybe.Some(dataset)) {
@@ -88,15 +93,22 @@
   <header class="fr-p-4w">
     <h5>Modifier la fiche de jeu de données</h5>
 
-    <a
-      aria-label="go to fiche page"
-      href="/fiches/{dataset.id}"
-      title="Aller vers la jeu de donnée"
+    <button
       class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
+      data-fr-opened="false"
+      aria-controls={formHasBeenTouched ? modalTriggerId : undefined}
+      on:click={() => {
+        if (!formHasBeenTouched) {
+          window.history.back();
+        }
+      }}
     >
       {""}
-    </a>
+    </button>
   </header>
+
+  <Modal triggerId={modalTriggerId} />
+
   <DatasetFormLayout>
     <DatasetForm
       {tags}
@@ -105,6 +117,7 @@
       submitLabel="Enregistrer les modifications"
       loadingLabel="Modification en cours..."
       on:save={onSave}
+      on:touched={() => (formHasBeenTouched = true)}
     />
 
     {#if $isAdmin}
@@ -133,6 +146,6 @@
     justify-content: space-between;
     top: 0;
     z-index: 55;
-    background-color: white;
+    background-color: var(--background-default-grey);
   }
 </style>
