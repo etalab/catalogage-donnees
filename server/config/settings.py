@@ -1,6 +1,6 @@
-from typing import Literal
+from typing import Literal, Optional
 
-from pydantic import BaseSettings
+from pydantic import BaseSettings, SecretStr
 from sqlalchemy.engine.url import make_url
 
 ServerMode = Literal["local", "live"]
@@ -14,8 +14,15 @@ class Settings(BaseSettings):
     host: str = "localhost"
     port: int = 3579
     docs_url: str = "/docs"
+
     debug: bool = False
     testing: bool = False
+
+    # Emails
+    email_backend: str = (
+        "server.infrastructure.emails.backends.console.ConsoleEmailBackend"
+    )
+    mailpace_api_token: Optional[SecretStr] = None
 
     class Config:
         env_prefix = "app_"

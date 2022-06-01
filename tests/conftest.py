@@ -1,5 +1,6 @@
 import asyncio
 import os
+import socket
 from typing import AsyncIterator, Iterator
 
 import httpx
@@ -19,8 +20,11 @@ from server.infrastructure.database import Database
 from server.seedwork.application.messages import MessageBus
 
 from .helpers import TestUser, create_client, create_test_user
+from .mocks.email import outbox
+from .mocks.network import socket_connect_fail
 
 os.environ["APP_TESTING"] = "True"
+os.environ["APP_EMAIL_BACKEND"] = "tests.mocks.email.TestingEmailBackend"
 
 bootstrap()
 
@@ -49,6 +53,17 @@ async def transaction() -> AsyncIterator[None]:
     async with db.transaction() as tx:
         yield
         await tx.rollback()
+
+
+@pytest.fixture(autouse=True)
+def disable_network(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(socket.socket, "connect", socket_connect_fail)
+
+
+@pytest.fixture(autouse=True)
+def autoreset_mocks() -> Iterator[None]:
+    yield
+    outbox.clear()
 
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
