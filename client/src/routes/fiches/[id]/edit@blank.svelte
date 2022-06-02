@@ -36,9 +36,12 @@
   import { Maybe } from "$lib/util/maybe";
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
   import Modal from "src/lib/components/Modal/Modal.svelte";
+  import type { SvelteComponent } from "svelte";
 
   export let dataset: Maybe<Dataset>;
   export let tags: Maybe<Tag[]>;
+
+  let form: SvelteComponent;
 
   let modalTriggerId = "stop-editing-form-modal";
 
@@ -87,6 +90,10 @@
     await deleteDataset({ fetch, apiToken: $apiToken, id: dataset.id });
     await goto(paths.home);
   };
+
+  const handleSaveAfterConfirmation = () => {
+    form.submitForm();
+  };
 </script>
 
 {#if Maybe.Some(dataset) && Maybe.Some(tags)}
@@ -95,7 +102,7 @@
 
     <button
       class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
-      data-fr-opened="false"
+      data-fr-opened={false}
       aria-controls={formHasBeenTouched ? modalTriggerId : undefined}
       on:click={() => {
         if (!formHasBeenTouched) {
@@ -107,10 +114,11 @@
     </button>
   </header>
 
-  <Modal triggerId={modalTriggerId} />
+  <Modal on:save={handleSaveAfterConfirmation} triggerId={modalTriggerId} />
 
   <DatasetFormLayout>
     <DatasetForm
+      bind:this={form}
       {tags}
       initial={dataset}
       {loading}

@@ -166,6 +166,10 @@
 
   $: emailErrors = $errors.contactEmails as unknown as string[];
 
+  export const submitForm = (event: Event) => {
+    handleSubmit(event);
+  };
+
   const handleFieldChange = async (event: Event) => {
     dispatch("touched", true);
     handleChange(event);
@@ -198,7 +202,7 @@
 </script>
 
 <form
-  on:submit={handleSubmit}
+  on:submit={submitForm}
   data-bitwarden-watching="1"
   aria-label="Informations sur le jeu de données"
 >
