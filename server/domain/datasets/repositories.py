@@ -26,6 +26,7 @@ class DatasetRepository(Repository):
         *,
         page: Page = Page(),
         geographical_coverage: GeographicalCoverage = None,
+        tag_ids: List[ID] = None,
     ) -> Tuple[List[Dataset], int]:
         raise NotImplementedError  # pragma: no cover
 

@@ -1,7 +1,6 @@
 import datetime as dt
 from typing import List, Optional
 
-from fastapi import Query
 from pydantic import BaseModel, EmailStr, Field
 
 from server.domain.common.types import ID
@@ -11,13 +10,7 @@ from server.domain.datasets.entities import (
     UpdateFrequency,
 )
 
-
-class DatasetListParams(BaseModel):
-    q: Optional[str] = Query(None)
-    highlight: bool = Query(False)
-    page_number: int = Query(1)
-    page_size: int = Query(10)
-    geographical_coverage: Optional[GeographicalCoverage] = Query(None)
+# See: https://github.com/tiangolo/fastapi/issues/318#issuecomment-584087181
 
 
 class DatasetCreate(BaseModel):

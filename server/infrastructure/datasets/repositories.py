@@ -11,6 +11,7 @@ from sqlalchemy import (
     Integer,
     String,
     Table,
+    and_,
     desc,
     func,
     select,
@@ -19,7 +20,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import ARRAY, TSVECTOR, UUID
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Mapped, relationship, selectinload
+from sqlalchemy.orm import Mapped, contains_eager, relationship, selectinload
 
 from server.domain.common.pagination import Page
 from server.domain.common.types import ID
@@ -52,12 +53,23 @@ dataset_dataformat = Table(
     Column("dataformat_id", ForeignKey("dataformat.id"), primary_key=True),
 )
 
-dataset_tag = Table(
-    "dataset_tag",
-    Base.metadata,
-    Column("dataset_id", ForeignKey("dataset.id"), primary_key=True),
-    Column("tag_id", ForeignKey("tag.id"), primary_key=True),
-)
+
+# Association object
+# See: https://docs.sqlalchemy.org/en/14/orm/basic_relationships.html#association-object
+class DatasetTagModel(Base):
+    __tablename__ = "dataset_tag"
+    dataset_id: uuid.UUID = Column(ForeignKey("dataset.id"), primary_key=True)
+    dataset: "DatasetModel" = relationship(
+        "DatasetModel",
+        back_populates="tags",
+        # cascade="delete",
+    )
+    tag_id: uuid.UUID = Column(ForeignKey("tag.id"), primary_key=True)
+    tag: "TagModel" = relationship(
+        "TagModel",
+        back_populates="datasets",
+        # cascade="delete",
+    )
 
 
 class DataFormatModel(Base):
@@ -101,7 +113,11 @@ class DatasetModel(Base):
     update_frequency = Column(Enum(UpdateFrequency, enum="update_frequency_enum"))
     last_updated_at = Column(DateTime(timezone=True))
     published_url = Column(String)
-    tags: List["TagModel"] = relationship("TagModel", secondary=dataset_tag)
+    tags: List["DatasetTagModel"] = relationship(
+        "DatasetTagModel",
+        back_populates="dataset",
+        cascade="delete, delete-orphan",
+    )
 
     search_tsv: Mapped[str] = Column(
         TSVECTOR,
@@ -121,7 +137,7 @@ def make_entity(instance: DatasetModel) -> Dataset:
     kwargs = {
         "catalog_record": make_catalog_record_entity(instance.catalog_record),
         "formats": [fmt.name for fmt in instance.formats],
-        "tags": [make_tag_entity(tag) for tag in instance.tags],
+        "tags": [make_tag_entity(tag.tag) for tag in instance.tags],
     }
 
     kwargs.update(
@@ -137,27 +153,33 @@ def make_instance(
     entity: Dataset,
     catalog_record: CatalogRecordModel,
     formats: List[DataFormatModel],
-    tags: List[TagModel],
 ) -> DatasetModel:
-    return DatasetModel(
+    instance = DatasetModel(
         **entity.dict(exclude={"catalog_record", "formats", "tags"}),
         catalog_record=catalog_record,
         formats=formats,
-        tags=tags,
     )
+
+    instance.tags = [
+        DatasetTagModel(dataset_id=entity.id, tag_id=tag.id) for tag in entity.tags
+    ]
+
+    return instance
 
 
 def update_instance(
     instance: DatasetModel,
     entity: Dataset,
     formats: List[DataFormatModel],
-    tags: List[TagModel],
+    # tags: List[DatasetTagModel],
 ) -> None:
     for field in set(Dataset.__fields__) - {"id", "catalog_record", "formats", "tags"}:
         setattr(instance, field, getattr(entity, field))
 
     instance.formats = formats
-    instance.tags = tags
+    instance.tags = [
+        DatasetTagModel(dataset_id=instance.id, tag_id=tag.id) for tag in entity.tags
+    ]
 
 
 class SqlDatasetRepository(DatasetRepository):
@@ -169,6 +191,7 @@ class SqlDatasetRepository(DatasetRepository):
         *,
         page: Page = Page(),
         geographical_coverage: GeographicalCoverage = None,
+        tag_ids: List[ID] = None,
     ) -> Tuple[List[Dataset], int]:
         limit, offset = to_limit_offset(page)
 
@@ -178,10 +201,35 @@ class SqlDatasetRepository(DatasetRepository):
                 .options(
                     selectinload(DatasetModel.formats),
                     selectinload(DatasetModel.catalog_record),
-                    selectinload(DatasetModel.tags),
+                    *(
+                        (
+                            selectinload(DatasetModel.tags).selectinload(
+                                DatasetTagModel.tag
+                            ),
+                        )
+                        if tag_ids is None
+                        else ()
+                    ),
                 )
                 .join(DatasetModel.catalog_record)
             )
+
+            if tag_ids is not None:
+                stmt = (
+                    stmt.join(DatasetTagModel, DatasetModel.tags)
+                    .join(
+                        TagModel,
+                        and_(
+                            TagModel.datasets,
+                            TagModel.id.in_(tag_ids),
+                        ),
+                    )
+                    .options(
+                        contains_eager(DatasetModel.tags).contains_eager(
+                            DatasetTagModel.tag
+                        )
+                    )
+                )
 
             if geographical_coverage is not None:
                 stmt = stmt.where(
@@ -192,7 +240,7 @@ class SqlDatasetRepository(DatasetRepository):
 
             count = await get_count_from(stmt, session)
             result = await session.execute(stmt.limit(limit).offset(offset))
-            instances = result.scalars().all()
+            instances = result.scalars().unique().all()
             items = [make_entity(instance) for instance in instances]
             return items, count
 
@@ -247,7 +295,7 @@ class SqlDatasetRepository(DatasetRepository):
                 .options(
                     selectinload(DatasetModel.formats),
                     selectinload(DatasetModel.catalog_record),
-                    selectinload(DatasetModel.tags),
+                    selectinload(DatasetModel.tags).selectinload(DatasetTagModel.tag),
                 )
                 .where(
                     # NOTE: SQLAlchemy has `.match(...)` that uses `to_tsquery()`.
@@ -292,7 +340,7 @@ class SqlDatasetRepository(DatasetRepository):
             .options(
                 selectinload(DatasetModel.formats),
                 selectinload(DatasetModel.catalog_record),
-                selectinload(DatasetModel.tags),
+                selectinload(DatasetModel.tags).selectinload(DatasetTagModel.tag),
             )
         )
         result = await session.execute(stmt)
@@ -336,9 +384,10 @@ class SqlDatasetRepository(DatasetRepository):
                 session, entity.catalog_record.id
             )
             formats = await self._get_formats(session, entity.formats)
-            tags = await self._get_tags(session, entity.tags)
-            instance = make_instance(entity, catalog_record, formats, tags)
 
+            instance = make_instance(entity, catalog_record, formats)
+
+            session.add_all(instance.tags)
             session.add(instance)
 
             await session.commit()
@@ -354,8 +403,10 @@ class SqlDatasetRepository(DatasetRepository):
                 return
 
             formats = await self._get_formats(session, entity.formats)
-            tags = await self._get_tags(session, entity.tags)
-            update_instance(instance, entity, formats, tags)
+            # session.add_all(instance.tags)
+            update_instance(instance, entity, formats)
+            session.add_all(instance.tags)
+            session.add(instance)
 
             await session.commit()
 

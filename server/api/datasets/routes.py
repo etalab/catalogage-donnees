@@ -1,6 +1,6 @@
-from typing import Union
+from typing import List, Optional, Union
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
@@ -20,11 +20,12 @@ from server.config.di import resolve
 from server.domain.auth.entities import UserRole
 from server.domain.common.pagination import Page, Pagination
 from server.domain.common.types import ID
+from server.domain.datasets.entities import GeographicalCoverage
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
 from ..auth.dependencies import HasRole, IsAuthenticated
-from .schemas import DatasetCreate, DatasetListParams, DatasetUpdate
+from .schemas import DatasetCreate, DatasetUpdate
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
@@ -35,20 +36,26 @@ router = APIRouter(prefix="/datasets", tags=["datasets"])
     response_model=Pagination[DatasetView],
 )
 async def list_datasets(
-    params: DatasetListParams = Depends(),
+    q: Optional[str] = Query(None),
+    highlight: bool = Query(False),
+    page_number: int = Query(1),
+    page_size: int = Query(10),
+    geographical_coverage: Optional[GeographicalCoverage] = Query(None),
+    tag_ids: Optional[List[ID]] = Query(None),
 ) -> Union[JSONResponse, Pagination[DatasetView]]:
     bus = resolve(MessageBus)
 
-    page = Page(number=params.page_number, size=params.page_size)
+    page = Page(number=page_number, size=page_size)
 
-    if params.q is not None:
-        query = SearchDatasets(q=params.q, highlight=params.highlight, page=page)
+    if q is not None:
+        query = SearchDatasets(q=q, highlight=highlight, page=page)
         pagination = await bus.execute(query)
         return JSONResponse(jsonable_encoder(pagination))
 
     query = GetAllDatasets(
         page=page,
-        geographical_coverage=params.geographical_coverage,
+        geographical_coverage=geographical_coverage,
+        tag_ids=tag_ids,
     )
 
     return await bus.execute(query)

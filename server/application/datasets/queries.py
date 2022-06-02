@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from server.domain.common.pagination import Page, Pagination
 from server.domain.common.types import ID
@@ -11,6 +11,7 @@ from .views import DatasetSearchView, DatasetView
 class GetAllDatasets(Query[Pagination[DatasetView]]):
     page: Page = Page()
     geographical_coverage: Optional[GeographicalCoverage] = None
+    tag_ids: Optional[List[ID]] = None
 
 
 class GetDatasetByID(Query[DatasetView]):

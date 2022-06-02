@@ -65,6 +65,7 @@ async def get_all_datasets(query: GetAllDatasets) -> Pagination[DatasetView]:
     datasets, count = await repository.get_all(
         page=query.page,
         geographical_coverage=query.geographical_coverage,
+        tag_ids=query.tag_ids,
     )
 
     views = [DatasetView(**dataset.dict()) for dataset in datasets]
