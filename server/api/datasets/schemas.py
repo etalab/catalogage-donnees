@@ -13,10 +13,11 @@ from server.domain.datasets.entities import (
 
 
 class DatasetListParams(BaseModel):
-    q: str = Query(None)
+    q: Optional[str] = Query(None)
     highlight: bool = Query(False)
     page_number: int = Query(1)
     page_size: int = Query(10)
+    geographical_coverage: Optional[GeographicalCoverage] = Query(None)
 
 
 class DatasetCreate(BaseModel):

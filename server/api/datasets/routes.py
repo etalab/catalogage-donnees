@@ -46,7 +46,11 @@ async def list_datasets(
         pagination = await bus.execute(query)
         return JSONResponse(jsonable_encoder(pagination))
 
-    query = GetAllDatasets(page=page)
+    query = GetAllDatasets(
+        page=page,
+        geographical_coverage=params.geographical_coverage,
+    )
+
     return await bus.execute(query)
 
 

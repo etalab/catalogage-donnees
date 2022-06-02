@@ -164,7 +164,12 @@ class SqlDatasetRepository(DatasetRepository):
     def __init__(self, db: Database) -> None:
         self._db = db
 
-    async def get_all(self, page: Page = Page()) -> Tuple[List[Dataset], int]:
+    async def get_all(
+        self,
+        *,
+        page: Page = Page(),
+        geographical_coverage: GeographicalCoverage = None,
+    ) -> Tuple[List[Dataset], int]:
         limit, offset = to_limit_offset(page)
 
         async with self._db.session() as session:
@@ -176,8 +181,15 @@ class SqlDatasetRepository(DatasetRepository):
                     selectinload(DatasetModel.tags),
                 )
                 .join(DatasetModel.catalog_record)
-                .order_by(CatalogRecordModel.created_at.desc())
             )
+
+            if geographical_coverage is not None:
+                stmt = stmt.where(
+                    DatasetModel.geographical_coverage == geographical_coverage
+                )
+
+            stmt = stmt.order_by(CatalogRecordModel.created_at.desc())
+
             count = await get_count_from(stmt, session)
             result = await session.execute(stmt.limit(limit).offset(offset))
             instances = result.scalars().all()

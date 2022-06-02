@@ -294,6 +294,43 @@ async def test_dataset_get_all_uses_reverse_chronological_order(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "name, value_miss, value_match",
+    [
+        pytest.param(
+            "geographical_coverage",
+            "region",
+            CREATE_ANY_DATASET.geographical_coverage.value,
+        ),
+    ],
+)
+async def test_dataset_filters(
+    name: str,
+    value_miss: Any,
+    value_match: Any,
+    client: httpx.AsyncClient,
+    temp_user: TestUser,
+) -> None:
+    assert value_miss != value_match
+
+    bus = resolve(MessageBus)
+    pk = await bus.execute(CREATE_ANY_DATASET)
+
+    params = {name: value_miss}
+    response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["items"]) == 0
+
+    params = {name: value_match}
+    response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["items"]) == 1
+    assert data["items"][0]["id"] == str(pk)
+
+
+@pytest.mark.asyncio
 class TestDatasetOptionalFields:
     @pytest.mark.parametrize(
         "field, default",

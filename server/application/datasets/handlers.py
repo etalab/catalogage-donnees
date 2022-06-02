@@ -61,8 +61,14 @@ async def delete_dataset(command: DeleteDataset) -> None:
 
 async def get_all_datasets(query: GetAllDatasets) -> Pagination[DatasetView]:
     repository = resolve(DatasetRepository)
-    datasets, count = await repository.get_all(page=query.page)
+
+    datasets, count = await repository.get_all(
+        page=query.page,
+        geographical_coverage=query.geographical_coverage,
+    )
+
     views = [DatasetView(**dataset.dict()) for dataset in datasets]
+
     return Pagination(items=views, total_items=count, page_size=query.page.size)
 
 
