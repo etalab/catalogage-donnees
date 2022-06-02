@@ -81,6 +81,7 @@ class DatasetModel(Base):
         "CatalogRecordModel",
         back_populates="dataset",
         cascade="delete",
+        lazy="joined",
         uselist=False,
     )
 
@@ -172,7 +173,6 @@ class SqlDatasetRepository(DatasetRepository):
                 select(DatasetModel)
                 .options(
                     selectinload(DatasetModel.formats),
-                    selectinload(DatasetModel.catalog_record),
                     selectinload(DatasetModel.tags),
                 )
                 .join(DatasetModel.catalog_record)
@@ -234,7 +234,6 @@ class SqlDatasetRepository(DatasetRepository):
                 )
                 .options(
                     selectinload(DatasetModel.formats),
-                    selectinload(DatasetModel.catalog_record),
                     selectinload(DatasetModel.tags),
                 )
                 .where(
@@ -279,7 +278,6 @@ class SqlDatasetRepository(DatasetRepository):
             .where(DatasetModel.id == id)
             .options(
                 selectinload(DatasetModel.formats),
-                selectinload(DatasetModel.catalog_record),
                 selectinload(DatasetModel.tags),
             )
         )
