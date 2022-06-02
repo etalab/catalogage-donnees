@@ -28,8 +28,6 @@
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
   import type { Tag } from "src/definitions/tag";
 
-  import Modal from "src/lib/components/Modal/Modal.svelte";
-
   let modalTriggerId = "confirm-stop-contributing-modal";
 
   let loading = false;
@@ -72,8 +70,6 @@
     {""}
   </button>
 </header>
-
-<Modal triggerId={modalTriggerId} />
 
 {#if Maybe.Some(tags)}
   <DatasetFormLayout>

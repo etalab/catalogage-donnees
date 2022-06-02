@@ -35,8 +35,8 @@
   import { deleteDataset } from "$lib/repositories/datasets";
   import { Maybe } from "$lib/util/maybe";
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
-  import Modal from "src/lib/components/Modal/Modal.svelte";
   import type { SvelteComponent } from "svelte";
+  import ModalExitFormConfirmation from "src/lib/components/ModalExitFormConfirmation/ModalExitFormConfirmation.svelte";
 
   export let dataset: Maybe<Dataset>;
   export let tags: Maybe<Tag[]>;
@@ -114,7 +114,10 @@
     </button>
   </header>
 
-  <Modal on:save={handleSaveAfterConfirmation} triggerId={modalTriggerId} />
+  <ModalExitFormConfirmation
+    {modalTriggerId}
+    on:save={handleSaveAfterConfirmation}
+  />
 
   <DatasetFormLayout>
     <DatasetForm
