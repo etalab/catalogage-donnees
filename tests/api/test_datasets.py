@@ -293,6 +293,32 @@ async def test_dataset_get_all_uses_reverse_chronological_order(
 
 
 @pytest.mark.asyncio
+async def test_dataset_filters_geographical_coverage(
+    client: httpx.AsyncClient, temp_user: TestUser
+) -> None:
+    bus = resolve(MessageBus)
+
+    pk = await bus.execute(
+        CREATE_ANY_DATASET.copy(
+            update={"geographical_coverage": GeographicalCoverage.NATIONAL}
+        )
+    )
+
+    params = {"geographical_coverage": GeographicalCoverage.REGION.value}
+    response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["items"]) == 0
+
+    params = {"geographical_coverage": GeographicalCoverage.NATIONAL.value}
+    response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["items"]) == 1
+    assert data["items"][0]["id"] == str(pk)
+
+
+@pytest.mark.asyncio
 class TestDatasetOptionalFields:
     @pytest.mark.parametrize(
         "field, default",
