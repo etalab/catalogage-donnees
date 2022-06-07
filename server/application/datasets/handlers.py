@@ -3,13 +3,13 @@ from server.domain.catalog_records.entities import CatalogRecord
 from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.common.pagination import Pagination
 from server.domain.common.types import ID
-from server.domain.datasets.entities import Dataset
+from server.domain.datasets.entities import Dataset, DatasetFilters
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.domain.datasets.repositories import DatasetRepository
 from server.domain.tags.repositories import TagRepository
 
 from .commands import CreateDataset, DeleteDataset, UpdateDataset
-from .queries import GetAllDatasets, GetDatasetByID, SearchDatasets
+from .queries import GetAllDatasets, GetDatasetByID, GetDatasetFilters, SearchDatasets
 from .views import DatasetSearchView, DatasetView
 
 
@@ -57,6 +57,11 @@ async def update_dataset(command: UpdateDataset) -> None:
 async def delete_dataset(command: DeleteDataset) -> None:
     repository = resolve(DatasetRepository)
     await repository.delete(command.id)
+
+
+async def get_dataset_filters(query: GetDatasetFilters) -> DatasetFilters:
+    repository = resolve(DatasetRepository)
+    return await repository.get_dataset_filters()
 
 
 async def get_all_datasets(query: GetAllDatasets) -> Pagination[DatasetView]:

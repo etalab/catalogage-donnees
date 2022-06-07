@@ -13,6 +13,7 @@ from server.application.datasets.commands import (
 from server.application.datasets.queries import (
     GetAllDatasets,
     GetDatasetByID,
+    GetDatasetFilters,
     SearchDatasets,
 )
 from server.application.datasets.views import DatasetView
@@ -24,7 +25,12 @@ from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
 from ..auth.dependencies import HasRole, IsAuthenticated
-from .schemas import DatasetCreate, DatasetListParams, DatasetUpdate
+from .schemas import (
+    DatasetCreate,
+    DatasetListParams,
+    DatasetListResponse,
+    DatasetUpdate,
+)
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
@@ -32,7 +38,7 @@ router = APIRouter(prefix="/datasets", tags=["datasets"])
 @router.get(
     "/",
     dependencies=[Depends(IsAuthenticated())],
-    response_model=Pagination[DatasetView],
+    response_model=DatasetListResponse,
 )
 async def list_datasets(
     params: DatasetListParams = Depends(),
@@ -46,12 +52,16 @@ async def list_datasets(
         pagination = await bus.execute(query)
         return JSONResponse(jsonable_encoder(pagination))
 
-    query = GetAllDatasets(
-        page=page,
-        geographical_coverage__in=params.geographical_coverage,
+    pagination = await bus.execute(
+        GetAllDatasets(
+            page=page,
+            geographical_coverage__in=params.geographical_coverage,
+        )
     )
 
-    return await bus.execute(query)
+    filters = await bus.execute(GetDatasetFilters()) if params.filters_info else None
+
+    return DatasetListResponse(**pagination.dict(), filters=filters)
 
 
 @router.get(

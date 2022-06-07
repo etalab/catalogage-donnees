@@ -6,7 +6,7 @@ from server.seedwork.domain.repositories import Repository
 
 from ..common.pagination import Page
 from ..common.types import ID, id_factory
-from .entities import Dataset, GeographicalCoverage
+from .entities import Dataset, DatasetFilters, GeographicalCoverage
 
 
 class DatasetHeadlines(TypedDict):
@@ -20,6 +20,9 @@ SearchResult = Tuple[Dataset, Optional[DatasetHeadlines]]
 class DatasetRepository(Repository):
     def make_id(self) -> ID:
         return id_factory()
+
+    async def get_dataset_filters(self) -> DatasetFilters:
+        raise NotImplementedError  # pragma: no cover
 
     async def get_all(
         self,

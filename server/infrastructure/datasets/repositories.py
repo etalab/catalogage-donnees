@@ -25,6 +25,7 @@ from server.domain.common.types import ID
 from server.domain.datasets.entities import (
     DataFormat,
     Dataset,
+    DatasetFilters,
     GeographicalCoverage,
     UpdateFrequency,
 )
@@ -162,6 +163,11 @@ def update_instance(
 class SqlDatasetRepository(DatasetRepository):
     def __init__(self, db: Database) -> None:
         self._db = db
+
+    async def get_dataset_filters(self) -> DatasetFilters:
+        return DatasetFilters(
+            geographical_coverage=list(GeographicalCoverage),
+        )
 
     async def get_all(
         self,

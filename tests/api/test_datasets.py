@@ -293,6 +293,29 @@ async def test_dataset_get_all_uses_reverse_chronological_order(
 
 
 @pytest.mark.asyncio
+async def test_dataset_get_all_filters_info(
+    client: httpx.AsyncClient, temp_user: TestUser
+) -> None:
+    response = await client.get(
+        "/datasets/", params={"filters_info": True}, auth=temp_user.auth
+    )
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert sorted(data["filters"]["geographical_coverage"]) == [
+        "department",
+        "epci",
+        "europe",
+        "municipality",
+        "national",
+        "national_full_territory",
+        "region",
+        "world",
+    ]
+
+
+@pytest.mark.asyncio
 async def test_dataset_filters_geographical_coverage(
     client: httpx.AsyncClient, temp_user: TestUser
 ) -> None:
@@ -304,13 +327,18 @@ async def test_dataset_filters_geographical_coverage(
         )
     )
 
-    params = {"geographical_coverage": GeographicalCoverage.REGION.value}
+    params = {"geographical_coverage": [GeographicalCoverage.REGION.value]}
     response = await client.get("/datasets/", params=params, auth=temp_user.auth)
     assert response.status_code == 200
     data = response.json()
     assert len(data["items"]) == 0
 
-    params = {"geographical_coverage": GeographicalCoverage.NATIONAL.value}
+    params = {
+        "geographical_coverage": [
+            GeographicalCoverage.NATIONAL.value,
+            GeographicalCoverage.EUROPE.value,
+        ]
+    }
     response = await client.get("/datasets/", params=params, auth=temp_user.auth)
     assert response.status_code == 200
     data = response.json()

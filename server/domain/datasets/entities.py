@@ -2,7 +2,7 @@ import datetime as dt
 import enum
 from typing import List, Optional
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from server.domain.tags.entities import Tag
 from server.seedwork.domain.entities import Entity
@@ -86,3 +86,7 @@ class Dataset(Entity):
         self.last_updated_at = last_updated_at
         self.published_url = published_url
         self.tags = tags
+
+
+class DatasetFilters(BaseModel):
+    geographical_coverage: List[GeographicalCoverage]
