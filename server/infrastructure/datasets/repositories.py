@@ -40,7 +40,7 @@ from ..catalog_records.repositories import CatalogRecordModel
 from ..catalog_records.repositories import make_entity as make_catalog_record_entity
 from ..database import Base, Database
 from ..helpers.sqlalchemy import get_count_from, to_limit_offset
-from ..tags.repositories import TagModel
+from ..tags.repositories import TagModel, dataset_tag
 from ..tags.repositories import make_entity as make_tag_entity
 
 # Association table
@@ -50,13 +50,6 @@ dataset_dataformat = Table(
     Base.metadata,
     Column("dataset_id", ForeignKey("dataset.id"), primary_key=True),
     Column("dataformat_id", ForeignKey("dataformat.id"), primary_key=True),
-)
-
-dataset_tag = Table(
-    "dataset_tag",
-    Base.metadata,
-    Column("dataset_id", ForeignKey("dataset.id"), primary_key=True),
-    Column("tag_id", ForeignKey("tag.id"), primary_key=True),
 )
 
 
@@ -102,7 +95,9 @@ class DatasetModel(Base):
     update_frequency = Column(Enum(UpdateFrequency, enum="update_frequency_enum"))
     last_updated_at = Column(DateTime(timezone=True))
     published_url = Column(String)
-    tags: List["TagModel"] = relationship("TagModel", secondary=dataset_tag)
+    tags: List["TagModel"] = relationship(
+        "TagModel", back_populates="datasets", secondary=dataset_tag
+    )
 
     search_tsv: Mapped[str] = Column(
         TSVECTOR,

@@ -8,7 +8,6 @@ from server.application.datasets.queries import GetDatasetByID
 from server.application.tags.commands import CreateTag
 from server.application.tags.queries import GetTagByID
 from server.config.di import resolve
-from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.common import datetime as dtutil
 from server.domain.common.types import id_factory
 from server.domain.datasets.entities import (
@@ -600,20 +599,12 @@ class TestDeleteDataset:
         bus = resolve(MessageBus)
 
         dataset_id = await bus.execute(CREATE_ANY_DATASET)
-        dataset = await bus.execute(GetDatasetByID(id=dataset_id))
 
         response = await client.delete(f"/datasets/{dataset_id}/", auth=admin_user.auth)
         assert response.status_code == 204
 
-        query = GetDatasetByID(id=dataset_id)
         with pytest.raises(DatasetDoesNotExist):
-            await bus.execute(query)
-
-        # Verify cascades
-        catalog_record_repository = resolve(CatalogRecordRepository)
-        assert (
-            await catalog_record_repository.get_by_id(dataset.catalog_record.id) is None
-        )
+            await bus.execute(GetDatasetByID(id=dataset_id))
 
     async def test_idempotent(
         self, client: httpx.AsyncClient, admin_user: TestUser
