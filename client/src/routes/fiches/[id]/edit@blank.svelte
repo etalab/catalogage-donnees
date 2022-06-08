@@ -49,6 +49,8 @@
 
   let formHasBeenTouched = false;
 
+  const history = window.history;
+
   const onSave = async (event: CustomEvent<DatasetFormData>) => {
     if (!Maybe.Some(dataset)) {
       return;
@@ -99,14 +101,14 @@
 {#if Maybe.Some(dataset) && Maybe.Some(tags)}
   <header class="fr-p-4w">
     <h5>Modifier la fiche de jeu de données</h5>
-
     <button
       class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
+      data-testid="exit-edit-form"
       data-fr-opened={false}
       aria-controls={formHasBeenTouched ? modalTriggerId : undefined}
       on:click={() => {
         if (!formHasBeenTouched) {
-          window.history.back();
+          history.back();
         }
       }}
     >
