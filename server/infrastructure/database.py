@@ -7,18 +7,30 @@ from sqlalchemy.ext.asyncio import (
     AsyncTransaction,
     create_async_engine,
 )
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import DeclarativeMeta, registry, sessionmaker
 
-from .adapters import json
+mapper_registry = registry()
 
-Base = declarative_base()
+
+class Base(metaclass=DeclarativeMeta):
+    # Explicit SQLAlchemy declarative base, for use with mypy.
+    # See: https://docs.sqlalchemy.org/en/20/orm/declarative_styles.html#creating-an-explicit-base-non-dynamically-for-use-with-mypy-similar  # noqa
+    # NOTE: as of SQLAlchemy 1.4, the mypy plugin is considered as legacy, but
+    # still required for full mypy support. SQLAlchemy 2.0 is planned to include new
+    # constructs that allow full mypy support without the plugin.
+    # See: https://docs.sqlalchemy.org/en/20/orm/extensions/mypy.html
+
+    __abstract__ = True
+    registry = mapper_registry
+    metadata = mapper_registry.metadata
+    __init__ = mapper_registry.constructor
 
 
 class Database:
     def __init__(self, url: str, debug: bool = False) -> None:
-        self._engine = create_async_engine(url, echo=debug, json_serializer=json.dumps)
+        self._engine = create_async_engine(url, echo=debug, future=True)
         self._session_cls = sessionmaker(
-            self._engine, autocommit=False, autoflush=False, class_=AsyncSession
+            bind=self._engine, class_=AsyncSession, future=True
         )
 
     @property

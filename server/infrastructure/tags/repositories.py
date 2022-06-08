@@ -3,14 +3,13 @@ from typing import TYPE_CHECKING, List, Optional
 
 from sqlalchemy import Column, ForeignKey, String, Table, select
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import relationship
 
 from server.domain.common.types import ID, id_factory
 from server.domain.tags.entities import Tag
 from server.domain.tags.repositories import TagRepository
-from server.infrastructure.database import Base, Database
+from server.infrastructure.database import Base, Database, mapper_registry
 
 if TYPE_CHECKING:
     from ..datasets.repositories import DatasetModel
@@ -18,7 +17,7 @@ if TYPE_CHECKING:
 
 dataset_tag = Table(
     "dataset_tag",
-    Base.metadata,
+    mapper_registry.metadata,
     Column("dataset_id", ForeignKey("dataset.id"), primary_key=True),
     Column("tag_id", ForeignKey("tag.id"), primary_key=True),
 )
@@ -64,11 +63,7 @@ class SqlTagRepository(TagRepository):
     ) -> Optional[TagModel]:
         stmt = select(TagModel).where(TagModel.id == id_)
         result = await session.execute(stmt)
-
-        try:
-            return result.scalar_one()
-        except NoResultFound:
-            return None
+        return result.scalar_one_or_none()
 
     async def get_by_id(self, id_: ID) -> Optional[Tag]:
         async with self._db.session() as session:
@@ -81,11 +76,10 @@ class SqlTagRepository(TagRepository):
 
     async def insert(self, entity: Tag) -> ID:
         async with self._db.session() as session:
-            instance = make_instance(entity)
+            async with session.begin():
+                instance = make_instance(entity)
+                session.add(instance)
 
-            session.add(instance)
-
-            await session.commit()
             await session.refresh(instance)
 
             return ID(instance.id)

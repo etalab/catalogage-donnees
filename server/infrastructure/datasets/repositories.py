@@ -17,7 +17,6 @@ from sqlalchemy import (
     text,
 )
 from sqlalchemy.dialects.postgresql import ARRAY, TSVECTOR, UUID
-from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, relationship, selectinload
 
@@ -38,7 +37,7 @@ from server.domain.tags.entities import Tag
 
 from ..catalog_records.repositories import CatalogRecordModel
 from ..catalog_records.repositories import make_entity as make_catalog_record_entity
-from ..database import Base, Database
+from ..database import Base, Database, mapper_registry
 from ..helpers.sqlalchemy import get_count_from, to_limit_offset
 from ..tags.repositories import TagModel, dataset_tag
 from ..tags.repositories import make_entity as make_tag_entity
@@ -47,7 +46,7 @@ from ..tags.repositories import make_entity as make_tag_entity
 # See: https://docs.sqlalchemy.org/en/14/orm/basic_relationships.html#many-to-many
 dataset_dataformat = Table(
     "dataset_dataformat",
-    Base.metadata,
+    mapper_registry.metadata,
     Column("dataset_id", ForeignKey("dataset.id"), primary_key=True),
     Column("dataformat_id", ForeignKey("dataformat.id"), primary_key=True),
 )
@@ -58,6 +57,7 @@ class DataFormatModel(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Enum(DataFormat, name="dataformat_enum"), nullable=False, unique=True)
+
     datasets: List["DatasetModel"] = relationship(
         "DatasetModel",
         back_populates="formats",
@@ -135,12 +135,15 @@ def make_instance(
     formats: List[DataFormatModel],
     tags: List[TagModel],
 ) -> DatasetModel:
-    return DatasetModel(
+    instance = DatasetModel(
         **entity.dict(exclude={"catalog_record", "formats", "tags"}),
-        catalog_record=catalog_record,
-        formats=formats,
-        tags=tags,
     )
+
+    instance.catalog_record = catalog_record
+    instance.formats = formats
+    instance.tags = tags
+
+    return instance
 
 
 def update_instance(
@@ -278,10 +281,7 @@ class SqlDatasetRepository(DatasetRepository):
         )
         result = await session.execute(stmt)
 
-        try:
-            return result.scalar_one()
-        except NoResultFound:
-            return None
+        return result.scalar_one_or_none()
 
     async def get_by_id(self, id: ID) -> Optional[Dataset]:
         async with self._db.session() as session:
@@ -313,32 +313,31 @@ class SqlDatasetRepository(DatasetRepository):
 
     async def insert(self, entity: Dataset) -> ID:
         async with self._db.session() as session:
-            catalog_record = await self._get_catalog_record(
-                session, entity.catalog_record.id
-            )
-            formats = await self._get_formats(session, entity.formats)
-            tags = await self._get_tags(session, entity.tags)
-            instance = make_instance(entity, catalog_record, formats, tags)
+            async with session.begin():
+                catalog_record = await self._get_catalog_record(
+                    session, entity.catalog_record.id
+                )
+                formats = await self._get_formats(session, entity.formats)
+                tags = await self._get_tags(session, entity.tags)
+                instance = make_instance(entity, catalog_record, formats, tags)
 
-            session.add(instance)
+                session.add(instance)
 
-            await session.commit()
             await session.refresh(instance)
 
             return ID(instance.id)
 
     async def update(self, entity: Dataset) -> None:
         async with self._db.session() as session:
-            instance = await self._maybe_get_by_id(session, entity.id)
+            async with session.begin():
+                instance = await self._maybe_get_by_id(session, entity.id)
 
-            if instance is None:
-                return
+                if instance is None:
+                    return
 
-            formats = await self._get_formats(session, entity.formats)
-            tags = await self._get_tags(session, entity.tags)
-            update_instance(instance, entity, formats, tags)
-
-            await session.commit()
+                formats = await self._get_formats(session, entity.formats)
+                tags = await self._get_tags(session, entity.tags)
+                update_instance(instance, entity, formats, tags)
 
     async def delete(self, id: ID) -> None:
         async with self._db.session() as session:
