@@ -344,6 +344,32 @@ async def test_dataset_filters_geographical_coverage(
 
 
 @pytest.mark.asyncio
+async def test_dataset_filters_tags(
+    client: httpx.AsyncClient, temp_user: TestUser
+) -> None:
+    bus = resolve(MessageBus)
+
+    architecture_id = await bus.execute(CreateTag(name="Architecture"))
+
+    pk = await bus.execute(
+        CREATE_ANY_DATASET.copy(update={"tag_ids": [architecture_id]})
+    )
+
+    params = {"tag_ids": [str(id_factory())]}
+    response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["items"]) == 0
+
+    params = {"tag_ids": [str(architecture_id)]}
+    response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["items"]) == 1
+    assert data["items"][0]["id"] == str(pk)
+
+
+@pytest.mark.asyncio
 class TestDatasetOptionalFields:
     @pytest.mark.parametrize(
         "field, default",

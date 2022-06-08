@@ -56,6 +56,7 @@ async def list_datasets(
         spec=DatasetSpec(
             search_term=params.q,
             geographical_coverage__in=params.geographical_coverage,
+            tag__id__in=params.tag_id,
         ),
     )
 

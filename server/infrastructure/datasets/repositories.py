@@ -39,7 +39,7 @@ class SqlDatasetRepository(DatasetRepository):
             result = await session.stream(stmt.limit(limit).offset(offset))
             items = [
                 (make_entity(query.instance(row)), query.extras(row))
-                async for row in result
+                async for row in result.unique()
             ]
             return items, count
 
