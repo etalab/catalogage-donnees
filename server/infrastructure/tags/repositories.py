@@ -1,15 +1,27 @@
 import uuid
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
-from sqlalchemy import Column, String, select
+from sqlalchemy import Column, ForeignKey, String, Table, select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import relationship
 
 from server.domain.common.types import ID, id_factory
 from server.domain.tags.entities import Tag
 from server.domain.tags.repositories import TagRepository
 from server.infrastructure.database import Base, Database
+
+if TYPE_CHECKING:
+    from ..datasets.repositories import DatasetModel
+
+
+dataset_tag = Table(
+    "dataset_tag",
+    Base.metadata,
+    Column("dataset_id", ForeignKey("dataset.id"), primary_key=True),
+    Column("tag_id", ForeignKey("tag.id"), primary_key=True),
+)
 
 
 class TagModel(Base):
@@ -17,6 +29,10 @@ class TagModel(Base):
 
     id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True)
     name = Column(String, nullable=False)
+
+    datasets: List["DatasetModel"] = relationship(
+        "DatasetModel", back_populates="tags", secondary=dataset_tag
+    )
 
 
 def make_entity(instance: TagModel) -> Tag:
