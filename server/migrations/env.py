@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from server.config.di import bootstrap, resolve
 from server.config.settings import Settings
-from server.infrastructure.database import Base
+from server.infrastructure.database import mapper_registry
 
 bootstrap()
 settings = resolve(Settings)
@@ -37,7 +37,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+target_metadata = mapper_registry.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
