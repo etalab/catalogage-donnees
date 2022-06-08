@@ -58,11 +58,13 @@ Or in routes:
 
 Or in any custom scripts as seems fit.
 """
+from typing import List, Type
 
 from server.application.auth.passwords import PasswordEncoder
 from server.domain.auth.repositories import UserRepository
 from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.datasets.repositories import DatasetRepository
+from server.domain.emails.backends import EmailBackend
 from server.domain.tags.repositories import TagRepository
 from server.infrastructure.adapters.messages import MessageBusAdapter
 from server.infrastructure.auth.passwords import Argon2PasswordEncoder
@@ -75,11 +77,13 @@ from server.infrastructure.datasets.repositories import SqlDatasetRepository
 from server.infrastructure.tags.repositories import SqlTagRepository
 from server.seedwork.application.di import Container
 from server.seedwork.application.messages import MessageBus
-from server.seedwork.application.modules import load_modules
+from server.seedwork.application.modules import Module
 
+from ._utils import load_object
 from .settings import Settings
 
 MODULES = [
+    "server.infrastructure.emails.module.EmailsModule",
     "server.infrastructure.datasets.module.DatasetsModule",
     "server.infrastructure.tags.module.TagsModule",
     "server.infrastructure.auth.module.AuthModule",
@@ -98,13 +102,18 @@ def configure(container: "Container") -> None:
     settings = Settings()
     container.register_instance(Settings, settings)
 
-    # Common services
+    # Emails
+    email_backend_cls: Type[EmailBackend] = load_object(settings.email_backend)
+    container.register_instance(
+        EmailBackend, email_backend_cls(**email_backend_cls.options())
+    )
 
+    # Passwords
     container.register_instance(PasswordEncoder, Argon2PasswordEncoder())
 
     # Event handling (Commands, queries, and the message bus)
 
-    modules = load_modules(MODULES)
+    modules: List[Module] = [load_object(path) for path in MODULES]
 
     command_handlers = {
         command: handler
