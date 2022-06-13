@@ -6,7 +6,8 @@ from server.seedwork.domain.repositories import Repository
 
 from ..common.pagination import Page
 from ..common.types import ID, id_factory
-from .entities import Dataset, DatasetFilters, GeographicalCoverage
+from .entities import Dataset
+from .specifications import DatasetSpec
 
 
 class DatasetHeadlines(TypedDict):
@@ -21,14 +22,8 @@ class DatasetRepository(Repository):
     def make_id(self) -> ID:
         return id_factory()
 
-    async def get_dataset_filters(self) -> DatasetFilters:
-        raise NotImplementedError  # pragma: no cover
-
     async def get_all(
-        self,
-        *,
-        page: Page = Page(),
-        geographical_coverage__in: List[GeographicalCoverage] = None,
+        self, *, page: Page = Page(), spec: DatasetSpec = DatasetSpec()
     ) -> Tuple[List[Dataset], int]:
         raise NotImplementedError  # pragma: no cover
 

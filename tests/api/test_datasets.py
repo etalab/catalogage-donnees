@@ -293,9 +293,7 @@ async def test_dataset_get_all_uses_reverse_chronological_order(
 
 
 @pytest.mark.asyncio
-async def test_dataset_filters(
-    client: httpx.AsyncClient, temp_user: TestUser
-) -> None:
+async def test_dataset_filters(client: httpx.AsyncClient, temp_user: TestUser) -> None:
     response = await client.get("/datasets/filters/", auth=temp_user.auth)
     assert response.status_code == 200
 

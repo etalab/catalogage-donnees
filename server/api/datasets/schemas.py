@@ -4,12 +4,9 @@ from typing import List, Optional
 from fastapi import Query
 from pydantic import BaseModel, EmailStr, Field
 
-from server.application.datasets.views import DatasetView
-from server.domain.common.pagination import Pagination
 from server.domain.common.types import ID
 from server.domain.datasets.entities import (
     DataFormat,
-    DatasetFilters,
     GeographicalCoverage,
     UpdateFrequency,
 )
@@ -22,7 +19,7 @@ class DatasetListParams:
         highlight: bool = False,
         page_number: int = 1,
         page_size: int = 10,
-        geographical_coverage: Optional[List[str]] = Query(None),
+        geographical_coverage: Optional[List[GeographicalCoverage]] = Query(None),
     ) -> None:
         self.q = q
         self.highlight = highlight

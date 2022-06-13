@@ -3,14 +3,14 @@ from server.domain.catalog_records.entities import CatalogRecord
 from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.common.pagination import Pagination
 from server.domain.common.types import ID
-from server.domain.datasets.entities import Dataset, DatasetFilters
+from server.domain.datasets.entities import Dataset, GeographicalCoverage
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.domain.datasets.repositories import DatasetRepository
 from server.domain.tags.repositories import TagRepository
 
 from .commands import CreateDataset, DeleteDataset, UpdateDataset
 from .queries import GetAllDatasets, GetDatasetByID, GetDatasetFilters, SearchDatasets
-from .views import DatasetSearchView, DatasetView
+from .views import DatasetFiltersView, DatasetSearchView, DatasetView
 
 
 async def create_dataset(command: CreateDataset, *, id_: ID = None) -> ID:
@@ -59,18 +59,16 @@ async def delete_dataset(command: DeleteDataset) -> None:
     await repository.delete(command.id)
 
 
-async def get_dataset_filters(query: GetDatasetFilters) -> DatasetFilters:
-    repository = resolve(DatasetRepository)
-    return await repository.get_dataset_filters()
+async def get_dataset_filters(query: GetDatasetFilters) -> DatasetFiltersView:
+    return DatasetFiltersView(
+        geographical_coverage=list(GeographicalCoverage),
+    )
 
 
 async def get_all_datasets(query: GetAllDatasets) -> Pagination[DatasetView]:
     repository = resolve(DatasetRepository)
 
-    datasets, count = await repository.get_all(
-        page=query.page,
-        geographical_coverage__in=query.geographical_coverage__in,
-    )
+    datasets, count = await repository.get_all(page=query.page, spec=query.spec)
 
     views = [DatasetView(**dataset.dict()) for dataset in datasets]
 

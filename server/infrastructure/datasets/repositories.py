@@ -25,7 +25,6 @@ from server.domain.common.types import ID
 from server.domain.datasets.entities import (
     DataFormat,
     Dataset,
-    DatasetFilters,
     GeographicalCoverage,
     UpdateFrequency,
 )
@@ -34,6 +33,7 @@ from server.domain.datasets.repositories import (
     DatasetRepository,
     SearchResult,
 )
+from server.domain.datasets.specifications import DatasetSpec
 from server.domain.tags.entities import Tag
 
 from ..catalog_records.repositories import CatalogRecordModel
@@ -164,16 +164,11 @@ class SqlDatasetRepository(DatasetRepository):
     def __init__(self, db: Database) -> None:
         self._db = db
 
-    async def get_dataset_filters(self) -> DatasetFilters:
-        return DatasetFilters(
-            geographical_coverage=list(GeographicalCoverage),
-        )
-
     async def get_all(
         self,
         *,
         page: Page = Page(),
-        geographical_coverage__in: List[GeographicalCoverage] = None,
+        spec: DatasetSpec = DatasetSpec(),
     ) -> Tuple[List[Dataset], int]:
         limit, offset = to_limit_offset(page)
 
@@ -187,9 +182,11 @@ class SqlDatasetRepository(DatasetRepository):
                 .join(DatasetModel.catalog_record)
             )
 
-            if geographical_coverage__in is not None:
+            if spec.geographical_coverage__in is not None:
                 stmt = stmt.where(
-                    DatasetModel.geographical_coverage.in_(geographical_coverage__in)
+                    DatasetModel.geographical_coverage.in_(
+                        spec.geographical_coverage__in
+                    )
                 )
 
             stmt = stmt.order_by(CatalogRecordModel.created_at.desc())
