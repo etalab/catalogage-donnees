@@ -15,7 +15,8 @@ class DatasetHeadlines(TypedDict):
     description: Optional[str]
 
 
-SearchResult = Tuple[Dataset, Optional[DatasetHeadlines]]
+class DatasetGetAllExtras(TypedDict, total=False):
+    headlines: DatasetHeadlines
 
 
 class DatasetRepository(Repository):
@@ -24,12 +25,7 @@ class DatasetRepository(Repository):
 
     async def get_all(
         self, *, page: Page = Page(), spec: DatasetSpec = DatasetSpec()
-    ) -> Tuple[List[Dataset], int]:
-        raise NotImplementedError  # pragma: no cover
-
-    async def search(
-        self, q: str, highlight: bool = False, page: Page = Page()
-    ) -> Tuple[List[SearchResult], int]:
+    ) -> Tuple[List[Tuple[Dataset, DatasetGetAllExtras]], int]:
         raise NotImplementedError  # pragma: no cover
 
     async def get_by_id(self, id: ID) -> Optional[Dataset]:

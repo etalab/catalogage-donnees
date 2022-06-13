@@ -75,17 +75,17 @@ async def add_corpus(items: List[Tuple[str, str]] = None) -> None:
         ),
         pytest.param(
             "national",
-            ["Inventaire national forestier", "Cadastre national"],
+            ["Cadastre national", "Inventaire national forestier"],
             id="terms:single-results:multiple-title",
         ),
         pytest.param(
             "France",
-            ["Inventaire national forestier", "Cadastre national"],
+            ["Cadastre national", "Inventaire national forestier"],
             id="terms:single-results:multiple-description",
         ),
         pytest.param(
             "base",
-            ["Base Carbone", "Cadastre national"],
+            ["Cadastre national", "Base Carbone"],
             id="terms:single-results:multiple-title-description",
         ),
         pytest.param(

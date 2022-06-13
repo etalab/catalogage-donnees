@@ -148,6 +148,7 @@ async def test_dataset_crud(
         "last_updated_at": known_date.isoformat(),
         "published_url": None,
         "tags": [],
+        "headlines": None,
     }
 
     non_existing_id = id_factory()
@@ -525,6 +526,7 @@ class TestDatasetUpdate:
             "last_updated_at": other_known_date.isoformat(),
             "published_url": "https://data.gouv.fr/datasets/other",
             "tags": [],
+            "headlines": None,
         }
 
         # Entity was indeed updated

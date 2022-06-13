@@ -1,7 +1,6 @@
 from typing import Union
 
 from fastapi import APIRouter, Depends
-from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 
@@ -14,7 +13,6 @@ from server.application.datasets.queries import (
     GetAllDatasets,
     GetDatasetByID,
     GetDatasetFilters,
-    SearchDatasets,
 )
 from server.application.datasets.views import DatasetFiltersView, DatasetView
 from server.config.di import resolve
@@ -22,7 +20,7 @@ from server.domain.auth.entities import UserRole
 from server.domain.common.pagination import Page, Pagination
 from server.domain.common.types import ID
 from server.domain.datasets.exceptions import DatasetDoesNotExist
-from server.domain.datasets.specifications import DatasetSpec
+from server.domain.datasets.specifications import DatasetSearch, DatasetSpec
 from server.seedwork.application.messages import MessageBus
 
 from ..auth.dependencies import HasRole, IsAuthenticated
@@ -53,14 +51,12 @@ async def list_datasets(
 
     page = Page(number=params.page_number, size=params.page_size)
 
-    if params.q is not None:
-        query = SearchDatasets(q=params.q, highlight=params.highlight, page=page)
-        pagination = await bus.execute(query)
-        return JSONResponse(jsonable_encoder(pagination))
-
     query = GetAllDatasets(
         page=page,
         spec=DatasetSpec(
+            search=DatasetSearch(term=params.q, highlight=params.highlight)
+            if params.q is not None
+            else None,
             geographical_coverage__in=params.geographical_coverage,
         ),
     )

@@ -31,8 +31,7 @@ class DatasetView(BaseModel):
     published_url: Optional[str]
     tags: List[TagView]
 
-
-class DatasetSearchView(DatasetView):
+    # Extras
     headlines: Optional[DatasetHeadlines] = None
 
 

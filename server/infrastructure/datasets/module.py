@@ -9,14 +9,12 @@ from server.application.datasets.handlers import (
     get_all_datasets,
     get_dataset_by_id,
     get_dataset_filters,
-    search_datasets,
     update_dataset,
 )
 from server.application.datasets.queries import (
     GetAllDatasets,
     GetDatasetByID,
     GetDatasetFilters,
-    SearchDatasets,
 )
 from server.seedwork.application.modules import Module
 
@@ -31,6 +29,5 @@ class DatasetsModule(Module):
     query_handlers = {
         GetAllDatasets: get_all_datasets,
         GetDatasetByID: get_dataset_by_id,
-        SearchDatasets: search_datasets,
         GetDatasetFilters: get_dataset_filters,
     }
