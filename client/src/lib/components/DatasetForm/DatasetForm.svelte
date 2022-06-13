@@ -593,6 +593,14 @@
     resize: vertical;
   }
 
+  h2 {
+    /* Prevent h2 to be covered by the header
+    See https://css-tricks.com/fixed-headers-and-jump-links-the-solution-is-scroll-margin-top/
+    
+    */
+    scroll-margin-top: 10vh;
+  }
+
   .button--container {
     display: flex;
     justify-content: flex-end;
