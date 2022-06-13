@@ -21,24 +21,30 @@ from server.config.di import resolve
 from server.domain.auth.entities import UserRole
 from server.domain.common.pagination import Page, Pagination
 from server.domain.common.types import ID
+from server.domain.datasets.entities import DatasetFilters
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
 from ..auth.dependencies import HasRole, IsAuthenticated
-from .schemas import (
-    DatasetCreate,
-    DatasetListParams,
-    DatasetListResponse,
-    DatasetUpdate,
-)
+from .schemas import DatasetCreate, DatasetListParams, DatasetUpdate
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
 
 @router.get(
+    "/filters/",
+    dependencies=[Depends(IsAuthenticated())],
+    response_model=DatasetFilters,
+)
+async def get_dataset_filters() -> DatasetFilters:
+    bus = resolve(MessageBus)
+    return await bus.execute(GetDatasetFilters())
+
+
+@router.get(
     "/",
     dependencies=[Depends(IsAuthenticated())],
-    response_model=DatasetListResponse,
+    response_model=Pagination[DatasetView],
 )
 async def list_datasets(
     params: DatasetListParams = Depends(),
@@ -52,16 +58,12 @@ async def list_datasets(
         pagination = await bus.execute(query)
         return JSONResponse(jsonable_encoder(pagination))
 
-    pagination = await bus.execute(
+    return await bus.execute(
         GetAllDatasets(
             page=page,
             geographical_coverage__in=params.geographical_coverage,
         )
     )
-
-    filters = await bus.execute(GetDatasetFilters()) if params.filters_info else None
-
-    return DatasetListResponse(**pagination.dict(), filters=filters)
 
 
 @router.get(

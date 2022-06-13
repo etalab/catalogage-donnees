@@ -293,17 +293,15 @@ async def test_dataset_get_all_uses_reverse_chronological_order(
 
 
 @pytest.mark.asyncio
-async def test_dataset_get_all_filters_info(
+async def test_dataset_filters(
     client: httpx.AsyncClient, temp_user: TestUser
 ) -> None:
-    response = await client.get(
-        "/datasets/", params={"filters_info": True}, auth=temp_user.auth
-    )
+    response = await client.get("/datasets/filters/", auth=temp_user.auth)
     assert response.status_code == 200
 
     data = response.json()
 
-    assert sorted(data["filters"]["geographical_coverage"]) == [
+    assert sorted(data["geographical_coverage"]) == [
         "department",
         "epci",
         "europe",
