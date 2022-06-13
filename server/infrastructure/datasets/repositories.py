@@ -1,33 +1,12 @@
-import uuid
 from typing import List, Optional, Tuple
 
-from sqlalchemy import (
-    Column,
-    Computed,
-    DateTime,
-    Enum,
-    ForeignKey,
-    Index,
-    Integer,
-    String,
-    Table,
-    desc,
-    func,
-    select,
-    text,
-)
-from sqlalchemy.dialects.postgresql import ARRAY, TSVECTOR, UUID
+from sqlalchemy import desc, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Mapped, relationship, selectinload
+from sqlalchemy.orm import selectinload
 
 from server.domain.common.pagination import Page
 from server.domain.common.types import ID
-from server.domain.datasets.entities import (
-    DataFormat,
-    Dataset,
-    GeographicalCoverage,
-    UpdateFrequency,
-)
+from server.domain.datasets.entities import DataFormat, Dataset
 from server.domain.datasets.repositories import (
     DatasetHeadlines,
     DatasetRepository,
@@ -37,127 +16,11 @@ from server.domain.datasets.specifications import DatasetSpec
 from server.domain.tags.entities import Tag
 
 from ..catalog_records.repositories import CatalogRecordModel
-from ..catalog_records.repositories import make_entity as make_catalog_record_entity
-from ..database import Base, Database, mapper_registry
+from ..database import Database
 from ..helpers.sqlalchemy import get_count_from, to_limit_offset
-from ..tags.repositories import TagModel, dataset_tag
-from ..tags.repositories import make_entity as make_tag_entity
-
-# Association table
-# See: https://docs.sqlalchemy.org/en/14/orm/basic_relationships.html#many-to-many
-dataset_dataformat = Table(
-    "dataset_dataformat",
-    mapper_registry.metadata,
-    Column("dataset_id", ForeignKey("dataset.id"), primary_key=True),
-    Column("dataformat_id", ForeignKey("dataformat.id"), primary_key=True),
-)
-
-
-class DataFormatModel(Base):
-    __tablename__ = "dataformat"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(Enum(DataFormat, name="dataformat_enum"), nullable=False, unique=True)
-
-    datasets: List["DatasetModel"] = relationship(
-        "DatasetModel",
-        back_populates="formats",
-        secondary=dataset_dataformat,
-    )
-
-
-class DatasetModel(Base):
-    __tablename__ = "dataset"
-
-    id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True)
-
-    catalog_record: "CatalogRecordModel" = relationship(
-        "CatalogRecordModel",
-        back_populates="dataset",
-        cascade="delete",
-        lazy="joined",
-        uselist=False,
-    )
-
-    title = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    service = Column(String, nullable=False)
-    geographical_coverage = Column(
-        Enum(GeographicalCoverage, enum="geographical_coverage_enum"), nullable=False
-    )
-    formats: List[DataFormatModel] = relationship(
-        "DataFormatModel",
-        back_populates="datasets",
-        secondary=dataset_dataformat,
-    )
-    technical_source = Column(String)
-    producer_email = Column(String, nullable=False)
-    contact_emails = Column(ARRAY(String), server_default="{}", nullable=False)
-    update_frequency = Column(Enum(UpdateFrequency, enum="update_frequency_enum"))
-    last_updated_at = Column(DateTime(timezone=True))
-    published_url = Column(String)
-    tags: List["TagModel"] = relationship(
-        "TagModel", back_populates="datasets", secondary=dataset_tag
-    )
-
-    search_tsv: Mapped[str] = Column(
-        TSVECTOR,
-        Computed("to_tsvector('french', title || ' ' || description)", persisted=True),
-    )
-
-    __table_args__ = (
-        Index(
-            "ix_dataset_search_tsv",
-            search_tsv,
-            postgresql_using="GIN",
-        ),
-    )
-
-
-def make_entity(instance: DatasetModel) -> Dataset:
-    kwargs = {
-        "catalog_record": make_catalog_record_entity(instance.catalog_record),
-        "formats": [fmt.name for fmt in instance.formats],
-        "tags": [make_tag_entity(tag) for tag in instance.tags],
-    }
-
-    kwargs.update(
-        (field, getattr(instance, field))
-        for field in Dataset.__fields__
-        if field not in kwargs
-    )
-
-    return Dataset(**kwargs)
-
-
-def make_instance(
-    entity: Dataset,
-    catalog_record: CatalogRecordModel,
-    formats: List[DataFormatModel],
-    tags: List[TagModel],
-) -> DatasetModel:
-    instance = DatasetModel(
-        **entity.dict(exclude={"catalog_record", "formats", "tags"}),
-    )
-
-    instance.catalog_record = catalog_record
-    instance.formats = formats
-    instance.tags = tags
-
-    return instance
-
-
-def update_instance(
-    instance: DatasetModel,
-    entity: Dataset,
-    formats: List[DataFormatModel],
-    tags: List[TagModel],
-) -> None:
-    for field in set(Dataset.__fields__) - {"id", "catalog_record", "formats", "tags"}:
-        setattr(instance, field, getattr(entity, field))
-
-    instance.formats = formats
-    instance.tags = tags
+from ..tags.repositories import TagModel
+from .models import DataFormatModel, DatasetModel
+from .transformers import make_entity, make_instance, update_instance
 
 
 class SqlDatasetRepository(DatasetRepository):

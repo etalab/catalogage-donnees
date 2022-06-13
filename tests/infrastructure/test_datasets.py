@@ -9,7 +9,7 @@ from server.config.di import resolve
 from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.datasets.entities import DataFormat, GeographicalCoverage
 from server.infrastructure.database import Database
-from server.infrastructure.datasets.repositories import DatasetModel
+from server.infrastructure.datasets.models import DatasetModel
 from server.infrastructure.tags.repositories import TagModel, dataset_tag
 from server.seedwork.application.messages import MessageBus
 

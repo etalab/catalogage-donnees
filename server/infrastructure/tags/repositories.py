@@ -12,7 +12,7 @@ from server.domain.tags.repositories import TagRepository
 from server.infrastructure.database import Base, Database, mapper_registry
 
 if TYPE_CHECKING:
-    from ..datasets.repositories import DatasetModel
+    from ..datasets.models import DatasetModel
 
 
 dataset_tag = Table(
