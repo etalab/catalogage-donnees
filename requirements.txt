@@ -17,7 +17,7 @@ asgi-lifespan==1.0.1
 black==22.3.0
 click==8.1.2
 flake8==4.0.1
-httpx==0.22.0
+httpx==0.23.0
 isort==5.10.1
 mypy==0.942
 psycopg2-binary==2.9.2
