@@ -34,3 +34,7 @@ class DatasetView(BaseModel):
 
 class DatasetSearchView(DatasetView):
     headlines: Optional[DatasetHeadlines] = None
+
+
+class DatasetFiltersView(BaseModel):
+    geographical_coverage: List[GeographicalCoverage]

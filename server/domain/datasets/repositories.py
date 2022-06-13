@@ -7,6 +7,7 @@ from server.seedwork.domain.repositories import Repository
 from ..common.pagination import Page
 from ..common.types import ID, id_factory
 from .entities import Dataset
+from .specifications import DatasetSpec
 
 
 class DatasetHeadlines(TypedDict):
@@ -21,7 +22,9 @@ class DatasetRepository(Repository):
     def make_id(self) -> ID:
         return id_factory()
 
-    async def get_all(self, page: Page = Page()) -> Tuple[List[Dataset], int]:
+    async def get_all(
+        self, *, page: Page = Page(), spec: DatasetSpec = DatasetSpec()
+    ) -> Tuple[List[Dataset], int]:
         raise NotImplementedError  # pragma: no cover
 
     async def search(

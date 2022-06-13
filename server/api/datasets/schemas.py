@@ -12,11 +12,20 @@ from server.domain.datasets.entities import (
 )
 
 
-class DatasetListParams(BaseModel):
-    q: str = Query(None)
-    highlight: bool = Query(False)
-    page_number: int = Query(1)
-    page_size: int = Query(10)
+class DatasetListParams:
+    def __init__(
+        self,
+        q: Optional[str] = None,
+        highlight: bool = False,
+        page_number: int = 1,
+        page_size: int = 10,
+        geographical_coverage: Optional[List[GeographicalCoverage]] = Query(None),
+    ) -> None:
+        self.q = q
+        self.highlight = highlight
+        self.page_number = page_number
+        self.page_size = page_size
+        self.geographical_coverage = geographical_coverage
 
 
 class DatasetCreate(BaseModel):
