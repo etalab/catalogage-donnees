@@ -20,7 +20,7 @@ from server.domain.auth.entities import UserRole
 from server.domain.common.pagination import Page, Pagination
 from server.domain.common.types import ID
 from server.domain.datasets.exceptions import DatasetDoesNotExist
-from server.domain.datasets.specifications import DatasetSearch, DatasetSpec
+from server.domain.datasets.specifications import DatasetSpec
 from server.seedwork.application.messages import MessageBus
 
 from ..auth.dependencies import HasRole, IsAuthenticated
@@ -54,9 +54,7 @@ async def list_datasets(
     query = GetAllDatasets(
         page=page,
         spec=DatasetSpec(
-            search=DatasetSearch(term=params.q, highlight=params.highlight)
-            if params.q is not None
-            else None,
+            search_term=params.q,
             geographical_coverage__in=params.geographical_coverage,
         ),
     )

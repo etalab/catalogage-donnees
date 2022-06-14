@@ -34,10 +34,13 @@ class SqlDatasetRepository(DatasetRepository):
 
         async with self._db.session() as session:
             query = GetAllQuery(spec)
-            stmt = query.statement()
+            stmt = query.statement
             count = await get_count_from(stmt, session)
             result = await session.stream(stmt.limit(limit).offset(offset))
-            items = await query.gather(result)
+            items = [
+                (make_entity(query.instance(row)), query.extras(row))
+                async for row in result
+            ]
             return items, count
 
     async def _maybe_get_by_id(
