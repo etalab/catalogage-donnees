@@ -13,7 +13,7 @@ from server.domain.common.types import ID
 from ..database import Base, Database
 
 if TYPE_CHECKING:
-    from ..datasets.repositories import DatasetModel
+    from ..datasets.models import DatasetModel
 
 
 class CatalogRecordModel(Base):
