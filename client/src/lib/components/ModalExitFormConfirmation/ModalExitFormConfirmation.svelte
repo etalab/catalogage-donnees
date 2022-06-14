@@ -3,14 +3,14 @@
 
   import Modal from "../GenericModal/GenericModal.svelte";
 
-  export let modalTriggerId: string;
+  export let controlId: string;
 
-  const dispatch = createEventDispatcher<{ save: void }>();
+  const dispatch = createEventDispatcher<{ save: void; cancel: void }>();
 </script>
 
-<Modal triggerId={modalTriggerId}>
+<Modal {controlId}>
   <div slot="modal-content">
-    <h1 id="{modalTriggerId}-title" class="fr-modal__title">
+    <h1 id="{controlId}-title" class="fr-modal__title">
       <span
         class="fr-icon-error-warning-fill fr-fi--md fr-text-default--error"
         aria-hidden="true"
@@ -33,7 +33,11 @@
         </button>
       </li>
       <li>
-        <button aria-controls={modalTriggerId} class="fr-btn fr-btn--secondary">
+        <button
+          on:click={() => dispatch("cancel")}
+          aria-controls={controlId}
+          class="fr-btn fr-btn--secondary"
+        >
           Ne pas sauvegarder
         </button>
       </li>

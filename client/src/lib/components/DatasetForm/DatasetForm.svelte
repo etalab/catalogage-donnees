@@ -230,7 +230,7 @@
         id="title"
         name="title"
         required
-        on:change={handleFieldChange}
+        on:input={handleFieldChange}
         on:blur={handleFieldChange}
         bind:value={$form.title}
       />
@@ -260,7 +260,7 @@
         id="description"
         name="description"
         required
-        on:change={handleFieldChange}
+        on:input={handleFieldChange}
         on:blur={handleFieldChange}
         bind:value={$form.description}
       />
@@ -290,7 +290,7 @@
         id="service"
         name="service"
         required
-        on:change={handleFieldChange}
+        on:input={handleFieldChange}
         on:blur={handleFieldChange}
         bind:value={$form.service}
       />
@@ -311,7 +311,7 @@
       label="Couverture géographique"
       placeholder="Sélectionnez une couverture géographique..."
       value={$form.geographicalCoverage}
-      on:change={(event) =>
+      on:input={(event) =>
         handleSelectChange(
           "geographicalCoverage",
           event,
@@ -363,8 +363,7 @@
               {value}
               required={dataFormatsValue.every((checked) => !checked)}
               checked={dataFormatsValue[index]}
-              on:blur={(event) => handleDataformatChange(event, index)}
-              on:change={(event) => handleDataformatChange(event, index)}
+              on:input={(event) => handleDataformatChange(event, index)}
             />
             <label for={id}>
               {label}
@@ -399,8 +398,7 @@
         type="text"
         id="technicalSource"
         name="technicalSource"
-        on:change={handleFieldChange}
-        on:blur={handleFieldChange}
+        on:input={handleFieldChange}
         bind:value={$form.technicalSource}
       />
       {#if $errors.technicalSource}
@@ -456,8 +454,7 @@
         type="email"
         id="producerEmail"
         name="producerEmail"
-        on:change={handleFieldChange}
-        on:blur={handleFieldChange}
+        on:input={handleFieldChange}
         bind:value={$form.producerEmail}
       />
       {#if $errors.producerEmail}
@@ -471,7 +468,7 @@
       bind:errors={emailErrors}
       bind:contactEmails={$form.contactEmails}
       on:blur={handleChange}
-      on:change={handleChange}
+      on:input={handleChange}
     />
   </div>
 
@@ -503,8 +500,7 @@
           type="date"
           id="lastUpdatedAt"
           name="lastUpdatedAt"
-          on:change={handleLastUpdatedAtChange}
-          on:blur={handleLastUpdatedAtChange}
+          on:input={handleLastUpdatedAtChange}
           bind:value={$form.lastUpdatedAt}
         />
 
@@ -523,7 +519,7 @@
       placeholder="Sélectionner une option"
       label="Fréquence de mise à jour"
       value={$form.updateFrequency}
-      on:change={(event) =>
+      on:input={(event) =>
         handleSelectChange(
           "updateFrequency",
           event,
@@ -565,8 +561,7 @@
         type="text"
         id="publishedUrl"
         name="publishedUrl"
-        on:change={handleChange}
-        on:blur={handleChange}
+        on:input={handleChange}
         bind:value={$form.publishedUrl}
       />
 

@@ -43,7 +43,7 @@
 
   let form: SvelteComponent;
 
-  let modalTriggerId = "stop-editing-form-modal";
+  let modalControlId = "stop-editing-form-modal";
 
   let loading = false;
 
@@ -96,29 +96,40 @@
   const handleSaveAfterConfirmation = () => {
     form.submitForm();
   };
+
+  const handleExitForm = () => {
+    history.go(-1);
+  };
 </script>
 
 {#if Maybe.Some(dataset) && Maybe.Some(tags)}
   <header class="fr-p-4w">
     <h5>Modifier la fiche de jeu de données</h5>
-    <button
-      class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
-      data-testid="exit-edit-form"
-      data-fr-opened={false}
-      aria-controls={formHasBeenTouched ? modalTriggerId : undefined}
-      on:click={() => {
-        if (!formHasBeenTouched) {
-          history.back();
-        }
-      }}
-    >
-      {""}
-    </button>
+
+    {#if formHasBeenTouched}
+      <button
+        class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
+        data-fr-opened="false"
+        data-testid="exit-edit-form"
+        aria-controls={modalControlId}
+      >
+        {""}
+      </button>
+    {:else}
+      <button
+        data-testid="exit-edit-form"
+        class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
+        on:click={handleExitForm}
+      >
+        {""}
+      </button>
+    {/if}
   </header>
 
   <ModalExitFormConfirmation
-    {modalTriggerId}
+    on:cancel={handleExitForm}
     on:save={handleSaveAfterConfirmation}
+    controlId={modalControlId}
   />
 
   <DatasetFormLayout>
