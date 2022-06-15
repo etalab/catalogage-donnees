@@ -75,17 +75,17 @@ async def add_corpus(items: List[Tuple[str, str]] = None) -> None:
         ),
         pytest.param(
             "national",
-            ["Inventaire national forestier", "Cadastre national"],
+            ["Cadastre national", "Inventaire national forestier"],
             id="terms:single-results:multiple-title",
         ),
         pytest.param(
             "France",
-            ["Inventaire national forestier", "Cadastre national"],
+            ["Cadastre national", "Inventaire national forestier"],
             id="terms:single-results:multiple-description",
         ),
         pytest.param(
             "base",
-            ["Base Carbone", "Cadastre national"],
+            ["Cadastre national", "Base Carbone"],
             id="terms:single-results:multiple-title-description",
         ),
         pytest.param(
@@ -288,41 +288,31 @@ async def test_search_ranking(client: httpx.AsyncClient, temp_user: TestUser) ->
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "highlight, corpus, q, expected_headlines",
+    "corpus, q, expected_headlines",
     [
         pytest.param(
-            False,
-            [("Restaurants CROUS", "Lieux de restauration du CROUS")],
-            "restaurant",
-            None,
-            id="off",
-        ),
-        pytest.param(
-            True,
             [("Restaurants CROUS", "Lieux de restauration du CROUS")],
             "restaurant",
             {
                 "title": "<mark>Restaurants</mark> CROUS",
                 "description": "Lieux de <mark>restauration</mark> du CROUS",
             },
-            id="on",
+            id="title-description",
         ),
         pytest.param(
-            True,
             [("Restaurants CROUS", "Données fournies par le CROUS")],
             "restaurant",
             {
                 "title": "<mark>Restaurants</mark> CROUS",
                 "description": None,
             },
-            id="on-description-without-results",
+            id="description-without-results",
         ),
     ],
 )
 async def test_search_highlight(
     client: httpx.AsyncClient,
     temp_user: TestUser,
-    highlight: bool,
     corpus: list,
     q: str,
     expected_headlines: Optional[dict],
@@ -333,7 +323,7 @@ async def test_search_highlight(
 
     response = await client.get(
         "/datasets/",
-        params={"q": q, "highlight": highlight},
+        params={"q": q},
         auth=temp_user.auth,
     )
     assert response.status_code == 200

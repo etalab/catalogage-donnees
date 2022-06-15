@@ -54,7 +54,7 @@ export const getDatasets: GetDatasets = async ({
   ];
 
   if (typeof q === "string") {
-    queryItems.push(["q", q], ["highlight", "true"]);
+    queryItems.push(["q", q]);
   }
 
   const queryString = toQueryString(queryItems);

@@ -3,7 +3,7 @@ from server.domain.common.types import ID
 from server.domain.datasets.specifications import DatasetSpec
 from server.seedwork.application.queries import Query
 
-from .views import DatasetFiltersView, DatasetSearchView, DatasetView
+from .views import DatasetFiltersView, DatasetView
 
 
 class GetAllDatasets(Query[Pagination[DatasetView]]):
@@ -13,12 +13,6 @@ class GetAllDatasets(Query[Pagination[DatasetView]]):
 
 class GetDatasetByID(Query[DatasetView]):
     id: ID
-
-
-class SearchDatasets(Query[Pagination[DatasetSearchView]]):
-    q: str
-    page: Page = Page()
-    highlight: bool = False
 
 
 class GetDatasetFilters(Query[DatasetFiltersView]):

@@ -9,8 +9,8 @@ from server.domain.datasets.repositories import DatasetRepository
 from server.domain.tags.repositories import TagRepository
 
 from .commands import CreateDataset, DeleteDataset, UpdateDataset
-from .queries import GetAllDatasets, GetDatasetByID, GetDatasetFilters, SearchDatasets
-from .views import DatasetFiltersView, DatasetSearchView, DatasetView
+from .queries import GetAllDatasets, GetDatasetByID, GetDatasetFilters
+from .views import DatasetFiltersView, DatasetView
 
 
 async def create_dataset(command: CreateDataset, *, id_: ID = None) -> ID:
@@ -70,7 +70,7 @@ async def get_all_datasets(query: GetAllDatasets) -> Pagination[DatasetView]:
 
     datasets, count = await repository.get_all(page=query.page, spec=query.spec)
 
-    views = [DatasetView(**dataset.dict()) for dataset in datasets]
+    views = [DatasetView(**dataset.dict(), **extras) for dataset, extras in datasets]
 
     return Pagination(items=views, total_items=count, page_size=query.page.size)
 
@@ -85,23 +85,3 @@ async def get_dataset_by_id(query: GetDatasetByID) -> DatasetView:
         raise DatasetDoesNotExist(id)
 
     return DatasetView(**dataset.dict())
-
-
-async def search_datasets(query: SearchDatasets) -> Pagination[DatasetSearchView]:
-    repository = resolve(DatasetRepository)
-
-    items, count = await repository.search(
-        q=query.q,
-        highlight=query.highlight,
-        page=query.page,
-    )
-
-    views = [
-        DatasetSearchView(
-            **dataset.dict(),
-            headlines=headlines,
-        )
-        for dataset, headlines in items
-    ]
-
-    return Pagination(items=views, total_items=count, page_size=query.page.size)

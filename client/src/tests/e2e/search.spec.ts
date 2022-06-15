@@ -21,7 +21,6 @@ test.describe("Search", () => {
     expect(request.method()).toBe("GET");
     const searchParams = new URLSearchParams(request.url());
     expect(searchParams.get("q")).toBe("title");
-    expect(searchParams.get("highlight")).toBe("true");
     expect(response.status()).toBe(200);
     const { items } = await response.json();
     expect(items.length).toBeGreaterThanOrEqual(1);
@@ -61,7 +60,6 @@ test.describe("Search", () => {
     expect(request.method()).toBe("GET");
     const searchParams = new URLSearchParams(request.url());
     expect(searchParams.get("q")).toBe("title");
-    expect(searchParams.get("highlight")).toBe("true");
     expect(response.status()).toBe(200);
     let { items } = await response.json();
     expect(items.length).toBeGreaterThanOrEqual(1);

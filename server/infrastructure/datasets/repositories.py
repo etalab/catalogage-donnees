@@ -1,17 +1,13 @@
 from typing import List, Optional, Tuple
 
-from sqlalchemy import desc, func, select, text
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from server.domain.common.pagination import Page
 from server.domain.common.types import ID
 from server.domain.datasets.entities import DataFormat, Dataset
-from server.domain.datasets.repositories import (
-    DatasetHeadlines,
-    DatasetRepository,
-    SearchResult,
-)
+from server.domain.datasets.repositories import DatasetGetAllExtras, DatasetRepository
 from server.domain.datasets.specifications import DatasetSpec
 from server.domain.tags.entities import Tag
 
@@ -20,6 +16,7 @@ from ..database import Database
 from ..helpers.sqlalchemy import get_count_from, to_limit_offset
 from ..tags.repositories import TagModel
 from .models import DataFormatModel, DatasetModel
+from .queries.get_all import GetAllQuery
 from .transformers import make_entity, make_instance, update_instance
 
 
@@ -32,118 +29,18 @@ class SqlDatasetRepository(DatasetRepository):
         *,
         page: Page = Page(),
         spec: DatasetSpec = DatasetSpec(),
-    ) -> Tuple[List[Dataset], int]:
+    ) -> Tuple[List[Tuple[Dataset, DatasetGetAllExtras]], int]:
         limit, offset = to_limit_offset(page)
 
         async with self._db.session() as session:
-            stmt = (
-                select(DatasetModel)
-                .options(
-                    selectinload(DatasetModel.formats),
-                    selectinload(DatasetModel.tags),
-                )
-                .join(DatasetModel.catalog_record)
-            )
-
-            if spec.geographical_coverage__in is not None:
-                stmt = stmt.where(
-                    DatasetModel.geographical_coverage.in_(
-                        spec.geographical_coverage__in
-                    )
-                )
-
-            stmt = stmt.order_by(CatalogRecordModel.created_at.desc())
-
+            query = GetAllQuery(spec)
+            stmt = query.statement
             count = await get_count_from(stmt, session)
-            result = await session.execute(stmt.limit(limit).offset(offset))
-            instances = result.scalars().all()
-            items = [make_entity(instance) for instance in instances]
-            return items, count
-
-    async def search(
-        self,
-        q: str,
-        highlight: bool = False,
-        page: Page = Page(),
-    ) -> Tuple[List[SearchResult], int]:
-        limit, offset = to_limit_offset(page)
-
-        async with self._db.session() as session:
-            query_col = func.plainto_tsquery(text("'french'"), q)
-
-            # 0 = (the default) ignores the document length
-            # This is defined for the sake of being explicit:
-            # * No need to normalize the `rank` value as we don't need it.
-            # * Some normalization options allow penalizing longer documents, but this
-            #   is irrelevant for our use cases (users may enter titles or descriptions
-            #   as long as is necessary).
-            # https://www.postgresql.org/docs/12/textsearch-controls.html#TEXTSEARCH-RANKING
-            rank_normalization = 0
-
-            rank_col = func.ts_rank_cd(
-                DatasetModel.search_tsv, query_col, rank_normalization
-            )
-
-            title_headline_col = func.ts_headline(
-                text("'french'"),
-                DatasetModel.title,
-                query_col,
-                text("'StartSel=<mark>, StopSel=</mark>, HighlightAll=1'"),
-            )
-
-            description_headline_col = func.ts_headline(
-                text("'french'"),
-                DatasetModel.description,
-                query_col,
-                text("'StartSel=<mark>, StopSel=</mark>, MaxFragments=10'"),
-            )
-
-            headline_cols = (
-                (title_headline_col, description_headline_col) if highlight else ()
-            )
-
-            stmt = (
-                select(
-                    DatasetModel,
-                    rank_col.label("rank"),
-                    *headline_cols,
-                )
-                .options(
-                    selectinload(DatasetModel.formats),
-                    selectinload(DatasetModel.tags),
-                )
-                .where(
-                    # NOTE: SQLAlchemy has `.match(...)` that uses `to_tsquery()`.
-                    # But we use this `.op()` advanced syntax because we need
-                    # `plainto_tsquery()` to perform pre-processing and sanitization of
-                    # the `q` user input for us (e.g. 'The Fat Rat' -> 'fat & rat').
-                    # See:
-                    # https://www.postgresql.org/docs/current/textsearch-controls.html
-                    # https://docs.sqlalchemy.org/en/14/dialects/postgresql.html#full-text-search
-                    DatasetModel.search_tsv.op("@@")(query_col)
-                )
-                .order_by(desc(text("rank")))
-            )
-
-            count = await get_count_from(stmt, session)
-
-            result = await session.execute(stmt.limit(limit).offset(offset))
-
-            def _make_headlines(values: list) -> DatasetHeadlines:
-                htitle, hdescription = values
-                return {
-                    "title": htitle,
-                    "description": hdescription if "<mark>" in hdescription else None,
-                }
-
-            items: List[SearchResult] = [
-                (
-                    make_entity(instance),
-                    _make_headlines(headline_values) if headline_values else None,
-                )
-                for instance, _, *headline_values in result
+            result = await session.stream(stmt.limit(limit).offset(offset))
+            items = [
+                (make_entity(query.instance(row)), query.extras(row))
+                async for row in result
             ]
-
             return items, count
 
     async def _maybe_get_by_id(
