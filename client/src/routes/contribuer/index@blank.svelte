@@ -27,8 +27,9 @@
   import { Maybe } from "$lib/util/maybe";
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
   import type { Tag } from "src/definitions/tag";
+  import ModalExitFormConfirmation from "src/lib/components/ModalExitFormConfirmation/ModalExitFormConfirmation.svelte";
 
-  let modalTriggerId = "confirm-stop-contributing-modal";
+  let modalControlId = "confirm-stop-contributing-modal";
 
   let loading = false;
 
@@ -53,25 +54,41 @@
       loading = false;
     }
   };
+
+  const handleExitForm = () => {
+    history.go(-1);
+  };
 </script>
 
 <header class="fr-p-4w">
   <h5>Créer une fiche de jeu de données</h5>
-  <button
-    class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
-    data-fr-opened="false"
-    aria-controls={formHasBeenTouched ? modalTriggerId : undefined}
-    on:click={() => {
-      if (!formHasBeenTouched) {
-        window.history.back();
-      }
-    }}
-  >
-    {""}
-  </button>
+
+  {#if formHasBeenTouched}
+    <button
+      class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
+      data-fr-opened="false"
+      data-testid="exit-edit-form"
+      aria-controls={modalControlId}
+    >
+      {""}
+    </button>
+  {:else}
+    <button
+      data-testid="exit-edit-form"
+      class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
+      on:click={handleExitForm}
+    >
+      {""}
+    </button>
+  {/if}
 </header>
 
 {#if Maybe.Some(tags)}
+  <ModalExitFormConfirmation
+    on:confirm={handleExitForm}
+    controlId={modalControlId}
+  />
+
   <DatasetFormLayout>
     <DatasetForm
       {tags}

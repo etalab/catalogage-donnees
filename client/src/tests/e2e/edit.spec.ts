@@ -106,6 +106,7 @@ test.describe("confirm before exit", () => {
     page,
     dataset,
   }) => {
+    await page.goto(`/`);
     await page.goto(`/fiches/${dataset.id}/edit`);
     const title = page.locator("form [name=title]");
 
@@ -122,16 +123,12 @@ test.describe("confirm before exit", () => {
 
     // send changes to the api
 
-    const button = await page.locator("text=Sauvegarder et quitter");
-    const [response] = await Promise.all([
-      page.waitForResponse(`**/datasets/${dataset.id}/`),
-      button.click(),
-    ]);
+    const button = await page.locator("text=Quitter sans sauvegarder");
 
-    // check if the changes were saved
+    button.click();
 
-    const json = await response.json();
-    expect(json.title).toBe(newTitleText);
+    // check if the user has been redirected to the home page
+    await page.waitForURL("/");
   });
 
   test("Should NOT display a modal after clicking the exit button if NO changes has been made and should go to previous page ", async ({

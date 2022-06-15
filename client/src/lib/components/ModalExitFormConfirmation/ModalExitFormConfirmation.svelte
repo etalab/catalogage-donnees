@@ -5,7 +5,7 @@
 
   export let controlId: string;
 
-  const dispatch = createEventDispatcher<{ save: void; cancel: void }>();
+  const dispatch = createEventDispatcher<{ confirm: void }>();
 </script>
 
 <Modal {controlId}>
@@ -15,11 +15,12 @@
         class="fr-icon-error-warning-fill fr-fi--md fr-text-default--error"
         aria-hidden="true"
       />
-      Vos modifications n’ont pas eté sauvegardées
+      Êtes-vous sûr de vouloir quitter ?
     </h1>
     <p>
-      Si vous quittez l’édition de cette fiche vos modifications ne seront pas
-      sauvegardées. Est-ce vraiment ce que vous souhaitez ?
+      Il semblerait que vous ayez effectué des modifications non sauvegardées
+      sur cette fiche de données. souhaitez-vous vraiment quitter ce formulaire
+      et perdre votre saisie ?
     </p>
   </div>
 
@@ -28,17 +29,8 @@
       class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left"
     >
       <li>
-        <button on:click={() => dispatch("save")} class="fr-btn">
-          Sauvegarder et quitter
-        </button>
-      </li>
-      <li>
-        <button
-          on:click={() => dispatch("cancel")}
-          aria-controls={controlId}
-          class="fr-btn fr-btn--secondary"
-        >
-          Ne pas sauvegarder
+        <button on:click={() => dispatch("confirm")} class="fr-btn">
+          Quitter sans sauvegarder
         </button>
       </li>
     </ul>

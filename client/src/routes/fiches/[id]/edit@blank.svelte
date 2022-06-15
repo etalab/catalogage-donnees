@@ -35,13 +35,10 @@
   import { deleteDataset } from "$lib/repositories/datasets";
   import { Maybe } from "$lib/util/maybe";
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
-  import type { SvelteComponent } from "svelte";
   import ModalExitFormConfirmation from "src/lib/components/ModalExitFormConfirmation/ModalExitFormConfirmation.svelte";
 
   export let dataset: Maybe<Dataset>;
   export let tags: Maybe<Tag[]>;
-
-  let form: SvelteComponent;
 
   let modalControlId = "stop-editing-form-modal";
 
@@ -93,10 +90,6 @@
     await goto(paths.home);
   };
 
-  const handleSaveAfterConfirmation = () => {
-    form.submitForm();
-  };
-
   const handleExitForm = () => {
     history.go(-1);
   };
@@ -127,14 +120,12 @@
   </header>
 
   <ModalExitFormConfirmation
-    on:cancel={handleExitForm}
-    on:save={handleSaveAfterConfirmation}
+    on:confirm={handleExitForm}
     controlId={modalControlId}
   />
 
   <DatasetFormLayout>
     <DatasetForm
-      bind:this={form}
       {tags}
       initial={dataset}
       {loading}

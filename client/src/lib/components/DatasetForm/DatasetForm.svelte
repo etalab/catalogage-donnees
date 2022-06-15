@@ -314,7 +314,7 @@
       label="Couverture géographique"
       placeholder="Sélectionnez une couverture géographique..."
       value={$form.geographicalCoverage}
-      on:input={(event) =>
+      on:change={(event) =>
         handleSelectChange(
           "geographicalCoverage",
           event,
@@ -522,7 +522,7 @@
       placeholder="Sélectionner une option"
       label="Fréquence de mise à jour"
       value={$form.updateFrequency}
-      on:input={(event) =>
+      on:change={(event) =>
         handleSelectChange(
           "updateFrequency",
           event,
