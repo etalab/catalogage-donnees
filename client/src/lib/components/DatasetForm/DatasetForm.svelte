@@ -183,6 +183,7 @@
     const { checked } = event.target as HTMLInputElement;
     dataFormatsValue[index] = checked;
     updateValidateField("dataFormats", dataFormatsValue);
+    dispatch("touched");
   };
 
   const handleLastUpdatedAtChange = async (
@@ -191,13 +192,15 @@
     if (!event.currentTarget.value /* Empty date */) {
       // Needs manual handling, otherwise yup would call e.g. new Date("") which is invalid.
       updateValidateField("lastUpdatedAt", null);
+      dispatch("touched");
     } else {
-      await handleChange(event);
+      await handleFieldChange(event);
     }
   };
 
   const handleTagsChange = async (event: CustomEvent<Tag[]>) => {
     updateValidateField("tags", event.detail);
+    dispatch("touched");
   };
 </script>
 
@@ -363,7 +366,7 @@
               {value}
               required={dataFormatsValue.every((checked) => !checked)}
               checked={dataFormatsValue[index]}
-              on:input={(event) => handleDataformatChange(event, index)}
+              on:change={(event) => handleDataformatChange(event, index)}
             />
             <label for={id}>
               {label}
@@ -467,8 +470,8 @@
     <ContactEmailsField
       bind:errors={emailErrors}
       bind:contactEmails={$form.contactEmails}
-      on:blur={handleChange}
-      on:input={handleChange}
+      on:blur={handleFieldChange}
+      on:input={handleFieldChange}
     />
   </div>
 
@@ -561,7 +564,7 @@
         type="text"
         id="publishedUrl"
         name="publishedUrl"
-        on:input={handleChange}
+        on:input={handleFieldChange}
         bind:value={$form.publishedUrl}
       />
 
