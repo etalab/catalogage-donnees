@@ -29,6 +29,10 @@
       class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left"
     >
       <li>
+        <button aria-controls={controlId} class="fr-btn fr-btn--secondary">
+          Revenir au formulaire
+        </button>
+
         <button on:click={() => dispatch("confirm")} class="fr-btn">
           Quitter sans sauvegarder
         </button>
