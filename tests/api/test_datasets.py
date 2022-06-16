@@ -295,10 +295,16 @@ async def test_dataset_get_all_uses_reverse_chronological_order(
 
 @pytest.mark.asyncio
 async def test_dataset_filters(client: httpx.AsyncClient, temp_user: TestUser) -> None:
+    bus = resolve(MessageBus)
+
+    tag_id = await bus.execute(CreateTag(name="example"))
+
     response = await client.get("/datasets/filters/", auth=temp_user.auth)
     assert response.status_code == 200
 
     data = response.json()
+
+    assert set(data) == {"geographical_coverage", "tag_id"}
 
     assert sorted(data["geographical_coverage"]) == [
         "department",
@@ -310,6 +316,8 @@ async def test_dataset_filters(client: httpx.AsyncClient, temp_user: TestUser) -
         "region",
         "world",
     ]
+
+    assert data["tag_id"] == [str(tag_id)]
 
 
 @pytest.mark.asyncio
@@ -355,13 +363,13 @@ async def test_dataset_filters_tags(
         CREATE_ANY_DATASET.copy(update={"tag_ids": [architecture_id]})
     )
 
-    params = {"tag_ids": [str(id_factory())]}
+    params = {"tag_id": [str(id_factory())]}
     response = await client.get("/datasets/", params=params, auth=temp_user.auth)
     assert response.status_code == 200
     data = response.json()
     assert len(data["items"]) == 0
 
-    params = {"tag_ids": [str(architecture_id)]}
+    params = {"tag_id": [str(architecture_id)]}
     response = await client.get("/datasets/", params=params, auth=temp_user.auth)
     assert response.status_code == 200
     data = response.json()
