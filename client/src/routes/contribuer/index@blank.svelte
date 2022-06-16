@@ -67,14 +67,14 @@
     <button
       class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
       data-fr-opened="false"
-      data-testid="exit-edit-form"
+      data-testid="exit-contribution-form"
       aria-controls={modalControlId}
     >
       {""}
     </button>
   {:else}
     <button
-      data-testid="exit-edit-form"
+      data-testid="exit-contribution-form"
       class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
       on:click={handleExitForm}
     >
