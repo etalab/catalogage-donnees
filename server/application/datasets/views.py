@@ -37,3 +37,4 @@ class DatasetView(BaseModel):
 
 class DatasetFiltersView(BaseModel):
     geographical_coverage: List[GeographicalCoverage]
+    tag_id: List[ID]
