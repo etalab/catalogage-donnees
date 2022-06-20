@@ -33,6 +33,7 @@
   import Pagination from "$lib/components/Pagination/Pagination.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import paths from "$lib/paths";
+  import SearchableSelect from "src/lib/components/SearchableSelect/SearchableSelect.svelte";
 
   export let paginatedDatasets: Maybe<Paginated<Dataset>>;
   export let currentPage: number;
@@ -72,6 +73,26 @@
         <h2 class="fr-mb-3w">
           {paginatedDatasets.totalItems} jeux de donnnées contribués
         </h2>
+
+        <SearchableSelect
+          inputPlaceholder="Rechercher"
+          buttonPlaceholder="tata"
+          on:clickItem={() => {}}
+          options={[
+            {
+              label: "foo",
+              value: "foo",
+            },
+            {
+              label: "hello",
+              value: "hello",
+            },
+            {
+              label: "hello2",
+              value: "hello2",
+            },
+          ]}
+        />
         <DatasetList datasets={paginatedDatasets.items} />
         <div class="pagination-container fr-mt-2w ">
           <Pagination
