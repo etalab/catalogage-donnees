@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy import desc, func, select, text
 from sqlalchemy.engine import Row
-from sqlalchemy.orm import contains_eager, selectinload
+from sqlalchemy.orm import contains_eager
 from sqlalchemy.sql import ColumnElement
 
 from server.domain.datasets.repositories import DatasetGetAllExtras
@@ -10,7 +10,7 @@ from server.domain.datasets.specifications import DatasetSpec
 from server.infrastructure.catalog_records.repositories import CatalogRecordModel
 from server.infrastructure.tags.repositories import TagModel
 
-from ..models import DatasetModel
+from ..models import DataFormatModel, DatasetModel
 
 _TS_HEADLINE_TITLE_COL = "ts_headline_title"
 _TS_HEADLINE_DESCRIPTION_COL = "ts_headline_description"
@@ -21,11 +21,6 @@ class GetAllQuery:
         columns: List[ColumnElement] = []
         whereclauses = []
         orderbyclauses = []
-
-        if (values := spec.geographical_coverage__in) is not None:
-            whereclauses.append(
-                DatasetModel.geographical_coverage.in_(values),
-            )
 
         if (search_term := spec.search_term) is not None:
             # Search using a PostgreSQL text search vector (TSV).
@@ -66,16 +61,31 @@ class GetAllQuery:
             # Sort rows by search rank, best match first.
             orderbyclauses.append(desc(text("rank")))
 
+        if (geographical_coverages := spec.geographical_coverage__in) is not None:
+            whereclauses.append(
+                DatasetModel.geographical_coverage.in_(geographical_coverages),
+            )
+
+        if (services := spec.service__in) is not None:
+            whereclauses.append(DatasetModel.service.in_(services))
+
+        if (formats := spec.format__in) is not None:
+            whereclauses.append(DataFormatModel.name.in_(formats))
+
+        if (technical_sources := spec.technical_source__in) is not None:
+            whereclauses.append(DatasetModel.technical_source.in_(technical_sources))
+
         if (tag_ids := spec.tag__id__in) is not None:
             whereclauses.append(TagModel.id.in_(tag_ids))
 
         self.statement = (
             select(DatasetModel, *columns)
             .join(DatasetModel.catalog_record)
-            .outerjoin(DatasetModel.tags)
+            .join(DatasetModel.formats, isouter=True)
+            .join(DatasetModel.tags, isouter=True)
             .options(
-                selectinload(DatasetModel.formats),
                 contains_eager(DatasetModel.catalog_record),
+                contains_eager(DatasetModel.formats),
                 contains_eager(DatasetModel.tags),
             )
             .where(*whereclauses)

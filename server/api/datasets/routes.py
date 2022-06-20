@@ -9,12 +9,8 @@ from server.application.datasets.commands import (
     DeleteDataset,
     UpdateDataset,
 )
-from server.application.datasets.queries import (
-    GetAllDatasets,
-    GetDatasetByID,
-    GetDatasetFilters,
-)
-from server.application.datasets.views import DatasetFiltersView, DatasetView
+from server.application.datasets.queries import GetAllDatasets, GetDatasetByID
+from server.application.datasets.views import DatasetView
 from server.config.di import resolve
 from server.domain.auth.entities import UserRole
 from server.domain.common.pagination import Page, Pagination
@@ -24,19 +20,12 @@ from server.domain.datasets.specifications import DatasetSpec
 from server.seedwork.application.messages import MessageBus
 
 from ..auth.dependencies import HasRole, IsAuthenticated
+from . import filters
 from .schemas import DatasetCreate, DatasetListParams, DatasetUpdate
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
-
-@router.get(
-    "/filters/",
-    dependencies=[Depends(IsAuthenticated())],
-    response_model=DatasetFiltersView,
-)
-async def get_dataset_filters() -> DatasetFiltersView:
-    bus = resolve(MessageBus)
-    return await bus.execute(GetDatasetFilters())
+router.include_router(filters.router)
 
 
 @router.get(
@@ -56,6 +45,9 @@ async def list_datasets(
         spec=DatasetSpec(
             search_term=params.q,
             geographical_coverage__in=params.geographical_coverage,
+            service__in=params.service,
+            format__in=params.format,
+            technical_source__in=params.technical_source,
             tag__id__in=params.tag_id,
         ),
     )
