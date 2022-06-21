@@ -1,3 +1,4 @@
+from server.application.tags.queries import GetAllTags
 from server.config.di import resolve
 from server.domain.catalog_records.entities import CatalogRecord
 from server.domain.catalog_records.repositories import CatalogRecordRepository
@@ -7,6 +8,7 @@ from server.domain.datasets.entities import Dataset, GeographicalCoverage
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.domain.datasets.repositories import DatasetRepository
 from server.domain.tags.repositories import TagRepository
+from server.seedwork.application.messages import MessageBus
 
 from .commands import CreateDataset, DeleteDataset, UpdateDataset
 from .queries import GetAllDatasets, GetDatasetByID, GetDatasetFilters
@@ -60,8 +62,13 @@ async def delete_dataset(command: DeleteDataset) -> None:
 
 
 async def get_dataset_filters(query: GetDatasetFilters) -> DatasetFiltersView:
+    bus = resolve(MessageBus)
+
+    tags = await bus.execute(GetAllTags())
+
     return DatasetFiltersView(
         geographical_coverage=list(GeographicalCoverage),
+        tag_id=[tag.id for tag in tags],
     )
 
 

@@ -3,12 +3,10 @@ from typing import Any, List
 import httpx
 import pytest
 
-from server.application.datasets.commands import CreateDataset
 from server.application.datasets.queries import GetDatasetByID
 from server.application.tags.commands import CreateTag
 from server.application.tags.queries import GetTagByID
 from server.config.di import resolve
-from server.domain.common import datetime as dtutil
 from server.domain.common.types import id_factory
 from server.domain.datasets.entities import (
     DataFormat,
@@ -17,8 +15,10 @@ from server.domain.datasets.entities import (
 )
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
+from tests.factories import CreateDatasetFactory
 
-from ..helpers import TestUser
+from ..factories import UpdateDatasetFactory, fake
+from ..helpers import TestUser, to_payload
 
 
 @pytest.mark.asyncio
@@ -93,40 +93,29 @@ async def test_create_dataset_invalid(
         assert error_attrs == expected_error_attrs
 
 
-known_date = dtutil.parse("2022-01-04T10:15:19.121212+00:00")
-
-CREATE_DATASET_PAYLOAD = {
-    "title": "Example title",
-    "description": "Example description",
-    "service": "Example service",
-    "geographical_coverage": "national",
-    "formats": ["website"],
-    "technical_source": "Example database",
-    "producer_email": "example.service@mydomain.org",
-    "contact_emails": ["example.person@mydomain.org"],
-    "update_frequency": "weekly",
-    "last_updated_at": known_date.isoformat(),
-    "published_url": None,
-    "tag_ids": [],
-}
-
-CREATE_ANY_DATASET = CreateDataset(
-    title="Title",
-    description="Description",
-    service="Example service",
-    geographical_coverage=GeographicalCoverage.NATIONAL,
-    formats=[DataFormat.WEBSITE, DataFormat.API],
-    contact_emails=["person@mydomain.org"],
-)
-
-
 @pytest.mark.asyncio
 async def test_dataset_crud(
     client: httpx.AsyncClient, temp_user: TestUser, admin_user: TestUser
 ) -> None:
-    response = await client.post(
-        "/datasets/", json=CREATE_DATASET_PAYLOAD, auth=temp_user.auth
+    last_updated_at = fake.date_time_tz()
+
+    payload = to_payload(
+        CreateDatasetFactory.build(
+            title="Example title",
+            description="Example description",
+            service="Example service",
+            geographical_coverage=GeographicalCoverage.NATIONAL,
+            formats=[DataFormat.WEBSITE],
+            technical_source="Example database",
+            producer_email="example.service@mydomain.org",
+            contact_emails=["example.person@mydomain.org"],
+            update_frequency=UpdateFrequency.WEEKLY,
+            last_updated_at=last_updated_at,
+            published_url=None,
+        )
     )
+
+    response = await client.post("/datasets/", json=payload, auth=temp_user.auth)
     assert response.status_code == 201
     data = response.json()
 
@@ -145,7 +134,7 @@ async def test_dataset_crud(
         "producer_email": "example.service@mydomain.org",
         "contact_emails": ["example.person@mydomain.org"],
         "update_frequency": "weekly",
-        "last_updated_at": known_date.isoformat(),
+        "last_updated_at": last_updated_at.isoformat(),
         "published_url": None,
         "tags": [],
         "headlines": None,
@@ -178,7 +167,10 @@ async def test_dataset_crud(
 @pytest.mark.asyncio
 class TestDatasetPermissions:
     async def test_create_not_authenticated(self, client: httpx.AsyncClient) -> None:
-        response = await client.post("/datasets/", json=CREATE_DATASET_PAYLOAD)
+        response = await client.post(
+            "/datasets/",
+            json=to_payload(CreateDatasetFactory.build()),
+        )
         assert response.status_code == 401
 
     async def test_get_not_authenticated(self, client: httpx.AsyncClient) -> None:
@@ -212,7 +204,7 @@ async def add_dataset_pagination_corpus(n: int) -> None:
     bus = resolve(MessageBus)
 
     for k in range(1, n + 1):
-        await bus.execute(CREATE_ANY_DATASET.copy(update={"title": f"Dataset {k}"}))
+        await bus.execute(CreateDatasetFactory.build(title=f"Dataset {k}"))
 
 
 @pytest.mark.asyncio
@@ -283,9 +275,9 @@ async def test_dataset_get_all_uses_reverse_chronological_order(
     client: httpx.AsyncClient, temp_user: TestUser
 ) -> None:
     bus = resolve(MessageBus)
-    await bus.execute(CREATE_ANY_DATASET.copy(update={"title": "Oldest"}))
-    await bus.execute(CREATE_ANY_DATASET.copy(update={"title": "Intermediate"}))
-    await bus.execute(CREATE_ANY_DATASET.copy(update={"title": "Newest"}))
+    await bus.execute(CreateDatasetFactory.build(title="Oldest"))
+    await bus.execute(CreateDatasetFactory.build(title="Intermediate"))
+    await bus.execute(CreateDatasetFactory.build(title="Newest"))
 
     response = await client.get("/datasets/", auth=temp_user.auth)
     assert response.status_code == 200
@@ -295,10 +287,16 @@ async def test_dataset_get_all_uses_reverse_chronological_order(
 
 @pytest.mark.asyncio
 async def test_dataset_filters(client: httpx.AsyncClient, temp_user: TestUser) -> None:
+    bus = resolve(MessageBus)
+
+    tag_id = await bus.execute(CreateTag(name="example"))
+
     response = await client.get("/datasets/filters/", auth=temp_user.auth)
     assert response.status_code == 200
 
     data = response.json()
+
+    assert set(data) == {"geographical_coverage", "tag_id"}
 
     assert sorted(data["geographical_coverage"]) == [
         "department",
@@ -311,6 +309,8 @@ async def test_dataset_filters(client: httpx.AsyncClient, temp_user: TestUser) -
         "world",
     ]
 
+    assert data["tag_id"] == [str(tag_id)]
+
 
 @pytest.mark.asyncio
 async def test_dataset_filters_geographical_coverage(
@@ -318,10 +318,8 @@ async def test_dataset_filters_geographical_coverage(
 ) -> None:
     bus = resolve(MessageBus)
 
-    pk = await bus.execute(
-        CREATE_ANY_DATASET.copy(
-            update={"geographical_coverage": GeographicalCoverage.NATIONAL}
-        )
+    dataset_id = await bus.execute(
+        CreateDatasetFactory.build(geographical_coverage=GeographicalCoverage.NATIONAL)
     )
 
     params = {"geographical_coverage": [GeographicalCoverage.REGION.value]}
@@ -340,7 +338,33 @@ async def test_dataset_filters_geographical_coverage(
     assert response.status_code == 200
     data = response.json()
     assert len(data["items"]) == 1
-    assert data["items"][0]["id"] == str(pk)
+    assert data["items"][0]["id"] == str(dataset_id)
+
+
+@pytest.mark.asyncio
+async def test_dataset_filters_tags(
+    client: httpx.AsyncClient, temp_user: TestUser
+) -> None:
+    bus = resolve(MessageBus)
+
+    architecture_id = await bus.execute(CreateTag(name="Architecture"))
+
+    dataset_id = await bus.execute(
+        CreateDatasetFactory.build(tag_ids=[architecture_id])
+    )
+
+    params = {"tag_id": [str(id_factory())]}
+    response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["items"]) == 0
+
+    params = {"tag_id": [str(architecture_id)]}
+    response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["items"]) == 1
+    assert data["items"][0]["id"] == str(dataset_id)
 
 
 @pytest.mark.asyncio
@@ -357,7 +381,7 @@ class TestDatasetOptionalFields:
     async def test_optional_fields_missing_uses_defaults(
         self, client: httpx.AsyncClient, temp_user: TestUser, field: str, default: Any
     ) -> None:
-        payload = CREATE_DATASET_PAYLOAD.copy()
+        payload = to_payload(CreateDatasetFactory.build())
         payload.pop(field)
         response = await client.post("/datasets/", json=payload, auth=temp_user.auth)
         assert response.status_code == 201
@@ -370,7 +394,7 @@ class TestDatasetOptionalFields:
         response = await client.post(
             "/datasets/",
             json={
-                **CREATE_DATASET_PAYLOAD,
+                **to_payload(CreateDatasetFactory.build()),
                 "geographical_coverage": "not_in_enum",
                 "contact_emails": ["notanemail", "valid@mydomain.org"],
                 "update_frequency": "not_in_enum",
@@ -400,9 +424,10 @@ class TestDatasetUpdate:
     async def test_not_found(
         self, client: httpx.AsyncClient, temp_user: TestUser
     ) -> None:
+        pk = id_factory()
         response = await client.put(
-            f"/datasets/{id_factory()}/",
-            json=CREATE_DATASET_PAYLOAD,
+            f"/datasets/{pk}/",
+            json=to_payload(UpdateDatasetFactory.build(id=pk)),
             auth=temp_user.auth,
         )
         assert response.status_code == 404
@@ -411,7 +436,7 @@ class TestDatasetUpdate:
         self, client: httpx.AsyncClient, temp_user: TestUser
     ) -> None:
         bus = resolve(MessageBus)
-        dataset_id = await bus.execute(CREATE_ANY_DATASET)
+        dataset_id = await bus.execute(CreateDatasetFactory.build())
 
         # Apply PUT semantics, which expect a full entity.
         response = await client.put(
@@ -442,24 +467,26 @@ class TestDatasetUpdate:
         self, client: httpx.AsyncClient, temp_user: TestUser
     ) -> None:
         bus = resolve(MessageBus)
-        dataset_id = await bus.execute(CREATE_ANY_DATASET)
+
+        last_updated_at = fake.date_time_tz()
+        command = CreateDatasetFactory.build(last_updated_at=last_updated_at)
+
+        dataset_id = await bus.execute(command)
 
         response = await client.put(
             f"/datasets/{dataset_id}/",
-            json={
-                "title": "",
-                "description": "",
-                "service": "",
-                "formats": ["website", "api"],
-                "geographical_coverage": "national",
-                "producer_email": None,
-                "technical_source": "",
-                "contact_emails": ["person@mydomain.org"],
-                "update_frequency": "weekly",
-                "last_updated_at": known_date.isoformat(),
-                "published_url": "",
-                "tag_ids": [],
-            },
+            json=to_payload(
+                UpdateDatasetFactory.build(
+                    factory_use_construct=True,  # Skip validation
+                    title="",
+                    description="",
+                    service="",
+                    published_url="",
+                    **command.dict(
+                        exclude={"title", "description", "service", "published_url"}
+                    ),
+                )
+            ),
             auth=temp_user.auth,
         )
         assert response.status_code == 422
@@ -485,9 +512,9 @@ class TestDatasetUpdate:
 
     async def test_update(self, client: httpx.AsyncClient, temp_user: TestUser) -> None:
         bus = resolve(MessageBus)
-        dataset_id = await bus.execute(CREATE_ANY_DATASET)
+        dataset_id = await bus.execute(CreateDatasetFactory.build())
 
-        other_known_date = dtutil.parse("2022-02-04T10:15:19.121212+00:00")
+        other_last_updated_at = fake.date_time_tz()
 
         response = await client.put(
             f"/datasets/{dataset_id}/",
@@ -501,7 +528,7 @@ class TestDatasetUpdate:
                 "producer_email": "other.service@mydomain.org",
                 "contact_emails": ["other.person@mydomain.org"],
                 "update_frequency": "weekly",
-                "last_updated_at": other_known_date.isoformat(),
+                "last_updated_at": other_last_updated_at.isoformat(),
                 "published_url": "https://data.gouv.fr/datasets/other",
                 "tag_ids": [],
             },
@@ -523,7 +550,7 @@ class TestDatasetUpdate:
             "producer_email": "other.service@mydomain.org",
             "contact_emails": ["other.person@mydomain.org"],
             "update_frequency": "weekly",
-            "last_updated_at": other_known_date.isoformat(),
+            "last_updated_at": other_last_updated_at.isoformat(),
             "published_url": "https://data.gouv.fr/datasets/other",
             "tags": [],
             "headlines": None,
@@ -541,7 +568,7 @@ class TestDatasetUpdate:
         assert dataset.producer_email == "other.service@mydomain.org"
         assert dataset.contact_emails == ["other.person@mydomain.org"]
         assert dataset.update_frequency == UpdateFrequency.WEEKLY
-        assert dataset.last_updated_at == other_known_date
+        assert dataset.last_updated_at == other_last_updated_at
         assert dataset.published_url == "https://data.gouv.fr/datasets/other"
 
 
@@ -551,15 +578,19 @@ class TestFormats:
         self, client: httpx.AsyncClient, temp_user: TestUser
     ) -> None:
         bus = resolve(MessageBus)
-        dataset_id = await bus.execute(CREATE_ANY_DATASET)
+        command = CreateDatasetFactory.build(
+            formats=[DataFormat.WEBSITE, DataFormat.API]
+        )
+        dataset_id = await bus.execute(command)
 
         response = await client.put(
             f"/datasets/{dataset_id}/",
-            json={
-                **CREATE_ANY_DATASET.dict(),
-                "geographical_coverage": CREATE_ANY_DATASET.geographical_coverage.value,
-                "formats": ["website", "api", "file_gis"],
-            },
+            json=to_payload(
+                UpdateDatasetFactory.build(
+                    formats=[DataFormat.WEBSITE, DataFormat.API, DataFormat.FILE_GIS],
+                    **command.dict(exclude={"formats"}),
+                )
+            ),
             auth=temp_user.auth,
         )
 
@@ -570,15 +601,19 @@ class TestFormats:
         self, client: httpx.AsyncClient, temp_user: TestUser
     ) -> None:
         bus = resolve(MessageBus)
-        dataset_id = await bus.execute(CREATE_ANY_DATASET)
+        command = CreateDatasetFactory.build(
+            formats=[DataFormat.WEBSITE, DataFormat.API]
+        )
+        dataset_id = await bus.execute(command)
 
         response = await client.put(
             f"/datasets/{dataset_id}/",
-            json={
-                **CREATE_ANY_DATASET.dict(),
-                "geographical_coverage": CREATE_ANY_DATASET.geographical_coverage.value,
-                "formats": ["website"],
-            },
+            json=to_payload(
+                UpdateDatasetFactory.build(
+                    formats=[DataFormat.WEBSITE],
+                    **command.dict(exclude={"formats"}),
+                )
+            ),
             auth=temp_user.auth,
         )
 
@@ -593,18 +628,19 @@ class TestTags:
     ) -> None:
         bus = resolve(MessageBus)
 
-        dataset_id = await bus.execute(CREATE_ANY_DATASET)
+        command = CreateDatasetFactory.build()
+        dataset_id = await bus.execute(command)
         tag_architecture_id = await bus.execute(CreateTag(name="Architecture"))
         tag_architecture = await bus.execute(GetTagByID(id=tag_architecture_id))
 
         response = await client.put(
             f"/datasets/{dataset_id}/",
-            json={
-                **CREATE_ANY_DATASET.dict(),
-                "geographical_coverage": CREATE_ANY_DATASET.geographical_coverage.value,
-                "formats": [fmt.value for fmt in CREATE_ANY_DATASET.formats],
-                "tag_ids": [str(tag_architecture.id)],
-            },
+            json=to_payload(
+                UpdateDatasetFactory.build(
+                    tag_ids=[str(tag_architecture_id)],
+                    **command.dict(exclude={"tag_ids"}),
+                )
+            ),
             auth=temp_user.auth,
         )
         assert response.status_code == 200
@@ -621,19 +657,17 @@ class TestTags:
         bus = resolve(MessageBus)
 
         tag_architecture_id = await bus.execute(CreateTag(name="Architecture"))
-        tag_architecture = await bus.execute(GetTagByID(id=tag_architecture_id))
-        dataset_id = await bus.execute(
-            CREATE_ANY_DATASET.copy(update={"tag_ids": [str(tag_architecture.id)]})
-        )
+        command = CreateDatasetFactory.build(tag_ids=[str(tag_architecture_id)])
+        dataset_id = await bus.execute(command)
 
         response = await client.put(
             f"/datasets/{dataset_id}/",
-            json={
-                **CREATE_ANY_DATASET.dict(),
-                "geographical_coverage": CREATE_ANY_DATASET.geographical_coverage.value,
-                "formats": [fmt.value for fmt in CREATE_ANY_DATASET.formats],
-                "tag_ids": [],
-            },
+            json=to_payload(
+                UpdateDatasetFactory.build(
+                    tag_ids=[],
+                    **command.dict(exclude={"tag_ids"}),
+                )
+            ),
             auth=temp_user.auth,
         )
         assert response.status_code == 200
@@ -650,7 +684,7 @@ class TestDeleteDataset:
     ) -> None:
         bus = resolve(MessageBus)
 
-        dataset_id = await bus.execute(CREATE_ANY_DATASET)
+        dataset_id = await bus.execute(CreateDatasetFactory.build())
 
         response = await client.delete(f"/datasets/{dataset_id}/", auth=admin_user.auth)
         assert response.status_code == 204

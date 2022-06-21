@@ -19,11 +19,13 @@ class DatasetListParams:
         page_number: int = 1,
         page_size: int = 10,
         geographical_coverage: Optional[List[GeographicalCoverage]] = Query(None),
+        tag_id: Optional[List[ID]] = Query(None),
     ) -> None:
         self.q = q
         self.page_number = page_number
         self.page_size = page_size
         self.geographical_coverage = geographical_coverage
+        self.tag_id = tag_id
 
 
 class DatasetCreate(BaseModel):

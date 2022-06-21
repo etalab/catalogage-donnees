@@ -3,17 +3,12 @@ from typing import List, Optional, Tuple
 
 import httpx
 import pytest
-from pydantic import EmailStr
 
-from server.application.datasets.commands import (
-    CreateDataset,
-    DeleteDataset,
-    UpdateDataset,
-)
+from server.application.datasets.commands import DeleteDataset
 from server.application.datasets.queries import GetDatasetByID
 from server.config.di import resolve
-from server.domain.datasets.entities import DataFormat, GeographicalCoverage
 from server.seedwork.application.messages import MessageBus
+from tests.factories import CreateDatasetFactory, UpdateDatasetFactory
 
 from ..helpers import TestUser
 
@@ -31,14 +26,7 @@ async def add_corpus(items: List[Tuple[str, str]] = None) -> None:
     bus = resolve(MessageBus)
 
     for title, description in items:
-        command = CreateDataset(
-            title=title,
-            description=description,
-            service="Service",
-            geographical_coverage=GeographicalCoverage.NATIONAL,
-            formats=[DataFormat.FILE_TABULAR],
-            contact_emails=["person@mydomain.org"],
-        )
+        command = CreateDatasetFactory.build(title=title, description=description)
         pk = await bus.execute(command)
         query = GetDatasetByID(id=pk)
         await bus.execute(query)
@@ -174,14 +162,7 @@ async def test_search_results_change_when_data_changes(
     assert not data["items"]
 
     # Add new dataset
-    command = CreateDataset(
-        title="Titre",
-        description="Description",
-        service="Service",
-        geographical_coverage=GeographicalCoverage.DEPARTMENT,
-        formats=[DataFormat.OTHER],
-        contact_emails=[EmailStr("person@mydomain.org")],
-    )
+    command = CreateDatasetFactory.build(title="Titre")
     pk = await bus.execute(command)
     # New dataset is returned in search results
     response = await client.get(
@@ -194,22 +175,11 @@ async def test_search_results_change_when_data_changes(
     assert dataset["id"] == str(pk)
 
     # Update dataset title
-    command = UpdateDataset(
-        id=pk,
-        title="Modifié",
-        description="Description",
-        service="Service",
-        geographical_coverage=GeographicalCoverage.DEPARTMENT,
-        formats=[DataFormat.OTHER],
-        technical_source=None,
-        producer_email=None,
-        contact_emails=[EmailStr("person@mydomain.org")],
-        update_frequency=None,
-        last_updated_at=None,
-        published_url=None,
-        tag_ids=[],
+    update_command = UpdateDatasetFactory.build(
+        id=pk, title="Modifié", **command.dict(exclude={"title"})
     )
-    await bus.execute(command)
+
+    await bus.execute(update_command)
     # Updated dataset is returned in search results targeting updated data
     response = await client.get(
         "/datasets/",
@@ -221,20 +191,9 @@ async def test_search_results_change_when_data_changes(
     assert dataset["id"] == str(pk)
 
     # Same on description
-    command = UpdateDataset(
-        id=pk,
-        title="Modifié",
+    command = UpdateDatasetFactory.build(
         description="Jeu de données spécial",
-        service="Service",
-        geographical_coverage=GeographicalCoverage.DEPARTMENT,
-        formats=[DataFormat.OTHER],
-        technical_source=None,
-        producer_email=None,
-        contact_emails=[EmailStr("person@mydomain.org")],
-        update_frequency=None,
-        last_updated_at=None,
-        published_url=None,
-        tag_ids=[],
+        **update_command.dict(exclude={"description"})
     )
     await bus.execute(command)
     response = await client.get(

@@ -1,34 +1,34 @@
-import itertools
+import json
 from typing import Callable
 
 import httpx
-from pydantic import EmailStr, SecretStr
+from pydantic import BaseModel
 
-from server.application.auth.commands import CreateUser
 from server.config.di import resolve
 from server.domain.auth.entities import User, UserRole
 from server.domain.auth.repositories import UserRepository
 from server.seedwork.application.messages import MessageBus
+
+from .factories import CreateUserFactory
 
 
 def create_client(app: Callable) -> httpx.AsyncClient:
     return httpx.AsyncClient(app=app, base_url="http://testserver")
 
 
-class _DisablePytestCollectionMixin:
+def to_payload(obj: BaseModel) -> dict:
     """
-    Prevent a class named 'Test*' from being collected as a test case by pytest.
-
-    See: https://github.com/pytest-dev/pytest/issues/1879
+    Convert a Pydantic model instance to a JSON-serializable dictionary.
     """
+    return json.loads(obj.json())
 
-    __test__ = False
 
-
-class TestUser(_DisablePytestCollectionMixin, User):
+class TestUser(User):
     """
     A user that exposes the plaintext password for testing purposes.
     """
+
+    __test__ = False  # pytest shouldn't collect this.
 
     password: str
 
@@ -42,20 +42,14 @@ class TestUser(_DisablePytestCollectionMixin, User):
         return request
 
 
-_temp_user_ids = itertools.count(0)
-
-
 async def create_test_user(role: UserRole) -> TestUser:
     bus = resolve(MessageBus)
     user_repository = resolve(UserRepository)
 
-    email = EmailStr(f"temp{next(_temp_user_ids)}@mydomain.org")
-    password = SecretStr("s3kr3t")
-
-    command = CreateUser(email=email, password=password)
+    command = CreateUserFactory.build()
     await bus.execute(command, role=role)
 
-    user = await user_repository.get_by_email(email)
+    user = await user_repository.get_by_email(command.email)
     assert user is not None
 
-    return TestUser(**user.dict(), password=password.get_secret_value())
+    return TestUser(**user.dict(), password=command.password.get_secret_value())

@@ -8,6 +8,7 @@ from sqlalchemy.sql import ColumnElement
 from server.domain.datasets.repositories import DatasetGetAllExtras
 from server.domain.datasets.specifications import DatasetSpec
 from server.infrastructure.catalog_records.repositories import CatalogRecordModel
+from server.infrastructure.tags.repositories import TagModel
 
 from ..models import DatasetModel
 
@@ -65,13 +66,17 @@ class GetAllQuery:
             # Sort rows by search rank, best match first.
             orderbyclauses.append(desc(text("rank")))
 
+        if (tag_ids := spec.tag__id__in) is not None:
+            whereclauses.append(TagModel.id.in_(tag_ids))
+
         self.statement = (
             select(DatasetModel, *columns)
             .join(DatasetModel.catalog_record)
+            .outerjoin(DatasetModel.tags)
             .options(
                 selectinload(DatasetModel.formats),
-                selectinload(DatasetModel.tags),
                 contains_eager(DatasetModel.catalog_record),
+                contains_eager(DatasetModel.tags),
             )
             .where(*whereclauses)
             .order_by(*orderbyclauses, CatalogRecordModel.created_at.desc())

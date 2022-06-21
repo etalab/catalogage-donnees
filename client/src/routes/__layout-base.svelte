@@ -33,6 +33,4 @@
   <link rel="manifest" href={manifest} crossorigin="use-credentials" />
 </svelte:head>
 
-<main id="contenu">
-  <slot />
-</main>
+<slot />
