@@ -99,7 +99,6 @@ describe("Test the dataset form", () => {
     expect(options.length).toBe(1);
   });
 
-
   test("a message telling no result has been found must be display if ... no result has been found", async () => {
     const { getByRole, getAllByRole } = render(SearchableSelect, {
       props,
@@ -116,7 +115,7 @@ describe("Test the dataset form", () => {
     const options = getAllByRole("listitem");
     expect(options.length).toBe(1);
 
-    expect(options[0].textContent).toBe("Aucun résultat trouvé")
+    expect(options[0].textContent).toBe("Aucun résultat trouvé");
   });
 
   test("the button should display the selected item value", async () => {
@@ -159,5 +158,26 @@ describe("Test the dataset form", () => {
     await fireEvent.click(options[0]);
 
     expect(button).toHaveTextContent("un arbre");
+  });
+
+  test("should hide the overlay after an item has been clicked", async () => {
+    const searchTerm = "arbre";
+    const { getByRole, getAllByRole } = render(SearchableSelect, {
+      props,
+    });
+
+    const button = getByRole("button");
+    await fireEvent.click(button);
+    const input = getByRole("searchbox");
+
+    await fireEvent.input(input, {
+      target: { value: searchTerm },
+    });
+
+    const options = getAllByRole("listitem");
+
+    await fireEvent.click(options[0]);
+
+    expect(input).not.toBeVisible();
   });
 });

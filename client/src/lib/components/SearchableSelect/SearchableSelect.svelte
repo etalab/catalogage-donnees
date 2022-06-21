@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { SelectOption } from "src/definitions/form";
   import { createEventDispatcher } from "svelte";
+  import { clickOutside } from "src/lib/actions/clickOutside";
 
   export let buttonPlaceholder: string;
   export let inputPlaceholder: string;
@@ -21,12 +22,15 @@
 
   const handleClickListItem = (option: SelectOption) => {
     buttonPlaceholder = option.label;
-
     dispatch("clickItem", option);
+    displayOptions = false;
   };
 </script>
 
-<div class="container">
+<div
+  class="container"
+  use:clickOutside={{ callback: () => (displayOptions = false) }}
+>
   <button class="fr-select" on:click={() => (displayOptions = !displayOptions)}
     >{buttonPlaceholder}</button
   >
@@ -61,7 +65,6 @@
     padding: 10px;
     background-color: var(--grey-1000-75);
     box-shadow: 0 0 10px var(--grey-925);
-    position: absolute;
     z-index: 10;
     width: 100%;
     max-height: 32vh;
