@@ -19,12 +19,18 @@ class DatasetListParams:
         page_number: int = 1,
         page_size: int = 10,
         geographical_coverage: Optional[List[GeographicalCoverage]] = Query(None),
+        service: Optional[List[str]] = Query(None),
+        format_: Optional[List[DataFormat]] = Query(None, alias="format"),
+        technical_source: Optional[List[str]] = Query(None),
         tag_id: Optional[List[ID]] = Query(None),
     ) -> None:
         self.q = q
         self.page_number = page_number
         self.page_size = page_size
         self.geographical_coverage = geographical_coverage
+        self.service = service
+        self.format = format_
+        self.technical_source = technical_source
         self.tag_id = tag_id
 
 

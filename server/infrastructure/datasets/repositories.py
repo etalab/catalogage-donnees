@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Set, Tuple
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -66,6 +66,18 @@ class SqlDatasetRepository(DatasetRepository):
                 return None
 
             return make_entity(instance)
+
+    async def get_service_set(self) -> Set[str]:
+        async with self._db.session() as session:
+            stmt = select(DatasetModel.service.distinct())
+            result = await session.execute(stmt)
+            return set(result.scalars())
+
+    async def get_technical_source_set(self) -> Set[str]:
+        async with self._db.session() as session:
+            stmt = select(DatasetModel.technical_source.distinct())
+            result = await session.execute(stmt)
+            return set(result.scalars())
 
     async def _get_catalog_record(
         self, session: AsyncSession, id_: ID

@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Set, Tuple
 
 from typing_extensions import TypedDict
 
@@ -29,6 +29,12 @@ class DatasetRepository(Repository):
         raise NotImplementedError  # pragma: no cover
 
     async def get_by_id(self, id: ID) -> Optional[Dataset]:
+        raise NotImplementedError  # pragma: no cover
+
+    async def get_service_set(self) -> Set[str]:
+        raise NotImplementedError  # pragma: no cover
+
+    async def get_technical_source_set(self) -> Set[str]:
         raise NotImplementedError  # pragma: no cover
 
     async def insert(self, entity: Dataset) -> ID:

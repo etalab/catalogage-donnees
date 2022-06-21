@@ -4,7 +4,7 @@ from server.domain.catalog_records.entities import CatalogRecord
 from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.common.pagination import Pagination
 from server.domain.common.types import ID
-from server.domain.datasets.entities import Dataset, GeographicalCoverage
+from server.domain.datasets.entities import DataFormat, Dataset, GeographicalCoverage
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.domain.datasets.repositories import DatasetRepository
 from server.domain.tags.repositories import TagRepository
@@ -63,11 +63,17 @@ async def delete_dataset(command: DeleteDataset) -> None:
 
 async def get_dataset_filters(query: GetDatasetFilters) -> DatasetFiltersView:
     bus = resolve(MessageBus)
+    repository = resolve(DatasetRepository)
 
+    services = await repository.get_service_set()
+    technical_sources = await repository.get_technical_source_set()
     tags = await bus.execute(GetAllTags())
 
     return DatasetFiltersView(
         geographical_coverage=list(GeographicalCoverage),
+        service=services,
+        format=list(DataFormat),
+        technical_source=technical_sources,
         tag_id=[tag.id for tag in tags],
     )
 
