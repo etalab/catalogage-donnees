@@ -99,6 +99,54 @@ test.describe("Edit dataset", () => {
   });
 });
 
+test.describe("confirm before exit", () => {
+  test.use({ storageState: STATE_AUTHENTICATED });
+
+  test("Should display a modal after clicking the exit button if changes has been made", async ({
+    page,
+    dataset,
+  }) => {
+    await page.goto(`/`);
+    await page.goto(`/fiches/${dataset.id}/edit`);
+    const title = page.locator("form [name=title]");
+
+    // make change
+
+    const newTitleText = "Other title";
+    expect(newTitleText).not.toBe(dataset.title);
+    await title.fill(newTitleText);
+
+    // check if the modal is open
+
+    await page.locator("[data-testid=exit-edit-form]").click();
+    await page.locator("[id=stop-editing-form-modal]");
+
+    // send changes to the api
+
+    const button = await page.locator("text=Quitter sans sauvegarder");
+
+    button.click();
+
+    // check if the user has been redirected to the home page
+    await page.waitForURL("/");
+  });
+
+  test("Should NOT display a modal after clicking the exit button if NO changes has been made and should go to previous page ", async ({
+    page,
+    dataset,
+  }) => {
+    // Build user navigation history
+    await page.goto(`/`);
+    await page.goto(`/fiches/${dataset.id}/edit`);
+
+    // Try to quit the form
+    await page.locator("[data-testid=exit-edit-form]").click();
+
+    // check if the user has been redirected to the home page
+    await page.waitForURL("/");
+  });
+});
+
 test.describe("Edit dataset as admin", () => {
   test.use({ storageState: STATE_AUTHENTICATED_ADMIN });
 

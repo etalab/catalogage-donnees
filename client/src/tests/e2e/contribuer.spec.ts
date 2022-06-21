@@ -162,4 +162,49 @@ test.describe("Basic form submission", () => {
     await page.evaluate(() => window.scrollBy(0, -window.innerHeight / 4));
     await expect(activeSidebarItem).toHaveText("Sources et formats");
   });
+
+  test.describe("confirm before exit", () => {
+    test.use({ storageState: STATE_AUTHENTICATED });
+
+    test("Should display a modal after clicking the exit button if changes has been made", async ({
+      page,
+    }) => {
+      await page.goto(`/`);
+      await page.goto("/contribuer");
+      const title = page.locator("form [name=title]");
+
+      // make change
+
+      const newTitleText = "Other title";
+      await title.fill(newTitleText);
+
+      // check if the modal is open
+
+      await page.locator("[data-testid=exit-contribution-form]").click();
+      await page.locator("[id=confirm-stop-contributing-modal]");
+
+      // send changes to the api
+
+      const button = await page.locator("text=Quitter sans sauvegarder");
+
+      button.click();
+
+      // check if the user has been redirected to the home page
+      await page.waitForURL("/");
+    });
+
+    test("Should NOT display a modal after clicking the exit button if NO changes has been made and should go to previous page ", async ({
+      page,
+    }) => {
+      // Build user navigation history
+      await page.goto(`/`);
+      await page.goto(`/contribuer`);
+
+      // Try to quit the form
+      await page.locator("[data-testid=exit-contribution-form]").click();
+
+      // check if the user has been redirected to the home page
+      await page.waitForURL("/");
+    });
+  });
 });

@@ -44,7 +44,8 @@
     tags: [],
   };
 
-  const dispatch = createEventDispatcher<{ save: DatasetFormData }>();
+  const dispatch =
+    createEventDispatcher<{ save: DatasetFormData; touched: boolean }>();
 
   type DatasetFormValues = {
     title: string;
@@ -165,6 +166,15 @@
 
   $: emailErrors = $errors.contactEmails as unknown as string[];
 
+  export const submitForm = (event: Event) => {
+    handleSubmit(event);
+  };
+
+  const handleFieldChange = async (event: Event) => {
+    dispatch("touched", true);
+    handleChange(event);
+  };
+
   const hasError = (error: string | string[]) => {
     return typeof error === "string" && Boolean(error);
   };
@@ -173,6 +183,7 @@
     const { checked } = event.target as HTMLInputElement;
     dataFormatsValue[index] = checked;
     updateValidateField("dataFormats", dataFormatsValue);
+    dispatch("touched");
   };
 
   const handleLastUpdatedAtChange = async (
@@ -181,18 +192,20 @@
     if (!event.currentTarget.value /* Empty date */) {
       // Needs manual handling, otherwise yup would call e.g. new Date("") which is invalid.
       updateValidateField("lastUpdatedAt", null);
+      dispatch("touched");
     } else {
-      await handleChange(event);
+      await handleFieldChange(event);
     }
   };
 
   const handleTagsChange = async (event: CustomEvent<Tag[]>) => {
     updateValidateField("tags", event.detail);
+    dispatch("touched");
   };
 </script>
 
 <form
-  on:submit={handleSubmit}
+  on:submit={submitForm}
   data-bitwarden-watching="1"
   aria-label="Informations sur le jeu de données"
 >
@@ -220,8 +233,8 @@
         id="title"
         name="title"
         required
-        on:change={handleChange}
-        on:blur={handleChange}
+        on:input={handleFieldChange}
+        on:blur={handleFieldChange}
         bind:value={$form.title}
       />
       {#if $errors.title}
@@ -250,8 +263,8 @@
         id="description"
         name="description"
         required
-        on:change={handleChange}
-        on:blur={handleChange}
+        on:input={handleFieldChange}
+        on:blur={handleFieldChange}
         bind:value={$form.description}
       />
       {#if $errors.description}
@@ -280,8 +293,8 @@
         id="service"
         name="service"
         required
-        on:change={handleChange}
-        on:blur={handleChange}
+        on:input={handleFieldChange}
+        on:blur={handleFieldChange}
         bind:value={$form.service}
       />
 
@@ -305,14 +318,14 @@
         handleSelectChange(
           "geographicalCoverage",
           event,
-          handleChange,
+          handleFieldChange,
           updateValidateField
         )}
       on:blur={(event) =>
         handleSelectChange(
           "geographicalCoverage",
           event,
-          handleChange,
+          handleFieldChange,
           updateValidateField
         )}
       error={$errors.geographicalCoverage}
@@ -353,7 +366,6 @@
               {value}
               required={dataFormatsValue.every((checked) => !checked)}
               checked={dataFormatsValue[index]}
-              on:blur={(event) => handleDataformatChange(event, index)}
               on:change={(event) => handleDataformatChange(event, index)}
             />
             <label for={id}>
@@ -389,8 +401,7 @@
         type="text"
         id="technicalSource"
         name="technicalSource"
-        on:change={handleChange}
-        on:blur={handleChange}
+        on:input={handleFieldChange}
         bind:value={$form.technicalSource}
       />
       {#if $errors.technicalSource}
@@ -446,8 +457,7 @@
         type="email"
         id="producerEmail"
         name="producerEmail"
-        on:change={handleChange}
-        on:blur={handleChange}
+        on:input={handleFieldChange}
         bind:value={$form.producerEmail}
       />
       {#if $errors.producerEmail}
@@ -460,8 +470,8 @@
     <ContactEmailsField
       bind:errors={emailErrors}
       bind:contactEmails={$form.contactEmails}
-      on:blur={handleChange}
-      on:change={handleChange}
+      on:blur={handleFieldChange}
+      on:input={handleFieldChange}
     />
   </div>
 
@@ -493,8 +503,7 @@
           type="date"
           id="lastUpdatedAt"
           name="lastUpdatedAt"
-          on:change={handleLastUpdatedAtChange}
-          on:blur={handleLastUpdatedAtChange}
+          on:input={handleLastUpdatedAtChange}
           bind:value={$form.lastUpdatedAt}
         />
 
@@ -517,14 +526,14 @@
         handleSelectChange(
           "updateFrequency",
           event,
-          handleChange,
+          handleFieldChange,
           updateValidateField
         )}
       on:blur={(event) =>
         handleSelectChange(
           "updateFrequency",
           event,
-          handleChange,
+          handleFieldChange,
           updateValidateField
         )}
       error={$errors.updateFrequency}
@@ -555,8 +564,7 @@
         type="text"
         id="publishedUrl"
         name="publishedUrl"
-        on:change={handleChange}
-        on:blur={handleChange}
+        on:input={handleFieldChange}
         bind:value={$form.publishedUrl}
       />
 
@@ -581,6 +589,14 @@
 <style>
   textarea {
     resize: vertical;
+  }
+
+  h2 {
+    /* Prevent h2 to be covered by the header
+    See https://css-tricks.com/fixed-headers-and-jump-links-the-solution-is-scroll-margin-top/
+    
+    */
+    scroll-margin-top: 10vh;
   }
 
   .button--container {

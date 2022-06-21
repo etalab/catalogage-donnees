@@ -27,8 +27,13 @@
   import { Maybe } from "$lib/util/maybe";
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
   import type { Tag } from "src/definitions/tag";
+  import ModalExitFormConfirmation from "src/lib/components/ModalExitFormConfirmation/ModalExitFormConfirmation.svelte";
+
+  let modalControlId = "confirm-stop-contributing-modal";
 
   let loading = false;
+
+  let formHasBeenTouched = false;
 
   export let tags: Maybe<Tag[]>;
 
@@ -49,28 +54,59 @@
       loading = false;
     }
   };
+
+  const handleExitForm = () => {
+    history.go(-1);
+  };
 </script>
 
-<header class="fr-m-4w">
+<header class="fr-p-4w">
   <h5>Créer une fiche de jeu de données</h5>
-  <a
-    aria-label="go to home page"
-    href="/"
-    class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
-  >
-    {""}
-  </a>
+
+  {#if formHasBeenTouched}
+    <button
+      class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
+      data-fr-opened="false"
+      data-testid="exit-contribution-form"
+      aria-controls={modalControlId}
+    >
+      {""}
+    </button>
+  {:else}
+    <button
+      data-testid="exit-contribution-form"
+      class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
+      on:click={handleExitForm}
+    >
+      {""}
+    </button>
+  {/if}
 </header>
 
 {#if Maybe.Some(tags)}
+  <ModalExitFormConfirmation
+    on:confirm={handleExitForm}
+    controlId={modalControlId}
+  />
+
   <DatasetFormLayout>
-    <DatasetForm {tags} {loading} on:save={onSave} />
+    <DatasetForm
+      {tags}
+      {loading}
+      on:save={onSave}
+      on:touched={() => (formHasBeenTouched = true)}
+    />
   </DatasetFormLayout>
 {/if}
 
 <style>
   header {
+    height: 10vh;
     display: flex;
+    position: sticky;
     justify-content: space-between;
+    top: 0;
+    z-index: 55;
+    background-color: var(--background-default-grey);
   }
 </style>

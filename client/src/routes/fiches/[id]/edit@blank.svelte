@@ -35,11 +35,18 @@
   import { deleteDataset } from "$lib/repositories/datasets";
   import { Maybe } from "$lib/util/maybe";
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
+  import ModalExitFormConfirmation from "src/lib/components/ModalExitFormConfirmation/ModalExitFormConfirmation.svelte";
 
   export let dataset: Maybe<Dataset>;
   export let tags: Maybe<Tag[]>;
 
+  let modalControlId = "stop-editing-form-modal";
+
   let loading = false;
+
+  let formHasBeenTouched = false;
+
+  const history = window.history;
 
   const onSave = async (event: CustomEvent<DatasetFormData>) => {
     if (!Maybe.Some(dataset)) {
@@ -82,21 +89,41 @@
     await deleteDataset({ fetch, apiToken: $apiToken, id: dataset.id });
     await goto(paths.home);
   };
+
+  const handleExitForm = () => {
+    history.go(-1);
+  };
 </script>
 
 {#if Maybe.Some(dataset) && Maybe.Some(tags)}
-  <header class="fr-m-4w">
+  <header class="fr-p-4w">
     <h5>Modifier la fiche de jeu de données</h5>
 
-    <a
-      aria-label="go to fiche page"
-      href="/fiches/{dataset.id}"
-      title="Aller vers la jeu de donnée"
-      class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
-    >
-      {""}
-    </a>
+    {#if formHasBeenTouched}
+      <button
+        class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
+        data-fr-opened="false"
+        data-testid="exit-edit-form"
+        aria-controls={modalControlId}
+      >
+        {""}
+      </button>
+    {:else}
+      <button
+        data-testid="exit-edit-form"
+        class="fr-btn fr-icon-close-line fr-btn--icon fr-btn--secondary"
+        on:click={handleExitForm}
+      >
+        {""}
+      </button>
+    {/if}
   </header>
+
+  <ModalExitFormConfirmation
+    on:confirm={handleExitForm}
+    controlId={modalControlId}
+  />
+
   <DatasetFormLayout>
     <DatasetForm
       {tags}
@@ -105,6 +132,7 @@
       submitLabel="Enregistrer les modifications"
       loadingLabel="Modification en cours..."
       on:save={onSave}
+      on:touched={() => (formHasBeenTouched = true)}
     />
 
     {#if $isAdmin}
@@ -127,7 +155,12 @@
 
 <style>
   header {
+    height: 10vh;
     display: flex;
+    position: sticky;
     justify-content: space-between;
+    top: 0;
+    z-index: 55;
+    background-color: var(--background-default-grey);
   }
 </style>
