@@ -1,8 +1,7 @@
 import httpx
 import pytest
-from fastapi import FastAPI
 
-from server.api.app import create_app
+from server.api.app import App, create_app
 from server.config.di import configure, resolve
 from server.config.settings import Settings
 from server.infrastructure.database import Database
@@ -12,7 +11,7 @@ from .helpers import create_client
 
 
 @pytest.mark.asyncio
-async def test_debug_default_disabled(app: FastAPI, client: httpx.AsyncClient) -> None:
+async def test_debug_default_disabled(app: App, client: httpx.AsyncClient) -> None:
     assert not app.debug
 
     db = resolve(Database)

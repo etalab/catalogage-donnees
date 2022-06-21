@@ -1,6 +1,6 @@
 import asyncio
 import os
-from typing import AsyncIterator, Iterator
+from typing import TYPE_CHECKING, AsyncIterator, Iterator
 
 import httpx
 import pytest
@@ -8,7 +8,6 @@ import pytest_asyncio
 from alembic import command
 from alembic.config import Config
 from asgi_lifespan import LifespanManager
-from fastapi import FastAPI
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from server.application.datasets.queries import GetAllDatasets
@@ -19,6 +18,9 @@ from server.infrastructure.database import Database
 from server.seedwork.application.messages import MessageBus
 
 from .helpers import TestUser, create_client, create_test_user
+
+if TYPE_CHECKING:
+    from server.api.app import App
 
 os.environ["APP_TESTING"] = "True"
 
@@ -70,7 +72,7 @@ def event_loop() -> Iterator[asyncio.AbstractEventLoop]:
 
 
 @pytest_asyncio.fixture(scope="session")
-async def app() -> AsyncIterator[FastAPI]:
+async def app() -> AsyncIterator["App"]:
     from server.api.app import create_app
 
     app = create_app()
@@ -80,7 +82,7 @@ async def app() -> AsyncIterator[FastAPI]:
 
 
 @pytest_asyncio.fixture(scope="session")
-async def client(app: FastAPI) -> AsyncIterator[httpx.AsyncClient]:
+async def client(app: "App") -> AsyncIterator[httpx.AsyncClient]:
     async with create_client(app) as client:
         yield client
 
