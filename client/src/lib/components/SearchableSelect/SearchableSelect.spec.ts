@@ -66,8 +66,6 @@ describe("Test the dataset form", () => {
     const button = getByRole("button");
     await fireEvent.click(button);
     const options = getAllByRole("listitem");
-
-    expect(options.length).toBe(selectOptions.length);
     expect(options[0].textContent).toBe(selectOptions[0].label);
   });
 
@@ -96,7 +94,25 @@ describe("Test the dataset form", () => {
     });
 
     const options = getAllByRole("listitem");
-    expect(options.length).toBe(1);
+    expect(options.length).toBe(2);
+  });
+
+  test("the search should be case insensitive", async () => {
+    const { getByRole, getAllByRole } = render(SearchableSelect, {
+      props,
+    });
+
+    const button = getByRole("button");
+    await fireEvent.click(button);
+    const input = getByRole("searchbox");
+
+    await fireEvent.input(input, {
+      target: { value: "ArBre" },
+    });
+
+    const options = getAllByRole("listitem");
+    expect(options.length).toBe(2);
+    expect(options[0].textContent).toBe("un arbre");
   });
 
   test("a message telling no result has been found must be display if ... no result has been found", async () => {

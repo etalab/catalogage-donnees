@@ -7,35 +7,61 @@
   export let inputPlaceholder: string;
   export let options: Array<SelectOption>;
 
-  let filteredOptions: Array<SelectOption> = options;
-  let displayOptions = false;
+  let macthedOptions: Array<SelectOption> = options;
+  let isOverlayOpen = false;
+  let buttonText = buttonPlaceholder;
+
+  const openOverlay = () => {
+    isOverlayOpen = true;
+  };
+
+  const closeOverlay = () => {
+    macthedOptions = options;
+    isOverlayOpen = false;
+  };
+
+  const handleOverlayOpening = () => {
+    if (!isOverlayOpen) {
+      openOverlay();
+      return;
+    }
+
+    if (isOverlayOpen) {
+      closeOverlay();
+      return;
+    }
+  };
 
   const dispatch = createEventDispatcher<{
-    clickItem: SelectOption;
+    clickItem: SelectOption | null;
   }>();
 
   const handleInput = (e: Event) => {
     const searchTerm = (e.target as HTMLInputElement).value;
 
-    filteredOptions = options.filter((item) => item.label.match(searchTerm));
+    macthedOptions = options.filter((item) =>
+      item.label.match(new RegExp(searchTerm, "i"))
+    );
   };
 
   const handleClickListItem = (option: SelectOption) => {
-    buttonPlaceholder = option.label;
+    buttonText = option.label;
     dispatch("clickItem", option);
-    displayOptions = false;
+    closeOverlay();
+  };
+
+  const handleResetFilter = () => {
+    macthedOptions = options;
+    buttonText = buttonPlaceholder;
+    dispatch("clickItem", null);
   };
 </script>
 
-<div
-  class="container"
-  use:clickOutside={{ callback: () => (displayOptions = false) }}
->
-  <button class="fr-select" on:click={() => (displayOptions = !displayOptions)}
-    >{buttonPlaceholder}</button
+<div class="container" use:clickOutside={{ callback: handleOverlayOpening }}>
+  <button class="fr-select" on:click={handleOverlayOpening}>{buttonText}</button
   >
 
-  {#if displayOptions}
+  {#if isOverlayOpen}
     <div class="overlay">
       <input
         placeholder={inputPlaceholder}
@@ -44,11 +70,15 @@
         type="search"
       />
       <ul>
-        {#each filteredOptions as option}
+        {#each macthedOptions as option}
           <li on:click={() => handleClickListItem(option)}>{option.label}</li>
         {/each}
 
-        {#if filteredOptions.length === 0}
+        {#if macthedOptions.length > 0}
+          <li on:click={handleResetFilter}>Réinitiliser le filtre</li>
+        {/if}
+
+        {#if macthedOptions.length === 0}
           <li class="no-result">Aucun résultat trouvé</li>
         {/if}
       </ul>
@@ -60,6 +90,7 @@
   .container {
     position: relative;
     box-sizing: border-box;
+    width: 100%;
   }
   .overlay {
     padding: 10px;
