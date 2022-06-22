@@ -11,6 +11,12 @@
   let isOverlayOpen = false;
   let buttonText = buttonPlaceholder;
 
+  let searchTerm: string;
+
+  $: macthedOptions = options.filter((item) =>
+    item.label.match(new RegExp(searchTerm, "i"))
+  );
+
   const openOverlay = () => {
     isOverlayOpen = true;
   };
@@ -36,14 +42,6 @@
     clickItem: SelectOption | null;
   }>();
 
-  const handleInput = (e: Event) => {
-    const searchTerm = (e.target as HTMLInputElement).value;
-
-    macthedOptions = options.filter((item) =>
-      item.label.match(new RegExp(searchTerm, "i"))
-    );
-  };
-
   const handleClickListItem = (option: SelectOption) => {
     buttonText = option.label;
     dispatch("clickItem", option);
@@ -66,7 +64,7 @@
       <input
         placeholder={inputPlaceholder}
         class="fr-input"
-        on:input={handleInput}
+        bind:value={searchTerm}
         type="search"
       />
       <ul>
