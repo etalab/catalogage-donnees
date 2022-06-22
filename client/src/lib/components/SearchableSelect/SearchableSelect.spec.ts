@@ -155,7 +155,7 @@ describe("Test the dataset form", () => {
     expect(button).toHaveTextContent("un arbre");
   });
 
-  test("the component must send an event with the selected option", async () => {
+  test("the selected option must be displayed", async () => {
     const searchTerm = "arbre";
     const { getByRole, getAllByRole } = render(SearchableSelect, {
       props,
