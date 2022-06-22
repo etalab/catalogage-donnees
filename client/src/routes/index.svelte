@@ -72,6 +72,7 @@
         <h2 class="fr-mb-3w">
           {paginatedDatasets.totalItems} jeux de donnnées contribués
         </h2>
+
         <DatasetList datasets={paginatedDatasets.items} />
         <div class="pagination-container fr-mt-2w ">
           <Pagination
