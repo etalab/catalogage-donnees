@@ -33,6 +33,7 @@
   import Pagination from "$lib/components/Pagination/Pagination.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import paths from "$lib/paths";
+  import FilterSection from "./_FilterSection.svelte";
 
   export let paginatedDatasets: Maybe<Paginated<Dataset>>;
   export let currentPage: number;
@@ -66,6 +67,44 @@
 </section>
 
 <section class="fr-container">
+  <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters fr-mb-3w">
+    <div class="fr-col-4">
+      <FilterSection
+        searchFilters={{
+          geographical_coverage: ["tata toto", "toto"],
+          service: ["..."],
+          formats: ["..."],
+          technical_source: ["..."],
+          tags: ["..."],
+        }}
+        sectionTitle="Informations Générales"
+      />
+    </div>
+    <div class="fr-col-4">
+      <FilterSection
+        searchFilters={{
+          geographical_coverage: ["tata, toto"],
+          service: ["..."],
+          formats: ["..."],
+          technical_source: ["..."],
+          tags: ["..."],
+        }}
+        sectionTitle="Informations Générales"
+      />
+    </div>
+    <div class="fr-col-4">
+      <FilterSection
+        searchFilters={{
+          geographical_coverage: ["..."],
+          service: ["..."],
+          formats: ["..."],
+          technical_source: ["..."],
+          tags: ["..."],
+        }}
+        sectionTitle="Informations Générales"
+      />
+    </div>
+  </div>
   <div class="fr-grid-row">
     <div class="fr-col-12">
       {#if Maybe.Some(paginatedDatasets)}
@@ -90,5 +129,11 @@
   .pagination-container {
     display: flex;
     justify-content: space-around;
+  }
+
+  /* Filters */
+
+  p {
+    padding: 0;
   }
 </style>

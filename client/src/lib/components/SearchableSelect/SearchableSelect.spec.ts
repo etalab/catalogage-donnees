@@ -36,7 +36,7 @@ describe("Test the dataset form", () => {
     expect(button).toHaveTextContent(buttonPlaceholder);
   });
 
-  test("a dropdown must not be displayed before button click", () => {
+  test("should not display the dropdown until the button has been clicked", () => {
     const { queryByRole } = render(SearchableSelect, {
       props,
     });
