@@ -1,3 +1,3 @@
 export type SearchFilter = {
-    [key: string]: string[]
-}
+  [key: string]: string[] | null;
+};

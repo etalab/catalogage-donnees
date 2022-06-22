@@ -34,9 +34,17 @@
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import paths from "$lib/paths";
   import FilterSection from "./_FilterSection.svelte";
+  import type { SearchFilter } from "src/definitions/searchFilters";
+  import {
+    cleanSearchFilters,
+    mergeSearchFilters,
+  } from "src/lib/util/searchFilters";
+  import { toSearchQueryParamRecord } from "src/lib/transformers/searchFilter";
 
   export let paginatedDatasets: Maybe<Paginated<Dataset>>;
   export let currentPage: number;
+
+  let selectedFilters: SearchFilter;
 
   const submitSearch = (event: CustomEvent<string>) => {
     const q = event.detail;
@@ -50,6 +58,18 @@
       ["page", page.toString()],
     ]);
     return `${queryString}`;
+  };
+
+  const handleFilterSelected = (e: CustomEvent<SearchFilter>) => {
+    selectedFilters = cleanSearchFilters(
+      mergeSearchFilters(selectedFilters, e.detail)
+    );
+
+    const queryParam = new URLSearchParams(
+      toSearchQueryParamRecord(selectedFilters)
+    );
+
+    console.log(queryParam.toString());
   };
 </script>
 
@@ -72,36 +92,29 @@
       <FilterSection
         searchFilters={{
           geographical_coverage: ["tata toto", "toto"],
-          service: ["..."],
-          formats: ["..."],
-          technical_source: ["..."],
-          tags: ["..."],
+          service: ["foo", "bar", "baz"],
         }}
         sectionTitle="Informations Générales"
+        on:filterSelected={handleFilterSelected}
       />
     </div>
     <div class="fr-col-4">
       <FilterSection
         searchFilters={{
-          geographical_coverage: ["tata, toto"],
-          service: ["..."],
-          formats: ["..."],
-          technical_source: ["..."],
-          tags: ["..."],
+          formats: ["foo", "bar", "baz"],
+          technical_source: ["foo", "bar", "baz"],
         }}
         sectionTitle="Informations Générales"
+        on:filterSelected={handleFilterSelected}
       />
     </div>
     <div class="fr-col-4">
       <FilterSection
         searchFilters={{
-          geographical_coverage: ["..."],
-          service: ["..."],
-          formats: ["..."],
-          technical_source: ["..."],
-          tags: ["..."],
+          tags: ["foo", "bar", "baz"],
         }}
         sectionTitle="Informations Générales"
+        on:filterSelected={handleFilterSelected}
       />
     </div>
   </div>
