@@ -8,6 +8,7 @@
   import { login } from "$lib/stores/auth";
   import { login as sendLoginRequest } from "$lib/repositories/auth";
   import LoginForm from "$lib/components/LoginForm/LoginForm.svelte";
+  import { getApiUrl } from "src/lib/fetch";
 
   let loading = false;
   let loginFailed = false;
@@ -36,6 +37,10 @@
       loading = false;
     }
   };
+
+  const startDataPassAuthFlow = async () => {
+    await goto(`${getApiUrl()}/auth/api_gouv/login`);
+  };
 </script>
 
 <svelte:head>
@@ -54,6 +59,15 @@
   <div class="fr-grid-row fr-grid-row--center">
     <div class="fr-col-12 fr-col-md-6">
       <LoginForm {loading} {loginFailed} on:submit={onSubmit} />
+
+      <div class="fr-grid-row fr-grid-row--center fr-mt-3w">
+        <button
+          class="fr-btn fr-btn--secondary fr-btn--icon-right fr-icon-logout-box-r-line"
+          on:click={startDataPassAuthFlow}
+        >
+          Se connecter avec api.gouv.fr
+        </button>
+      </div>
     </div>
   </div>
 </section>

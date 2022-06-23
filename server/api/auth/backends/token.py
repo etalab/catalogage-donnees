@@ -2,11 +2,7 @@ from typing import Optional, Tuple
 
 from fastapi.encoders import jsonable_encoder
 from fastapi.openapi.models import HTTPBearer
-from starlette.authentication import (
-    AuthCredentials,
-    AuthenticationBackend,
-    AuthenticationError,
-)
+from starlette.authentication import AuthCredentials, AuthenticationError
 from starlette.requests import HTTPConnection
 
 from server.application.auth.queries import GetUserByAPIToken
@@ -15,9 +11,10 @@ from server.domain.auth.exceptions import UserDoesNotExist
 from server.seedwork.application.messages import MessageBus
 
 from ..models import ApiUser
+from .base import AuthBackend
 
 
-class TokenAuthBackend(AuthenticationBackend):
+class TokenAuthBackend(AuthBackend):
     """
     Authenticate users based on their API token: 'Authorization: Bearer <api_token>'
     """
@@ -34,7 +31,7 @@ class TokenAuthBackend(AuthenticationBackend):
         authorization = conn.headers.get("Authorization")
 
         if authorization is None:
-            return AuthCredentials(), ApiUser(None)
+            return None
 
         scheme, found, api_token = authorization.partition(" ")
         if not found:
@@ -42,7 +39,7 @@ class TokenAuthBackend(AuthenticationBackend):
             raise AuthenticationError()
 
         if scheme.lower() != "bearer":
-            return AuthCredentials(), ApiUser(None)
+            return None
 
         bus = resolve(MessageBus)
 
