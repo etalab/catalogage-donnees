@@ -1,9 +1,17 @@
-import type { SearchFilter } from "src/definitions/searchFilters";
-import { cleanSearchFilters, mergeSearchFilters } from "./searchFilters";
+import { GEOGRAPHICAL_COVERAGE_LABELS } from "src/constants";
+import type {
+  FilterCategoryGroup,
+  SearchFilter,
+} from "src/definitions/searchFilters";
+import {
+  cleanSearchFilters,
+  groupSearchFiltersByCategory,
+  mergeSearchFilters,
+} from "./searchFilters";
 
 describe("SearchFilters", () => {
   describe("cleanSearchFilters", () => {
-    test.only("a search filter should not have null values", () => {
+    test("a search filter should not have null values", () => {
       const source: SearchFilter = {
         service: ["DINUM", "DGSE", "ETALAB"],
         tags: null,
@@ -73,23 +81,42 @@ describe("SearchFilters", () => {
 
       expect(result).toEqual(expectedResult);
     });
+  });
 
-    test("new filters should not have null values", () => {
-      const source: SearchFilter = {
-        service: ["DINUM", "DGSE", "ETALAB"],
-        tags: ["new", "old", "present"],
+  describe("groupSearchFiltersByCategory", () => {
+    test("should group filters by category", () => {
+      const searchFilters: SearchFilter = {
+        tags: ["foo", "bar", "baz"],
+        opening: ["restricted", "open"],
+        service: ["DGSE", "DGSI"],
+        geographical_coverage: [
+          GEOGRAPHICAL_COVERAGE_LABELS.department,
+          GEOGRAPHICAL_COVERAGE_LABELS.epci,
+        ],
+        format: ["Excel", "CSV"],
+        technical_source: ["tata", "toto"],
       };
 
-      const newSearchFilter: SearchFilter = {
-        service: null,
-        tags: ["new", "present"],
+      const expectedResult: FilterCategoryGroup = {
+        "Informations Générales": {
+          opening: ["restricted", "open"],
+          geographical_coverage: [
+            GEOGRAPHICAL_COVERAGE_LABELS.department,
+            GEOGRAPHICAL_COVERAGE_LABELS.epci,
+          ],
+          service: ["DGSE", "DGSI"],
+        },
+        "Mots-clés Thématiques": {
+          tags: ["foo", "bar", "baz"],
+        },
+
+        "Sources et Formats": {
+          format: ["Excel", "CSV"],
+          technical_source: ["tata", "toto"],
+        },
       };
 
-      const expectedResult: SearchFilter = {
-        tags: ["new", "present"],
-      };
-
-      const result = mergeSearchFilters(source, newSearchFilter);
+      const result = groupSearchFiltersByCategory(searchFilters);
 
       expect(result).toEqual(expectedResult);
     });

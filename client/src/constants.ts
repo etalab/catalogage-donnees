@@ -3,6 +3,7 @@ import type {
   UpdateFrequency,
   GeographicalCoverage,
 } from "./definitions/datasets";
+import type { FilterCategories } from "./definitions/searchFilters";
 
 export const PUBLIC_PAGES = ["/login"];
 
@@ -44,6 +45,14 @@ export const GEOGRAPHICAL_COVERAGE_LABELS: {
   national_full_territory: "Nationale (territoires d'Outre-mer inclus)",
   europe: "Européenne",
   world: "Monde",
+};
+
+export const SEARCH_FILTERS_CATEGORIES: {
+  [K in FilterCategories]: string[];
+} = {
+  "Informations Générales": ["opening", "geographical_coverage", "service"],
+  "Mots-clés Thématiques": ["tags"],
+  "Sources et Formats": ["format", "technical_source"],
 };
 
 export const DATASETS_PER_PAGE = 50;

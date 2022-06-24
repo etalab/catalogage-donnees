@@ -69,7 +69,7 @@
       toSearchQueryParamRecord(selectedFilters)
     );
 
-    console.log(queryParam.toString());
+    // TODO; envoyer les queryString à l'API
   };
 </script>
 
