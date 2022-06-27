@@ -1,4 +1,11 @@
-import type { Dataset } from "src/definitions/datasets";
+import { GEOGRAPHICAL_COVERAGE_LABELS } from "src/constants";
+import type {
+  Dataset,
+  SearchFilter,
+  SelectableSearchFilter,
+} from "src/definitions/datasets";
+import type { SelectOption } from "src/definitions/form";
+import type { Tag } from "src/definitions/tag";
 import { omit } from "../util/object";
 
 export const camelToUnderscore = (key: string): string => {
@@ -47,5 +54,47 @@ export const toDataset = (item: any): Dataset => {
     technicalSource: technical_source,
     lastUpdatedAt: last_updated_at ? new Date(last_updated_at) : null,
     publishedUrl: published_url,
+  };
+};
+
+const mapToOption = (items: string[]): SelectOption[] =>
+  items.map((item) => {
+    return {
+      label: item,
+      value: item,
+    };
+  });
+
+const mapTagToSelectOption = (items: Tag[]): SelectOption[] =>
+  items.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+
+const mapGeographicalCoverageToSelectOption = (
+  items: string[]
+): SelectOption[] =>
+  items.map((item) => {
+    return {
+      label: GEOGRAPHICAL_COVERAGE_LABELS[item],
+      value: item,
+    };
+  });
+
+export const transformAPISearchFiltersIntoSearchFilters = (
+  source: SearchFilter
+): SelectableSearchFilter => {
+  return {
+    format: source.format ? mapToOption(source.format) : null,
+    geographical_coverage: source.geographical_coverage
+      ? mapGeographicalCoverageToSelectOption(source.geographical_coverage)
+      : null,
+    service: source.service ? mapToOption(source.service) : null,
+    tags: source.tags ? mapTagToSelectOption(source.tags) : null,
+    technical_source: source.technical_source
+      ? mapToOption(source.technical_source)
+      : null,
   };
 };

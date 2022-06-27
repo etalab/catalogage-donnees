@@ -2,12 +2,13 @@ import { SEARCH_FILTERS_CATEGORIES } from "src/constants";
 import type {
   FilterCategoryGroup,
   SearchFilter,
-} from "src/definitions/searchFilters";
+  SelectableSearchFilter,
+} from "src/definitions/datasets";
 
-export const mergeSearchFilters = (
-  source: SearchFilter,
-  newFilters: SearchFilter
-): SearchFilter => {
+export const mergeSelectableSearchFilter = (
+  source: SelectableSearchFilter,
+  newFilters: Partial<SelectableSearchFilter>
+): SelectableSearchFilter => {
   return {
     ...source,
     ...newFilters,
@@ -15,26 +16,26 @@ export const mergeSearchFilters = (
 };
 
 export const cleanSearchFilters = (
-  searchFilter: SearchFilter
-): SearchFilter => {
-  return Object.keys(searchFilter).reduce((previous, current) => {
-    if (searchFilter[current]) {
+  selectedSearchFilter: SelectableSearchFilter
+): Partial<SelectableSearchFilter> => {
+  return Object.keys(selectedSearchFilter).reduce((previous, current) => {
+    if (selectedSearchFilter[current]) {
       return {
         ...previous,
-        [current]: searchFilter[current],
+        [current]: selectedSearchFilter[current],
       };
     }
     return previous;
-  }, {}) as unknown as SearchFilter;
+  }, {});
 };
 
-export const groupSearchFiltersByCategory = (
-  filters: SearchFilter
+export const groupSelectableSearchFilterByCategory = (
+  filters: SelectableSearchFilter
 ): FilterCategoryGroup => {
   const initialValues: FilterCategoryGroup = {
     "Informations Générales": {},
-    "Mots-clés Thématiques": {},
     "Sources et Formats": {},
+    "Mots-clés Thématiques": {},
   };
 
   return Object.keys(SEARCH_FILTERS_CATEGORIES).reduce((previous, current) => {
