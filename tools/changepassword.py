@@ -2,7 +2,7 @@ import asyncio
 import sys
 
 import click
-from pydantic import SecretStr
+from pydantic import EmailStr, SecretStr
 
 from server.application.auth.commands import ChangePassword
 from server.config.di import bootstrap, resolve
@@ -40,7 +40,7 @@ async def main() -> None:
     user = await _prompt_user()
     password = _prompt_password()
 
-    await bus.execute(ChangePassword(email=user.email, password=password))
+    await bus.execute(ChangePassword(email=EmailStr(user.email), password=password))
 
 
 if __name__ == "__main__":

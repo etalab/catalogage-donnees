@@ -2,6 +2,7 @@ from typing import List
 
 import httpx
 import pytest
+from pydantic import EmailStr
 
 from server.application.auth.queries import GetUserByEmail
 from server.config.di import resolve
@@ -178,7 +179,7 @@ async def test_delete_user(
     response = await client.delete(f"/auth/users/{temp_user.id}/", auth=admin_user.auth)
     assert response.status_code == 204
 
-    query = GetUserByEmail(email=temp_user.email)
+    query = GetUserByEmail(email=EmailStr(temp_user.email))
     with pytest.raises(UserDoesNotExist):
         await bus.execute(query)
 

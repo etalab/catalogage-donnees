@@ -1,4 +1,5 @@
 import json
+import uuid
 from pathlib import Path
 
 import pytest
@@ -9,6 +10,7 @@ from server.application.auth.queries import Login
 from server.application.datasets.commands import UpdateDataset
 from server.application.datasets.queries import GetAllDatasets, GetDatasetByID
 from server.config.di import resolve
+from server.domain.common.types import ID
 from server.seedwork.application.messages import MessageBus
 from tools import initdata
 
@@ -117,7 +119,7 @@ async def test_repo_initdata(
     captured = capsys.readouterr()
     assert captured.out.count("created") == num_entities
 
-    pk = "16b398af-f8c7-48b9-898a-18ad3404f528"
+    pk = ID(uuid.UUID("16b398af-f8c7-48b9-898a-18ad3404f528"))
     dataset = await bus.execute(GetDatasetByID(id=pk))
     assert dataset.title == "Données brutes de l'inventaire forestier"
 

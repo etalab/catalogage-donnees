@@ -9,7 +9,7 @@ from .models import CatalogRecordModel, DataFormatModel, DatasetModel
 
 
 def make_entity(instance: DatasetModel) -> Dataset:
-    kwargs = {
+    kwargs: dict = {
         "catalog_record": make_catalog_record_entity(instance.catalog_record),
         "formats": [fmt.name for fmt in instance.formats],
         "tags": [make_tag_entity(tag) for tag in instance.tags],

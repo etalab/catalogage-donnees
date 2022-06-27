@@ -1,8 +1,5 @@
-from typing import Union
-
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
-from fastapi.responses import JSONResponse
 
 from server.application.datasets.commands import (
     CreateDataset,
@@ -35,7 +32,7 @@ router.include_router(filters.router)
 )
 async def list_datasets(
     params: DatasetListParams = Depends(),
-) -> Union[JSONResponse, Pagination[DatasetView]]:
+) -> Pagination[DatasetView]:
     bus = resolve(MessageBus)
 
     page = Page(number=params.page_number, size=params.page_size)
