@@ -5,6 +5,7 @@ import uvicorn.supervisors
 
 from server.config.di import resolve
 from server.config.settings import Settings
+from .logging.config import get_log_config
 
 
 def get_server_config(
@@ -16,6 +17,7 @@ def get_server_config(
     kwargs = dict(
         host=settings.host,
         port=settings.port,
+        log_config=get_log_config(settings),
     )
 
     if settings.server_mode == "local":

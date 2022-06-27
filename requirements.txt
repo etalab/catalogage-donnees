@@ -6,6 +6,7 @@ fastapi==0.78.0
 gunicorn==20.1.0
 punq==0.6.2
 pydantic[email]==1.9.0
+python-json-logger==2.0.2
 uvicorn[standard]==0.17.6
 sqlalchemy[asyncio,mypy]==1.4.39
 
