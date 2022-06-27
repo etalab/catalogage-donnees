@@ -83,7 +83,7 @@ const mapGeographicalCoverageToSelectOption = (
     };
   });
 
-export const transformAPISearchFiltersIntoSearchFilters = (
+export const transformSearchFiltersIntoSelectableSearchFilters = (
   source: SearchFilter
 ): SelectableSearchFilter => {
   return {

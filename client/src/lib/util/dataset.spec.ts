@@ -1,6 +1,6 @@
 import { GEOGRAPHICAL_COVERAGE_LABELS } from "src/constants";
 import type {
-  FilterCategoryGroup,
+  SelectableSearchFilterGroup,
   SelectableSearchFilter,
 } from "src/definitions/datasets";
 import { getFakeSelectableSearchFilter } from "src/tests/factories/dataset";
@@ -67,7 +67,7 @@ describe("SearchFilters", () => {
     test("should group filters by category", () => {
       const searchFilters = getFakeSelectableSearchFilter({});
 
-      const expectedResult: FilterCategoryGroup = {
+      const expectedResult: SelectableSearchFilterGroup = {
         "Informations Générales": {
           geographical_coverage: searchFilters.geographical_coverage,
           service: searchFilters.service,

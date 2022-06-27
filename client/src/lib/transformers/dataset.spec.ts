@@ -10,7 +10,7 @@ import {
   toPayload,
   camelToUnderscore,
   transformKeysToUnderscoreCase,
-  transformAPISearchFiltersIntoSearchFilters,
+  transformSearchFiltersIntoSelectableSearchFilters,
 } from "./dataset";
 
 describe("transformers -- dataset", () => {
@@ -98,7 +98,7 @@ describe("transformers -- dataset", () => {
         ],
       };
 
-      expect(transformAPISearchFiltersIntoSearchFilters(source)).toEqual(
+      expect(transformSearchFiltersIntoSelectableSearchFilters(source)).toEqual(
         expectedResult
       );
     });

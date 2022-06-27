@@ -2,43 +2,20 @@
   import { DATASET_FILTERS_TRANSLATION } from "src/constants";
 
   import type { SelectOption } from "src/definitions/form";
-  import type { SearchFilter } from "src/definitions/datasets";
-  import type { Tag } from "src/definitions/tag";
+  import type { SelectableSearchFilter } from "src/definitions/datasets";
 
   import SearchableSelect from "src/lib/components/SearchableSelect/SearchableSelect.svelte";
-  import { mergeSearchFilters } from "src/lib/util/dataset";
   import { createEventDispatcher } from "svelte";
+  import { mergeSelectableSearchFilter } from "src/lib/util/dataset";
 
   export let sectionTitle: string;
-  export let searchFilters: SearchFilter;
+  export let searchFilters: SelectableSearchFilter;
 
-  let selectedFilters: SearchFilter;
+  let selectedFilters: Partial<SelectableSearchFilter>;
 
   const dispatch = createEventDispatcher<{
-    filterSelected: SearchFilter;
+    filterSelected: Partial<SelectableSearchFilter>;
   }>();
-
-  const getFilterOptions = (filterName: string): string[] | void => {
-    const value = searchFilters[filterName];
-    if (!value) {
-      return;
-    }
-
-    return value;
-  };
-
-  const mapToSelectOption = (filters: string[]): SelectOption[] =>
-    filters.map((item) => ({
-      label: item,
-      value: item,
-    }));
-
-  const mapTagToOption = (tags: Tag[]): SelectOption[] => {
-    return tags.map((item) => ({
-      label: item.name,
-      value: item.id,
-    }));
-  };
 
   $: searchFiltersKeys = Object.keys(searchFilters);
 
@@ -46,13 +23,17 @@
     filterKey: string,
     e: CustomEvent<SelectOption | null>
   ) => {
-    const value = e.detail?.value;
+    const value = e.detail;
 
-    const newFilter: Partial<SearchFilter> = {
+    const newFilter: Partial<SelectableSearchFilter> = {
       [filterKey]: value ? [value] : null,
     };
 
-    selectedFilters = mergeSearchFilters(selectedFilters, newFilter);
+    if (selectedFilters) {
+      selectedFilters = mergeSelectableSearchFilter(selectedFilters, newFilter);
+    } else {
+      selectedFilters = newFilter;
+    }
 
     dispatch("filterSelected", selectedFilters);
   };
@@ -61,7 +42,7 @@
 <h6>{sectionTitle}</h6>
 
 {#each searchFiltersKeys as filterName}
-  {@const options = getFilterOptions(filterName)}
+  {@const options = searchFilters[filterName]}
   {#if options}
     <div class="fr-mb-2w">
       <p>{DATASET_FILTERS_TRANSLATION[filterName]}</p>
@@ -69,7 +50,7 @@
         buttonPlaceholder="Rechercher ..."
         inputPlaceholder="Rechercher ..."
         on:clickItem={(e) => handleSelectFilter(filterName, e)}
-        options={mapToSelectOption(options)}
+        {options}
       />
     </div>
   {/if}

@@ -1,15 +1,18 @@
-import type { SearchFilter } from "src/definitions/searchFilters";
+import type { SelectableSearchFilter } from "src/definitions/datasets";
+import type { SelectOption } from "src/definitions/form";
+import type { Maybe } from "../util/maybe";
 
 export const toSearchQueryParamRecord = (
-  searchFilter: SearchFilter
-): string[][] => {
+  searchFilter: Partial<SelectableSearchFilter>
+): [string, Maybe<string>][] => {
   return Object.keys(searchFilter).reduce((previous, current) => {
-    const value = searchFilter[current];
+    const options: SelectOption[] = searchFilter[current];
 
-    if (value) {
-      return [...previous, [current, ...value]];
+    if (options) {
+      const values = options.map((item) => item.value).filter((item) => item);
+      return [...previous, [current, ...values]];
     }
 
     return previous;
-  }, []);
+  }, []) as unknown as [string, Maybe<string>][];
 };

@@ -1,14 +1,14 @@
 import { SEARCH_FILTERS_CATEGORIES } from "src/constants";
 import type {
-  FilterCategoryGroup,
+  SelectableSearchFilterGroup,
   SearchFilter,
   SelectableSearchFilter,
 } from "src/definitions/datasets";
 
 export const mergeSelectableSearchFilter = (
-  source: SelectableSearchFilter,
+  source: Partial<SelectableSearchFilter>,
   newFilters: Partial<SelectableSearchFilter>
-): SelectableSearchFilter => {
+): Partial<SelectableSearchFilter> => {
   return {
     ...source,
     ...newFilters,
@@ -16,7 +16,7 @@ export const mergeSelectableSearchFilter = (
 };
 
 export const cleanSearchFilters = (
-  selectedSearchFilter: SelectableSearchFilter
+  selectedSearchFilter: Partial<SelectableSearchFilter>
 ): Partial<SelectableSearchFilter> => {
   return Object.keys(selectedSearchFilter).reduce((previous, current) => {
     if (selectedSearchFilter[current]) {
@@ -31,8 +31,8 @@ export const cleanSearchFilters = (
 
 export const groupSelectableSearchFilterByCategory = (
   filters: SelectableSearchFilter
-): FilterCategoryGroup => {
-  const initialValues: FilterCategoryGroup = {
+): SelectableSearchFilterGroup => {
+  const initialValues: SelectableSearchFilterGroup = {
     "Informations Générales": {},
     "Sources et Formats": {},
     "Mots-clés Thématiques": {},

@@ -9,6 +9,8 @@
 
     const token = get(apiToken);
 
+    // Promise.all?
+
     const paginatedDatasets = await getDatasets({
       fetch,
       apiToken: token,
@@ -30,7 +32,9 @@
     return {
       props: {
         paginatedDatasets,
-        groupedSearchFilters: groupSearchFiltersByCategory(searchFilters),
+        groupedSearchFilters: groupSelectableSearchFilterByCategory(
+          transformSearchFiltersIntoSelectableSearchFilters(searchFilters)
+        ),
         currentPage: page,
       },
     };
@@ -40,7 +44,11 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page as pageStore } from "$app/stores";
-  import type { Dataset } from "src/definitions/datasets";
+  import type {
+    Dataset,
+    SelectableSearchFilterGroup,
+    SelectableSearchFilter,
+  } from "src/definitions/datasets";
   import type { GetPageLink, Paginated } from "src/definitions/pagination";
   import { patchQueryString, toQueryString } from "$lib/util/urls";
   import { Maybe } from "$lib/util/maybe";
@@ -49,24 +57,20 @@
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import paths from "$lib/paths";
   import FilterSection from "./_FilterSection.svelte";
-  import type {
-    FilterCategoryGroup,
-    SearchFilter,
-  } from "src/definitions/searchFilters";
   import {
     cleanSearchFilters,
-    groupSearchFiltersByCategory,
-    mergeSearchFilters,
-  } from "src/lib/util/searchFilters";
+    groupSelectableSearchFilterByCategory,
+    mergeSelectableSearchFilter,
+  } from "src/lib/util/dataset";
   import { toSearchQueryParamRecord } from "src/lib/transformers/searchFilter";
+  import { transformSearchFiltersIntoSelectableSearchFilters } from "src/lib/transformers/dataset";
+  import type { SelectOption } from "src/definitions/form";
 
   export let paginatedDatasets: Maybe<Paginated<Dataset>>;
   export let currentPage: number;
-  export let groupedSearchFilters: Maybe<FilterCategoryGroup>;
+  export let groupedSearchFilters: Maybe<SelectableSearchFilterGroup>;
 
-  console.log(groupedSearchFilters);
-
-  let selectedFilters: SearchFilter;
+  let selectedFilters: Partial<SelectableSearchFilter>;
 
   const submitSearch = (event: CustomEvent<string>) => {
     const q = event.detail;
@@ -82,16 +86,19 @@
     return `${queryString}`;
   };
 
-  const handleFilterSelected = (e: CustomEvent<SearchFilter>) => {
+  const handleSelectedFilter = (e: CustomEvent<SelectableSearchFilter>) => {
     selectedFilters = cleanSearchFilters(
-      mergeSearchFilters(selectedFilters, e.detail)
+      mergeSelectableSearchFilter(selectedFilters, e.detail)
     );
 
-    const queryParam = new URLSearchParams(
-      toSearchQueryParamRecord(selectedFilters)
+    const queryParamsRecords = toSearchQueryParamRecord(selectedFilters);
+
+    const queryString = patchQueryString(
+      $pageStore.url.searchParams,
+      queryParamsRecords
     );
 
-    // TODO; envoyer les queryString à l'API
+    console.log(queryString);
   };
 </script>
 
@@ -116,7 +123,7 @@
           <FilterSection
             searchFilters={groupedSearchFilters[filterCategory]}
             sectionTitle={filterCategory}
-            on:filterSelected={handleFilterSelected}
+            on:filterSelected={handleSelectedFilter}
           />
         </div>
       {/each}
