@@ -2,20 +2,35 @@
   import type { Load } from "@sveltejs/kit";
   import { get } from "svelte/store";
   import { apiToken } from "$lib/stores/auth";
-  import { getDatasets } from "$lib/repositories/datasets";
+  import { getDatasets, getSearchFilter } from "$lib/repositories/datasets";
 
   export const load: Load = async ({ fetch, url }) => {
     const page = +(url.searchParams.get("page") || 1);
 
+    const token = get(apiToken);
+
     const paginatedDatasets = await getDatasets({
       fetch,
-      apiToken: get(apiToken),
+      apiToken: token,
       page,
     });
+
+    const searchFilters = await getSearchFilter(fetch, token);
+
+    if (!searchFilters) {
+      return {
+        props: {
+          paginatedDatasets,
+          groupedSearchFilters: null,
+          currentPage: page,
+        },
+      };
+    }
 
     return {
       props: {
         paginatedDatasets,
+        groupedSearchFilters: groupSearchFiltersByCategory(searchFilters),
         currentPage: page,
       },
     };
@@ -34,15 +49,22 @@
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import paths from "$lib/paths";
   import FilterSection from "./_FilterSection.svelte";
-  import type { SearchFilter } from "src/definitions/searchFilters";
+  import type {
+    FilterCategoryGroup,
+    SearchFilter,
+  } from "src/definitions/searchFilters";
   import {
     cleanSearchFilters,
+    groupSearchFiltersByCategory,
     mergeSearchFilters,
   } from "src/lib/util/searchFilters";
   import { toSearchQueryParamRecord } from "src/lib/transformers/searchFilter";
 
   export let paginatedDatasets: Maybe<Paginated<Dataset>>;
   export let currentPage: number;
+  export let groupedSearchFilters: Maybe<FilterCategoryGroup>;
+
+  console.log(groupedSearchFilters);
 
   let selectedFilters: SearchFilter;
 
@@ -87,37 +109,20 @@
 </section>
 
 <section class="fr-container">
-  <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters fr-mb-3w">
-    <div class="fr-col-4">
-      <FilterSection
-        searchFilters={{
-          geographical_coverage: ["tata toto", "toto"],
-          service: ["foo", "bar", "baz"],
-        }}
-        sectionTitle="Informations Générales"
-        on:filterSelected={handleFilterSelected}
-      />
+  {#if groupedSearchFilters}
+    <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters fr-mb-3w">
+      {#each Object.keys(groupedSearchFilters) as filterCategory}
+        <div class="fr-col-4">
+          <FilterSection
+            searchFilters={groupedSearchFilters[filterCategory]}
+            sectionTitle={filterCategory}
+            on:filterSelected={handleFilterSelected}
+          />
+        </div>
+      {/each}
     </div>
-    <div class="fr-col-4">
-      <FilterSection
-        searchFilters={{
-          formats: ["foo", "bar", "baz"],
-          technical_source: ["foo", "bar", "baz"],
-        }}
-        sectionTitle="Informations Générales"
-        on:filterSelected={handleFilterSelected}
-      />
-    </div>
-    <div class="fr-col-4">
-      <FilterSection
-        searchFilters={{
-          tags: ["foo", "bar", "baz"],
-        }}
-        sectionTitle="Informations Générales"
-        on:filterSelected={handleFilterSelected}
-      />
-    </div>
-  </div>
+  {/if}
+
   <div class="fr-grid-row">
     <div class="fr-col-12">
       {#if Maybe.Some(paginatedDatasets)}

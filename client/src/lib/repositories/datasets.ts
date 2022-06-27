@@ -11,6 +11,7 @@ import { toQueryString } from "$lib/util/urls";
 import { toDataset, toPayload } from "$lib/transformers/dataset";
 import { toPaginated } from "$lib/transformers/pagination";
 import { Maybe } from "$lib/util/maybe";
+import type { SearchFilter } from "src/definitions/searchFilters";
 
 type GetDatasetByID = (opts: {
   fetch: Fetch;
@@ -145,4 +146,16 @@ export const deleteDataset: DeleteDataset = async ({ fetch, apiToken, id }) => {
     headers: new Headers(getHeaders(apiToken)),
   });
   await makeApiRequest(fetch, request);
+};
+
+
+export const getSearchFilter = async (fetch: Fetch, apiToken: string): Promise<Maybe<SearchFilter>> => {
+  const url = `${getApiUrl()}/datasets/filters/`;
+  const request = new Request(url, {
+    headers: new Headers(getHeaders(apiToken)),
+  });
+
+  const response = (await makeApiRequest(fetch, request))
+
+  return Maybe.map(response, (response) => response.json());
 };

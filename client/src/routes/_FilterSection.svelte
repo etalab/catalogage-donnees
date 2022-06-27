@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { DATASET_FILTERS } from "src/constants";
+
   import type { SelectOption } from "src/definitions/form";
   import type { SearchFilter } from "src/definitions/searchFilters";
 
@@ -46,14 +48,6 @@
 
     dispatch("filterSelected", selectedFilters);
   };
-
-  const titleMappingTable = {
-    geographical_coverage: "Couverture géographique",
-    service: "Service producteur de la donnée",
-    formats: "Formats de mise à disposition",
-    technical_source: "Système d’information source",
-    tags: "Mots-clés",
-  };
 </script>
 
 <h6>{sectionTitle}</h6>
@@ -62,7 +56,7 @@
   {@const options = getFilterOptions(filterName)}
   {#if options}
     <div class="fr-mb-2w">
-      <p>{titleMappingTable[filterName]}</p>
+      <p>{DATASET_FILTERS[filterName]}</p>
       <SearchableSelect
         buttonPlaceholder="Rechercher ..."
         inputPlaceholder="Rechercher ..."

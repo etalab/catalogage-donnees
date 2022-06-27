@@ -3,7 +3,6 @@ import type {
   UpdateFrequency,
   GeographicalCoverage,
 } from "./definitions/datasets";
-import type { FilterCategories } from "./definitions/searchFilters";
 
 export const PUBLIC_PAGES = ["/login"];
 
@@ -47,12 +46,36 @@ export const GEOGRAPHICAL_COVERAGE_LABELS: {
   world: "Monde",
 };
 
+
+export type FilterCategories =
+  | "Informations Générales"
+  | "Sources et Formats"
+
+
 export const SEARCH_FILTERS_CATEGORIES: {
   [K in FilterCategories]: string[];
 } = {
-  "Informations Générales": ["opening", "geographical_coverage", "service"],
-  "Mots-clés Thématiques": ["tags"],
+  "Informations Générales": ["geographical_coverage", "service"],
   "Sources et Formats": ["format", "technical_source"],
 };
+
+
+export type DatasetFilters = "Couverture géographique" |
+  "Service producteur de la donnée" |
+  "Formats de mise à disposition" |
+  "Système d’information source" |
+  "Mots-clés";
+
+
+export const DATASET_FILTERS: { [K: string]: DatasetFilters } =
+{
+  geographical_coverage: "Couverture géographique",
+  service: "Service producteur de la donnée",
+  format: "Formats de mise à disposition",
+  technical_source: "Système d’information source",
+  tags: "Mots-clés",
+};
+
+
 
 export const DATASETS_PER_PAGE = 50;
