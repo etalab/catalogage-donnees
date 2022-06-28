@@ -74,7 +74,7 @@ async def get_dataset_filters(query: GetDatasetFilters) -> DatasetFiltersView:
         service=list(services),
         format=list(DataFormat),
         technical_source=list(technical_sources),
-        tag_id=[tag.id for tag in tags],
+        tag_id=tags,
     )
 
 

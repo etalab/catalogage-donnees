@@ -40,4 +40,4 @@ class DatasetFiltersView(BaseModel):
     service: List[str]
     format: List[DataFormat]
     technical_source: List[str]
-    tag_id: List[ID]
+    tag_id: List[TagView]

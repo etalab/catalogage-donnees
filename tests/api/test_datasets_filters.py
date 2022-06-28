@@ -19,7 +19,7 @@ async def test_dataset_filters_info(
 ) -> None:
     bus = resolve(MessageBus)
 
-    tag_id = await bus.execute(CreateTagFactory.build())
+    tag_id = await bus.execute(CreateTagFactory.build(name="Architecture"))
 
     await bus.execute(
         CreateDatasetFactory.build(
@@ -70,7 +70,7 @@ async def test_dataset_filters_info(
     ]
 
     assert data["tag_id"] == [
-        str(tag_id),
+        {"id": str(tag_id), "name": "Architecture"},
     ]
 
 
