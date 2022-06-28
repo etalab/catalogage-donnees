@@ -15,7 +15,7 @@ describe("SearchFilters", () => {
   describe("cleanSearchFilters", () => {
     test("a search filter should not have null values", () => {
       const source: SelectableSearchFilter = {
-        tags: null,
+        tag_id: null,
         geographical_coverage: [
           {
             label: GEOGRAPHICAL_COVERAGE_LABELS.epci,
@@ -49,7 +49,7 @@ describe("SearchFilters", () => {
         name: "bar",
       });
       const source = getFakeSelectableSearchFilter({
-        tags: [{ label: tag1.name, value: tag1.id }],
+        tag_id: [{ label: tag1.name, value: tag1.id }],
       });
 
       const newSearchFilter: Partial<SelectableSearchFilter> = {
@@ -59,7 +59,7 @@ describe("SearchFilters", () => {
       const result = mergeSelectableSearchFilter(source, newSearchFilter);
 
       expect(result.service).toEqual(newSearchFilter.service);
-      expect(result.tags).toEqual(source.tags);
+      expect(result.tag_id).toEqual(source.tag_id);
     });
   });
 
@@ -73,7 +73,7 @@ describe("SearchFilters", () => {
           service: searchFilters.service,
         },
         "Mots-clés Thématiques": {
-          tags: searchFilters.tags,
+          tag_id: searchFilters.tag_id,
         },
 
         "Sources et Formats": {

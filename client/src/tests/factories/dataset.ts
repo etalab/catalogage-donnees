@@ -49,14 +49,48 @@ export const getFakeSearchFilter = (
   searchFilter: Partial<SearchFilter> = {}
 ): SearchFilter => {
   return {
-    tags: searchFilter.tags || [buildFakeTag(), buildFakeTag()],
-    geographical_coverage: searchFilter.geographical_coverage || [
-      "department",
-      "epci",
+    tag_id: searchFilter.tag_id || [
+      buildFakeTag({
+        id: "3fb62570-7398-431a-bd60-cce1fd7bd32b",
+        name: "tag1",
+      }),
+      buildFakeTag({
+        id: "bd9de4da-9897-43e7-b09d-9235ea9af571",
+        name: "tag2",
+      }),
     ],
-    service: searchFilter.service || ["DINUM", "ADEME"],
-    technical_source: searchFilter.technical_source || ["foo", "bar"],
-    format: searchFilter.format || ["CSV", "XLSX"],
+    geographical_coverage: searchFilter.geographical_coverage || [
+      "municipality",
+      "epci",
+      "department",
+      "region",
+      "national",
+      "national_full_territory",
+      "europe",
+      "world",
+    ],
+    service: searchFilter.service || [
+      "Service enquêtes",
+      "Ministère de l'écologie",
+      "Service cartographie",
+      "Direction des données du CROUS",
+      "qsdqsd",
+    ],
+    format: searchFilter.format || [
+      "file_tabular",
+      "file_gis",
+      "api",
+      "database",
+      "website",
+      "other",
+    ],
+    technical_source: searchFilter.technical_source || [
+      "foo/bar",
+      "Système d'information central du CROUS",
+      "Catalogue des fiches de la DARES",
+      "SIG national de l'IGN",
+      "qsdqsd",
+    ],
   };
 };
 
@@ -67,7 +101,7 @@ export const getFakeSelectableSearchFilter = (
   const tag2 = buildFakeTag();
 
   return {
-    tags: searchFilter.tags || [
+    tag_id: searchFilter.tag_id || [
       {
         label: tag1.name,
         value: tag1.id,

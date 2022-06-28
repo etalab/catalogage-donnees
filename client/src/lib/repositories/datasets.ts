@@ -11,7 +11,7 @@ import { toQueryString } from "$lib/util/urls";
 import { toDataset, toPayload } from "$lib/transformers/dataset";
 import { toPaginated } from "$lib/transformers/pagination";
 import { Maybe } from "$lib/util/maybe";
-import type { SearchFilter } from "src/definitions/searchFilters";
+import type { SearchFilter } from "src/definitions/datasets";
 import { getFakeSearchFilter } from "src/tests/factories/dataset";
 
 type GetDatasetByID = (opts: {

@@ -92,7 +92,7 @@ export const transformSearchFiltersIntoSelectableSearchFilters = (
       ? mapGeographicalCoverageToSelectOption(source.geographical_coverage)
       : null,
     service: source.service ? mapToOption(source.service) : null,
-    tags: source.tags ? mapTagToSelectOption(source.tags) : null,
+    tag_id: source.tag_id ? mapTagToSelectOption(source.tag_id) : null,
     technical_source: source.technical_source
       ? mapToOption(source.technical_source)
       : null,

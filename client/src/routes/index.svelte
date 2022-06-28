@@ -64,7 +64,6 @@
   } from "src/lib/util/dataset";
   import { toSearchQueryParamRecord } from "src/lib/transformers/searchFilter";
   import { transformSearchFiltersIntoSelectableSearchFilters } from "src/lib/transformers/dataset";
-  import type { SelectOption } from "src/definitions/form";
 
   export let paginatedDatasets: Maybe<Paginated<Dataset>>;
   export let currentPage: number;

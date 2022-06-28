@@ -64,7 +64,7 @@ export type DatasetFilter =
   | "service"
   | "format"
   | "technical_source"
-  | "tags";
+  | "tag_id";
 
 export type DatasetFiltersTranslation =
   | "Couverture géographique"
@@ -80,7 +80,7 @@ export const DATASET_FILTERS_TRANSLATION: {
   service: "Service producteur de la donnée",
   format: "Formats de mise à disposition",
   technical_source: "Système d’information source",
-  tags: "Mots-clés",
+  tag_id: "Mots-clés",
 };
 
 export const DATASETS_PER_PAGE = 50;

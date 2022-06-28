@@ -69,7 +69,7 @@ export type SearchFilter = {
   service: string[] | null;
   format: string[] | null;
   technical_source: string[] | null;
-  tags: Tag[] | null;
+  tag_id: Tag[] | null;
 };
 
 export type SelectableSearchFilter = {
@@ -77,7 +77,7 @@ export type SelectableSearchFilter = {
   service: SelectOption[] | null;
   format: SelectOption[] | null;
   technical_source: SelectOption[] | null;
-  tags: SelectOption[] | null;
+  tag_id: SelectOption[] | null;
 };
 
 export type SelectableSearchFilterGroup = {

@@ -65,7 +65,7 @@ describe("transformers -- dataset", () => {
         format: ["CSV", "XLS"],
         geographical_coverage: ["epci", "department"],
         service: ["DINUM"],
-        tags: [tag1, tag2],
+        tag_id: [tag1, tag2],
         technical_source: ["DINUM", "ADEME"],
       };
 
@@ -82,7 +82,7 @@ describe("transformers -- dataset", () => {
           },
         ],
         service: [{ label: "DINUM", value: "DINUM" }],
-        tags: [
+        tag_id: [
           { label: tag1.name, value: tag1.id },
           { label: tag2.name, value: tag2.id },
         ],

@@ -8,7 +8,7 @@ describe("Search Filters", () => {
     it("should transform a searchFilter to a QueryParamRecord", () => {
       const tag1 = buildFakeTag();
       const searchFilter: Partial<SelectableSearchFilter> = {
-        tags: [
+        tag_id: [
           {
             label: tag1.name,
             value: tag1.id,
