@@ -45,8 +45,8 @@
   {@const options = searchFilters[filterName]}
   {#if options}
     <div class="fr-mb-2w">
-      <p>{DATASET_FILTERS_TRANSLATION[filterName]}</p>
       <SearchableSelect
+        label={DATASET_FILTERS_TRANSLATION[filterName]}
         buttonPlaceholder="Rechercher ..."
         inputPlaceholder="Rechercher ..."
         on:clickItem={(e) => handleSelectFilter(filterName, e)}

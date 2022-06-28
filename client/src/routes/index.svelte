@@ -69,6 +69,7 @@
   export let groupedSearchFilters: Maybe<SelectableSearchFilterGroup>;
 
   let selectedFilters: Partial<SelectableSearchFilter>;
+
   let displayFilters = false;
 
   const submitSearch = (event: CustomEvent<string>) => {
@@ -134,7 +135,8 @@
 
     {#if groupedSearchFilters}
       <div
-        class="fr-grid-row fr-grid-row--center fr-grid-row--gutters fr-py-3w {displayFilters
+        data-testid="dataset-filters"
+        class="fr-grid-row fr-grid-row--center fr-grid-row--gutters fr-py-3w {!displayFilters
           ? 'hidden'
           : undefined} filters"
       >

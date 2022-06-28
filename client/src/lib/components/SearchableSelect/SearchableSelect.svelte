@@ -1,21 +1,27 @@
 <script lang="ts">
   import type { SelectOption } from "src/definitions/form";
   import { clickOutside } from "src/lib/actions/clickOutside";
+  import { slugify } from "src/lib/util/string";
   import { createEventDispatcher } from "svelte";
 
   export let buttonPlaceholder: string;
   export let inputPlaceholder: string;
+  export let label: string;
   export let options: Array<SelectOption>;
 
   let macthedOptions: Array<SelectOption> = options;
   let isOverlayOpen = false;
   let buttonText = buttonPlaceholder;
 
+  let selectedOption: SelectOption;
+
   let searchTerm: string;
 
   $: macthedOptions = options.filter((item) =>
     item.label.match(new RegExp(searchTerm, "i"))
   );
+
+  $: slug = slugify(label);
 
   const openOverlay = () => {
     isOverlayOpen = true;
@@ -54,10 +60,25 @@
     dispatch("clickItem", null);
     closeOverlay();
   };
+
+  const handleSelectChange = (e: Event) => {
+    const selectedOption = options.find(
+      (item) => item.value === (e.target as HTMLInputElement).value
+    );
+
+    if (selectedOption) {
+      handleClickListItem(selectedOption);
+    }
+  };
 </script>
 
 <div use:clickOutside={{ callback: () => closeOverlay() }} class="container">
-  <button class="fr-select" on:click={handleOverlayOpening}>{buttonText}</button
+  <label id={`${slug}-label`} for={slug}>{label}</label>
+  <button
+    aria-labelledby={`${slug}-label`}
+    class="fr-select"
+    data-testId={`${slug}-button`}
+    on:click={handleOverlayOpening}>{buttonText}</button
   >
 
   {#if isOverlayOpen}
@@ -68,14 +89,28 @@
         bind:value={searchTerm}
         type="search"
       />
-      <ul>
-        {#each macthedOptions as option}
-          <li on:click={() => handleClickListItem(option)}>{option.label}</li>
-        {/each}
 
+      <div class="a11y_hidden" aria-hidden="true">
+        <select
+          on:change={handleSelectChange}
+          id={slug}
+          bind:value={selectedOption}
+          tabindex="-1"
+        >
+          {#each macthedOptions as option}
+            <option value={option.value}>{option.label}</option>
+          {/each}
+        </select>
+      </div>
+
+      <ul>
         {#if macthedOptions.length > 0}
           <li on:click={handleResetFilter}>Réinitialiser le filtre</li>
         {/if}
+
+        {#each macthedOptions as option}
+          <li on:click={() => handleClickListItem(option)}>{option.label}</li>
+        {/each}
 
         {#if macthedOptions.length === 0}
           <li class="no-result">Aucun résultat trouvé</li>
@@ -127,5 +162,9 @@
 
   .no-result {
     cursor: not-allowed;
+  }
+
+  .a11y_hidden {
+    display: none;
   }
 </style>
