@@ -1,4 +1,4 @@
-import uuid
+import datetime as dt
 from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import Column, DateTime, ForeignKey, func, select
@@ -19,13 +19,13 @@ if TYPE_CHECKING:
 class CatalogRecordModel(Base):
     __tablename__ = "catalog_record"
 
-    id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True)
+    id: ID = Column(UUID(as_uuid=True), primary_key=True)
     dataset_id: ID = Column(UUID(as_uuid=True), ForeignKey("dataset.id"))
     dataset: "DatasetModel" = relationship(
         "DatasetModel",
         back_populates="catalog_record",
     )
-    created_at = Column(
+    created_at: dt.datetime = Column(
         DateTime(timezone=True), server_default=func.clock_timestamp(), nullable=False
     )
 

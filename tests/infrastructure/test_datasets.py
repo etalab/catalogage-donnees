@@ -2,35 +2,24 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import contains_eager
 
-from server.application.datasets.commands import CreateDataset, DeleteDataset
+from server.application.datasets.commands import DeleteDataset
 from server.application.datasets.queries import GetDatasetByID
-from server.application.tags.commands import CreateTag
 from server.config.di import resolve
 from server.domain.catalog_records.repositories import CatalogRecordRepository
-from server.domain.datasets.entities import DataFormat, GeographicalCoverage
 from server.infrastructure.database import Database
 from server.infrastructure.datasets.models import DatasetModel
 from server.infrastructure.tags.repositories import TagModel, dataset_tag
 from server.seedwork.application.messages import MessageBus
+
+from ..factories import CreateDatasetFactory, CreateTagFactory
 
 
 @pytest.mark.asyncio
 async def test_dataset_cascades() -> None:
     bus = resolve(MessageBus)
 
-    tag_architecture_id = await bus.execute(CreateTag(name="Architecture"))
-
-    dataset_id = await bus.execute(
-        CreateDataset(
-            title="Title",
-            description="Description",
-            service="Example service",
-            geographical_coverage=GeographicalCoverage.NATIONAL,
-            formats=[DataFormat.WEBSITE, DataFormat.API],
-            contact_emails=["person@mydomain.org"],
-            tag_ids=[str(tag_architecture_id)],
-        )
-    )
+    tag_id = await bus.execute(CreateTagFactory.build(name="Architecture"))
+    dataset_id = await bus.execute(CreateDatasetFactory.build(tag_ids=[tag_id]))
 
     dataset = await bus.execute(GetDatasetByID(id=dataset_id))
 
@@ -47,7 +36,7 @@ async def test_dataset_cascades() -> None:
             .join(dataset_tag, isouter=True)
             .join(DatasetModel, isouter=True)
             .options(contains_eager(TagModel.datasets))
-            .where(TagModel.id == tag_architecture_id)
+            .where(TagModel.id == tag_id)
         )
         result = await session.execute(stmt)
         tag = result.unique().scalar_one()

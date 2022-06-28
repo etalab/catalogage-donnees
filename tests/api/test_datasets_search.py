@@ -191,11 +191,11 @@ async def test_search_results_change_when_data_changes(
     assert dataset["id"] == str(pk)
 
     # Same on description
-    command = UpdateDatasetFactory.build(
+    update_command = UpdateDatasetFactory.build(
         description="Jeu de données spécial",
         **update_command.dict(exclude={"description"})
     )
-    await bus.execute(command)
+    await bus.execute(update_command)
     response = await client.get(
         "/datasets/",
         params={"q": "spécial"},
@@ -206,8 +206,8 @@ async def test_search_results_change_when_data_changes(
     assert dataset["id"] == str(pk)
 
     # Deleted dataset is not returned in search results anymore
-    command = DeleteDataset(id=pk)
-    await bus.execute(command)
+    delete_command = DeleteDataset(id=pk)
+    await bus.execute(delete_command)
     response = await client.get(
         "/datasets/",
         params={"q": "modifié"},

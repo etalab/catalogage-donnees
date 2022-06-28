@@ -108,26 +108,26 @@ async def handle_dataset(item: dict, reset: bool = False) -> None:
     existing_dataset = await repository.get_by_id(id_)
 
     if existing_dataset is not None:
-        command = UpdateDataset(id=id_, **item["params"])
+        update_command = UpdateDataset(id=id_, **item["params"])
 
         changed = any(
-            getattr(command, k) != _get_dataset_attr(existing_dataset, k)
+            getattr(update_command, k) != _get_dataset_attr(existing_dataset, k)
             for k in item["params"]
         )
 
         if changed and reset:
-            await bus.execute(command)
-            print(f"{warn('reset')}: {command!r}")
+            await bus.execute(update_command)
+            print(f"{warn('reset')}: {update_command!r}")
             return
 
         dataset_repr = f"Dataset(id={id_!r}, title={item['params']['title']!r}, ...)"
         print(f"{info('ok')}: {dataset_repr}")
         return
 
-    command = CreateDataset(**item["params"])
+    create_command = CreateDataset(**item["params"])
 
-    await bus.execute(command, id_=id_)
-    print(f"{success('created')}: {command!r}")
+    await bus.execute(create_command, id_=id_)
+    print(f"{success('created')}: {create_command!r}")
 
 
 async def main(path: pathlib.Path, reset: bool = False, no_input: bool = False) -> None:

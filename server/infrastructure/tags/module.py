@@ -9,7 +9,7 @@ class TagsModule(Module):
         CreateTag: create_tag,
     }
 
-    query_handlers: dict = {
+    query_handlers = {
         GetAllTags: get_all_tags,
         GetTagByID: get_tag_by_id,
     }

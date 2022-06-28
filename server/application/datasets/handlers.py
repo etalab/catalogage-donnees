@@ -71,9 +71,9 @@ async def get_dataset_filters(query: GetDatasetFilters) -> DatasetFiltersView:
 
     return DatasetFiltersView(
         geographical_coverage=list(GeographicalCoverage),
-        service=services,
+        service=list(services),
         format=list(DataFormat),
-        technical_source=technical_sources,
+        technical_source=list(technical_sources),
         tag_id=[tag.id for tag in tags],
     )
 
