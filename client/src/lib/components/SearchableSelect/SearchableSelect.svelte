@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { SelectOption } from "src/definitions/form";
+  import { clickOutside } from "src/lib/actions/clickOutside";
   import { createEventDispatcher } from "svelte";
 
   export let buttonPlaceholder: string;
@@ -51,10 +52,11 @@
     macthedOptions = options;
     buttonText = buttonPlaceholder;
     dispatch("clickItem", null);
+    closeOverlay();
   };
 </script>
 
-<div class="container">
+<div use:clickOutside={{ callback: () => closeOverlay() }} class="container">
   <button class="fr-select" on:click={handleOverlayOpening}>{buttonText}</button
   >
 
