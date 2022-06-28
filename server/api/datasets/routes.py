@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
+from starlette.responses import Response
 
 from server.application.datasets.commands import (
     CreateDataset,
@@ -109,6 +110,7 @@ async def update_dataset(id: ID, data: DatasetUpdate) -> DatasetView:
     "/{id}/",
     dependencies=[Depends(IsAuthenticated()), Depends(HasRole(UserRole.ADMIN))],
     status_code=204,
+    response_class=Response,
 )
 async def delete_dataset(id: ID) -> None:
     bus = resolve(MessageBus)
