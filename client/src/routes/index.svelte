@@ -9,15 +9,14 @@
 
     const token = get(apiToken);
 
-    // Promise.all?
-
-    const paginatedDatasets = await getDatasets({
-      fetch,
-      apiToken: token,
-      page,
-    });
-
-    const searchFilters = await getSearchFilter(fetch, token);
+    const [paginatedDatasets, searchFilters] = await Promise.all([
+      getDatasets({
+        fetch,
+        apiToken: token,
+        page,
+      }),
+      getSearchFilter(fetch, token),
+    ]);
 
     if (!searchFilters) {
       return {
