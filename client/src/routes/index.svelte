@@ -70,6 +70,7 @@
   export let groupedSearchFilters: Maybe<SelectableSearchFilterGroup>;
 
   let selectedFilters: Partial<SelectableSearchFilter>;
+  let displayFilters = false;
 
   const submitSearch = (event: CustomEvent<string>) => {
     const q = event.detail;
@@ -116,27 +117,42 @@
 </section>
 
 <section class="fr-container">
-  {#if groupedSearchFilters}
-    <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters fr-mb-3w">
-      {#each Object.keys(groupedSearchFilters) as filterCategory}
-        <div class="fr-col-4">
-          <FilterSection
-            searchFilters={groupedSearchFilters[filterCategory]}
-            sectionTitle={filterCategory}
-            on:filterSelected={handleSelectedFilter}
-          />
-        </div>
-      {/each}
-    </div>
-  {/if}
-
-  <div class="fr-grid-row">
-    <div class="fr-col-12">
-      {#if Maybe.Some(paginatedDatasets)}
-        <h2 class="fr-mb-3w">
+  {#if Maybe.Some(paginatedDatasets)}
+    <div class="fr-grid-row summary">
+      <div class="fr-col-12 fr-pb-3w summary__header">
+        <h2>
           {paginatedDatasets.totalItems} jeux de donnnées contribués
         </h2>
 
+        <button
+          on:click={() => (displayFilters = !displayFilters)}
+          class="fr-btn fr-btn--secondary"
+        >
+          Affiner la recherche
+        </button>
+      </div>
+    </div>
+
+    {#if groupedSearchFilters}
+      <div
+        class="fr-grid-row fr-grid-row--center fr-grid-row--gutters fr-py-3w {displayFilters
+          ? 'hidden'
+          : undefined} filters"
+      >
+        {#each Object.keys(groupedSearchFilters) as filterCategory}
+          <div class="fr-col-4">
+            <FilterSection
+              searchFilters={groupedSearchFilters[filterCategory]}
+              sectionTitle={filterCategory}
+              on:filterSelected={handleSelectedFilter}
+            />
+          </div>
+        {/each}
+      </div>
+    {/if}
+
+    <div class="fr-grid-row">
+      <div class="fr-col-12">
         <DatasetList datasets={paginatedDatasets.items} />
         <div class="pagination-container fr-mt-2w ">
           <Pagination
@@ -145,9 +161,9 @@
             {getPageLink}
           />
         </div>
-      {/if}
+      </div>
     </div>
-  </div>
+  {/if}
 </section>
 
 <style>
@@ -156,9 +172,23 @@
     justify-content: space-around;
   }
 
-  /* Filters */
-
-  p {
+  h2 {
     padding: 0;
+  }
+
+  .hidden {
+    display: none;
+    height: 0;
+  }
+
+  .filters {
+    border-bottom: 1px solid var(--border-default-grey);
+    border-top: 1px solid var(--border-default-grey);
+  }
+
+  .summary__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 </style>
