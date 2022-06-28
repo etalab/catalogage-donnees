@@ -74,7 +74,7 @@
         {/each}
 
         {#if macthedOptions.length > 0}
-          <li on:click={handleResetFilter}>Réinitiliser le filtre</li>
+          <li on:click={handleResetFilter}>Réinitialiser le filtre</li>
         {/if}
 
         {#if macthedOptions.length === 0}
