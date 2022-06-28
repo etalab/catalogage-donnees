@@ -56,7 +56,7 @@ export const SEARCH_FILTERS_CATEGORIES: {
 } = {
   "Informations Générales": ["geographical_coverage", "service"],
   "Sources et Formats": ["format", "technical_source"],
-  "Mots-clés Thématiques": ["tags"],
+  "Mots-clés Thématiques": ["tag_id"],
 };
 
 export type DatasetFilter =

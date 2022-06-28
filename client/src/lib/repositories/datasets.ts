@@ -13,6 +13,7 @@ import { toPaginated } from "$lib/transformers/pagination";
 import { Maybe } from "$lib/util/maybe";
 import type { SearchFilter } from "src/definitions/datasets";
 import { getFakeSearchFilter } from "src/tests/factories/dataset";
+import type { QueryParamRecord } from "src/definitions/url";
 
 type GetDatasetByID = (opts: {
   fetch: Fetch;
@@ -42,6 +43,7 @@ type GetDatasets = (opts: {
   apiToken: string;
   page: number;
   q?: string;
+  filters?: QueryParamRecord;
 }) => Promise<Maybe<Paginated<Dataset>>>;
 
 export const getDatasets: GetDatasets = async ({
@@ -49,6 +51,7 @@ export const getDatasets: GetDatasets = async ({
   apiToken,
   page,
   q,
+  filters,
 }) => {
   const queryItems: [string, string][] = [
     ["page_number", page.toString()],
@@ -57,6 +60,12 @@ export const getDatasets: GetDatasets = async ({
 
   if (typeof q === "string") {
     queryItems.push(["q", q]);
+  }
+
+  if (filters) {
+    filters.forEach((item) => {
+      queryItems.push(item);
+    });
   }
 
   const queryString = toQueryString(queryItems);

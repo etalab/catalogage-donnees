@@ -85,19 +85,20 @@
     return `${queryString}`;
   };
 
-  const handleSelectedFilter = (e: CustomEvent<SelectableSearchFilter>) => {
+  const handleSelectedFilter = async (
+    e: CustomEvent<SelectableSearchFilter>
+  ) => {
     selectedFilters = cleanSearchFilters(
       mergeSelectableSearchFilter(selectedFilters, e.detail)
     );
 
     const queryParamsRecords = toSearchQueryParamRecord(selectedFilters);
-
-    const queryString = patchQueryString(
-      $pageStore.url.searchParams,
-      queryParamsRecords
-    );
-
-    console.log(queryString);
+    paginatedDatasets = await getDatasets({
+      fetch,
+      page: currentPage,
+      apiToken: $apiToken,
+      filters: queryParamsRecords,
+    });
   };
 </script>
 
