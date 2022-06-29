@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { SelectOption } from "src/definitions/form";
   import { clickOutside } from "src/lib/actions/clickOutside";
-  import { slugify } from "src/lib/util/string";
+  import { slugify } from "src/lib/util/format";
   import { createEventDispatcher } from "svelte";
 
   export let buttonPlaceholder: string;

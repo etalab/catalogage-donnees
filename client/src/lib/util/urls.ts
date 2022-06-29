@@ -1,9 +1,10 @@
+import type { QueryParamRecord } from "src/definitions/url";
 import { Maybe } from "./maybe";
 
 /**
  * Create an URL query string, including a leading "?" if needed, dropping any null or undefined values.
  */
-export const toQueryString = (items: [string, Maybe<string>][]): string => {
+export const toQueryString = (items: QueryParamRecord): string => {
   return patchQueryString(new URLSearchParams(), items);
 };
 

@@ -53,7 +53,7 @@ export const getDatasets: GetDatasets = async ({
   q,
   filters,
 }) => {
-  const queryItems: [string, string][] = [
+  const queryItems: QueryParamRecord = [
     ["page_number", page.toString()],
     ["page_size", DATASETS_PER_PAGE.toString()],
   ];
