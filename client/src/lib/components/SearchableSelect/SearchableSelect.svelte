@@ -121,6 +121,9 @@
 </div>
 
 <style>
+  button {
+    text-align: left;
+  }
   .container {
     position: relative;
     box-sizing: border-box;

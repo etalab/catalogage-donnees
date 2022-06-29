@@ -78,7 +78,7 @@
   let displayFilters = false;
 
   const updateSearch = (event: CustomEvent<string>) => {
-    const q = event.detail;
+    q = event.detail;
     const queryString = toQueryString([["q", q]]);
     const href = `${queryString}`; // Same page, update query string only
     goto(href);
@@ -104,6 +104,7 @@
       page: currentPage,
       apiToken: $apiToken,
       filters: queryParamsRecords,
+      q,
     });
   };
 </script>
@@ -129,12 +130,16 @@
           {pluralize(paginatedDatasets.totalItems, "résultat", "résultats")}
         </h2>
 
-        <button
-          on:click={() => (displayFilters = !displayFilters)}
-          class="fr-btn fr-btn--secondary"
-        >
-          Affiner la recherche
-        </button>
+        {#if paginatedDatasets.totalItems > 1}
+          <button
+            on:click={() => (displayFilters = !displayFilters)}
+            class="fr-btn fr-btn--secondary  fr-btn--icon-right {!displayFilters
+              ? 'fr-icon-arrow-down-s-line'
+              : 'fr-icon-arrow-up-s-line'}"
+          >
+            Affiner la recherche
+          </button>
+        {/if}
       </div>
     </div>
 
@@ -173,6 +178,9 @@
 </section>
 
 <style>
+  .summary__header {
+    border-bottom: 1px solid var(--border-default-grey);
+  }
   .pagination-container {
     display: flex;
     justify-content: space-around;
@@ -189,7 +197,6 @@
 
   .filters {
     border-bottom: 1px solid var(--border-default-grey);
-    border-top: 1px solid var(--border-default-grey);
   }
 
   .summary__header {
