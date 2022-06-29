@@ -55,9 +55,3 @@
     </div>
   {/if}
 {/each}
-
-<style>
-  p {
-    padding: 0;
-  }
-</style>

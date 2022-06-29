@@ -21,6 +21,7 @@ const selectOptions: Array<SelectOption> = [
 ];
 
 const props = {
+  label: "Mon label",
   inputPlaceholder,
   buttonPlaceholder,
   options: selectOptions,
@@ -66,7 +67,7 @@ describe("Test the dataset form", () => {
     const button = getByRole("button");
     await fireEvent.click(button);
     const options = getAllByRole("listitem");
-    expect(options[0].textContent).toBe(selectOptions[0].label);
+    expect(options[1].textContent).toBe(selectOptions[0].label);
   });
 
   test("should have a text input of type search", async () => {
@@ -112,7 +113,7 @@ describe("Test the dataset form", () => {
 
     const options = getAllByRole("listitem");
     expect(options.length).toBe(2);
-    expect(options[0].textContent).toBe("un arbre");
+    expect(options[1].textContent).toBe("un arbre");
   });
 
   test("a message telling no result has been found must be display if ... no result has been found", async () => {
@@ -150,7 +151,7 @@ describe("Test the dataset form", () => {
 
     const options = getAllByRole("listitem");
 
-    await fireEvent.click(options[0]);
+    await fireEvent.click(options[1]);
 
     expect(button).toHaveTextContent("un arbre");
   });
@@ -171,7 +172,7 @@ describe("Test the dataset form", () => {
 
     const options = getAllByRole("listitem");
 
-    await fireEvent.click(options[0]);
+    await fireEvent.click(options[1]);
 
     expect(button).toHaveTextContent("un arbre");
   });

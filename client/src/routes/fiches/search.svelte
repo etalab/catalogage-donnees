@@ -79,6 +79,13 @@
 
   const updateSearch = (event: CustomEvent<string>) => {
     q = event.detail;
+
+    if (!q) {
+      const href = ``; // Same page, remove query string
+      goto(href);
+      return;
+    }
+
     const queryString = toQueryString([["q", q]]);
     const href = `${queryString}`; // Same page, update query string only
     goto(href);

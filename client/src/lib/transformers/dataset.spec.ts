@@ -62,7 +62,7 @@ describe("transformers -- dataset", () => {
       });
 
       const source: SearchFilter = {
-        format: ["CSV", "XLS"],
+        format: ["file_tabular", "file_gis"],
         geographical_coverage: ["epci", "department"],
         service: ["DINUM"],
         tag_id: [tag1, tag2],
@@ -71,8 +71,11 @@ describe("transformers -- dataset", () => {
 
       const expectedResult: SelectableSearchFilter = {
         format: [
-          { label: "CSV", value: "CSV" },
-          { label: "XLS", value: "XLS" },
+          {
+            label: "Fichier tabulaire (XLS, XLSX, CSV, ...)",
+            value: "file_tabular",
+          },
+          { label: "Fichier SIG (Shapefile, ...)", value: "file_gis" },
         ],
         geographical_coverage: [
           { label: GEOGRAPHICAL_COVERAGE_LABELS.epci, value: "epci" },

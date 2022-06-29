@@ -12,7 +12,6 @@ import { toDataset, toPayload } from "$lib/transformers/dataset";
 import { toPaginated } from "$lib/transformers/pagination";
 import { Maybe } from "$lib/util/maybe";
 import type { SearchFilter } from "src/definitions/datasets";
-import { getFakeSearchFilter } from "src/tests/factories/dataset";
 import type { QueryParamRecord } from "src/definitions/url";
 
 type GetDatasetByID = (opts: {
@@ -168,10 +167,5 @@ export const getSearchFilter = async (
   });
 
   const response = await makeApiRequest(fetch, request);
-
-  console.log(response);
-
-  return getFakeSearchFilter();
-
-  // return Maybe.map(response, (response) => response.json());
+  return Maybe.map(response, (response) => response.json());
 };

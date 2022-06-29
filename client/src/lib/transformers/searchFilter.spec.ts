@@ -24,7 +24,7 @@ describe("Search Filters", () => {
       };
 
       const expectedResult: [string, Maybe<string>][] = [
-        ["tags", tag1.id],
+        ["tag_id", tag1.id],
         ["service", "DINUM"],
       ];
       const result = toSearchQueryParamRecord(searchFilter);

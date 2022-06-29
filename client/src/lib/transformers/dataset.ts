@@ -1,4 +1,7 @@
-import { GEOGRAPHICAL_COVERAGE_LABELS } from "src/constants";
+import {
+  DATA_FORMAT_LABELS,
+  GEOGRAPHICAL_COVERAGE_LABELS,
+} from "src/constants";
 import type {
   Dataset,
   SearchFilter,
@@ -83,11 +86,19 @@ const mapGeographicalCoverageToSelectOption = (
     };
   });
 
+const mapDataFormatToSelectOption = (items: string[]): SelectOption[] =>
+  items.map((item) => {
+    return {
+      label: DATA_FORMAT_LABELS[item],
+      value: item,
+    };
+  });
+
 export const transformSearchFiltersIntoSelectableSearchFilters = (
   source: SearchFilter
 ): SelectableSearchFilter => {
   return {
-    format: source.format ? mapToOption(source.format) : null,
+    format: source.format ? mapDataFormatToSelectOption(source.format) : null,
     geographical_coverage: source.geographical_coverage
       ? mapGeographicalCoverageToSelectOption(source.geographical_coverage)
       : null,

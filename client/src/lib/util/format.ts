@@ -52,7 +52,6 @@ export const splitParagraphs = (text: string): string[] => {
   return text.split("\n");
 };
 
-
 export const slugify = (str: string) => {
   str = str.replace(/^\s+|\s+$/g, "");
 
