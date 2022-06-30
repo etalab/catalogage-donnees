@@ -1,7 +1,7 @@
 import datetime as dt
 from typing import List, Optional
 
-from pydantic import EmailStr, Field, validator
+from pydantic import EmailStr, Field
 
 from server.domain.common.types import ID
 from server.domain.datasets.entities import (
@@ -11,8 +11,10 @@ from server.domain.datasets.entities import (
 )
 from server.seedwork.application.commands import Command
 
+from .validation import CreateDatasetValidationMixin, UpdateDatasetValidationMixin
 
-class CreateDataset(Command[ID]):
+
+class CreateDataset(CreateDatasetValidationMixin, Command[ID]):
     title: str
     description: str
     service: str
@@ -26,20 +28,8 @@ class CreateDataset(Command[ID]):
     published_url: Optional[str] = None
     tag_ids: List[ID] = Field(default_factory=list)
 
-    @validator("formats")
-    def check_formats_at_least_one(cls, value: List[DataFormat]) -> List[DataFormat]:
-        if not value:
-            raise ValueError("formats must contain at least one item")
-        return value
 
-    @validator("contact_emails")
-    def check_contact_emails_at_least_one(cls, value: List[str]) -> List[str]:
-        if not value:
-            raise ValueError("contact_emails must contain at least one item")
-        return value
-
-
-class UpdateDataset(Command[None]):
+class UpdateDataset(UpdateDatasetValidationMixin, Command[None]):
     id: ID
     title: str
     description: str
@@ -53,42 +43,6 @@ class UpdateDataset(Command[None]):
     last_updated_at: Optional[dt.datetime] = Field(...)
     published_url: Optional[str] = Field(...)
     tag_ids: List[ID]
-
-    @validator("title")
-    def check_title_not_empty(cls, value: str) -> str:
-        if not value:
-            raise ValueError("title must not be empty")
-        return value
-
-    @validator("description")
-    def check_description_not_empty(cls, value: str) -> str:
-        if not value:
-            raise ValueError("description must not be empty")
-        return value
-
-    @validator("service")
-    def check_service_not_empty(cls, value: str) -> str:
-        if not value:
-            raise ValueError("service must not be empty")
-        return value
-
-    @validator("formats")
-    def check_formats_at_least_one(cls, value: List[DataFormat]) -> List[DataFormat]:
-        if not value:
-            raise ValueError("formats must contain at least one item")
-        return value
-
-    @validator("contact_emails")
-    def check_contact_emails_at_least_one(cls, value: List[str]) -> List[str]:
-        if not value:
-            raise ValueError("contact_emails must contain at least one item")
-        return value
-
-    @validator("published_url")
-    def check_published_url_not_empty(cls, value: Optional[str]) -> Optional[str]:
-        if value is not None and not value:
-            raise ValueError("published_url must not be empty")
-        return value
 
 
 class DeleteDataset(Command[None]):
