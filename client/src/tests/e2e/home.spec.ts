@@ -17,6 +17,8 @@ test.describe("Catalog list", () => {
 
   test("Sees the pagination", async ({ page }) => {
     await page.goto("/");
+
+    // Page size is 50 items, only 1 page during E2E tests.
     const currentPage = page.locator(
       "[data-testid='pagination-list'] [aria-current='page']"
     );

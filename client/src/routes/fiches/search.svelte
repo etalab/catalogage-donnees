@@ -63,7 +63,7 @@
     mergeSelectableDatasetFilter,
   } from "src/lib/util/dataset";
   import { transformSearchFiltersIntoSelectableDatasetFilters } from "src/lib/transformers/dataset";
-  import FilterSection from "../_FilterSection.svelte";
+  import FilterSection from "../../lib/components/DatasetFilterSection/DatasetFilterSection.svelte";
   import Pagination from "src/lib/components/Pagination/Pagination.svelte";
   import { toSearchQueryParamRecord } from "src/lib/transformers/searchFilter";
   import type { GetPageLink, Paginated } from "src/definitions/pagination";
@@ -137,16 +137,14 @@
           {pluralize(paginatedDatasets.totalItems, "résultat", "résultats")}
         </h2>
 
-        {#if paginatedDatasets.totalItems > 1}
-          <button
-            on:click={() => (displayFilters = !displayFilters)}
-            class="fr-btn fr-btn--secondary  fr-btn--icon-right {!displayFilters
-              ? 'fr-icon-arrow-down-s-line'
-              : 'fr-icon-arrow-up-s-line'}"
-          >
-            Affiner la recherche
-          </button>
-        {/if}
+        <button
+          on:click={() => (displayFilters = !displayFilters)}
+          class="fr-btn fr-btn--secondary  fr-btn--icon-right {!displayFilters
+            ? 'fr-icon-arrow-down-s-line'
+            : 'fr-icon-arrow-up-s-line'}"
+        >
+          Affiner la recherche
+        </button>
       </div>
     </div>
 

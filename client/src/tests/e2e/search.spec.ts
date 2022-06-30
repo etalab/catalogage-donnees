@@ -89,7 +89,7 @@ test.describe("Search", () => {
   test("should see 3 filter sections", async ({ page }) => {
     await page.goto("/");
 
-    await performASearch(page, "nom");
+    await performASearch(page, "crous");
 
     await page.locator("text=Affiner la recherche").click();
     const sectionTitles = await page.locator("h6");
@@ -107,13 +107,13 @@ test.describe("Search", () => {
   test("should filter results by geographical_coverage", async ({ page }) => {
     await page.goto("/");
 
-    await performASearch(page, "nom");
+    await performASearch(page, "crous");
 
     await page.locator("text=Affiner la recherche").click();
     await page
       .locator("[data-testid='couverture-geographique-button']")
       .click();
-    const option = page.locator("li:has-text('EPCI')").first();
+    const option = page.locator("li:has-text('Monde')").first();
 
     const [request, response] = await Promise.all([
       page.waitForRequest("**/datasets/?**"),
@@ -132,7 +132,7 @@ test.describe("Search", () => {
   test("should remove a filter", async ({ page }) => {
     await page.goto("/");
 
-    await performASearch(page, "nom");
+    await performASearch(page, "crous");
 
     await page.locator("text=Affiner la recherche").click();
     const geographicalCoverageButton = await page.locator(
@@ -141,7 +141,7 @@ test.describe("Search", () => {
 
     await geographicalCoverageButton.click();
 
-    const option = page.locator("li:has-text('EPCI')").first();
+    const option = page.locator("li:has-text('Monde')").first();
 
     const [request, response] = await Promise.all([
       page.waitForRequest("**/datasets/?**"),
@@ -166,6 +166,6 @@ test.describe("Search", () => {
     const itemCount = await page
       .locator('[data-test-id="dataset-list-item"]')
       .count();
-    expect(itemCount).toBe(7);
+    expect(itemCount).toBe(2);
   });
 });

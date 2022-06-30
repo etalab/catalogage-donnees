@@ -73,7 +73,9 @@
 </script>
 
 <div use:clickOutside={{ callback: () => closeOverlay() }} class="container">
-  <label id={`${slug}-label`} for={slug}>{label}</label>
+  <label data-testId={`${slug}-label`} id={`${slug}-label`} for={slug}
+    >{label}</label
+  >
   <button
     aria-labelledby={`${slug}-label`}
     class="fr-select"

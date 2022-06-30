@@ -61,7 +61,7 @@ datasets:
       tag_ids:
         - "9c1549a5-02ef-43a9-aa20-6babdce0b733"
 
-  -  # Mimicks: https://www.data.gouv.fr/fr/datasets/ensemble-des-lieux-de-restauration-des-crous-france-entiere-1/
+  - # Mimicks: https://www.data.gouv.fr/fr/datasets/ensemble-des-lieux-de-restauration-des-crous-france-entiere-1/
     id: "4370d027-1447-4e1b-9452-781233be7f5a"
     params:
       title: Ensemble des lieux de restauration des CROUS
@@ -69,6 +69,25 @@ datasets:
         Les ressources ci-dessous recensent les restaurants, brasseries et cafétérias dans le réseau des CROUS.
       service: Direction des données du CROUS
       geographical_coverage: national
+      formats:
+        - file_tabular
+      technical_source: Système d'information central du CROUS
+      producer_email: null
+      contact_emails: [crous.person@mydomain.org]
+      update_frequency: null
+      last_updated_at: null
+      published_url: "https://www.data.gouv.fr/fr/datasets/ensemble-des-lieux-de-restauration-des-crous-france-entiere-1/"
+      tag_ids:
+        - "ceb19363-1681-4052-813c-f771d4459295"
+
+  - # Mimicks: https://www.data.gouv.fr/fr/datasets/restaurants-brasseries-et-cafeterias-des-crous/
+    id: "3707e03b-d020-4a14-bb85-1ad0545b1578"
+    params:
+      title: Restaurants, brasseries et cafétérias des CROUS
+      description: |
+        Par région, les ressources ci-dessous recensent les restaurants, brasseries et cafétérias dans le réseau des CROUS.
+      service: Direction des données du CROUS
+      geographical_coverage: world
       formats:
         - file_tabular
       technical_source: Système d'information central du CROUS

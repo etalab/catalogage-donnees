@@ -48,7 +48,7 @@
 {#each searchFiltersKeys as filterName}
   {@const options = searchFilters[filterName]}
   {#if options}
-    <div class="fr-mb-2w">
+    <div data-testid={`filter-section`} class="fr-mb-2w">
       <SearchableSelect
         label={DATASET_FILTERS_TRANSLATION[filterName]}
         buttonPlaceholder="Rechercher ..."
