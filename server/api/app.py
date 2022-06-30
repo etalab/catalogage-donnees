@@ -5,7 +5,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from server.config import Settings
 from server.config.di import resolve
 
-from . import errors
 from .auth.middleware import AuthMiddleware
 from .resources import auth_backend
 from .routes import router
@@ -32,7 +31,6 @@ def create_app(settings: Settings = None) -> App:
     app = App(
         debug=settings.debug,
         docs_url=settings.docs_url,
-        exception_handlers=errors.exception_handlers,
     )
 
     app.add_middleware(

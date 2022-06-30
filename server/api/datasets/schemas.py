@@ -4,6 +4,10 @@ from typing import List, Optional
 from fastapi import Query
 from pydantic import BaseModel, EmailStr, Field
 
+from server.application.datasets.validation import (
+    CreateDatasetValidationMixin,
+    UpdateDatasetValidationMixin,
+)
 from server.domain.common.types import ID
 from server.domain.datasets.entities import (
     DataFormat,
@@ -34,7 +38,7 @@ class DatasetListParams:
         self.tag_id = tag_id
 
 
-class DatasetCreate(BaseModel):
+class DatasetCreate(CreateDatasetValidationMixin, BaseModel):
     title: str
     description: str
     service: str
@@ -49,7 +53,7 @@ class DatasetCreate(BaseModel):
     tag_ids: List[ID] = Field(default_factory=list)
 
 
-class DatasetUpdate(BaseModel):
+class DatasetUpdate(UpdateDatasetValidationMixin, BaseModel):
     title: str
     description: str
     service: str
