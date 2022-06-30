@@ -5,6 +5,7 @@ import uvicorn.supervisors
 
 from server.config.di import resolve
 from server.config.settings import Settings
+
 from .logging.config import get_log_config
 
 
