@@ -75,7 +75,9 @@ class SqlDatasetRepository(DatasetRepository):
 
     async def get_technical_source_set(self) -> Set[str]:
         async with self._db.session() as session:
-            stmt = select(DatasetModel.technical_source.distinct())
+            stmt = select(DatasetModel.technical_source.distinct()).where(
+                DatasetModel.technical_source.is_not(None)
+            )
             result = await session.execute(stmt)
             return set(result.scalars())
 

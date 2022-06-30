@@ -23,8 +23,16 @@ async def test_dataset_filters_info(
 
     await bus.execute(
         CreateDatasetFactory.build(
-            service="Example service",
+            service="Same example service",
             technical_source="Example database system",
+        )
+    )
+
+    # Add another with filterable optional fields left out
+    await bus.execute(
+        CreateDatasetFactory.build(
+            service="Same example service",
+            technical_source=None,
         )
     )
 
@@ -53,7 +61,7 @@ async def test_dataset_filters_info(
     ]
 
     assert data["service"] == [
-        "Example service",
+        "Same example service",
     ]
 
     assert sorted(data["format"]) == [
