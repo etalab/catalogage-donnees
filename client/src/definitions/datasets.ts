@@ -1,7 +1,7 @@
 import type { Maybe } from "$lib/util/maybe";
 import type { CatalogRecord } from "./catalog_records";
 import type { Tag } from "./tag";
-import type { FilterCategories } from "src/constants";
+import type { DatasetFilterCategories } from "src/constants";
 import type { SelectOption } from "./form";
 
 // Matches enum on the backend.
@@ -64,7 +64,7 @@ export type DatasetCreateData = Omit<DatasetFormData, "tags"> & {
 };
 export type DatasetUpdateData = DatasetCreateData;
 
-export type SearchFilter = {
+export type DatasetFilters = {
   geographical_coverage: string[] | null;
   service: string[] | null;
   format: string[] | null;
@@ -72,7 +72,7 @@ export type SearchFilter = {
   tag_id: Tag[] | null;
 };
 
-export type SelectableSearchFilter = {
+export type SelectableDatasetFilter = {
   geographical_coverage: SelectOption[] | null;
   service: SelectOption[] | null;
   format: SelectOption[] | null;
@@ -80,6 +80,6 @@ export type SelectableSearchFilter = {
   tag_id: SelectOption[] | null;
 };
 
-export type SelectableSearchFilterGroup = {
-  [key in FilterCategories]: Partial<SelectableSearchFilter>;
+export type SelectableDatasetFilterGroup = {
+  [key in DatasetFilterCategories]: Partial<SelectableDatasetFilter>;
 };

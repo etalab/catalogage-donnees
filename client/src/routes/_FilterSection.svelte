@@ -1,20 +1,21 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
+
   import { DATASET_FILTERS_TRANSLATION } from "src/constants";
 
   import type { SelectOption } from "src/definitions/form";
-  import type { SelectableSearchFilter } from "src/definitions/datasets";
+  import type { SelectableDatasetFilter } from "src/definitions/datasets";
+  import { mergeSelectableDatasetFilter } from "$lib/util/dataset";
 
-  import SearchableSelect from "src/lib/components/SearchableSelect/SearchableSelect.svelte";
-  import { createEventDispatcher } from "svelte";
-  import { mergeSelectableSearchFilter } from "src/lib/util/dataset";
+  import SearchableSelect from "$lib/components/SearchableSelect/SearchableSelect.svelte";
 
   export let sectionTitle: string;
-  export let searchFilters: SelectableSearchFilter;
+  export let searchFilters: SelectableDatasetFilter;
 
-  let selectedFilters: Partial<SelectableSearchFilter>;
+  let selectedFilters: Partial<SelectableDatasetFilter>;
 
   const dispatch = createEventDispatcher<{
-    filterSelected: Partial<SelectableSearchFilter>;
+    filterSelected: Partial<SelectableDatasetFilter>;
   }>();
 
   $: searchFiltersKeys = Object.keys(searchFilters);
@@ -25,12 +26,15 @@
   ) => {
     const value = e.detail;
 
-    const newFilter: Partial<SelectableSearchFilter> = {
+    const newFilter: Partial<SelectableDatasetFilter> = {
       [filterKey]: value ? [value] : null,
     };
 
     if (selectedFilters) {
-      selectedFilters = mergeSelectableSearchFilter(selectedFilters, newFilter);
+      selectedFilters = mergeSelectableDatasetFilter(
+        selectedFilters,
+        newFilter
+      );
     } else {
       selectedFilters = newFilter;
     }

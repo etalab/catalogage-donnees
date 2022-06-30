@@ -1,7 +1,6 @@
 import { test as base, expect, type APIRequestContext } from "@playwright/test";
-import type { Dataset, SearchFilter } from "src/definitions/datasets";
+import type { Dataset, DatasetFilters } from "src/definitions/datasets";
 import { toPayload } from "src/lib/transformers/dataset";
-import { getFakeSearchFilter } from "../factories/dataset";
 import { ADMIN_EMAIL } from "./constants";
 
 /**
@@ -19,7 +18,7 @@ type AppFixtures = {
   apiContext: APIRequestContext;
   adminApiToken: string;
   dataset: Dataset;
-  datasetFilters: SearchFilter;
+  datasetFilters: DatasetFilters;
 };
 
 export type AppTestArgs = AppOptions & AppFixtures;

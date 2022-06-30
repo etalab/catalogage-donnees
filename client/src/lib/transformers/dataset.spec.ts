@@ -1,7 +1,7 @@
 import { GEOGRAPHICAL_COVERAGE_LABELS } from "src/constants";
 import type {
-  SearchFilter,
-  SelectableSearchFilter,
+  DatasetFilters,
+  SelectableDatasetFilter,
 } from "src/definitions/datasets";
 import { getFakeDataset } from "src/tests/factories/dataset";
 import { buildFakeTag } from "src/tests/factories/tags";
@@ -10,7 +10,7 @@ import {
   toPayload,
   camelToUnderscore,
   transformKeysToUnderscoreCase,
-  transformSearchFiltersIntoSelectableSearchFilters,
+  transformSearchFiltersIntoSelectableDatasetFilters,
 } from "./dataset";
 
 describe("transformers -- dataset", () => {
@@ -50,7 +50,7 @@ describe("transformers -- dataset", () => {
   });
 
   describe("transformAPISearchFiltersIntoSearchFilters", () => {
-    test("should transform an SearchFilter into SelectableSearchFilter", () => {
+    test("should transform an SearchFilter into SelectableDatasetFilter", () => {
       const tag1 = buildFakeTag({
         id: "xyz-555-666",
         name: "monTag",
@@ -61,7 +61,7 @@ describe("transformers -- dataset", () => {
         name: "monTag2",
       });
 
-      const source: SearchFilter = {
+      const source: DatasetFilters = {
         format: ["file_tabular", "file_gis"],
         geographical_coverage: ["epci", "department"],
         service: ["DINUM"],
@@ -69,7 +69,7 @@ describe("transformers -- dataset", () => {
         technical_source: ["DINUM", "ADEME"],
       };
 
-      const expectedResult: SelectableSearchFilter = {
+      const expectedResult: SelectableDatasetFilter = {
         format: [
           {
             label: "Fichier tabulaire (XLS, XLSX, CSV, ...)",
@@ -101,9 +101,9 @@ describe("transformers -- dataset", () => {
         ],
       };
 
-      expect(transformSearchFiltersIntoSelectableSearchFilters(source)).toEqual(
-        expectedResult
-      );
+      expect(
+        transformSearchFiltersIntoSelectableDatasetFilters(source)
+      ).toEqual(expectedResult);
     });
   });
 });

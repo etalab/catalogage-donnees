@@ -46,13 +46,13 @@ export const GEOGRAPHICAL_COVERAGE_LABELS: {
   world: "Monde",
 };
 
-export type FilterCategories =
+export type DatasetFilterCategories =
   | "Informations Générales"
   | "Sources et Formats"
   | "Mots-clés Thématiques";
 
-export const SEARCH_FILTERS_CATEGORIES: {
-  [K in FilterCategories]: string[];
+export const DATASET_FILTER_CATEGORIES: {
+  [K in DatasetFilterCategories]: string[];
 } = {
   "Informations Générales": ["geographical_coverage", "service"],
   "Sources et Formats": ["format", "technical_source"],

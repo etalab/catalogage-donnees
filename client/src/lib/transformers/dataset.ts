@@ -4,8 +4,8 @@ import {
 } from "src/constants";
 import type {
   Dataset,
-  SearchFilter,
-  SelectableSearchFilter,
+  DatasetFilters,
+  SelectableDatasetFilter,
 } from "src/definitions/datasets";
 import type { SelectOption } from "src/definitions/form";
 import type { Tag } from "src/definitions/tag";
@@ -94,9 +94,9 @@ const mapDataFormatToSelectOption = (items: string[]): SelectOption[] =>
     };
   });
 
-export const transformSearchFiltersIntoSelectableSearchFilters = (
-  source: SearchFilter
-): SelectableSearchFilter => {
+export const transformSearchFiltersIntoSelectableDatasetFilters = (
+  source: DatasetFilters
+): SelectableDatasetFilter => {
   return {
     format: source.format ? mapDataFormatToSelectOption(source.format) : null,
     geographical_coverage: source.geographical_coverage

@@ -2,8 +2,8 @@ import { GEOGRAPHICAL_COVERAGE_LABELS } from "src/constants";
 import type {
   Dataset,
   DatasetFormData,
-  SearchFilter,
-  SelectableSearchFilter,
+  DatasetFilters,
+  SelectableDatasetFilter,
 } from "src/definitions/datasets";
 import { buildFakeTag } from "./tags";
 
@@ -46,8 +46,8 @@ export const getFakeDataSetFormData = (
 };
 
 export const getFakeSearchFilter = (
-  searchFilter: Partial<SearchFilter> = {}
-): SearchFilter => {
+  searchFilter: Partial<DatasetFilters> = {}
+): DatasetFilters => {
   return {
     tag_id: searchFilter.tag_id || [
       buildFakeTag({
@@ -94,9 +94,9 @@ export const getFakeSearchFilter = (
   };
 };
 
-export const getFakeSelectableSearchFilter = (
-  searchFilter: Partial<SelectableSearchFilter> = {}
-): SelectableSearchFilter => {
+export const getFakeSelectableDatasetFilter = (
+  searchFilter: Partial<SelectableDatasetFilter> = {}
+): SelectableDatasetFilter => {
   const tag1 = buildFakeTag();
   const tag2 = buildFakeTag();
 

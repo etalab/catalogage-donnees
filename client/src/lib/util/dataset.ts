@@ -1,14 +1,14 @@
-import { SEARCH_FILTERS_CATEGORIES } from "src/constants";
+import { DATASET_FILTER_CATEGORIES } from "src/constants";
 import type {
-  SelectableSearchFilterGroup,
-  SearchFilter,
-  SelectableSearchFilter,
+  SelectableDatasetFilterGroup,
+  DatasetFilters,
+  SelectableDatasetFilter,
 } from "src/definitions/datasets";
 
-export const mergeSelectableSearchFilter = (
-  source: Partial<SelectableSearchFilter>,
-  newFilters: Partial<SelectableSearchFilter>
-): Partial<SelectableSearchFilter> => {
+export const mergeSelectableDatasetFilter = (
+  source: Partial<SelectableDatasetFilter>,
+  newFilters: Partial<SelectableDatasetFilter>
+): Partial<SelectableDatasetFilter> => {
   return {
     ...source,
     ...newFilters,
@@ -16,8 +16,8 @@ export const mergeSelectableSearchFilter = (
 };
 
 export const cleanSearchFilters = (
-  selectedSearchFilter: Partial<SelectableSearchFilter>
-): Partial<SelectableSearchFilter> => {
+  selectedSearchFilter: Partial<SelectableDatasetFilter>
+): Partial<SelectableDatasetFilter> => {
   return Object.keys(selectedSearchFilter).reduce((previous, current) => {
     if (selectedSearchFilter[current]) {
       return {
@@ -29,24 +29,24 @@ export const cleanSearchFilters = (
   }, {});
 };
 
-export const groupSelectableSearchFilterByCategory = (
-  filters: SelectableSearchFilter
-): SelectableSearchFilterGroup => {
-  const initialValues: SelectableSearchFilterGroup = {
+export const groupSelectableDatasetFilterByCategory = (
+  filters: SelectableDatasetFilter
+): SelectableDatasetFilterGroup => {
+  const initialValues: SelectableDatasetFilterGroup = {
     "Informations Générales": {},
     "Sources et Formats": {},
     "Mots-clés Thématiques": {},
   };
 
-  return Object.keys(SEARCH_FILTERS_CATEGORIES).reduce((previous, current) => {
-    const filtersKey = SEARCH_FILTERS_CATEGORIES[current] as string[];
+  return Object.keys(DATASET_FILTER_CATEGORIES).reduce((previous, current) => {
+    const filtersKey = DATASET_FILTER_CATEGORIES[current] as string[];
 
     const mappedFilterKeys = filtersKey.reduce((previous, current) => {
       return {
         ...previous,
         [current]: filters[current],
       };
-    }, {}) as SearchFilter;
+    }, {}) as Partial<DatasetFilters>;
 
     return {
       ...previous,

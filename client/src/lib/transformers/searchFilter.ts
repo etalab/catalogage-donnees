@@ -1,9 +1,9 @@
-import type { SelectableSearchFilter } from "src/definitions/datasets";
+import type { SelectableDatasetFilter } from "src/definitions/datasets";
 import type { SelectOption } from "src/definitions/form";
 import type { QueryParamRecord } from "src/definitions/url";
 
 export const toSearchQueryParamRecord = (
-  searchFilter: Partial<SelectableSearchFilter>
+  searchFilter: Partial<SelectableDatasetFilter>
 ): QueryParamRecord => {
   return Object.keys(searchFilter).reduce((previous, current) => {
     const options: SelectOption[] = searchFilter[current];

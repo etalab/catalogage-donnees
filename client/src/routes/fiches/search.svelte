@@ -35,8 +35,8 @@
     return {
       props: {
         paginatedDatasets,
-        groupedSearchFilters: groupSelectableSearchFilterByCategory(
-          transformSearchFiltersIntoSelectableSearchFilters(searchFilters)
+        groupedSearchFilters: groupSelectableDatasetFilterByCategory(
+          transformSearchFiltersIntoSelectableDatasetFilters(searchFilters)
         ),
         currentPage: page,
         q,
@@ -49,8 +49,8 @@
   import { goto } from "$app/navigation";
   import type {
     Dataset,
-    SelectableSearchFilter,
-    SelectableSearchFilterGroup,
+    SelectableDatasetFilter,
+    SelectableDatasetFilterGroup,
   } from "src/definitions/datasets";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
@@ -59,10 +59,10 @@
   import { pluralize } from "src/lib/util/format";
   import {
     cleanSearchFilters,
-    groupSelectableSearchFilterByCategory,
-    mergeSelectableSearchFilter,
+    groupSelectableDatasetFilterByCategory,
+    mergeSelectableDatasetFilter,
   } from "src/lib/util/dataset";
-  import { transformSearchFiltersIntoSelectableSearchFilters } from "src/lib/transformers/dataset";
+  import { transformSearchFiltersIntoSelectableDatasetFilters } from "src/lib/transformers/dataset";
   import FilterSection from "../_FilterSection.svelte";
   import Pagination from "src/lib/components/Pagination/Pagination.svelte";
   import { toSearchQueryParamRecord } from "src/lib/transformers/searchFilter";
@@ -71,9 +71,9 @@
   export let q: string;
   export let currentPage: number;
   export let paginatedDatasets: Maybe<Paginated<Dataset>>;
-  export let groupedSearchFilters: Maybe<SelectableSearchFilterGroup>;
+  export let groupedSearchFilters: Maybe<SelectableDatasetFilterGroup>;
 
-  let selectedFilters: Partial<SelectableSearchFilter>;
+  let selectedFilters: Partial<SelectableDatasetFilter>;
 
   let displayFilters = false;
 
@@ -99,10 +99,10 @@
   };
 
   const handleSelectedFilter = async (
-    e: CustomEvent<SelectableSearchFilter>
+    e: CustomEvent<SelectableDatasetFilter>
   ) => {
     selectedFilters = cleanSearchFilters(
-      mergeSelectableSearchFilter(selectedFilters, e.detail)
+      mergeSelectableDatasetFilter(selectedFilters, e.detail)
     );
 
     const queryParamsRecords = toSearchQueryParamRecord(selectedFilters);
