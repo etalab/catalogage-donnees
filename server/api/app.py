@@ -15,13 +15,7 @@ origins = [
 
 
 class App(FastAPI):
-    def openapi(self) -> dict:
-        # Tweak the OpenAPI schema.
-        schema = super().openapi()
-        schema.setdefault("components", {}).setdefault("securitySchemes", {}).update(
-            auth_backend.get_openapi_security_definitions()
-        )
-        return schema
+    pass
 
 
 def create_app(settings: Settings = None) -> App:
