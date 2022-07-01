@@ -1,3 +1,4 @@
+import random
 from typing import Any, List
 
 import httpx
@@ -112,6 +113,7 @@ async def test_dataset_crud(
             update_frequency=UpdateFrequency.WEEKLY,
             last_updated_at=last_updated_at,
             published_url=None,
+            tag_ids=[],
         )
     )
 
@@ -200,11 +202,14 @@ class TestDatasetPermissions:
         assert response.status_code == 403
 
 
-async def add_dataset_pagination_corpus(n: int) -> None:
+async def add_dataset_pagination_corpus(n: int, tags: list) -> None:
     bus = resolve(MessageBus)
 
     for k in range(1, n + 1):
-        await bus.execute(CreateDatasetFactory.build(title=f"Dataset {k}"))
+        tag_ids = [tag.id for tag in random.choices(tags, k=random.randint(0, 2))]
+        await bus.execute(
+            CreateDatasetFactory.build(title=f"Dataset {k}", tag_ids=tag_ids)
+        )
 
 
 @pytest.mark.asyncio
@@ -251,12 +256,13 @@ async def add_dataset_pagination_corpus(n: int) -> None:
 async def test_dataset_pagination(
     client: httpx.AsyncClient,
     temp_user: TestUser,
+    tags: list,
     params: dict,
     expected_total_pages: int,
     expected_num_items: int,
     expected_dataset_titles: List[str],
 ) -> None:
-    await add_dataset_pagination_corpus(n=13)
+    await add_dataset_pagination_corpus(n=13, tags=tags)
 
     response = await client.get("/datasets/", params=params, auth=temp_user.auth)
     assert response.status_code == 200

@@ -1,6 +1,6 @@
 import asyncio
 import os
-from typing import TYPE_CHECKING, AsyncIterator, Iterator
+from typing import TYPE_CHECKING, AsyncIterator, Iterator, List
 
 import httpx
 import pytest
@@ -11,11 +11,14 @@ from asgi_lifespan import LifespanManager
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from server.application.datasets.queries import GetAllDatasets
+from server.application.tags.queries import GetAllTags
+from server.application.tags.views import TagView
 from server.config import Settings
 from server.config.di import bootstrap, resolve
 from server.domain.auth.entities import UserRole
 from server.infrastructure.database import Database
 from server.seedwork.application.messages import MessageBus
+from tests.factories import CreateTagFactory
 
 from .helpers import TestUser, create_client, create_test_user
 
@@ -59,6 +62,21 @@ async def warmup_db() -> None:
     # occur during tests and interfere with time measurements.
     bus = resolve(MessageBus)
     await bus.execute(GetAllDatasets())
+
+
+@pytest_asyncio.fixture
+async def tags(transaction: None) -> List[TagView]:
+    bus = resolve(MessageBus)
+
+    for name in [
+        "Monument historique",
+        "Lieu culturel",
+        "Musée de France",
+        "Statistiques",
+    ]:
+        await bus.execute(CreateTagFactory.build(name=name))
+
+    return await bus.execute(GetAllTags())
 
 
 @pytest.fixture(scope="session")
