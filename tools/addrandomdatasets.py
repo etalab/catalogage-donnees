@@ -7,10 +7,10 @@ import aiometer
 import click
 from tqdm import tqdm
 
+from server.application.tags.queries import GetAllTags
 from server.config.di import bootstrap, resolve
 from server.seedwork.application.messages import MessageBus
 from tests.factories import CreateDatasetFactory
-from server.application.tags.queries import GetAllTags
 
 success = functools.partial(click.style, fg="bright_green")
 
