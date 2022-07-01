@@ -21,7 +21,7 @@ class DateTimeTZProvider(BaseProvider):
         return self.generator.date_time(dtutil.UTC)
 
 
-fake = faker.Faker()
+fake = faker.Faker(["fr_FR"])
 fake.add_provider(DateTimeTZProvider)
 
 
@@ -46,7 +46,18 @@ class CreateTagFactory(Factory[CreateTag]):
 class CreateDatasetFactory(Factory[CreateDataset]):
     __model__ = CreateDataset
 
+    title = Use(fake.sentence)
+    description = Use(fake.text)
+    service = Use(fake.company)
     formats = Use(lambda: random.choices(list(DataFormat), k=random.randint(1, 3)))
+    technical_source = Use(
+        lambda: fake.sentence(nb_words=3) if random.random() < 0.5 else None
+    )
+    producer_email = Use(fake.ascii_free_email)
+    contact_emails = Use(
+        lambda: [fake.ascii_free_email() for _ in range(random.randint(1, 3))]
+    )
+    published_url = Use(lambda: fake.url() if random.random() < 0.5 else None)
     tag_ids = Use(lambda: [])
 
 

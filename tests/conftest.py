@@ -48,12 +48,11 @@ def test_database() -> Iterator[None]:
 
 
 @pytest_asyncio.fixture(autouse=True)
-async def transaction() -> AsyncIterator[None]:
+async def autorollback_db() -> AsyncIterator[None]:
     db = resolve(Database)
 
-    async with db.transaction() as tx:
+    async with db.autorollback():
         yield
-        await tx.rollback()
 
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
@@ -65,7 +64,7 @@ async def warmup_db() -> None:
 
 
 @pytest_asyncio.fixture
-async def tags(transaction: None) -> List[TagView]:
+async def tags() -> List[TagView]:
     bus = resolve(MessageBus)
 
     for name in [
