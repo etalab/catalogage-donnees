@@ -11,6 +11,7 @@ from server.application.auth.commands import CreateUser
 from server.application.datasets.commands import CreateDataset, UpdateDataset
 from server.application.tags.commands import CreateTag
 from server.domain.common import datetime as dtutil
+from server.domain.datasets.entities import DataFormat
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -41,15 +42,11 @@ class CreateUserFactory(Factory[CreateUser]):
 class CreateTagFactory(Factory[CreateTag]):
     __model__ = CreateTag
 
-    name = Use(
-        random.choice,
-        ("Monument historique", "Lieu culturel", "Musée de France", "Statistiques"),
-    )
-
 
 class CreateDatasetFactory(Factory[CreateDataset]):
     __model__ = CreateDataset
 
+    formats = Use(lambda: random.choices(list(DataFormat), k=random.randint(1, 3)))
     tag_ids = Use(lambda: [])
 
 
