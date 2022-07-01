@@ -14,7 +14,6 @@ sqlalchemy[asyncio,mypy]==1.4.39
 fastapi-debug-toolbar==0.2.1
 
 # Tooling
-aiometer==0.3.0
 asgi-lifespan==1.0.1
 black==22.3.0
 click==8.1.3

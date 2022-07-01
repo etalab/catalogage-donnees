@@ -64,7 +64,7 @@ async def warmup_db() -> None:
 
 
 @pytest_asyncio.fixture
-async def tags(transaction: None) -> List[TagView]:
+async def tags() -> List[TagView]:
     bus = resolve(MessageBus)
 
     for name in [

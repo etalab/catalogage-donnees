@@ -3,7 +3,6 @@ import asyncio
 import functools
 import random
 
-import aiometer
 import click
 from tqdm import tqdm
 
@@ -19,16 +18,13 @@ async def main(n: int) -> None:
     bus = resolve(MessageBus)
 
     tag_id_set = [tag.id for tag in await bus.execute(GetAllTags())]
+    assert len(tag_id_set) >= 1, "Need at least 1 tag in DB, 0 found"
 
-    with tqdm(total=n, unit="dataset") as progress:
-
-        async def task() -> None:
-            tag_ids = random.choices(tag_id_set, k=random.randint(1, 3))
-            await bus.execute(CreateDatasetFactory.build(tag_ids=tag_ids))
-            progress.update()
-
-        tasks = [task for _ in range(n)]
-        await aiometer.run_all(tasks, max_at_once=20)
+    for _ in tqdm(range(n), unit="dataset"):
+        tag_ids = random.choices(
+            tag_id_set, k=random.randint(1, min(3, len(tag_id_set)))
+        )
+        await bus.execute(CreateDatasetFactory.build(tag_ids=tag_ids))
 
     print(f"{success('created')}: {n} datasets")
 
