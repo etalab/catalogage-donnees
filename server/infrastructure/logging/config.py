@@ -28,6 +28,11 @@ def get_log_config(settings: Settings) -> dict:
                 "handlers": ["default"],
                 "level": "DEBUG" if settings.debug else "INFO",
             },
+            "sqlalchemy.engine": {
+                "handlers": ["default"] if settings.debug else [],
+                "level": "INFO",
+                "propagate": False,
+            },
             "uvicorn.error": {
                 "handlers": ["default"],
                 "level": "INFO",

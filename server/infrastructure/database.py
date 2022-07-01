@@ -28,7 +28,7 @@ class Base(metaclass=DeclarativeMeta):
 
 class Database:
     def __init__(self, url: str, debug: bool = False) -> None:
-        self._engine = create_async_engine(url, echo=debug, future=True)
+        self._engine = create_async_engine(url, future=True)
         self._session_cls = sessionmaker(
             bind=self._engine, class_=AsyncSession, future=True
         )
