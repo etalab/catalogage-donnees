@@ -23,6 +23,11 @@ const performASearch = async (
     button.click(),
   ]);
 
+  expect(request.method()).toBe("GET");
+  const searchParams = new URLSearchParams(request.url());
+  expect(searchParams.get("q")).toBe(searchValue);
+  expect(response.status()).toBe(200);
+
   return [request, response];
 };
 

@@ -22,6 +22,10 @@ def test_logging(capsys: pytest.CaptureFixture) -> None:
     assert "Debug test" not in captured.out
     assert "server.example: Info test" in captured.out
 
+    sqlalchemy_logger = logging.getLogger("sqlalchemy.engine")
+    assert sqlalchemy_logger.level == logging.INFO
+    assert not sqlalchemy_logger.handlers
+
 
 def test_logging_debug(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
@@ -41,6 +45,10 @@ def test_logging_debug(
     captured = capsys.readouterr()
     assert not captured.err
     assert "server.example: Debug test" in captured.out
+
+    sqlalchemy_logger = logging.getLogger("sqlalchemy.engine")
+    assert sqlalchemy_logger.level == logging.INFO
+    assert sqlalchemy_logger.handlers[0].name == "default"
 
 
 def test_logging_live_renders_json(

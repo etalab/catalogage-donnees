@@ -1,7 +1,6 @@
 from typing import Optional, Tuple
 
-from fastapi.encoders import jsonable_encoder
-from fastapi.openapi.models import HTTPBearer
+from fastapi.security.http import HTTPBearer
 from starlette.authentication import (
     AuthCredentials,
     AuthenticationBackend,
@@ -22,8 +21,7 @@ class TokenAuthBackend(AuthenticationBackend):
     Authenticate users based on their API token: 'Authorization: Bearer <api_token>'
     """
 
-    def get_openapi_security_definitions(self) -> dict:
-        return {"Bearer": jsonable_encoder(HTTPBearer())}
+    security = HTTPBearer(scheme_name="Bearer", auto_error=False)
 
     async def authenticate(
         self, conn: HTTPConnection

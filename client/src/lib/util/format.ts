@@ -52,7 +52,7 @@ export const splitParagraphs = (text: string): string[] => {
   return text.split("\n");
 };
 
-export const slugify = (str: string) => {
+export const slugify = (str: string): string => {
   str = str.replace(/^\s+|\s+$/g, "");
 
   // Make the string lowercase

@@ -1,12 +1,7 @@
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    AsyncSession,
-    AsyncTransaction,
-    create_async_engine,
-)
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import DeclarativeMeta, registry, sessionmaker
 
 mapper_registry = registry()
@@ -28,7 +23,7 @@ class Base(metaclass=DeclarativeMeta):
 
 class Database:
     def __init__(self, url: str, debug: bool = False) -> None:
-        self._engine = create_async_engine(url, echo=debug, future=True)
+        self._engine = create_async_engine(url, future=True)
         self._session_cls = sessionmaker(
             bind=self._engine, class_=AsyncSession, future=True
         )
@@ -41,11 +36,12 @@ class Database:
         return self._session_cls()
 
     @asynccontextmanager
-    async def transaction(self) -> AsyncIterator[AsyncTransaction]:
+    async def autorollback(self) -> AsyncIterator[None]:
         async with self._engine.connect() as conn:
             self._session_cls.configure(bind=conn)
             try:
                 async with conn.begin() as tx:
-                    yield tx
+                    yield
+                    await tx.rollback()
             finally:
                 self._session_cls.configure(bind=self._engine)

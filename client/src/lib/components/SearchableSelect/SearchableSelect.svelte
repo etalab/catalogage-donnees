@@ -3,20 +3,15 @@
   import { clickOutside } from "src/lib/actions/clickOutside";
   import { slugify } from "src/lib/util/format";
   import { createEventDispatcher } from "svelte";
-
   export let buttonPlaceholder: string;
   export let inputPlaceholder: string;
   export let label: string;
   export let options: Array<SelectOption>;
-
   let macthedOptions: Array<SelectOption> = options;
   let isOverlayOpen = false;
   let buttonText = buttonPlaceholder;
 
-  let selectedOption: SelectOption;
-
   let searchTerm: string;
-
   $: macthedOptions = options.filter((item) =>
     item.label.match(new RegExp(searchTerm, "i"))
   );
@@ -26,49 +21,33 @@
   const openOverlay = () => {
     isOverlayOpen = true;
   };
-
   const closeOverlay = () => {
     macthedOptions = options;
     isOverlayOpen = false;
   };
-
   const handleOverlayOpening = () => {
     if (!isOverlayOpen) {
       openOverlay();
       return;
     }
-
     if (isOverlayOpen) {
       closeOverlay();
       return;
     }
   };
-
   const dispatch = createEventDispatcher<{
     clickItem: SelectOption | null;
   }>();
-
   const handleClickListItem = (option: SelectOption) => {
     buttonText = option.label;
     dispatch("clickItem", option);
     closeOverlay();
   };
-
   const handleResetFilter = () => {
     macthedOptions = options;
     buttonText = buttonPlaceholder;
     dispatch("clickItem", null);
     closeOverlay();
-  };
-
-  const handleSelectChange = (e: Event) => {
-    const selectedOption = options.find(
-      (item) => item.value === (e.target as HTMLInputElement).value
-    );
-
-    if (selectedOption) {
-      handleClickListItem(selectedOption);
-    }
   };
 </script>
 
@@ -91,19 +70,6 @@
         bind:value={searchTerm}
         type="search"
       />
-
-      <div class="a11y_hidden" aria-hidden="true">
-        <select
-          on:change={handleSelectChange}
-          id={slug}
-          bind:value={selectedOption}
-          tabindex="-1"
-        >
-          {#each macthedOptions as option}
-            <option value={option.value}>{option.label}</option>
-          {/each}
-        </select>
-      </div>
 
       <ul>
         {#if macthedOptions.length > 0}
@@ -142,34 +108,25 @@
     position: absolute;
     border: 1px solid var(--background-contrast-grey);
   }
-
   input {
     margin: 0;
     margin-top: 5px;
   }
-
   ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
   }
-
   li {
     cursor: pointer;
     padding: 8px 16px;
     margin: 0;
     border-top: 1px solid var(--background-contrast-grey);
   }
-
   li:hover {
     background-color: var(--background-contrast-grey);
   }
-
   .no-result {
     cursor: not-allowed;
-  }
-
-  .a11y_hidden {
-    display: none;
   }
 </style>

@@ -63,6 +63,9 @@ initdata: #- Initialize data
 initdatareset: #- Initialize data, resetting any changed target entities
 	${bin}python -m tools.initdata --reset tools/initdata.yml
 
+randomdatasets: #- Add 500 random datasets
+	${bin}python -m tools.addrandomdatasets 500
+
 id: #- Generate an ID suitable for use in database entities
 	${bin}python -m tools.makeid
 

@@ -21,10 +21,15 @@ async def test_openapi(client: httpx.AsyncClient) -> None:
     assert response.status_code == 200
     schema = response.json()
 
+    # HTTP Bearer security scheme must be registered.
     bearer_scheme = schema["components"]["securitySchemes"].get("Bearer")
     assert bearer_scheme is not None
     assert bearer_scheme["type"] == "http"
     assert bearer_scheme["scheme"] == "bearer"
+
+    # Authenticated endpoints must be tied to the HTTP Bearer scheme.
+    # We just take an exmaple endpoint here.
+    assert {"Bearer": []} in schema["paths"]["/auth/users/"]["post"]["security"]
 
 
 @pytest.mark.parametrize("origin", ["http://localhost:3000"])

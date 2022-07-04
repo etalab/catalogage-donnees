@@ -68,9 +68,10 @@
   import { toSearchQueryParamRecord } from "src/lib/transformers/searchFilter";
   import type { GetPageLink, Paginated } from "src/definitions/pagination";
 
+  export let paginatedDatasets: Maybe<Paginated<Dataset>>;
   export let q: string;
   export let currentPage: number;
-  export let paginatedDatasets: Maybe<Paginated<Dataset>>;
+
   export let groupedSearchFilters: Maybe<SelectableDatasetFilterGroup>;
 
   let selectedFilters: Partial<SelectableDatasetFilter>;
@@ -123,7 +124,7 @@
   <div class="fr-container fr-grid-row fr-grid-row--center fr-py-6w">
     <div class="fr-col-10">
       <h1>Recherchez un jeu de données</h1>
-      <SearchForm value={q} on:submit={updateSearch} />
+      <SearchForm on:submit={updateSearch} />
     </div>
   </div>
 </section>

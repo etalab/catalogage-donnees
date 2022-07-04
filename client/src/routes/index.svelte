@@ -30,9 +30,9 @@
   import { patchQueryString, toQueryString } from "$lib/util/urls";
   import { Maybe } from "$lib/util/maybe";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
-  import Pagination from "$lib/components/Pagination/Pagination.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import paths from "$lib/paths";
+  import PaginationContainer from "./fiches/_PaginationContainer.svelte";
 
   export let paginatedDatasets: Maybe<Paginated<Dataset>>;
   export let currentPage: number;
@@ -74,21 +74,13 @@
         </h2>
 
         <DatasetList datasets={paginatedDatasets.items} />
-        <div class="pagination-container fr-mt-2w ">
-          <Pagination
-            {currentPage}
-            totalPages={paginatedDatasets.totalPages}
-            {getPageLink}
-          />
-        </div>
+
+        <PaginationContainer
+          {getPageLink}
+          totalPages={paginatedDatasets.totalPages}
+          {currentPage}
+        />
       {/if}
     </div>
   </div>
 </section>
-
-<style>
-  .pagination-container {
-    display: flex;
-    justify-content: space-around;
-  }
-</style>

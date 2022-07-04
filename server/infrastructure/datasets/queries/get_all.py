@@ -1,9 +1,6 @@
-from typing import List
-
 from sqlalchemy import desc, func, select, text
 from sqlalchemy.engine import Row
-from sqlalchemy.orm import contains_eager
-from sqlalchemy.sql import ColumnElement
+from sqlalchemy.orm import contains_eager, selectinload
 
 from server.domain.datasets.repositories import DatasetGetAllExtras
 from server.domain.datasets.specifications import DatasetSpec
@@ -18,7 +15,8 @@ _TS_HEADLINE_DESCRIPTION_COL = "ts_headline_description"
 
 class GetAllQuery:
     def __init__(self, spec: DatasetSpec) -> None:
-        columns: List[ColumnElement] = []
+        columns = []
+        joinclauses = []
         whereclauses = []
         orderbyclauses = []
 
@@ -70,23 +68,26 @@ class GetAllQuery:
             whereclauses.append(DatasetModel.service.in_(services))
 
         if (formats := spec.format__in) is not None:
+            joinclauses.append((DatasetModel.formats, {"isouter": True}))
             whereclauses.append(DataFormatModel.name.in_(formats))
 
         if (technical_sources := spec.technical_source__in) is not None:
             whereclauses.append(DatasetModel.technical_source.in_(technical_sources))
 
         if (tag_ids := spec.tag__id__in) is not None:
+            joinclauses.append((DatasetModel.tags, {"isouter": True}))
             whereclauses.append(TagModel.id.in_(tag_ids))
 
+        stmt = select(DatasetModel, *columns).join(DatasetModel.catalog_record)
+
+        for target, kwargs in joinclauses:
+            stmt = stmt.join(target, **kwargs)
+
         self.statement = (
-            select(DatasetModel, *columns)
-            .join(DatasetModel.catalog_record)
-            .join(DatasetModel.formats, isouter=True)
-            .join(DatasetModel.tags, isouter=True)
-            .options(
+            stmt.options(
                 contains_eager(DatasetModel.catalog_record),
-                contains_eager(DatasetModel.formats),
-                contains_eager(DatasetModel.tags),
+                selectinload(DatasetModel.formats),
+                selectinload(DatasetModel.tags),
             )
             .where(*whereclauses)
             .order_by(*orderbyclauses, CatalogRecordModel.created_at.desc())
