@@ -18,6 +18,7 @@
   import { user } from "src/lib/stores/auth";
   import ContactEmailsField from "../ContactEmailsField/ContactEmailsField.svelte";
   import Select from "../Select/Select.svelte";
+  import InputField from "../InputField/InputField.svelte";
   import { toSelectOptions } from "src/lib/transformers/form";
   import { handleSelectChange } from "src/lib/util/form";
   import { type DropMaybe, Maybe, type AddMaybe } from "$lib/util/maybe";
@@ -212,98 +213,53 @@
   <h2 id="information-generales" class="fr-mb-5w">Informations générales</h2>
 
   <div class="form--content fr-mb-8w">
-    <div
-      class="fr-input-group fr-mb-4w {$errors.title
-        ? 'fr-input-group--error'
-        : ''}"
+    <InputField
+      name="title"
+      required
+      value={$form.title}
+      error={$errors.title}
+      on:input={handleFieldChange}
+      on:blur={handleFieldChange}
     >
-      <label class="fr-label" for="title">
-        Nom du jeu de données
-        <RequiredMarker />
-        <span class="fr-hint-text" id="title-desc-hint">
-          Ce nom doit aller à l'essentiel et permettre d'indiquer en quelques
-          mots les informations que l'on peut y trouver. Pour des raisons
-          pratiques il est limité à 100 caractères.
-        </span>
-      </label>
-      <input
-        class="fr-input {$errors.title ? 'fr-input--error' : ''}"
-        aria-describedby={$errors.title ? "title-desc-error" : null}
-        type="text"
-        id="title"
-        name="title"
-        required
-        on:input={handleFieldChange}
-        on:blur={handleFieldChange}
-        bind:value={$form.title}
-      />
-      {#if $errors.title}
-        <p id="title-desc-error" class="fr-error-text">
-          {$errors.title}
-        </p>
-      {/if}
-    </div>
+      <svelte:fragment slot="label">Nom du jeu de données</svelte:fragment>
+      <svelte:fragment slot="hintText">
+        Ce nom doit aller à l'essentiel et permettre d'indiquer en quelques mots
+        les informations que l'on peut y trouver. Pour des raisons pratiques il
+        est limité à 100 caractères.
+      </svelte:fragment>
+    </InputField>
 
-    <div
-      class="fr-input-group fr-my-4w {$errors.description
-        ? 'fr-input-group--error'
-        : ''}"
+    <InputField
+      tag="textarea"
+      name="description"
+      required
+      value={$form.description}
+      error={$errors.description}
+      on:input={handleFieldChange}
+      on:blur={handleFieldChange}
     >
-      <label class="fr-label" for="description">
+      <svelte:fragment slot="label">
         Description du jeu de données
-        <RequiredMarker />
-        <span class="fr-hint-text" id="description-desc-hint">
-          Quel type de données sont contenues dans ce jeu de données ? Les
-          informations saisies ici seront utilisées par le moteur de recherche.
-        </span>
-      </label>
-      <textarea
-        class="fr-input {$errors.description ? 'fr-input--error' : ''}"
-        aria-describedby={$errors.description ? "description-desc-error" : null}
-        id="description"
-        name="description"
-        required
-        on:input={handleFieldChange}
-        on:blur={handleFieldChange}
-        bind:value={$form.description}
-      />
-      {#if $errors.description}
-        <p id="description-desc-error" class="fr-error-text">
-          {$errors.description}
-        </p>
-      {/if}
-    </div>
+      </svelte:fragment>
+      <svelte:fragment slot="hintText">
+        Quel type de données sont contenues dans ce jeu de données ? Les
+        informations saisies ici seront utilisées par le moteur de recherche.
+      </svelte:fragment>
+    </InputField>
 
-    <div
-      class="fr-input-group fr-my-4w {$errors.service
-        ? 'fr-input-group--error'
-        : ''}"
+    <InputField
+      name="service"
+      required
+      value={$form.service}
+      error={$errors.service}
+      on:input={handleFieldChange}
+      on:blur={handleFieldChange}
     >
-      <label class="fr-label" for="service">
-        Service producteur
-        <RequiredMarker />
-        <span class="fr-hint-text" id="service-desc-hint">
-          Service producteur du jeu de données au sein de l'organisation.
-        </span>
-      </label>
-      <input
-        class="fr-input {$errors.service ? 'fr-input--error' : ''}"
-        aria-describedby={$errors.service ? "service-desc-error" : null}
-        type="text"
-        id="service"
-        name="service"
-        required
-        on:input={handleFieldChange}
-        on:blur={handleFieldChange}
-        bind:value={$form.service}
-      />
-
-      {#if $errors.service}
-        <p id="service-desc-error" class="fr-error-text">
-          {$errors.service}
-        </p>
-      {/if}
-    </div>
+      <svelte:fragment slot="label">Service producteur</svelte:fragment>
+      <svelte:fragment slot="hintText">
+        Service producteur du jeu de données au sein de l'organisation.
+      </svelte:fragment>
+    </InputField>
 
     <Select
       options={toSelectOptions(GEOGRAPHICAL_COVERAGE_LABELS)}
@@ -336,7 +292,7 @@
 
   <div class="form--content fr-mb-8w">
     <fieldset
-      class="fr-fieldset {hasError($errors.dataFormats)
+      class="fr-fieldset fr-mb-4w {hasError($errors.dataFormats)
         ? 'fr-fieldset--error'
         : ''}"
       aria-describedby={hasError($errors.dataFormats)
@@ -381,35 +337,21 @@
       {/if}
     </fieldset>
 
-    <div
-      class="fr-input-group fr-my-4w {$errors.technicalSource
-        ? 'fr-input-group--error'
-        : ''}"
+    <InputField
+      name="technicalSource"
+      value={$form.technicalSource}
+      error={$errors.technicalSource}
+      on:input={handleFieldChange}
+      on:blur={handleFieldChange}
     >
-      <label class="fr-label" for="technicalSource">
+      <svelte:fragment slot="label">
         Système d'information source
-        <span class="fr-hint-text" id="technicalSource-desc-hint">
-          De quelle sources proviennent ces données ? Séparez leur nom par des
-          “/” lorsqu'il y en a plusieurs.
-        </span>
-      </label>
-      <input
-        class="fr-input {$errors.technicalSource ? 'fr-input--error' : ''}"
-        aria-describedby={$errors.technicalSource
-          ? "technicalSource-desc-error"
-          : null}
-        type="text"
-        id="technicalSource"
-        name="technicalSource"
-        on:input={handleFieldChange}
-        bind:value={$form.technicalSource}
-      />
-      {#if $errors.technicalSource}
-        <p id="technicalSource-desc-error" class="fr-error-text">
-          {$errors.technicalSource}
-        </p>
-      {/if}
-    </div>
+      </svelte:fragment>
+      <svelte:fragment slot="hintText">
+        De quelle sources proviennent ces données ? Séparez leur nom par des “/”
+        lorsqu'il y en a plusieurs.
+      </svelte:fragment>
+    </InputField>
   </div>
 
   <h2 id="mot-cles" class="fr-mb-5w">Mot-clés thématiques</h2>
@@ -434,38 +376,24 @@
   </p>
 
   <div class="form--content fr-mb-8w">
-    <div
-      class="fr-input-group fr-my-4w {$errors.producerEmail
-        ? 'fr-input-group--error'
-        : ''}"
+    <InputField
+      name="producerEmail"
+      type="email"
+      value={$form.producerEmail}
+      error={$errors.producerEmail}
+      on:input={handleFieldChange}
     >
-      <label class="fr-label" for="producerEmail">
+      <svelte:fragment slot="label">
         Adresse e-mail du service producteur
-        <span class="fr-hint-text" id="producerEmail-desc-hint">
-          Il est fortement conseillé d'avoir une adresse e-mail générique afin
-          de rendre la prise de contact possible quelle que soit les personnes
-          en responsabilité. Nous recommandons d'avoir une adresse différente
-          pour chaque service afin de ne pas "polluer" les boîtes e-mail de
-          chacun lorsque le catalogue grandit.
-        </span>
-      </label>
-      <input
-        class="fr-input {$errors.producerEmail ? 'fr-input--error' : ''}"
-        aria-describedby={$errors.producerEmail
-          ? "producerEmail-desc-error"
-          : null}
-        type="email"
-        id="producerEmail"
-        name="producerEmail"
-        on:input={handleFieldChange}
-        bind:value={$form.producerEmail}
-      />
-      {#if $errors.producerEmail}
-        <p id="producerEmail-desc-error" class="fr-error-text">
-          {$errors.producerEmail}
-        </p>
-      {/if}
-    </div>
+      </svelte:fragment>
+      <svelte:fragment slot="hintText">
+        Il est fortement conseillé d'avoir une adresse e-mail générique afin de
+        rendre la prise de contact possible quelle que soit les personnes en
+        responsabilité. Nous recommandons d'avoir une adresse différente pour
+        chaque service afin de ne pas "polluer" les boîtes e-mail de chacun
+        lorsque le catalogue grandit.
+      </svelte:fragment>
+    </InputField>
 
     <ContactEmailsField
       bind:errors={emailErrors}
@@ -485,35 +413,17 @@
   </p>
 
   <div class="form--content fr-mb-8w">
-    <div
-      class="fr-input-group fr-my-4w {$errors.lastUpdatedAt
-        ? 'fr-input-group--error'
-        : ''}"
+    <InputField
+      name="lastUpdatedAt"
+      type="date"
+      value={$form.lastUpdatedAt}
+      error={$errors.lastUpdatedAt}
+      on:input={handleLastUpdatedAtChange}
     >
-      <label class="fr-label" for="lastUpdatedAt">
+      <svelte:fragment slot="label">
         Date de la dernière mise à jour (JJ / MM / AAAA)
-      </label>
-
-      <div class="fr-input-wrap">
-        <input
-          class="fr-input {$errors.lastUpdatedAt ? 'fr-input--error' : ''}"
-          aria-describedby={$errors.lastUpdatedAt
-            ? "entrypoint-service-desc-error"
-            : null}
-          type="date"
-          id="lastUpdatedAt"
-          name="lastUpdatedAt"
-          on:input={handleLastUpdatedAtChange}
-          bind:value={$form.lastUpdatedAt}
-        />
-
-        {#if $errors.lastUpdatedAt}
-          <p id="title-desc-error" class="fr-error-text">
-            {$errors.lastUpdatedAt}
-          </p>
-        {/if}
-      </div>
-    </div>
+      </svelte:fragment>
+    </InputField>
 
     <Select
       options={toSelectOptions(UPDATE_FREQUENCY_LABELS)}
@@ -543,40 +453,22 @@
   <h2 id="ouverture" class="fr-mt-6w fr-mb-5w">Ouverture</h2>
 
   <div class="form--content fr-mb-8w">
-    <div
-      class="fr-input-group fr-my-4w"
-      class:fr-input-group--error={$errors.publishedUrl}
+    <InputField
+      name="publishedUrl"
+      value={$form.publishedUrl}
+      error={$errors.publishedUrl}
+      on:input={handleFieldChange}
+      on:blur={handleFieldChange}
     >
-      <label class="fr-label" for="publishedUrl">
-        Page open data
-        <span class="fr-hint-text" id="publishedUrl-desc-hint">
-          Si le jeu de données est publié en open data, saisissez ici le lien de
-          la page web associée.
-        </span>
-      </label>
-
-      <input
-        class="fr-input"
-        class:fr-input--error={$errors.lastUpdatedAt}
-        aria-describedby={$errors.publishedUrl
-          ? "publishedUrl-desc-error"
-          : null}
-        type="text"
-        id="publishedUrl"
-        name="publishedUrl"
-        on:input={handleFieldChange}
-        bind:value={$form.publishedUrl}
-      />
-
-      {#if $errors.publishedUrl}
-        <p id="publishedUrl-desc-error" class="fr-error-text">
-          {$errors.publishedUrl}
-        </p>
-      {/if}
-    </div>
+      <svelte:fragment slot="label">Page open data</svelte:fragment>
+      <svelte:fragment slot="hintText">
+        Si le jeu de données est publié en open data, saisissez ici le lien de
+        la page web associée.
+      </svelte:fragment>
+    </InputField>
   </div>
 
-  <div class="fr-input-group button--container fr-mb-6w">
+  <div class="fr-grid-row fr-grid-row--right fr-mb-6w">
     <button
       type="submit"
       class="fr-btn  fr-icon-upload-2-line fr-btn--icon-right"
@@ -587,21 +479,12 @@
 </form>
 
 <style>
-  textarea {
-    resize: vertical;
-  }
-
   h2 {
     /* Prevent h2 to be covered by the header
     See https://css-tricks.com/fixed-headers-and-jump-links-the-solution-is-scroll-margin-top/
     
     */
     scroll-margin-top: 10vh;
-  }
-
-  .button--container {
-    display: flex;
-    justify-content: flex-end;
   }
 
   .form--content {
