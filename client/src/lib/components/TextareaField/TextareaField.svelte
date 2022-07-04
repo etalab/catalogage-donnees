@@ -1,13 +1,9 @@
 <script lang="ts">
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
 
-  // If support for other input types is added, add it here.
-  type SupportedInputType = "text" | "date" | "email";
-
   export let name: string;
   export let label: string;
   export let hintText = "";
-  export let type: SupportedInputType = "text";
   export let required = false;
   export let value: string | null;
   export let error = "";
@@ -30,35 +26,17 @@
     {/if}
   </label>
 
-  {#if type === "date"}
-    <div class="fr-input-wrap">
-      <input
-        class="fr-input"
-        class:fr-input--error={error}
-        aria-describedby={error ? errorId : undefined}
-        {id}
-        {name}
-        {type}
-        {required}
-        {value}
-        on:input
-        on:blur
-      />
-    </div>
-  {:else}
-    <input
-      class="fr-input"
-      class:fr-input--error={error}
-      aria-describedby={error ? errorId : undefined}
-      {id}
-      {name}
-      {type}
-      {required}
-      {value}
-      on:input
-      on:blur
-    />
-  {/if}
+  <textarea
+    class="fr-input"
+    class:fr-input--error={error}
+    aria-describedby={error ? errorId : undefined}
+    {id}
+    {name}
+    {required}
+    {value}
+    on:input
+    on:blur
+  />
 
   {#if error}
     <p id={errorId} class="fr-error-text">
@@ -66,3 +44,9 @@
     </p>
   {/if}
 </div>
+
+<style>
+  textarea {
+    resize: vertical;
+  }
+</style>

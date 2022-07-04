@@ -19,6 +19,7 @@
   import ContactEmailsField from "../ContactEmailsField/ContactEmailsField.svelte";
   import Select from "../Select/Select.svelte";
   import InputField from "../InputField/InputField.svelte";
+  import TextareaField from "../TextareaField/TextareaField.svelte";
   import { toSelectOptions } from "src/lib/transformers/form";
   import { handleSelectChange } from "src/lib/util/form";
   import { type DropMaybe, Maybe, type AddMaybe } from "$lib/util/maybe";
@@ -215,51 +216,36 @@
   <div class="form--content fr-mb-8w">
     <InputField
       name="title"
+      label="Nom du jeu de données"
+      hintText="Ce nom doit aller à l'essentiel et permettre d'indiquer en quelques mots les informations que l'on peut y trouver. Pour des raisons pratiques il est limité à 100 caractères."
       required
       value={$form.title}
       error={$errors.title}
       on:input={handleFieldChange}
       on:blur={handleFieldChange}
-    >
-      <svelte:fragment slot="label">Nom du jeu de données</svelte:fragment>
-      <svelte:fragment slot="hintText">
-        Ce nom doit aller à l'essentiel et permettre d'indiquer en quelques mots
-        les informations que l'on peut y trouver. Pour des raisons pratiques il
-        est limité à 100 caractères.
-      </svelte:fragment>
-    </InputField>
+    />
 
-    <InputField
-      tag="textarea"
+    <TextareaField
       name="description"
+      label="Description du jeu de données"
+      hintText="Quel type de données sont contenues dans ce jeu de données ? Les informations saisies ici seront utilisées par le moteur de recherche."
       required
       value={$form.description}
       error={$errors.description}
       on:input={handleFieldChange}
       on:blur={handleFieldChange}
-    >
-      <svelte:fragment slot="label">
-        Description du jeu de données
-      </svelte:fragment>
-      <svelte:fragment slot="hintText">
-        Quel type de données sont contenues dans ce jeu de données ? Les
-        informations saisies ici seront utilisées par le moteur de recherche.
-      </svelte:fragment>
-    </InputField>
+    />
 
     <InputField
       name="service"
+      label="Service producteur"
+      hintText="Service producteur du jeu de données au sein de l'organisation."
       required
       value={$form.service}
       error={$errors.service}
       on:input={handleFieldChange}
       on:blur={handleFieldChange}
-    >
-      <svelte:fragment slot="label">Service producteur</svelte:fragment>
-      <svelte:fragment slot="hintText">
-        Service producteur du jeu de données au sein de l'organisation.
-      </svelte:fragment>
-    </InputField>
+    />
 
     <Select
       options={toSelectOptions(GEOGRAPHICAL_COVERAGE_LABELS)}
@@ -339,19 +325,13 @@
 
     <InputField
       name="technicalSource"
+      label="Système d'information source"
+      hintText="De quelle sources proviennent ces données ? Séparez leur nom par des “/” lorsqu'il y en a plusieurs."
       value={$form.technicalSource}
       error={$errors.technicalSource}
       on:input={handleFieldChange}
       on:blur={handleFieldChange}
-    >
-      <svelte:fragment slot="label">
-        Système d'information source
-      </svelte:fragment>
-      <svelte:fragment slot="hintText">
-        De quelle sources proviennent ces données ? Séparez leur nom par des “/”
-        lorsqu'il y en a plusieurs.
-      </svelte:fragment>
-    </InputField>
+    />
   </div>
 
   <h2 id="mot-cles" class="fr-mb-5w">Mot-clés thématiques</h2>
@@ -378,22 +358,13 @@
   <div class="form--content fr-mb-8w">
     <InputField
       name="producerEmail"
+      label=" Adresse e-mail du service producteur"
+      hintText="Il est fortement conseillé d'avoir une adresse e-mail générique afin de rendre la prise de contact possible quelle que soit les personnes en responsabilité. Nous recommandons d'avoir une adresse différente pour chaque service afin de ne pas “polluer” les boîtes e-mail de chacun lorsque le catalogue grandit."
       type="email"
       value={$form.producerEmail}
       error={$errors.producerEmail}
       on:input={handleFieldChange}
-    >
-      <svelte:fragment slot="label">
-        Adresse e-mail du service producteur
-      </svelte:fragment>
-      <svelte:fragment slot="hintText">
-        Il est fortement conseillé d'avoir une adresse e-mail générique afin de
-        rendre la prise de contact possible quelle que soit les personnes en
-        responsabilité. Nous recommandons d'avoir une adresse différente pour
-        chaque service afin de ne pas "polluer" les boîtes e-mail de chacun
-        lorsque le catalogue grandit.
-      </svelte:fragment>
-    </InputField>
+    />
 
     <ContactEmailsField
       bind:errors={emailErrors}
@@ -415,15 +386,12 @@
   <div class="form--content fr-mb-8w">
     <InputField
       name="lastUpdatedAt"
+      label="Date de la dernière mise à jour (JJ / MM / AAAA)"
       type="date"
       value={$form.lastUpdatedAt}
       error={$errors.lastUpdatedAt}
       on:input={handleLastUpdatedAtChange}
-    >
-      <svelte:fragment slot="label">
-        Date de la dernière mise à jour (JJ / MM / AAAA)
-      </svelte:fragment>
-    </InputField>
+    />
 
     <Select
       options={toSelectOptions(UPDATE_FREQUENCY_LABELS)}
@@ -455,20 +423,16 @@
   <div class="form--content fr-mb-8w">
     <InputField
       name="publishedUrl"
+      label="Page open data"
+      hintText="Si le jeu de données est publié en open data, saisissez ici le lien de la page web associée."
       value={$form.publishedUrl}
       error={$errors.publishedUrl}
       on:input={handleFieldChange}
       on:blur={handleFieldChange}
-    >
-      <svelte:fragment slot="label">Page open data</svelte:fragment>
-      <svelte:fragment slot="hintText">
-        Si le jeu de données est publié en open data, saisissez ici le lien de
-        la page web associée.
-      </svelte:fragment>
-    </InputField>
+    />
   </div>
 
-  <div class="fr-grid-row fr-grid-row--right fr-mb-6w">
+  <div class="fr-input-group button--container fr-mb-6w">
     <button
       type="submit"
       class="fr-btn  fr-icon-upload-2-line fr-btn--icon-right"
@@ -485,6 +449,11 @@
     
     */
     scroll-margin-top: 10vh;
+  }
+
+  .button--container {
+    display: flex;
+    justify-content: flex-end;
   }
 
   .form--content {
