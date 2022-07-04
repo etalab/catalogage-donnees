@@ -5,21 +5,20 @@
   import { apiToken } from "$lib/stores/auth";
 
   export const load: Load = async ({ fetch, url }) => {
+    const page = +(url.searchParams.get("page") || 1);
     const q = url.searchParams.get("q") || "";
 
-    const pagination = await getDatasets({
+    const paginatedDatasets = await getDatasets({
       fetch,
       apiToken: get(apiToken),
-      page: 1,
+      page,
       q,
     });
 
-    const datasets = Maybe.map(pagination, ({ items }) => items);
-
     return {
       props: {
-        q,
-        datasets,
+        paginatedDatasets,
+        currentPage: page,
       },
     };
   };
@@ -27,21 +26,32 @@
 
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import { page as pageStore } from "$app/stores";
   import type { Dataset } from "src/definitions/datasets";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
-  import { toQueryString } from "$lib/util/urls";
+  import { patchQueryString, toQueryString } from "$lib/util/urls";
   import { Maybe } from "$lib/util/maybe";
   import { pluralize } from "src/lib/util/format";
+  import type { GetPageLink, Paginated } from "src/definitions/pagination";
+  import PaginationContainer from "./_PaginationContainer.svelte";
 
+  export let paginatedDatasets: Maybe<Paginated<Dataset>>;
+  export let currentPage: number;
   export let q: string;
-  export let datasets: Maybe<Dataset[]>;
 
   const updateSearch = (event: CustomEvent<string>) => {
-    const q = event.detail;
+    q = event.detail;
     const queryString = toQueryString([["q", q]]);
     const href = `${queryString}`; // Same page, update query string only
     goto(href);
+  };
+
+  const getPageLink: GetPageLink = (page) => {
+    const queryString = patchQueryString($pageStore.url.searchParams, [
+      ["page", page.toString()],
+    ]);
+    return `${queryString}`;
   };
 </script>
 
@@ -52,19 +62,29 @@
   <div class="fr-container fr-grid-row fr-grid-row--center fr-py-6w">
     <div class="fr-col-10">
       <h1>Recherchez un jeu de données</h1>
-      <SearchForm value={q} on:submit={updateSearch} />
+      <SearchForm on:submit={updateSearch} />
     </div>
   </div>
 </section>
 
-<section class="fr-container fr-mt-8w fr-mb-15w">
-  {#if Maybe.Some(datasets)}
-    {#if q}
-      <h2 class="fr-mb-3w">
-        {datasets.length}
-        {pluralize(datasets.length, "résultat", "résultats")}
-      </h2>
-    {/if}
-    <DatasetList {datasets} />
-  {/if}
+<section class="fr-container">
+  <div class="fr-grid-row">
+    <div class="fr-col-12">
+      {#if Maybe.Some(paginatedDatasets)}
+        {#if q}
+          <h2 class="fr-mb-3w">
+            {paginatedDatasets.totalItems}
+            {pluralize(paginatedDatasets.totalItems, "résultat", "résultats")}
+          </h2>
+        {/if}
+
+        <DatasetList datasets={paginatedDatasets.items} />
+        <PaginationContainer
+          {getPageLink}
+          totalPages={paginatedDatasets.totalPages}
+          {currentPage}
+        />
+      {/if}
+    </div>
+  </div>
 </section>
