@@ -173,4 +173,30 @@ test.describe("Search", () => {
       .count();
     expect(itemCount).toBe(2);
   });
+
+  test("the search page should display several items by default", async ({
+    page,
+  }) => {
+    await page.goto("/search");
+
+    await Promise.all([
+      page.waitForRequest("**/datasets/?**"),
+      page.waitForResponse("**/datasets/?**"),
+    ]);
+
+    const itemCount = await page
+      .locator('[data-test-id="dataset-list-item"]')
+      .count();
+    expect(itemCount).toBe(4);
+  });
+
+  test("permform an empty search query all items", async ({ page }) => {
+    await page.goto("/search");
+    await performASearch(page, "");
+
+    const itemCount = await page
+      .locator('[data-test-id="dataset-list-item"]')
+      .count();
+    expect(itemCount).toBe(4);
+  });
 });

@@ -78,12 +78,12 @@
 
   let displayFilters = false;
 
-  const updateSearch = (event: CustomEvent<string>) => {
+  const updateSearch = async (event: CustomEvent<string>) => {
     q = event.detail;
 
     if (!q) {
-      const href = ``; // Same page, remove query string
-      goto(href);
+      const href = `search`; // Same page, remove query string
+      await goto(href);
       return;
     }
 
