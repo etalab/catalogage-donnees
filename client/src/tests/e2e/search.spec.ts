@@ -1,6 +1,35 @@
-import { expect } from "@playwright/test";
+import {
+  expect,
+  type Page,
+  type Request,
+  type Response,
+} from "@playwright/test";
 import { STATE_AUTHENTICATED } from "./constants";
 import { test } from "./fixtures";
+
+const performASearch = async (
+  page: Page,
+  searchValue: string
+): Promise<[Request, Response]> => {
+  const search = page.locator("form [name=q]");
+  await search.fill(searchValue);
+
+  expect(await search.inputValue()).toBe(searchValue);
+
+  const button = page.locator("button[type='submit']");
+  const [request, response] = await Promise.all([
+    page.waitForRequest("**/datasets/?**"),
+    page.waitForResponse("**/datasets/?**"),
+    button.click(),
+  ]);
+
+  expect(request.method()).toBe("GET");
+  const searchParams = new URLSearchParams(request.url());
+  expect(searchParams.get("q")).toBe(searchValue);
+  expect(response.status()).toBe(200);
+
+  return [request, response];
+};
 
 test.describe("Search", () => {
   test.use({ storageState: STATE_AUTHENTICATED });
@@ -8,20 +37,8 @@ test.describe("Search", () => {
   test("Performs a search from the home page", async ({ page, dataset }) => {
     await page.goto("/");
 
-    const search = page.locator("form [name=q]");
-    await search.fill("title");
-    expect(await search.inputValue()).toBe("title");
+    const [, response] = await performASearch(page, "title");
 
-    const button = page.locator("button[type='submit']");
-    const [request, response] = await Promise.all([
-      page.waitForRequest((req) => req.url().includes("/datasets/")),
-      page.waitForResponse((resp) => resp.url().includes("/datasets/")),
-      button.click(),
-    ]);
-    expect(request.method()).toBe("GET");
-    const searchParams = new URLSearchParams(request.url());
-    expect(searchParams.get("q")).toBe("title");
-    expect(response.status()).toBe(200);
     const { items } = await response.json();
     expect(items.length).toBeGreaterThanOrEqual(1);
     expect(items[0].title).toBe(dataset.title);
@@ -47,21 +64,9 @@ test.describe("Search", () => {
 
     // First search.
 
-    let search = page.locator("form [name=q]");
-    await search.fill("title");
-    expect(await search.inputValue()).toBe("title");
+    const [, response] = await performASearch(page, "title");
 
-    const button = page.locator("button[type='submit']");
-    let [request, response] = await Promise.all([
-      page.waitForRequest((req) => req.url().includes("/datasets/")),
-      page.waitForResponse((resp) => resp.url().includes("/datasets/")),
-      button.click(),
-    ]);
-    expect(request.method()).toBe("GET");
-    const searchParams = new URLSearchParams(request.url());
-    expect(searchParams.get("q")).toBe("title");
-    expect(response.status()).toBe(200);
-    let { items } = await response.json();
+    const { items } = await response.json();
     expect(items.length).toBeGreaterThanOrEqual(1);
     expect(items[0].title).toBe(dataset.title);
 
@@ -71,22 +76,17 @@ test.describe("Search", () => {
 
     // Second search. Aim at getting no results.
 
-    search = page.locator("form [name=q]");
-    await search.fill("noresultsexpected");
-    expect(await search.inputValue()).toBe("noresultsexpected");
-
-    [request, response] = await Promise.all([
-      page.waitForRequest((req) => req.url().includes("/datasets/")),
-      page.waitForResponse((resp) => resp.url().includes("/datasets/")),
-      button.click(),
-    ]);
-    expect(new URLSearchParams(request.url()).get("q")).toBe(
+    const [secondRequest, secondResponse] = await performASearch(
+      page,
       "noresultsexpected"
     );
-    expect(request.method()).toBe("GET");
-    expect(response.status()).toBe(200);
-    ({ items } = await response.json());
-    expect(items.length).toBe(0);
+    expect(new URLSearchParams(secondRequest.url()).get("q")).toBe(
+      "noresultsexpected"
+    );
+    expect(secondRequest.method()).toBe("GET");
+    expect(secondResponse.status()).toBe(200);
+    const { items: secondCallItems } = await secondResponse.json();
+    expect(secondCallItems.length).toBe(0);
 
     await expect(page).toHaveURL("/fiches/search?q=noresultsexpected");
   });
