@@ -25,7 +25,7 @@
       return {
         props: {
           paginatedDatasets,
-          groupedSearchFilters: null,
+          searchFilters: null,
           currentPage: page,
           q,
         },
@@ -35,9 +35,7 @@
     return {
       props: {
         paginatedDatasets,
-        groupedSearchFilters: groupSelectableDatasetFilterByCategory(
-          transformSearchFiltersIntoSelectableDatasetFilters(searchFilters)
-        ),
+        searchFilters,
         currentPage: page,
         q,
       },
@@ -49,8 +47,8 @@
   import { goto } from "$app/navigation";
   import type {
     Dataset,
+    DatasetFilters,
     SelectableDatasetFilter,
-    SelectableDatasetFilterGroup,
   } from "src/definitions/datasets";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
@@ -59,20 +57,18 @@
   import { pluralize } from "src/lib/util/format";
   import {
     cleanSearchFilters,
-    groupSelectableDatasetFilterByCategory,
     mergeSelectableDatasetFilter,
   } from "src/lib/util/dataset";
-  import { transformSearchFiltersIntoSelectableDatasetFilters } from "src/lib/transformers/dataset";
-  import FilterSection from "../../lib/components/DatasetFilterSection/DatasetFilterSection.svelte";
   import Pagination from "src/lib/components/Pagination/Pagination.svelte";
   import { toSearchQueryParamRecord } from "src/lib/transformers/searchFilter";
   import type { GetPageLink, Paginated } from "src/definitions/pagination";
+  import FilterPanel from "./_FilterPanel.svelte";
 
   export let paginatedDatasets: Maybe<Paginated<Dataset>>;
   export let q: string;
   export let currentPage: number;
 
-  export let groupedSearchFilters: Maybe<SelectableDatasetFilterGroup>;
+  export let searchFilters: Maybe<DatasetFilters>;
 
   let selectedFilters: Partial<SelectableDatasetFilter>;
 
@@ -149,22 +145,14 @@
       </div>
     </div>
 
-    {#if groupedSearchFilters}
+    {#if searchFilters}
       <div
         data-testid="dataset-filters"
-        class="fr-grid-row fr-grid-row--center fr-grid-row--gutters fr-py-3w {!displayFilters
+        class="fr-grid-row fr-grid-row--gutters fr-py-3w {!displayFilters
           ? 'hidden'
           : undefined} filters"
       >
-        {#each Object.keys(groupedSearchFilters) as filterCategory}
-          <div class="fr-col-4">
-            <FilterSection
-              searchFilters={groupedSearchFilters[filterCategory]}
-              sectionTitle={filterCategory}
-              on:filterSelected={handleSelectedFilter}
-            />
-          </div>
-        {/each}
+        <FilterPanel on:change={handleSelectedFilter} filters={searchFilters} />
       </div>
     {/if}
 
@@ -203,6 +191,7 @@
 
   .filters {
     border-bottom: 1px solid var(--border-default-grey);
+    justify-content: space-between;
   }
 
   .summary__header {

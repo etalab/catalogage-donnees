@@ -7,7 +7,6 @@ import { getFakeSelectableDatasetFilter } from "src/tests/factories/dataset";
 import { buildFakeTag } from "src/tests/factories/tags";
 import {
   cleanSearchFilters,
-  groupSelectableDatasetFilterByCategory,
   mergeSelectableDatasetFilter,
 } from "./dataset";
 
@@ -60,30 +59,6 @@ describe("SearchFilters", () => {
 
       expect(result.service).toEqual(newSearchFilter.service);
       expect(result.tag_id).toEqual(source.tag_id);
-    });
-  });
-
-  describe("groupSearchFiltersByCategory", () => {
-    test("should group filters by category", () => {
-      const searchFilters = getFakeSelectableDatasetFilter({});
-
-      const expectedResult: SelectableDatasetFilterGroup = {
-        "Informations Générales": {
-          geographical_coverage: searchFilters.geographical_coverage,
-          service: searchFilters.service,
-        },
-        "Mots-clés Thématiques": {
-          tag_id: searchFilters.tag_id,
-        },
-
-        "Sources et Formats": {
-          format: searchFilters.format,
-          technical_source: searchFilters.technical_source,
-        },
-      };
-
-      const result = groupSelectableDatasetFilterByCategory(searchFilters);
-      expect(result).toEqual(expectedResult);
     });
   });
 });

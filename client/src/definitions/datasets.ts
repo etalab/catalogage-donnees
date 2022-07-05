@@ -1,7 +1,6 @@
 import type { Maybe } from "$lib/util/maybe";
 import type { CatalogRecord } from "./catalog_records";
 import type { Tag } from "./tag";
-import type { DatasetFilterCategories } from "src/constants";
 import type { SelectOption } from "./form";
 
 // Matches enum on the backend.
@@ -78,8 +77,4 @@ export type SelectableDatasetFilter = {
   format: SelectOption[] | null;
   technical_source: SelectOption[] | null;
   tag_id: SelectOption[] | null;
-};
-
-export type SelectableDatasetFilterGroup = {
-  [key in DatasetFilterCategories]: Partial<SelectableDatasetFilter>;
 };

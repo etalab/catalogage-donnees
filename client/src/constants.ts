@@ -51,14 +51,6 @@ export type DatasetFilterCategories =
   | "Sources et Formats"
   | "Mots-clés Thématiques";
 
-export const DATASET_FILTER_CATEGORIES: {
-  [K in DatasetFilterCategories]: string[];
-} = {
-  "Informations Générales": ["geographical_coverage", "service"],
-  "Sources et Formats": ["format", "technical_source"],
-  "Mots-clés Thématiques": ["tag_id"],
-};
-
 export type DatasetFilter =
   | "geographical_coverage"
   | "service"

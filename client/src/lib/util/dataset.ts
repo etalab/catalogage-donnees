@@ -1,7 +1,5 @@
-import { DATASET_FILTER_CATEGORIES } from "src/constants";
+
 import type {
-  SelectableDatasetFilterGroup,
-  DatasetFilters,
   SelectableDatasetFilter,
 } from "src/definitions/datasets";
 
@@ -27,30 +25,4 @@ export const cleanSearchFilters = (
     }
     return previous;
   }, {});
-};
-
-export const groupSelectableDatasetFilterByCategory = (
-  filters: SelectableDatasetFilter
-): SelectableDatasetFilterGroup => {
-  const initialValues: SelectableDatasetFilterGroup = {
-    "Informations Générales": {},
-    "Sources et Formats": {},
-    "Mots-clés Thématiques": {},
-  };
-
-  return Object.keys(DATASET_FILTER_CATEGORIES).reduce((previous, current) => {
-    const filtersKey = DATASET_FILTER_CATEGORIES[current] as string[];
-
-    const mappedFilterKeys = filtersKey.reduce((previous, current) => {
-      return {
-        ...previous,
-        [current]: filters[current],
-      };
-    }, {}) as Partial<DatasetFilters>;
-
-    return {
-      ...previous,
-      [current]: mappedFilterKeys,
-    };
-  }, initialValues);
 };
