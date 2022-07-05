@@ -22,7 +22,7 @@
   import TextareaField from "../TextareaField/TextareaField.svelte";
   import { toSelectOptions } from "src/lib/transformers/form";
   import { handleSelectChange } from "src/lib/util/form";
-  import { type DropMaybe, Maybe, type AddMaybe } from "$lib/util/maybe";
+  import { type DropMaybe, Maybe } from "$lib/util/maybe";
   import TagSelector from "../TagSelector/TagSelector.svelte";
   import type { Tag } from "src/definitions/tag";
 
@@ -31,20 +31,7 @@
   export let loading = false;
   export let tags: Tag[] = [];
 
-  export let initial: AddMaybe<DatasetFormData, "geographicalCoverage"> = {
-    title: "",
-    description: "",
-    service: "",
-    formats: [],
-    producerEmail: "",
-    contactEmails: [$user?.email || ""],
-    geographicalCoverage: null, // Allow select null option upon creation
-    lastUpdatedAt: null,
-    updateFrequency: null,
-    technicalSource: "",
-    url: null,
-    tags: [],
-  };
+  export let initial: DatasetFormData | null = null;
 
   const dispatch =
     createEventDispatcher<{ save: DatasetFormData; touched: boolean }>();
@@ -69,22 +56,22 @@
   );
 
   const initialValues: DatasetFormValues = {
-    title: initial.title,
-    description: initial.description,
-    service: initial.service,
+    title: initial?.title || "",
+    description: initial?.description || "",
+    service: initial?.service || "",
     dataFormats: dataFormatChoices.map(
-      ({ value }) => !!initial.formats.find((v) => v === value)
+      ({ value }) => !!(initial?.formats || []).find((v) => v === value)
     ),
-    producerEmail: initial.producerEmail,
-    contactEmails: initial.contactEmails,
-    lastUpdatedAt: initial.lastUpdatedAt
+    producerEmail: initial?.producerEmail || "",
+    contactEmails: initial?.contactEmails || [$user?.email || ""],
+    lastUpdatedAt: initial?.lastUpdatedAt
       ? formatHTMLDate(initial.lastUpdatedAt)
       : null,
-    geographicalCoverage: initial.geographicalCoverage,
-    updateFrequency: initial.updateFrequency,
-    technicalSource: initial.technicalSource,
-    url: initial.url,
-    tags: initial.tags,
+    geographicalCoverage: initial?.geographicalCoverage || null,
+    updateFrequency: initial?.updateFrequency || null,
+    technicalSource: initial?.technicalSource || null,
+    url: initial?.url || null,
+    tags: initial?.tags || [],
   };
 
   // Handle this value manually.
@@ -339,7 +326,7 @@
   <div class="form--content fr-mb-8w">
     <TagSelector
       error={typeof $errors.tags === "string" ? $errors.tags : ""}
-      selectedTags={initial.tags}
+      selectedTags={initialValues.tags}
       on:change={handleTagsChange}
       name="tags"
       {tags}
