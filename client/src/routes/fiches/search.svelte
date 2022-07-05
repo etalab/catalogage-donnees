@@ -62,9 +62,9 @@
     cleanSearchDatasetFilters,
     mergeSelectableDatasetFilter,
   } from "src/lib/util/dataset";
-  import Pagination from "src/lib/components/Pagination/Pagination.svelte";
   import type { GetPageLink, Paginated } from "src/definitions/pagination";
   import FilterPanel from "./_FilterPanel.svelte";
+  import PaginationContainer from "./_PaginationContainer.svelte";
 
   export let paginatedDatasets: Maybe<Paginated<Dataset>>;
   export let q: string;
@@ -160,13 +160,11 @@
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <DatasetList datasets={paginatedDatasets.items} />
-        <div class="pagination-container fr-mt-2w ">
-          <Pagination
-            {currentPage}
-            totalPages={paginatedDatasets.totalPages}
-            {getPageLink}
-          />
-        </div>
+        <PaginationContainer
+          {getPageLink}
+          totalPages={paginatedDatasets.totalItems}
+          {currentPage}
+        />
       </div>
     </div>
   {/if}
