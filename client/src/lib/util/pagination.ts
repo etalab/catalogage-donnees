@@ -51,3 +51,11 @@ export const makePagination = (options: PaginationOptions): Pagination => {
     lastPage,
   };
 };
+
+export const makePageParam = (page: number): [string, string] => {
+  return ["page", page.toString()];
+};
+
+export const getPageFromParams = (searchParams: URLSearchParams): number => {
+  return +(searchParams.get("page") || 1);
+};

@@ -3,9 +3,10 @@
   import { get } from "svelte/store";
   import { apiToken } from "$lib/stores/auth";
   import { getDatasets } from "$lib/repositories/datasets";
+  import { getPageFromParams } from "$lib/util/pagination";
 
   export const load: Load = async ({ fetch, url }) => {
-    const page = +(url.searchParams.get("page") || 1);
+    const page = getPageFromParams(url.searchParams);
 
     const paginatedDatasets = await getDatasets({
       fetch,
@@ -24,10 +25,9 @@
 
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { page as pageStore } from "$app/stores";
   import type { Dataset } from "src/definitions/datasets";
-  import type { GetPageLink, Paginated } from "src/definitions/pagination";
-  import { patchQueryString, toQueryString } from "$lib/util/urls";
+  import type { Paginated } from "src/definitions/pagination";
+  import { toQueryString } from "$lib/util/urls";
   import { Maybe } from "$lib/util/maybe";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
@@ -42,13 +42,6 @@
     const queryString = toQueryString([["q", q]]);
     const href = `${paths.datasetSearch}${queryString}`;
     goto(href);
-  };
-
-  const getPageLink: GetPageLink = (page) => {
-    const queryString = patchQueryString($pageStore.url.searchParams, [
-      ["page", page.toString()],
-    ]);
-    return `${queryString}`;
   };
 </script>
 
@@ -76,9 +69,8 @@
         <DatasetList datasets={paginatedDatasets.items} />
 
         <PaginationContainer
-          {getPageLink}
-          totalPages={paginatedDatasets.totalPages}
           {currentPage}
+          totalPages={paginatedDatasets.totalPages}
         />
       {/if}
     </div>
