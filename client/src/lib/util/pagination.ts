@@ -57,5 +57,5 @@ export const makePageParam = (page: number): [string, string] => {
 };
 
 export const getPageFromParams = (searchParams: URLSearchParams): number => {
-  return +(searchParams.get("page") || 1);
+  return parseInt(searchParams.get("page") || "1");
 };
