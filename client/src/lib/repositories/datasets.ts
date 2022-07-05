@@ -3,6 +3,7 @@ import type {
   DatasetCreateData,
   DatasetFilters,
   DatasetUpdateData,
+  SelectableDatasetFilter,
 } from "src/definitions/datasets";
 import type { Fetch } from "src/definitions/fetch";
 import type { Paginated } from "src/definitions/pagination";
@@ -13,6 +14,7 @@ import { toDataset, toPayload } from "$lib/transformers/dataset";
 import { toPaginated } from "$lib/transformers/pagination";
 import { Maybe } from "$lib/util/maybe";
 import type { QueryParamRecord } from "src/definitions/url";
+import { toSearchQueryParamRecord } from "../transformers/searchFilter";
 
 type GetDatasetByID = (opts: {
   fetch: Fetch;
@@ -42,7 +44,7 @@ type GetDatasets = (opts: {
   apiToken: string;
   page: number;
   q?: string;
-  filters?: QueryParamRecord;
+  filters?: Partial<SelectableDatasetFilter>;
 }) => Promise<Maybe<Paginated<Dataset>>>;
 
 export const getDatasets: GetDatasets = async ({
@@ -62,7 +64,7 @@ export const getDatasets: GetDatasets = async ({
   }
 
   if (filters) {
-    filters.forEach((item) => {
+    toSearchQueryParamRecord(filters).forEach((item) => {
       queryItems.push(item);
     });
   }

@@ -1,14 +1,8 @@
 import { GEOGRAPHICAL_COVERAGE_LABELS } from "src/constants";
-import type {
-  SelectableDatasetFilterGroup,
-  SelectableDatasetFilter,
-} from "src/definitions/datasets";
+import type { SelectableDatasetFilter } from "src/definitions/datasets";
 import { getFakeSelectableDatasetFilter } from "src/tests/factories/dataset";
 import { buildFakeTag } from "src/tests/factories/tags";
-import {
-  cleanSearchFilters,
-  mergeSelectableDatasetFilter,
-} from "./dataset";
+import { cleanSearchFilters, mergeSelectableDatasetFilter } from "./dataset";
 
 describe("SearchFilters", () => {
   describe("cleanSearchFilters", () => {

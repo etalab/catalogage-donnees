@@ -1,7 +1,4 @@
-
-import type {
-  SelectableDatasetFilter,
-} from "src/definitions/datasets";
+import type { SelectableDatasetFilter } from "src/definitions/datasets";
 
 export const mergeSelectableDatasetFilter = (
   source: Partial<SelectableDatasetFilter>,

@@ -60,7 +60,6 @@
     mergeSelectableDatasetFilter,
   } from "src/lib/util/dataset";
   import Pagination from "src/lib/components/Pagination/Pagination.svelte";
-  import { toSearchQueryParamRecord } from "src/lib/transformers/searchFilter";
   import type { GetPageLink, Paginated } from "src/definitions/pagination";
   import FilterPanel from "./_FilterPanel.svelte";
 
@@ -102,12 +101,11 @@
       mergeSelectableDatasetFilter(selectedFilters, e.detail)
     );
 
-    const queryParamsRecords = toSearchQueryParamRecord(selectedFilters);
     paginatedDatasets = await getDatasets({
       fetch,
       page: currentPage,
       apiToken: $apiToken,
-      filters: queryParamsRecords,
+      filters: selectedFilters,
       q,
     });
   };

@@ -191,10 +191,10 @@ test.describe("Search", () => {
     const itemCount = await page
       .locator('[data-test-id="dataset-list-item"]')
       .count();
-    expect(itemCount).toBe(5);
+    expect(itemCount).toBe(6);
   });
 
-  test.only("permform an empty search query all items", async ({
+  test("permform an empty search query all items", async ({
     dataset,
     page,
   }) => {
@@ -226,7 +226,7 @@ test.describe("Search", () => {
     expect(secondRequest.method()).toBe("GET");
     expect(secondResponse.status()).toBe(200);
     const { items: secondCallItems } = await secondResponse.json();
-    expect(secondCallItems.length).toBe(6);
+    expect(secondCallItems.length).toBe(7);
 
     await expect(page).toHaveURL("/fiches/search");
   });
