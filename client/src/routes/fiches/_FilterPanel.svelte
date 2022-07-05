@@ -1,10 +1,8 @@
 <script lang="ts">
-  import {
-    DATASET_FILTERS_TRANSLATION,
-    type DatasetFilter,
-  } from "src/constants";
+  import { DATASET_FILTERS_TRANSLATION } from "src/constants";
 
   import type {
+    DatasetFilter,
     DatasetFilters,
     SelectableDatasetFilter,
   } from "src/definitions/datasets";

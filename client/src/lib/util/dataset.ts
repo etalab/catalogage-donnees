@@ -10,7 +10,7 @@ export const mergeSelectableDatasetFilter = (
   };
 };
 
-export const cleanSearchFilters = (
+export const cleanSearchDatasetFilters = (
   selectedSearchFilter: Partial<SelectableDatasetFilter>
 ): Partial<SelectableDatasetFilter> => {
   return Object.keys(selectedSearchFilter).reduce((previous, current) => {

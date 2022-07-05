@@ -1,7 +1,10 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
   import { get } from "svelte/store";
-  import { getDatasets, getSearchFilter } from "$lib/repositories/datasets";
+  import {
+    getDatasets,
+    getDatasetSearchFilters,
+  } from "$lib/repositories/datasets";
   import { apiToken } from "$lib/stores/auth";
   import { page as pageStore } from "$app/stores";
 
@@ -14,11 +17,11 @@
     const [paginatedDatasets, searchFilters] = await Promise.all([
       getDatasets({
         fetch,
-        apiToken: get(apiToken),
+        apiToken: token,
         page: 1,
         q,
       }),
-      getSearchFilter(fetch, token),
+      getDatasetSearchFilters({ fetch, apiToken: token }),
     ]);
 
     if (!searchFilters) {
@@ -56,7 +59,7 @@
   import { Maybe } from "$lib/util/maybe";
   import { pluralize } from "src/lib/util/format";
   import {
-    cleanSearchFilters,
+    cleanSearchDatasetFilters,
     mergeSelectableDatasetFilter,
   } from "src/lib/util/dataset";
   import Pagination from "src/lib/components/Pagination/Pagination.svelte";
@@ -97,7 +100,7 @@
   const handleSelectedFilter = async (
     e: CustomEvent<SelectableDatasetFilter>
   ) => {
-    selectedFilters = cleanSearchFilters(
+    selectedFilters = cleanSearchDatasetFilters(
       mergeSelectableDatasetFilter(selectedFilters, e.detail)
     );
 

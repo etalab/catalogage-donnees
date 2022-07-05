@@ -159,10 +159,15 @@ export const deleteDataset: DeleteDataset = async ({ fetch, apiToken, id }) => {
   await makeApiRequest(fetch, request);
 };
 
-export const getSearchFilter = async (
-  fetch: Fetch,
-  apiToken: string
-): Promise<Maybe<DatasetFilters>> => {
+type GetDatasetFilters = (opts: {
+  fetch: Fetch;
+  apiToken: string;
+}) => Promise<Maybe<DatasetFilters>>;
+
+export const getDatasetSearchFilters: GetDatasetFilters = async ({
+  fetch,
+  apiToken,
+}) => {
   const url = `${getApiUrl()}/datasets/filters/`;
   const request = new Request(url, {
     headers: new Headers(getHeaders(apiToken)),

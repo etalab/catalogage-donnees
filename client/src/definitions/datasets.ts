@@ -30,6 +30,25 @@ export type GeographicalCoverage =
   | "europe"
   | "world";
 
+export type DatasetFilterCategories =
+  | "Informations Générales"
+  | "Sources et Formats"
+  | "Mots-clés Thématiques";
+
+export type DatasetFilter =
+  | "geographical_coverage"
+  | "service"
+  | "format"
+  | "technical_source"
+  | "tag_id";
+
+export type DatasetFiltersTranslation =
+  | "Couverture géographique"
+  | "Service producteur de la donnée"
+  | "Formats de mise à disposition"
+  | "Système d’information source"
+  | "Mots-clés";
+
 export interface DatasetHeadlines {
   title: string;
   description: Maybe<string>;

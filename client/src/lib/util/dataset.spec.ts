@@ -2,7 +2,10 @@ import { GEOGRAPHICAL_COVERAGE_LABELS } from "src/constants";
 import type { SelectableDatasetFilter } from "src/definitions/datasets";
 import { getFakeSelectableDatasetFilter } from "src/tests/factories/dataset";
 import { buildFakeTag } from "src/tests/factories/tags";
-import { cleanSearchFilters, mergeSelectableDatasetFilter } from "./dataset";
+import {
+  cleanSearchDatasetFilters,
+  mergeSelectableDatasetFilter,
+} from "./dataset";
 
 describe("SearchFilters", () => {
   describe("cleanSearchFilters", () => {
@@ -30,7 +33,7 @@ describe("SearchFilters", () => {
         service: [{ label: "DINUM", value: "DINUM" }],
         technical_source: [{ label: "foo", value: "foo" }],
       };
-      const result = cleanSearchFilters(source);
+      const result = cleanSearchDatasetFilters(source);
 
       expect(result).toEqual(expectedResult);
     });
