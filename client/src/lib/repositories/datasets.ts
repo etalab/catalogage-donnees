@@ -1,7 +1,9 @@
 import type {
   Dataset,
   DatasetCreateData,
+  DatasetFilters,
   DatasetUpdateData,
+  SelectableDatasetFilter,
 } from "src/definitions/datasets";
 import type { Fetch } from "src/definitions/fetch";
 import type { Paginated } from "src/definitions/pagination";
@@ -11,6 +13,8 @@ import { toQueryString } from "$lib/util/urls";
 import { toDataset, toPayload } from "$lib/transformers/dataset";
 import { toPaginated } from "$lib/transformers/pagination";
 import { Maybe } from "$lib/util/maybe";
+import type { QueryParamRecord } from "src/definitions/url";
+import { toSearchQueryParamRecord } from "../transformers/searchFilter";
 
 type GetDatasetByID = (opts: {
   fetch: Fetch;
@@ -40,6 +44,7 @@ type GetDatasets = (opts: {
   apiToken: string;
   page: number;
   q?: string;
+  filters?: Partial<SelectableDatasetFilter>;
 }) => Promise<Maybe<Paginated<Dataset>>>;
 
 export const getDatasets: GetDatasets = async ({
@@ -47,14 +52,21 @@ export const getDatasets: GetDatasets = async ({
   apiToken,
   page,
   q,
+  filters,
 }) => {
-  const queryItems: [string, string][] = [
+  const queryItems: QueryParamRecord = [
     ["page_number", page.toString()],
     ["page_size", DATASETS_PER_PAGE.toString()],
   ];
 
-  if (typeof q === "string") {
+  if (q && typeof q === "string") {
     queryItems.push(["q", q]);
+  }
+
+  if (filters) {
+    toSearchQueryParamRecord(filters).forEach((item) => {
+      queryItems.push(item);
+    });
   }
 
   const queryString = toQueryString(queryItems);
@@ -145,4 +157,22 @@ export const deleteDataset: DeleteDataset = async ({ fetch, apiToken, id }) => {
     headers: new Headers(getHeaders(apiToken)),
   });
   await makeApiRequest(fetch, request);
+};
+
+type GetDatasetFilters = (opts: {
+  fetch: Fetch;
+  apiToken: string;
+}) => Promise<Maybe<DatasetFilters>>;
+
+export const getDatasetSearchFilters: GetDatasetFilters = async ({
+  fetch,
+  apiToken,
+}) => {
+  const url = `${getApiUrl()}/datasets/filters/`;
+  const request = new Request(url, {
+    headers: new Headers(getHeaders(apiToken)),
+  });
+
+  const response = await makeApiRequest(fetch, request);
+  return Maybe.map(response, (response) => response.json());
 };

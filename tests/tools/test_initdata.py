@@ -112,7 +112,7 @@ async def test_repo_initdata(
 
     num_users = 2
     num_tags = 7
-    num_datasets = 3
+    num_datasets = 4
     num_entities = num_users + num_tags + num_datasets
 
     await initdata.main(path, no_input=True)

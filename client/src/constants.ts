@@ -2,6 +2,8 @@ import type {
   DataFormat,
   UpdateFrequency,
   GeographicalCoverage,
+  DatasetFilter,
+  DatasetFiltersTranslation,
 } from "./definitions/datasets";
 
 export const PUBLIC_PAGES = ["/login"];
@@ -44,6 +46,16 @@ export const GEOGRAPHICAL_COVERAGE_LABELS: {
   national_full_territory: "Nationale (territoires d'Outre-mer inclus)",
   europe: "Européenne",
   world: "Monde",
+};
+
+export const DATASET_FILTERS_TRANSLATION: {
+  [K in DatasetFilter]: DatasetFiltersTranslation;
+} = {
+  geographical_coverage: "Couverture géographique",
+  service: "Service producteur de la donnée",
+  format: "Formats de mise à disposition",
+  technical_source: "Système d’information source",
+  tag_id: "Mots-clés",
 };
 
 export const DATASETS_PER_PAGE = 50;

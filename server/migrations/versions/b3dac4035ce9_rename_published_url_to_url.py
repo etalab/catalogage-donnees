@@ -1,4 +1,4 @@
-"""rename_published_url_to_url
+"""rename_url_to_url
 
 Revision ID: b3dac4035ce9
 Revises: e951f6fd7fbf

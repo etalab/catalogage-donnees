@@ -10,11 +10,14 @@
   let macthedOptions: Array<SelectOption> = options;
   let isOverlayOpen = false;
   let buttonText = buttonPlaceholder;
+
   let searchTerm: string;
   $: macthedOptions = options.filter((item) =>
     item.label.match(new RegExp(searchTerm, "i"))
   );
+
   $: slug = slugify(label);
+
   const openOverlay = () => {
     isOverlayOpen = true;
   };

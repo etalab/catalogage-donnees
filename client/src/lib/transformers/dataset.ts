@@ -1,4 +1,14 @@
-import type { Dataset } from "src/definitions/datasets";
+import {
+  DATA_FORMAT_LABELS,
+  GEOGRAPHICAL_COVERAGE_LABELS,
+} from "src/constants";
+import type {
+  Dataset,
+  DatasetFilters,
+  SelectableDatasetFilter,
+} from "src/definitions/datasets";
+import type { SelectOption } from "src/definitions/form";
+import type { Tag } from "src/definitions/tag";
 import { omit } from "../util/object";
 
 export const camelToUnderscore = (key: string): string => {
@@ -47,5 +57,55 @@ export const toDataset = (item: any): Dataset => {
     technicalSource: technical_source,
     lastUpdatedAt: last_updated_at ? new Date(last_updated_at) : null,
     url,
+  };
+};
+
+const mapToOption = (items: string[]): SelectOption[] =>
+  items.map((item) => {
+    return {
+      label: item,
+      value: item,
+    };
+  });
+
+const mapTagToSelectOption = (items: Tag[]): SelectOption[] =>
+  items.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+
+const mapGeographicalCoverageToSelectOption = (
+  items: string[]
+): SelectOption[] =>
+  items.map((item) => {
+    return {
+      label: GEOGRAPHICAL_COVERAGE_LABELS[item],
+      value: item,
+    };
+  });
+
+const mapDataFormatToSelectOption = (items: string[]): SelectOption[] =>
+  items.map((item) => {
+    return {
+      label: DATA_FORMAT_LABELS[item],
+      value: item,
+    };
+  });
+
+export const transformSearchFiltersIntoSelectableDatasetFilters = (
+  source: DatasetFilters
+): SelectableDatasetFilter => {
+  return {
+    format: source.format ? mapDataFormatToSelectOption(source.format) : null,
+    geographical_coverage: source.geographical_coverage
+      ? mapGeographicalCoverageToSelectOption(source.geographical_coverage)
+      : null,
+    service: source.service ? mapToOption(source.service) : null,
+    tag_id: source.tag_id ? mapTagToSelectOption(source.tag_id) : null,
+    technical_source: source.technical_source
+      ? mapToOption(source.technical_source)
+      : null,
   };
 };
