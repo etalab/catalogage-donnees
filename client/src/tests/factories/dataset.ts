@@ -1,10 +1,4 @@
-import { GEOGRAPHICAL_COVERAGE_LABELS } from "src/constants";
-import type {
-  Dataset,
-  DatasetFormData,
-  DatasetFilters,
-  SelectableDatasetFilter,
-} from "src/definitions/datasets";
+import type { Dataset, DatasetFormData } from "src/definitions/datasets";
 import { buildFakeTag } from "./tags";
 
 export const getFakeDataset = (dataset: Partial<Dataset> = {}): Dataset => {
@@ -42,90 +36,5 @@ export const getFakeDataSetFormData = (
     geographicalCoverage: datasetFormData.geographicalCoverage || "europe",
     url: datasetFormData.url || null,
     tags: datasetFormData.tags || [buildFakeTag()],
-  };
-};
-
-export const getFakeSearchFilter = (
-  searchFilter: Partial<DatasetFilters> = {}
-): DatasetFilters => {
-  return {
-    tag_id: searchFilter.tag_id || [
-      buildFakeTag({
-        id: "3fb62570-7398-431a-bd60-cce1fd7bd32b",
-        name: "tag1",
-      }),
-      buildFakeTag({
-        id: "bd9de4da-9897-43e7-b09d-9235ea9af571",
-        name: "tag2",
-      }),
-    ],
-    geographical_coverage: searchFilter.geographical_coverage || [
-      "municipality",
-      "epci",
-      "department",
-      "region",
-      "national",
-      "national_full_territory",
-      "europe",
-      "world",
-    ],
-    service: searchFilter.service || [
-      "Service enquêtes",
-      "Ministère de l'écologie",
-      "Service cartographie",
-      "Direction des données du CROUS",
-      "qsdqsd",
-    ],
-    format: searchFilter.format || [
-      "file_tabular",
-      "file_gis",
-      "api",
-      "database",
-      "website",
-      "other",
-    ],
-    technical_source: searchFilter.technical_source || [
-      "foo/bar",
-      "Système d'information central du CROUS",
-      "Catalogue des fiches de la DARES",
-      "SIG national de l'IGN",
-      "qsdqsd",
-    ],
-  };
-};
-
-export const getFakeSelectableDatasetFilter = (
-  searchFilter: Partial<SelectableDatasetFilter> = {}
-): SelectableDatasetFilter => {
-  const tag1 = buildFakeTag();
-  const tag2 = buildFakeTag();
-
-  return {
-    tag_id: searchFilter.tag_id || [
-      {
-        label: tag1.name,
-        value: tag1.id,
-      },
-      {
-        label: tag2.name,
-        value: tag2.id,
-      },
-    ],
-    geographical_coverage: searchFilter.geographical_coverage || [
-      {
-        label: GEOGRAPHICAL_COVERAGE_LABELS.epci,
-        value: "epci",
-      },
-    ],
-    service: searchFilter.service || [{ label: "DINUM", value: "DINUM" }],
-    technical_source: searchFilter.technical_source || [
-      { label: "foo", value: "foo" },
-    ],
-    format: searchFilter.format || [
-      {
-        label: "XLS",
-        value: "XLS",
-      },
-    ],
   };
 };

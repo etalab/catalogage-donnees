@@ -5,11 +5,11 @@
   import { createEventDispatcher } from "svelte";
   export let buttonPlaceholder: string;
   export let inputPlaceholder: string;
+  export let buttonText = buttonPlaceholder;
   export let label: string;
-  export let options: Array<SelectOption>;
-  let macthedOptions: Array<SelectOption> = options;
+  export let options: Array<SelectOption<any>>;
+  let macthedOptions: Array<SelectOption<any>> = options;
   let isOverlayOpen = false;
-  let buttonText = buttonPlaceholder;
 
   let searchTerm: string;
   $: macthedOptions = options.filter((item) =>
@@ -36,7 +36,7 @@
     }
   };
   const dispatch = createEventDispatcher<{
-    clickItem: SelectOption | null;
+    clickItem: SelectOption<any> | null;
   }>();
   const handleClickListItem = (option: SelectOption) => {
     buttonText = option.label;

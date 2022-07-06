@@ -53,6 +53,17 @@ test.describe("Search", () => {
     await page.locator(`:has-text('${dataset.title}')`).first().waitFor();
   });
 
+  test("Visits the search page and sees default results", async ({ page }) => {
+    await page.goto("/fiches/search");
+    const response = await page.waitForResponse("**/datasets/?**");
+    const { items } = await response.json();
+    expect(items.length).toBeGreaterThanOrEqual(4);
+    const itemCount = await page
+      .locator('[data-test-id="dataset-list-item"]')
+      .count();
+    expect(itemCount).toBe(items.length);
+  });
+
   test("Visits the search page and performs two searches", async ({
     page,
     dataset,
@@ -110,34 +121,42 @@ test.describe("Search", () => {
     await page.goto("/fiches/search");
     await page.locator("[data-testid='pagination-list']").waitFor();
   });
+});
 
-  test("should see 3 filter sections", async ({ page }) => {
-    await page.goto("/");
+test.describe("Search filters", () => {
+  test.use({ storageState: STATE_AUTHENTICATED });
 
-    await performASearch(page, "crous");
+  test("Sees filter sections and buttons", async ({ page }) => {
+    await page.goto("/fiches/search");
 
     await page.locator("text=Affiner la recherche").click();
-    const sectionTitles = await page.locator("h6");
 
-    expect(await sectionTitles.count()).toBe(3);
+    const filterPanel = page.locator("[data-test-id='filter-panel']");
 
-    const titles = await sectionTitles.allTextContents();
-    expect(titles).toEqual([
-      "Informations Générales",
-      "Sources et Formats",
-      "Mots-clés Thématiques",
-    ]);
+    expect(await filterPanel.locator("h6").count()).toBe(3);
+    await filterPanel.locator("text=Informations générales").waitFor();
+    await filterPanel.locator("text=Sources et formats").waitFor();
+    await filterPanel.locator("text=Mots-clés thématiques").waitFor();
+
+    expect(await filterPanel.locator("button").count()).toBe(5);
+    await filterPanel.locator("text=Couverture géographique").waitFor();
+    await filterPanel.locator("text=Service producteur de la donnée").waitFor();
+    await filterPanel.locator("text=Format de mise à disposition").waitFor();
+    await filterPanel.locator("text=Système d'information source").waitFor();
+    await filterPanel.locator("text=Mot-clé").waitFor();
   });
 
-  test("should filter results by geographical_coverage", async ({ page }) => {
-    await page.goto("/");
-
-    await performASearch(page, "crous");
+  test("Filters results by geographical_coverage", async ({ page }) => {
+    await page.goto("/fiches/search");
 
     await page.locator("text=Affiner la recherche").click();
-    await page
-      .locator("[data-testid='couverture-geographique-button']")
-      .click();
+
+    const filterPanel = page.locator("[data-test-id='filter-panel']");
+    const geographicalCoverageButton = filterPanel.locator(
+      "data-testid=couverture-geographique-button"
+    );
+    expect(geographicalCoverageButton).toHaveText("Rechercher...");
+    await geographicalCoverageButton.click();
     const option = page.locator("li:has-text('Monde')").first();
 
     const [request, response] = await Promise.all([
@@ -154,30 +173,19 @@ test.describe("Search", () => {
     expect(itemCount).toBe(1);
   });
 
-  test("should remove a filter", async ({ page }) => {
-    await page.goto("/");
-
-    await performASearch(page, "crous");
+  test("Visits the search page directly and removes the geographical_coverage filter", async ({
+    page,
+  }) => {
+    await page.goto("/fiches/search?geographical_coverage=world");
 
     await page.locator("text=Affiner la recherche").click();
-    const geographicalCoverageButton = await page.locator(
-      "[data-testid='couverture-geographique-button']"
+
+    const filterPanel = page.locator("[data-test-id='filter-panel']");
+    const geographicalCoverageButton = filterPanel.locator(
+      "data-testid=couverture-geographique-button"
     );
-
+    expect(geographicalCoverageButton).toHaveText("Monde");
     await geographicalCoverageButton.click();
-
-    const option = page.locator("li:has-text('Monde')").first();
-
-    const [request, response] = await Promise.all([
-      page.waitForRequest("**/datasets/?**"),
-      page.waitForResponse("**/datasets/?**"),
-      option.click(),
-    ]);
-    expect(request.method()).toBe("GET");
-    expect(response.status()).toBe(200);
-
-    await geographicalCoverageButton.click();
-
     const resetOption = page
       .locator("li:has-text('Réinitialiser le filtre')")
       .first();
@@ -191,59 +199,6 @@ test.describe("Search", () => {
     const itemCount = await page
       .locator('[data-test-id="dataset-list-item"]')
       .count();
-    expect(itemCount).toBe(2);
-  });
-
-  test("the search page should display several items by default", async ({
-    page,
-  }) => {
-    await page.goto("/fiches/search");
-
-    await Promise.all([
-      page.waitForRequest("**/datasets/?**"),
-      page.waitForResponse("**/datasets/?**"),
-    ]);
-
-    const itemCount = await page
-      .locator('[data-test-id="dataset-list-item"]')
-      .count();
-    expect(itemCount).toBe(6);
-  });
-
-  test("permform an empty search query all items", async ({
-    dataset,
-    page,
-  }) => {
-    await page.goto("/");
-
-    const link = page.locator("a >> text='Rechercher'");
-    await link.click();
-    await page.waitForLoadState();
-
-    await expect(page).toHaveTitle("Rechercher un jeu de données");
-    await expect(page).toHaveURL("/fiches/search");
-
-    // First search.
-
-    const [, response] = await performASearch(page, "title");
-
-    const { items } = await response.json();
-    expect(items.length).toBeGreaterThanOrEqual(1);
-    expect(items[0].title).toBe(dataset.title);
-
-    await expect(page).toHaveURL("/fiches/search?q=title");
-    await page.locator(`text=/${items.length} résultat(s)?/i`).waitFor();
-    await page.locator(`:has-text('${dataset.title}')`).first().waitFor();
-
-    // Second search. Aim at getting no results.
-
-    const [secondRequest, secondResponse] = await performASearch(page, "");
-
-    expect(secondRequest.method()).toBe("GET");
-    expect(secondResponse.status()).toBe(200);
-    const { items: secondCallItems } = await secondResponse.json();
-    expect(secondCallItems.length).toBe(7);
-
-    await expect(page).toHaveURL("/fiches/search");
+    expect(itemCount).toBeGreaterThanOrEqual(4);
   });
 });

@@ -1,11 +1,11 @@
-import type { Maybe } from "./maybe";
+import type { QueryParamRecord } from "src/definitions/url";
 import { patchQueryString, toQueryString } from "./urls";
 
 describe("toQueryString", () => {
-  const cases: [[string, Maybe<string>][], string][] = [
-    [[], ""],
-    [[["q", undefined]], ""],
-    [[["q", null]], ""],
+  const cases: [QueryParamRecord, string][] = [
+    [[], "?"],
+    [[["q", undefined]], "?"],
+    [[["q", null]], "?"],
     [[["q", ""]], "?q="],
     [[["q", "value"]], "?q=value"],
     [
@@ -24,8 +24,8 @@ describe("toQueryString", () => {
 });
 
 describe("patchQueryString", () => {
-  const cases: [URLSearchParams, [string, Maybe<string>][], string][] = [
-    [new URLSearchParams(), [], ""],
+  const cases: [URLSearchParams, QueryParamRecord, string][] = [
+    [new URLSearchParams(), [], "?"],
     [new URLSearchParams("a=1"), [], "?a=1"],
     [new URLSearchParams("a=1"), [["a", "1"]], "?a=1"],
     [
@@ -38,6 +38,7 @@ describe("patchQueryString", () => {
       ],
       "?a=1&b=2&d=&e=3",
     ],
+    [new URLSearchParams("a=1"), [["a", null]], "?"],
   ];
 
   test.each(cases)(
