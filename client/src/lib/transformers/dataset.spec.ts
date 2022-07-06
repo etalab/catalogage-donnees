@@ -1,9 +1,16 @@
+import { GEOGRAPHICAL_COVERAGE_LABELS } from "src/constants";
+import type {
+  DatasetFilters,
+  SelectableDatasetFilter,
+} from "src/definitions/datasets";
 import { getFakeDataset } from "src/tests/factories/dataset";
+import { buildFakeTag } from "src/tests/factories/tags";
 import {
   toDataset,
   toPayload,
   camelToUnderscore,
   transformKeysToUnderscoreCase,
+  transformSearchFiltersIntoSelectableDatasetFilters,
 } from "./dataset";
 
 describe("transformers -- dataset", () => {
@@ -40,5 +47,63 @@ describe("transformers -- dataset", () => {
     expect(Object.keys(result).every((key) => key === key.toLowerCase())).toBe(
       false
     );
+  });
+
+  describe("transformAPISearchFiltersIntoSearchFilters", () => {
+    test("should transform an SearchFilter into SelectableDatasetFilter", () => {
+      const tag1 = buildFakeTag({
+        id: "xyz-555-666",
+        name: "monTag",
+      });
+
+      const tag2 = buildFakeTag({
+        id: "abc-111-2226",
+        name: "monTag2",
+      });
+
+      const source: DatasetFilters = {
+        format: ["file_tabular", "file_gis"],
+        geographical_coverage: ["epci", "department"],
+        service: ["DINUM"],
+        tag_id: [tag1, tag2],
+        technical_source: ["DINUM", "ADEME"],
+      };
+
+      const expectedResult: SelectableDatasetFilter = {
+        format: [
+          {
+            label: "Fichier tabulaire (XLS, XLSX, CSV, ...)",
+            value: "file_tabular",
+          },
+          { label: "Fichier SIG (Shapefile, ...)", value: "file_gis" },
+        ],
+        geographical_coverage: [
+          { label: GEOGRAPHICAL_COVERAGE_LABELS.epci, value: "epci" },
+          {
+            label: GEOGRAPHICAL_COVERAGE_LABELS.department,
+            value: "department",
+          },
+        ],
+        service: [{ label: "DINUM", value: "DINUM" }],
+        tag_id: [
+          { label: tag1.name, value: tag1.id },
+          { label: tag2.name, value: tag2.id },
+        ],
+        technical_source: [
+          {
+            label: "DINUM",
+            value: "DINUM",
+          },
+          {
+            label: "ADEME",
+            value: "ADEME",
+          },
+        ],
+      };
+
+      expect(
+        transformSearchFiltersIntoSelectableDatasetFilters(source)
+      ).toEqual(expectedResult);
+    });
   });
 });
