@@ -42,7 +42,7 @@
     lastUpdatedAt: null,
     updateFrequency: null,
     technicalSource: "",
-    publishedUrl: null,
+    url: null,
     tags: [],
   };
 
@@ -60,7 +60,7 @@
     lastUpdatedAt: string | null;
     updateFrequency: UpdateFrequency | null;
     technicalSource: string | null;
-    publishedUrl: string | null;
+    url: string | null;
     tags: Tag[];
   };
 
@@ -83,7 +83,7 @@
     geographicalCoverage: initial.geographicalCoverage,
     updateFrequency: initial.updateFrequency,
     technicalSource: initial.technicalSource,
-    publishedUrl: initial.publishedUrl,
+    url: initial.url,
     tags: initial.tags,
   };
 
@@ -117,7 +117,7 @@
           .nullable()
           .required("Ce champs est requis"),
         technicalSource: yup.string().nullable(),
-        publishedUrl: yup.string().nullable(),
+        url: yup.string().nullable(),
         tags: yup
           .array()
           .of(
@@ -149,7 +149,7 @@
           : null;
 
         // Ensure "" becomes null.
-        const publishedUrl = values.publishedUrl ? values.publishedUrl : null;
+        const url = values.url ? values.url : null;
 
         const data: DatasetFormData = {
           ...values,
@@ -157,7 +157,7 @@
           producerEmail,
           contactEmails,
           lastUpdatedAt,
-          publishedUrl,
+          url,
         };
 
         dispatch("save", data);
@@ -422,11 +422,11 @@
 
   <div class="form--content fr-mb-8w">
     <InputField
-      name="publishedUrl"
+      name="url"
       label="Page open data"
       hintText="Si le jeu de données est publié en open data, saisissez ici le lien de la page web associée."
-      value={$form.publishedUrl}
-      error={$errors.publishedUrl}
+      value={$form.url}
+      error={$errors.url}
       on:input={handleFieldChange}
       on:blur={handleFieldChange}
     />

@@ -78,15 +78,15 @@ test.describe("Edit dataset", () => {
     await expect(deleteButton).not.toBeVisible();
   });
 
-  test("Clears the publishedUrl", async ({ page, dataset }) => {
+  test("Clears the url", async ({ page, dataset }) => {
     // Regression test: used to fail due to sending "" when server requires
     // null to indicate "no published URL".
     await page.goto(`/fiches/${dataset.id}/edit`);
 
-    const publishedUrl = page.locator("form [name=publishedUrl]");
+    const url = page.locator("form [name=url]");
     // Simulate touching the field or unsetting a previous value.
-    await publishedUrl.fill("");
-    expect(await publishedUrl.inputValue()).toBe("");
+    await url.fill("");
+    expect(await url.inputValue()).toBe("");
 
     const button = page.locator("button[type='submit']");
     const [response] = await Promise.all([
@@ -95,7 +95,7 @@ test.describe("Edit dataset", () => {
     ]);
     expect(response.status()).toBe(200);
     const json = await response.json();
-    expect(json.published_url).toBe(null);
+    expect(json.url).toBe(null);
   });
 });
 

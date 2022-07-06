@@ -57,7 +57,7 @@ class CreateDatasetFactory(Factory[CreateDataset]):
     contact_emails = Use(
         lambda: [fake.ascii_free_email() for _ in range(random.randint(1, 3))]
     )
-    published_url = Use(lambda: fake.url() if random.random() < 0.5 else None)
+    url = Use(lambda: fake.url() if random.random() < 0.5 else None)
     tag_ids = Use(lambda: [])
 
 

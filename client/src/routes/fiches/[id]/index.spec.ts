@@ -56,7 +56,7 @@ describe("Dataset detail description", () => {
   test("The open data link is present if the access is open", async () => {
     const { queryByText } = render(index, {
       dataset: getFakeDataset({
-        publishedUrl: "http://foo.com",
+        url: "http://foo.com",
       }),
     });
     const seeDataLink = queryByText("Voir les données", {

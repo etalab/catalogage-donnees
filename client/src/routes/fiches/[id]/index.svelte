@@ -92,12 +92,12 @@
         <AsideItem
           icon="fr-icon-x-open-data"
           label="Accessibilité aux données"
-          value={dataset.publishedUrl ? "Ouverte" : "Restreinte"}
+          value={dataset.url ? "Ouverte" : "Restreinte"}
         />
-        {#if dataset.publishedUrl}
+        {#if dataset.url}
           <a
             class="fr-btn fr-btn--icon-right fr-icon-external-link-line"
-            href={dataset.publishedUrl}
+            href={dataset.url}
             target="_blank"
           >
             Voir les données

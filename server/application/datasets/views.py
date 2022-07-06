@@ -28,7 +28,7 @@ class DatasetView(BaseModel):
     contact_emails: List[str]
     update_frequency: Optional[UpdateFrequency]
     last_updated_at: Optional[dt.datetime]
-    published_url: Optional[str]
+    url: Optional[str]
     tags: List[TagView]
 
     # Extras

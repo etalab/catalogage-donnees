@@ -50,8 +50,8 @@ class UpdateDatasetValidationMixin(BaseModel):
             raise ValueError("contact_emails must contain at least one item")
         return value
 
-    @validator("published_url", check_fields=False)
-    def check_published_url_not_empty(cls, value: Optional[str]) -> Optional[str]:
+    @validator("url", check_fields=False)
+    def check_url_not_empty(cls, value: Optional[str]) -> Optional[str]:
         if value is not None and not value:
-            raise ValueError("published_url must not be empty")
+            raise ValueError("url must not be empty")
         return value

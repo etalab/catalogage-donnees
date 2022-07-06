@@ -112,7 +112,7 @@ async def test_dataset_crud(
             contact_emails=["example.person@mydomain.org"],
             update_frequency=UpdateFrequency.WEEKLY,
             last_updated_at=last_updated_at,
-            published_url=None,
+            url=None,
             tag_ids=[],
         )
     )
@@ -137,7 +137,7 @@ async def test_dataset_crud(
         "contact_emails": ["example.person@mydomain.org"],
         "update_frequency": "weekly",
         "last_updated_at": last_updated_at.isoformat(),
-        "published_url": None,
+        "url": None,
         "tags": [],
         "headlines": None,
     }
@@ -378,7 +378,7 @@ class TestDatasetUpdate:
             "contact_emails",
             "update_frequency",
             "last_updated_at",
-            "published_url",
+            "url",
             "tag_ids",
         ]
         errors = response.json()["detail"]
@@ -405,10 +405,8 @@ class TestDatasetUpdate:
                     title="",
                     description="",
                     service="",
-                    published_url="",
-                    **command.dict(
-                        exclude={"title", "description", "service", "published_url"}
-                    ),
+                    url="",
+                    **command.dict(exclude={"title", "description", "service", "url"}),
                 )
             ),
             auth=temp_user.auth,
@@ -419,7 +417,7 @@ class TestDatasetUpdate:
             err_title,
             err_description,
             err_service,
-            err_published_url,
+            err_url,
         ) = response.json()["detail"]
 
         assert err_title["loc"] == ["body", "title"]
@@ -431,7 +429,7 @@ class TestDatasetUpdate:
         assert err_service["loc"] == ["body", "service"]
         assert "empty" in err_service["msg"]
 
-        assert err_published_url["loc"] == ["body", "published_url"]
+        assert err_url["loc"] == ["body", "url"]
         assert "empty" in err_service["msg"]
 
     async def test_update(self, client: httpx.AsyncClient, temp_user: TestUser) -> None:
@@ -453,7 +451,7 @@ class TestDatasetUpdate:
                 "contact_emails": ["other.person@mydomain.org"],
                 "update_frequency": "weekly",
                 "last_updated_at": other_last_updated_at.isoformat(),
-                "published_url": "https://data.gouv.fr/datasets/other",
+                "url": "https://data.gouv.fr/datasets/other",
                 "tag_ids": [],
             },
             auth=temp_user.auth,
@@ -475,7 +473,7 @@ class TestDatasetUpdate:
             "contact_emails": ["other.person@mydomain.org"],
             "update_frequency": "weekly",
             "last_updated_at": other_last_updated_at.isoformat(),
-            "published_url": "https://data.gouv.fr/datasets/other",
+            "url": "https://data.gouv.fr/datasets/other",
             "tags": [],
             "headlines": None,
         }
@@ -493,7 +491,7 @@ class TestDatasetUpdate:
         assert dataset.contact_emails == ["other.person@mydomain.org"]
         assert dataset.update_frequency == UpdateFrequency.WEEKLY
         assert dataset.last_updated_at == other_last_updated_at
-        assert dataset.published_url == "https://data.gouv.fr/datasets/other"
+        assert dataset.url == "https://data.gouv.fr/datasets/other"
 
 
 @pytest.mark.asyncio

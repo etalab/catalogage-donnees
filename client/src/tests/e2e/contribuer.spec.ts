@@ -17,7 +17,7 @@ test.describe("Basic form submission", () => {
     const lastUpdatedAtDate = "2000-05-05";
     const serviceText = "Ministère de l'écologie";
     const technicalSourceText = "foo/bar";
-    const publishedUrlText = "https://data.gouv.fr/datasets/example";
+    const urlText = "https://data.gouv.fr/datasets/example";
     const tagName = "services des eaux";
 
     await page.goto("/contribuer");
@@ -86,9 +86,9 @@ test.describe("Basic form submission", () => {
 
     // "Ouverture" section
 
-    const publishedUrl = page.locator("form [name=publishedUrl]");
-    await publishedUrl.fill(publishedUrlText);
-    expect(await publishedUrl.inputValue()).toBe(publishedUrlText);
+    const url = page.locator("form [name=url]");
+    await url.fill(urlText);
+    expect(await url.inputValue()).toBe(urlText);
 
     // "Mots clés" section
 
@@ -126,7 +126,7 @@ test.describe("Basic form submission", () => {
     expect(json.update_frequency).toBe("daily");
     expect(json.last_updated_at).toEqual("2000-05-05T00:00:00+00:00");
     expect(json.service).toBe(serviceText);
-    expect(json.published_url).toBe(publishedUrlText);
+    expect(json.url).toBe(urlText);
 
     const hasTag = json.tags.findIndex((item) => item.name === tagName) !== -1;
     expect(hasTag).toBeTruthy();
