@@ -74,7 +74,7 @@ test.describe("Search", () => {
     expect(items.length).toBeGreaterThanOrEqual(1);
     expect(items[0].title).toBe(dataset.title);
 
-    await expect(page).toHaveURL("/fiches/search?q=title");
+    await expect(page).toHaveURL("/fiches/search?q=title&page=1");
     await page.locator(`text=/${items.length} résultat(s)?/i`).waitFor();
     await page.locator(`:has-text('${dataset.title}')`).first().waitFor();
 
@@ -92,7 +92,23 @@ test.describe("Search", () => {
     const { items: secondCallItems } = await secondResponse.json();
     expect(secondCallItems.length).toBe(0);
 
-    await expect(page).toHaveURL("/fiches/search?q=noresultsexpected");
+    await expect(page).toHaveURL("/fiches/search?q=noresultsexpected&page=1");
+  });
+
+  test("Visits the search page directly and sees results", async ({
+    page,
+    dataset,
+  }) => {
+    await page.goto(`/fiches/search?q=${dataset.title}`);
+    const search = page.locator("form [name=q]");
+    expect(await search.inputValue()).toBe(dataset.title);
+    await page.locator(`text=/résultat(s)?/i`).waitFor();
+    await page.locator(`:has-text('${dataset.title}')`).first().waitFor();
+  });
+
+  test("Sees the pagination", async ({ page }) => {
+    await page.goto("/fiches/search");
+    await page.locator("[data-testid='pagination-list']").waitFor();
   });
 
   test("should see 3 filter sections", async ({ page }) => {

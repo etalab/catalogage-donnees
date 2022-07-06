@@ -6,14 +6,13 @@
     getDatasetSearchFilters,
   } from "$lib/repositories/datasets";
   import { apiToken } from "$lib/stores/auth";
+  import { getPageFromParams } from "$lib/util/pagination";
   import { page as pageStore } from "$app/stores";
 
   export const load: Load = async ({ fetch, url }) => {
-    const page = +(url.searchParams.get("page") || 1);
-
-    const token = get(apiToken);
-
+    const page = getPageFromParams(url.searchParams);
     const q = url.searchParams.get("q") || "";
+    const token = get(apiToken);
     const [paginatedDatasets, searchFilters] = await Promise.all([
       getDatasets({
         fetch,
@@ -55,15 +54,17 @@
   } from "src/definitions/datasets";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
-  import { patchQueryString, toQueryString } from "$lib/util/urls";
+  import { patchQueryString } from "$lib/util/urls";
   import { Maybe } from "$lib/util/maybe";
   import { pluralize } from "src/lib/util/format";
   import {
     cleanSearchDatasetFilters,
     mergeSelectableDatasetFilter,
   } from "src/lib/util/dataset";
-  import type { GetPageLink, Paginated } from "src/definitions/pagination";
+  import type { Paginated } from "src/definitions/pagination";
   import FilterPanel from "./_FilterPanel.svelte";
+  import { makePageParam } from "$lib/util/pagination";
+
   import PaginationContainer from "./_PaginationContainer.svelte";
 
   export let paginatedDatasets: Maybe<Paginated<Dataset>>;
@@ -72,29 +73,21 @@
 
   export let searchFilters: Maybe<DatasetFilters>;
 
+  let displayFilters = false;
   let selectedFilters: Partial<SelectableDatasetFilter>;
 
-  let displayFilters = false;
-
   const updateSearch = async (event: CustomEvent<string>) => {
-    q = event.detail;
-
-    if (!q) {
+    if (!event.detail) {
       const href = `search`; // Same page, remove query string
       await goto(href);
       return;
     }
-
-    const queryString = toQueryString([["q", q]]);
-    const href = `${queryString}`; // Same page, update query string only
-    goto(href);
-  };
-
-  const getPageLink: GetPageLink = (page) => {
-    const queryString = patchQueryString($pageStore.url.searchParams, [
-      ["page", page.toString()],
+    const href = patchQueryString($pageStore.url.searchParams, [
+      ["q", event.detail],
+      // If on page n = (2, ...), go back to page 1 on new search.
+      makePageParam(1),
     ]);
-    return `${queryString}`;
+    goto(href);
   };
 
   const handleSelectedFilter = async (
@@ -121,7 +114,7 @@
   <div class="fr-container fr-grid-row fr-grid-row--center fr-py-6w">
     <div class="fr-col-10">
       <h1>Recherchez un jeu de données</h1>
-      <SearchForm on:submit={updateSearch} />
+      <SearchForm value={q} on:submit={updateSearch} />
     </div>
   </div>
 </section>
@@ -160,8 +153,8 @@
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <DatasetList datasets={paginatedDatasets.items} />
+
         <PaginationContainer
-          {getPageLink}
           totalPages={paginatedDatasets.totalItems}
           {currentPage}
         />
@@ -178,11 +171,9 @@
     display: flex;
     justify-content: space-around;
   }
-
   h2 {
     padding: 0;
   }
-
   .hidden {
     display: none;
     height: 0;
