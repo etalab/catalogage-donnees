@@ -48,7 +48,7 @@ export type Dataset = {
   updateFrequency: UpdateFrequency | null;
   geographicalCoverage: GeographicalCoverage;
   technicalSource: string | null;
-  publishedUrl: string | null;
+  url: string | null;
   tags: Tag[];
 };
 

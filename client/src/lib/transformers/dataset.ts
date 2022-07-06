@@ -31,7 +31,7 @@ export const toDataset = (item: any): Dataset => {
     last_updated_at,
     geographical_coverage,
     technical_source,
-    published_url,
+    url,
     ...rest
   } = item;
   const { created_at } = catalog_record;
@@ -46,6 +46,6 @@ export const toDataset = (item: any): Dataset => {
     geographicalCoverage: geographical_coverage,
     technicalSource: technical_source,
     lastUpdatedAt: last_updated_at ? new Date(last_updated_at) : null,
-    publishedUrl: published_url,
+    url,
   };
 };

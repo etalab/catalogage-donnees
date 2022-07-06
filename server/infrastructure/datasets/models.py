@@ -77,7 +77,7 @@ class DatasetModel(Base):
     contact_emails = Column(ARRAY(String), server_default="{}", nullable=False)
     update_frequency = Column(Enum(UpdateFrequency, enum="update_frequency_enum"))
     last_updated_at = Column(DateTime(timezone=True))
-    published_url = Column(String)
+    url = Column(String)
     tags: List["TagModel"] = relationship(
         "TagModel", back_populates="datasets", secondary=dataset_tag
     )

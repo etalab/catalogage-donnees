@@ -26,10 +26,8 @@
     },
     {
       label: "Ouverture",
-      icon: dataset.publishedUrl
-        ? "fr-icon-x-open-data"
-        : "fr-icon-x-restricted-data",
-      value: dataset.publishedUrl ? "Open data" : "Restreint",
+      icon: dataset.url ? "fr-icon-x-open-data" : "fr-icon-x-restricted-data",
+      value: dataset.url ? "Open data" : "Restreint",
     },
   ];
 </script>
