@@ -2,16 +2,21 @@
   import type { Load } from "@sveltejs/kit";
   export const prerender = true;
   import { getTags } from "src/lib/repositories/tags";
-  import { apiToken } from "$lib/stores/auth";
+  import { getLicenses } from "src/lib/repositories/licenses";
   import { get } from "svelte/store";
+
   export const load: Load = async ({ fetch }) => {
-    const tags = await getTags({
-      fetch,
-      apiToken: get(apiToken),
-    });
+    const apiToken = get(apiTokenStore);
+
+    const [tags, licenses] = await Promise.all([
+      getTags({ fetch, apiToken }),
+      getLicenses({ fetch, apiToken }),
+    ]);
+
     return {
       props: {
         tags,
+        licenses,
       },
     };
   };
@@ -21,7 +26,7 @@
   import { goto } from "$app/navigation";
   import type { DatasetFormData } from "src/definitions/datasets";
   import paths from "$lib/paths";
-
+  import { apiToken as apiTokenStore } from "$lib/stores/auth";
   import DatasetForm from "$lib/components/DatasetForm/DatasetForm.svelte";
   import { createDataset } from "$lib/repositories/datasets";
   import { Maybe } from "$lib/util/maybe";
@@ -36,6 +41,7 @@
   let formHasBeenTouched = false;
 
   export let tags: Maybe<Tag[]>;
+  export let licenses: Maybe<string[]>;
 
   const onSave = async (event: CustomEvent<DatasetFormData>) => {
     try {
@@ -43,7 +49,7 @@
       const tagIds = event.detail.tags.map((item) => item.id);
       const dataset = await createDataset({
         fetch,
-        apiToken: $apiToken,
+        apiToken: $apiTokenStore,
         data: { tagIds, ...event.detail },
       });
 
@@ -83,7 +89,7 @@
   {/if}
 </header>
 
-{#if Maybe.Some(tags)}
+{#if Maybe.Some(tags) && Maybe.Some(licenses)}
   <ModalExitFormConfirmation
     on:confirm={handleExitForm}
     controlId={modalControlId}
@@ -92,6 +98,7 @@
   <DatasetFormLayout>
     <DatasetForm
       {tags}
+      {licenses}
       {loading}
       on:save={onSave}
       on:touched={() => (formHasBeenTouched = true)}

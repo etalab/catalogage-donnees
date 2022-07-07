@@ -26,6 +26,7 @@ describe("transformers -- Dataset filters", () => {
         name: "monTag2",
       },
     ],
+    license: ["*", "Licence Ouverte"],
   };
 
   const value: DatasetFiltersValue = {
@@ -34,6 +35,7 @@ describe("transformers -- Dataset filters", () => {
     service: null,
     technicalSource: "Serveur GIS",
     tagId: null,
+    license: "Licence Ouverte",
   };
 
   test("toFiltersParams", () => {
@@ -43,6 +45,7 @@ describe("transformers -- Dataset filters", () => {
       ["format", "file_gis"],
       ["technical_source", "Serveur GIS"],
       ["tag_id", null],
+      ["license", "Licence Ouverte"],
     ];
 
     expect(toFiltersParams(value)).toEqual(params);
@@ -51,7 +54,7 @@ describe("transformers -- Dataset filters", () => {
   test("getFiltersValueFromParams", () => {
     const queryString = toQueryString(toFiltersParams(value));
     expect(queryString).toBe(
-      "?geographical_coverage=epci&format=file_gis&technical_source=Serveur+GIS"
+      "?geographical_coverage=epci&format=file_gis&technical_source=Serveur+GIS&license=Licence+Ouverte"
     );
     expect(toFiltersValue(new URLSearchParams(queryString))).toEqual(value);
   });
@@ -77,6 +80,10 @@ describe("transformers -- Dataset filters", () => {
       tagId: [
         { label: "monTag1", value: "xyz-555-666" },
         { label: "monTag2", value: "abc-111-2226" },
+      ],
+      license: [
+        { label: "Toutes les licences", value: "*" },
+        { label: "Licence Ouverte", value: "Licence Ouverte" },
       ],
     };
 

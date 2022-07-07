@@ -8,6 +8,7 @@ export type DatasetFiltersInfo = {
   format: string[];
   technicalSource: string[];
   tagId: Tag[];
+  license: string[];
 };
 
 export type DatasetFiltersValue = {
@@ -16,6 +17,7 @@ export type DatasetFiltersValue = {
   format: string | null;
   technicalSource: string | null;
   tagId: string | null;
+  license: string | null;
 };
 
 export type DatasetFiltersOptions = {
