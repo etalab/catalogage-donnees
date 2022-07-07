@@ -25,6 +25,7 @@ async def test_dataset_filters_info(
         CreateDatasetFactory.build(
             service="Same example service",
             technical_source="Example database system",
+            license="Une licence spéciale",
         )
     )
 
@@ -47,6 +48,7 @@ async def test_dataset_filters_info(
         "format",
         "technical_source",
         "tag_id",
+        "license",
     }
 
     assert sorted(data["geographical_coverage"]) == [
@@ -79,6 +81,13 @@ async def test_dataset_filters_info(
 
     assert data["tag_id"] == [
         {"id": str(tag_id), "name": "Architecture"},
+    ]
+
+    assert data["license"] == [
+        "*",
+        "Licence Ouverte",
+        "ODC Open Database License",
+        "Une licence spéciale",
     ]
 
 
@@ -126,6 +135,13 @@ class _Env:
             lambda env: [str(env.tag_id)],
             id="tag_id",
         ),
+        pytest.param(
+            "license",
+            lambda _: {"license": "Licence Ouverte"},
+            lambda _: ["ODC Open License v1.0"],
+            lambda _: "Licence Ouverte",
+            id="license",
+        ),
     ],
 )
 async def test_dataset_filters_apply(
@@ -155,3 +171,27 @@ async def test_dataset_filters_apply(
     data = response.json()
     assert len(data["items"]) == 1
     assert data["items"][0]["id"] == str(dataset_id)
+
+
+@pytest.mark.asyncio
+async def test_dataset_filters_license_any(
+    client: httpx.AsyncClient, temp_user: TestUser
+) -> None:
+    bus = resolve(MessageBus)
+
+    dataset1_id = await bus.execute(
+        CreateDatasetFactory.build(license="Licence Ouverte")
+    )
+    dataset2_id = await bus.execute(
+        CreateDatasetFactory.build(license="ODC Open Database Licence v1.0")
+    )
+
+    params = {"license": "*"}
+    response = await client.get("/datasets/", params=params, auth=temp_user.auth)
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["items"]) == 2
+    assert [item["id"] for item in data["items"]] == [
+        str(dataset2_id),
+        str(dataset1_id),
+    ]

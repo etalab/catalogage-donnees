@@ -37,6 +37,9 @@ class DatasetRepository(Repository):
     async def get_technical_source_set(self) -> Set[str]:
         raise NotImplementedError  # pragma: no cover
 
+    async def get_license_set(self) -> Set[str]:
+        raise NotImplementedError  # pragma: no cover
+
     async def insert(self, entity: Dataset) -> ID:
         raise NotImplementedError  # pragma: no cover
 

@@ -113,6 +113,7 @@ async def test_dataset_crud(
             update_frequency=UpdateFrequency.WEEKLY,
             last_updated_at=last_updated_at,
             url=None,
+            license="Licence Ouverte",
             tag_ids=[],
         )
     )
@@ -138,6 +139,7 @@ async def test_dataset_crud(
         "update_frequency": "weekly",
         "last_updated_at": last_updated_at.isoformat(),
         "url": None,
+        "license": "Licence Ouverte",
         "tags": [],
         "headlines": None,
     }
@@ -300,6 +302,7 @@ class TestDatasetOptionalFields:
             pytest.param("producer_email", None),
             pytest.param("update_frequency", None),
             pytest.param("last_updated_at", None),
+            pytest.param("license", None),
         ],
     )
     async def test_optional_fields_missing_uses_defaults(
@@ -379,6 +382,7 @@ class TestDatasetUpdate:
             "update_frequency",
             "last_updated_at",
             "url",
+            "license",
             "tag_ids",
         ]
         errors = response.json()["detail"]
@@ -438,23 +442,26 @@ class TestDatasetUpdate:
 
         other_last_updated_at = fake.date_time_tz()
 
+        payload = to_payload(
+            UpdateDatasetFactory.build(
+                title="Other title",
+                description="Other description",
+                service="Other service",
+                geographical_coverage=GeographicalCoverage.REGION,
+                formats=[DataFormat.DATABASE],
+                technical_source="Other information system",
+                producer_email="other.service@mydomain.org",
+                contact_emails=["other.person@mydomain.org"],
+                update_frequency=UpdateFrequency.WEEKLY,
+                last_updated_at=other_last_updated_at.isoformat(),
+                url="https://data.gouv.fr/datasets/other",
+                license="ODC Open Database License",
+                tag_ids=[],
+            )
+        )
+
         response = await client.put(
-            f"/datasets/{dataset_id}/",
-            json={
-                "title": "Other title",
-                "description": "Other description",
-                "service": "Other service",
-                "geographical_coverage": "region",
-                "formats": ["database"],
-                "technical_source": "Other information system",
-                "producer_email": "other.service@mydomain.org",
-                "contact_emails": ["other.person@mydomain.org"],
-                "update_frequency": "weekly",
-                "last_updated_at": other_last_updated_at.isoformat(),
-                "url": "https://data.gouv.fr/datasets/other",
-                "tag_ids": [],
-            },
-            auth=temp_user.auth,
+            f"/datasets/{dataset_id}/", json=payload, auth=temp_user.auth
         )
         assert response.status_code == 200
 
@@ -474,6 +481,7 @@ class TestDatasetUpdate:
             "update_frequency": "weekly",
             "last_updated_at": other_last_updated_at.isoformat(),
             "url": "https://data.gouv.fr/datasets/other",
+            "license": "ODC Open Database License",
             "tags": [],
             "headlines": None,
         }
@@ -492,6 +500,7 @@ class TestDatasetUpdate:
         assert dataset.update_frequency == UpdateFrequency.WEEKLY
         assert dataset.last_updated_at == other_last_updated_at
         assert dataset.url == "https://data.gouv.fr/datasets/other"
+        assert dataset.license == "ODC Open Database License"
 
 
 @pytest.mark.asyncio

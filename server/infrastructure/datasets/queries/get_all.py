@@ -78,6 +78,12 @@ class GetAllQuery:
             joinclauses.append((DatasetModel.tags, {"isouter": True}))
             whereclauses.append(TagModel.id.in_(tag_ids))
 
+        if (license := spec.license) is not None:
+            if license == "*":
+                whereclauses.append(DatasetModel.license.is_not(None))
+            else:
+                whereclauses.append(DatasetModel.license == license)
+
         stmt = select(DatasetModel, *columns).join(DatasetModel.catalog_record)
 
         for target, kwargs in joinclauses:

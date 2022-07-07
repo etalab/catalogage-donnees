@@ -47,6 +47,7 @@ async def list_datasets(
             format__in=params.format,
             technical_source__in=params.technical_source,
             tag__id__in=params.tag_id,
+            license=params.license,
         ),
     )
 

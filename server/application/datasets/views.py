@@ -29,6 +29,7 @@ class DatasetView(BaseModel):
     update_frequency: Optional[UpdateFrequency]
     last_updated_at: Optional[dt.datetime]
     url: Optional[str]
+    license: Optional[str]
     tags: List[TagView]
 
     # Extras
@@ -41,3 +42,4 @@ class DatasetFiltersView(BaseModel):
     format: List[DataFormat]
     technical_source: List[str]
     tag_id: List[TagView]
+    license: List[str]

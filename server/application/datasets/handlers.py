@@ -1,3 +1,4 @@
+from server.application.licenses.queries import GetLicenseSet
 from server.application.tags.queries import GetAllTags
 from server.config.di import resolve
 from server.domain.catalog_records.entities import CatalogRecord
@@ -68,6 +69,7 @@ async def get_dataset_filters(query: GetDatasetFilters) -> DatasetFiltersView:
     services = await repository.get_service_set()
     technical_sources = await repository.get_technical_source_set()
     tags = await bus.execute(GetAllTags())
+    licenses = await bus.execute(GetLicenseSet())
 
     return DatasetFiltersView(
         geographical_coverage=list(GeographicalCoverage),
@@ -75,6 +77,7 @@ async def get_dataset_filters(query: GetDatasetFilters) -> DatasetFiltersView:
         format=list(DataFormat),
         technical_source=list(technical_sources),
         tag_id=tags,
+        license=["*", *licenses],
     )
 
 
