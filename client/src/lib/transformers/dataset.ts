@@ -29,7 +29,9 @@ export const transformKeysToUnderscoreCase = (object: {
 export const toPayload = (
   data: Partial<Record<keyof Dataset, any>>
 ): { [K: string]: unknown } => {
-  return transformKeysToUnderscoreCase(omit(data, ["catalogRecord"]));
+  const payload = transformKeysToUnderscoreCase(omit(data, ["catalogRecord"]));
+  payload.license = null;
+  return payload;
 };
 
 export const toDataset = (item: any): Dataset => {

@@ -12,6 +12,7 @@ from server.application.datasets.commands import CreateDataset, UpdateDataset
 from server.application.tags.commands import CreateTag
 from server.domain.common import datetime as dtutil
 from server.domain.datasets.entities import DataFormat
+from server.domain.licenses.entities import BUILTIN_LICENSE_SUGGESTIONS
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -58,6 +59,7 @@ class CreateDatasetFactory(Factory[CreateDataset]):
         lambda: [fake.ascii_free_email() for _ in range(random.randint(1, 3))]
     )
     url = Use(lambda: fake.url() if random.random() < 0.5 else None)
+    license = Use(random.choice, [None, *BUILTIN_LICENSE_SUGGESTIONS])
     tag_ids = Use(lambda: [])
 
 

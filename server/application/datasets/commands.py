@@ -26,6 +26,7 @@ class CreateDataset(CreateDatasetValidationMixin, Command[ID]):
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
     url: Optional[str] = None
+    license: Optional[str] = None
     tag_ids: List[ID] = Field(default_factory=list)
 
 
@@ -42,6 +43,7 @@ class UpdateDataset(UpdateDatasetValidationMixin, Command[None]):
     update_frequency: Optional[UpdateFrequency] = Field(...)
     last_updated_at: Optional[dt.datetime] = Field(...)
     url: Optional[str] = Field(...)
+    license: Optional[str] = Field(...)
     tag_ids: List[ID]
 
 

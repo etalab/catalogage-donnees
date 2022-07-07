@@ -54,6 +54,7 @@ class Dataset(Entity):
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
     url: Optional[str] = None
+    license: Optional[str] = None
     tags: List[Tag] = Field(default_factory=list)
 
     class Config:
@@ -72,6 +73,7 @@ class Dataset(Entity):
         update_frequency: Optional[UpdateFrequency],
         last_updated_at: Optional[dt.datetime],
         url: Optional[str],
+        license: Optional[str],
         tags: List[Tag],
     ) -> None:
         self.title = title
@@ -85,4 +87,5 @@ class Dataset(Entity):
         self.update_frequency = update_frequency
         self.last_updated_at = last_updated_at
         self.url = url
+        self.license = license
         self.tags = tags

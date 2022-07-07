@@ -78,6 +78,7 @@ class DatasetModel(Base):
     update_frequency = Column(Enum(UpdateFrequency, enum="update_frequency_enum"))
     last_updated_at = Column(DateTime(timezone=True))
     url = Column(String)
+    license = Column(String)
     tags: List["TagModel"] = relationship(
         "TagModel", back_populates="datasets", secondary=dataset_tag
     )

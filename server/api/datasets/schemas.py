@@ -27,6 +27,7 @@ class DatasetListParams:
         format_: Optional[List[DataFormat]] = Query(None, alias="format"),
         technical_source: Optional[List[str]] = Query(None),
         tag_id: Optional[List[ID]] = Query(None),
+        license: Optional[str] = Query(None),
     ) -> None:
         self.q = q
         self.page_number = page_number
@@ -36,6 +37,7 @@ class DatasetListParams:
         self.format = format_
         self.technical_source = technical_source
         self.tag_id = tag_id
+        self.license = license
 
 
 class DatasetCreate(CreateDatasetValidationMixin, BaseModel):
@@ -50,6 +52,7 @@ class DatasetCreate(CreateDatasetValidationMixin, BaseModel):
     update_frequency: Optional[UpdateFrequency] = None
     last_updated_at: Optional[dt.datetime] = None
     url: Optional[str] = None
+    license: Optional[str] = None
     tag_ids: List[ID] = Field(default_factory=list)
 
 
@@ -65,4 +68,5 @@ class DatasetUpdate(UpdateDatasetValidationMixin, BaseModel):
     update_frequency: Optional[UpdateFrequency] = Field(...)
     last_updated_at: Optional[dt.datetime] = Field(...)
     url: Optional[str] = Field(...)
+    license: Optional[str] = Field(...)
     tag_ids: List[ID]

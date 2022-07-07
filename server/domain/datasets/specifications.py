@@ -14,3 +14,4 @@ class DatasetSpec:
     format__in: Optional[Sequence[DataFormat]] = None
     technical_source__in: Optional[Sequence[str]] = None
     tag__id__in: Optional[Sequence[ID]] = None
+    license: Optional[str] = None

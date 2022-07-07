@@ -81,6 +81,14 @@ class SqlDatasetRepository(DatasetRepository):
             result = await session.execute(stmt)
             return set(result.scalars())
 
+    async def get_license_set(self) -> Set[str]:
+        async with self._db.session() as session:
+            stmt = select(DatasetModel.license.distinct()).where(
+                DatasetModel.license.is_not(None)
+            )
+            result = await session.execute(stmt)
+            return set(result.scalars())
+
     async def _get_catalog_record(
         self, session: AsyncSession, id_: ID
     ) -> CatalogRecordModel:

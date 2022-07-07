@@ -82,6 +82,7 @@ from .settings import Settings
 MODULES = [
     "server.infrastructure.datasets.module.DatasetsModule",
     "server.infrastructure.tags.module.TagsModule",
+    "server.infrastructure.licenses.module.LicensesModule",
     "server.infrastructure.auth.module.AuthModule",
 ]
 
