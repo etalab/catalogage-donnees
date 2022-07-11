@@ -1,10 +1,9 @@
 import type {
   Dataset,
   DatasetCreateData,
-  DatasetFilters,
   DatasetUpdateData,
-  SelectableDatasetFilter,
 } from "src/definitions/datasets";
+import type { DatasetFiltersValue } from "src/definitions/datasetFilters";
 import type { Fetch } from "src/definitions/fetch";
 import type { Paginated } from "src/definitions/pagination";
 import { DATASETS_PER_PAGE } from "src/constants";
@@ -12,9 +11,9 @@ import { getHeaders, getApiUrl, makeApiRequest } from "$lib/fetch";
 import { toQueryString } from "$lib/util/urls";
 import { toDataset, toPayload } from "$lib/transformers/dataset";
 import { toPaginated } from "$lib/transformers/pagination";
+import { toFiltersParams } from "$lib/transformers/datasetFilters";
 import { Maybe } from "$lib/util/maybe";
 import type { QueryParamRecord } from "src/definitions/url";
-import { toSearchQueryParamRecord } from "../transformers/searchFilter";
 
 type GetDatasetByID = (opts: {
   fetch: Fetch;
@@ -44,7 +43,7 @@ type GetDatasets = (opts: {
   apiToken: string;
   page: number;
   q?: string;
-  filters?: Partial<SelectableDatasetFilter>;
+  filters?: Maybe<DatasetFiltersValue>;
 }) => Promise<Maybe<Paginated<Dataset>>>;
 
 export const getDatasets: GetDatasets = async ({
@@ -59,14 +58,12 @@ export const getDatasets: GetDatasets = async ({
     ["page_size", DATASETS_PER_PAGE.toString()],
   ];
 
-  if (q && typeof q === "string") {
+  if (Maybe.Some(q) && q) {
     queryItems.push(["q", q]);
   }
 
-  if (filters) {
-    toSearchQueryParamRecord(filters).forEach((item) => {
-      queryItems.push(item);
-    });
+  if (Maybe.Some(filters)) {
+    queryItems.push(...toFiltersParams(filters));
   }
 
   const queryString = toQueryString(queryItems);
@@ -157,22 +154,4 @@ export const deleteDataset: DeleteDataset = async ({ fetch, apiToken, id }) => {
     headers: new Headers(getHeaders(apiToken)),
   });
   await makeApiRequest(fetch, request);
-};
-
-type GetDatasetFilters = (opts: {
-  fetch: Fetch;
-  apiToken: string;
-}) => Promise<Maybe<DatasetFilters>>;
-
-export const getDatasetSearchFilters: GetDatasetFilters = async ({
-  fetch,
-  apiToken,
-}) => {
-  const url = `${getApiUrl()}/datasets/filters/`;
-  const request = new Request(url, {
-    headers: new Headers(getHeaders(apiToken)),
-  });
-
-  const response = await makeApiRequest(fetch, request);
-  return Maybe.map(response, (response) => response.json());
 };

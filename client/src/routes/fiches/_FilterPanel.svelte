@@ -1,117 +1,104 @@
 <script lang="ts">
-  import { DATASET_FILTERS_TRANSLATION } from "src/constants";
-
   import type {
-    DatasetFilter,
-    DatasetFilters,
-    SelectableDatasetFilter,
-  } from "src/definitions/datasets";
+    DatasetFiltersInfo,
+    DatasetFiltersValue,
+  } from "src/definitions/datasetFilters";
   import type { SelectOption } from "src/definitions/form";
+  import type { Tag } from "src/definitions/tag";
   import SearchableSelect from "src/lib/components/SearchableSelect/SearchableSelect.svelte";
-  import { transformSearchFiltersIntoSelectableDatasetFilters } from "src/lib/transformers/dataset";
-  import { mergeSelectableDatasetFilter } from "src/lib/util/dataset";
+  import {
+    toFiltersButtonTexts,
+    toFiltersOptions,
+  } from "src/lib/transformers/datasetFilters";
   import { createEventDispatcher } from "svelte";
 
-  export let filters: DatasetFilters;
+  export let info: DatasetFiltersInfo;
+  export let value: DatasetFiltersValue;
 
-  let selectedFilters: Partial<SelectableDatasetFilter>;
+  const createTagIdToNameMap = (tags: Tag[]) => {
+    const map = {};
+    tags.forEach(({ id, name }) => (map[id] = name));
+    return map;
+  };
 
-  const dispatch = createEventDispatcher<{
-    change: Partial<SelectableDatasetFilter>;
-  }>();
+  $: tagIdToName = createTagIdToNameMap(info.tagId);
+  $: filtersOptions = toFiltersOptions(info);
+  $: buttonTexts = toFiltersButtonTexts(value, tagIdToName);
 
-  $: selectableDataSetFilters =
-    transformSearchFiltersIntoSelectableDatasetFilters(filters);
+  const dispatch = createEventDispatcher<{ change: DatasetFiltersValue }>();
 
-  const handleSelectFilter = (
-    filterKey: DatasetFilter,
-    e: CustomEvent<SelectOption | null>
+  const handleSelectFilter = <K extends keyof DatasetFiltersValue>(
+    key: K,
+    e: CustomEvent<SelectOption<DatasetFiltersValue[K]> | null>
   ) => {
-    const value = e.detail;
-
-    const newFilter: Partial<SelectableDatasetFilter> = {
-      [filterKey]: value ? [value] : null,
-    };
-
-    if (selectedFilters) {
-      selectedFilters = mergeSelectableDatasetFilter(
-        selectedFilters,
-        newFilter
-      );
-    } else {
-      selectedFilters = newFilter;
-    }
-
-    dispatch("change", selectedFilters);
+    value[key] = e.detail?.value || null;
+    dispatch("change", value);
   };
 </script>
 
 <section>
-  <h6>Informations Générales</h6>
+  <h6>Informations générales</h6>
 
-  {#if selectableDataSetFilters.geographical_coverage}
-    <div class="fr-mb-2w">
-      <SearchableSelect
-        label={DATASET_FILTERS_TRANSLATION.geographical_coverage}
-        buttonPlaceholder="Rechercher ..."
-        inputPlaceholder="Rechercher ..."
-        on:clickItem={(e) => handleSelectFilter("geographical_coverage", e)}
-        options={selectableDataSetFilters.geographical_coverage}
-      />
-    </div>
-  {/if}
+  <div class="fr-mb-2w">
+    <SearchableSelect
+      label="Couverture géographique"
+      buttonPlaceholder="Rechercher..."
+      inputPlaceholder="Rechercher..."
+      buttonText={buttonTexts.geographicalCoverage || "Rechercher..."}
+      on:clickItem={(e) => handleSelectFilter("geographicalCoverage", e)}
+      options={filtersOptions.geographicalCoverage}
+    />
+  </div>
 
-  {#if selectableDataSetFilters.service}
-    <div class="fr-mb-2w">
-      <SearchableSelect
-        label={DATASET_FILTERS_TRANSLATION.service}
-        buttonPlaceholder="Rechercher ..."
-        inputPlaceholder="Rechercher ..."
-        on:clickItem={(e) => handleSelectFilter("service", e)}
-        options={selectableDataSetFilters.service}
-      />
-    </div>
-  {/if}
+  <div class="fr-mb-2w">
+    <SearchableSelect
+      label="Service producteur de la donnée"
+      buttonPlaceholder="Rechercher..."
+      inputPlaceholder="Rechercher..."
+      buttonText={buttonTexts.service || "Rechercher..."}
+      on:clickItem={(e) => handleSelectFilter("service", e)}
+      options={filtersOptions.service}
+    />
+  </div>
 </section>
 
 <section>
-  <h6>Sources et Formats</h6>
-  {#if selectableDataSetFilters.format}
-    <div class="fr-mb-2w">
-      <SearchableSelect
-        label={DATASET_FILTERS_TRANSLATION.format}
-        buttonPlaceholder="Rechercher ..."
-        inputPlaceholder="Rechercher ..."
-        on:clickItem={(e) => handleSelectFilter("format", e)}
-        options={selectableDataSetFilters.format}
-      />
-    </div>
-  {/if}
+  <h6>Sources et formats</h6>
 
-  {#if selectableDataSetFilters.technical_source}
-    <div class="fr-mb-2w">
-      <SearchableSelect
-        label={DATASET_FILTERS_TRANSLATION.technical_source}
-        buttonPlaceholder="Rechercher ..."
-        inputPlaceholder="Rechercher ..."
-        on:clickItem={(e) => handleSelectFilter("technical_source", e)}
-        options={selectableDataSetFilters.technical_source}
-      />
-    </div>
-  {/if}
+  <div class="fr-mb-2w">
+    <SearchableSelect
+      label="Format de mise à disposition"
+      buttonPlaceholder="Rechercher..."
+      inputPlaceholder="Rechercher..."
+      buttonText={buttonTexts.format || "Rechercher..."}
+      on:clickItem={(e) => handleSelectFilter("format", e)}
+      options={filtersOptions.format}
+    />
+  </div>
+
+  <div class="fr-mb-2w">
+    <SearchableSelect
+      label="Système d'information source"
+      buttonPlaceholder="Rechercher..."
+      inputPlaceholder="Rechercher..."
+      buttonText={buttonTexts.technicalSource || "Rechercher..."}
+      on:clickItem={(e) => handleSelectFilter("technicalSource", e)}
+      options={filtersOptions.technicalSource}
+    />
+  </div>
 </section>
 
 <section>
-  <h6>Mots-clés Thématiques</h6>
-  {#if selectableDataSetFilters.tag_id}
-    <div class="fr-mb-2w">
-      <SearchableSelect
-        label={DATASET_FILTERS_TRANSLATION.tag_id}
-        buttonPlaceholder="Rechercher ..."
-        inputPlaceholder="Rechercher ..."
-        on:clickItem={(e) => handleSelectFilter("tag_id", e)}
-        options={selectableDataSetFilters.tag_id}
-      />
-    </div>
-  {/if}
+  <h6>Mots-clés thématiques</h6>
+
+  <div class="fr-mb-2w">
+    <SearchableSelect
+      label="Mot-clé"
+      buttonPlaceholder="Rechercher..."
+      inputPlaceholder="Rechercher..."
+      buttonText={buttonTexts.tagId || "Rechercher..."}
+      on:clickItem={(e) => handleSelectFilter("tagId", e)}
+      options={filtersOptions.tagId}
+    />
+  </div>
 </section>

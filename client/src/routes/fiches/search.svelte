@@ -1,43 +1,36 @@
 <script context="module" lang="ts">
   import type { Load } from "@sveltejs/kit";
   import { get } from "svelte/store";
-  import {
-    getDatasets,
-    getDatasetSearchFilters,
-  } from "$lib/repositories/datasets";
+  import { getDatasets } from "$lib/repositories/datasets";
   import { apiToken } from "$lib/stores/auth";
   import { getPageFromParams } from "$lib/util/pagination";
   import { page as pageStore } from "$app/stores";
+  import { getDatasetFiltersInfo } from "src/lib/repositories/datasetFilters";
+  import { toFiltersValue } from "src/lib/transformers/datasetFilters";
 
   export const load: Load = async ({ fetch, url }) => {
     const page = getPageFromParams(url.searchParams);
     const q = url.searchParams.get("q") || "";
+    const filtersValue = toFiltersValue(url.searchParams);
+
     const token = get(apiToken);
-    const [paginatedDatasets, searchFilters] = await Promise.all([
+
+    const [paginatedDatasets, filtersInfo] = await Promise.all([
       getDatasets({
         fetch,
         apiToken: token,
-        page: 1,
+        page,
         q,
+        filters: filtersValue,
       }),
-      getDatasetSearchFilters({ fetch, apiToken: token }),
+      getDatasetFiltersInfo({ fetch, apiToken: token }),
     ]);
-
-    if (!searchFilters) {
-      return {
-        props: {
-          paginatedDatasets,
-          searchFilters: null,
-          currentPage: page,
-          q,
-        },
-      };
-    }
 
     return {
       props: {
         paginatedDatasets,
-        searchFilters,
+        filtersInfo,
+        filtersValue,
         currentPage: page,
         q,
       },
@@ -47,63 +40,46 @@
 
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import type { Dataset } from "src/definitions/datasets";
   import type {
-    Dataset,
-    DatasetFilters,
-    SelectableDatasetFilter,
-  } from "src/definitions/datasets";
+    DatasetFiltersInfo,
+    DatasetFiltersValue,
+  } from "src/definitions/datasetFilters";
   import DatasetList from "$lib/components/DatasetList/DatasetList.svelte";
   import SearchForm from "$lib/components/SearchForm/SearchForm.svelte";
   import { patchQueryString } from "$lib/util/urls";
   import { Maybe } from "$lib/util/maybe";
   import { pluralize } from "src/lib/util/format";
-  import {
-    cleanSearchDatasetFilters,
-    mergeSelectableDatasetFilter,
-  } from "src/lib/util/dataset";
   import type { Paginated } from "src/definitions/pagination";
   import FilterPanel from "./_FilterPanel.svelte";
+  import { toFiltersParams } from "src/lib/transformers/datasetFilters";
   import { makePageParam } from "$lib/util/pagination";
-
   import PaginationContainer from "./_PaginationContainer.svelte";
 
   export let paginatedDatasets: Maybe<Paginated<Dataset>>;
   export let q: string;
   export let currentPage: number;
 
-  export let searchFilters: Maybe<DatasetFilters>;
+  export let filtersInfo: Maybe<DatasetFiltersInfo>;
+  export let filtersValue: DatasetFiltersValue;
 
   let displayFilters = false;
-  let selectedFilters: Partial<SelectableDatasetFilter>;
 
   const updateSearch = async (event: CustomEvent<string>) => {
-    if (!event.detail) {
-      const href = `search`; // Same page, remove query string
-      await goto(href);
-      return;
-    }
     const href = patchQueryString($pageStore.url.searchParams, [
-      ["q", event.detail],
+      ["q", event.detail || null],
       // If on page n = (2, ...), go back to page 1 on new search.
       makePageParam(1),
     ]);
-    goto(href);
+    goto(href, { noscroll: true });
   };
 
-  const handleSelectedFilter = async (
-    e: CustomEvent<SelectableDatasetFilter>
-  ) => {
-    selectedFilters = cleanSearchDatasetFilters(
-      mergeSelectableDatasetFilter(selectedFilters, e.detail)
-    );
-
-    paginatedDatasets = await getDatasets({
-      fetch,
-      page: currentPage,
-      apiToken: $apiToken,
-      filters: selectedFilters,
-      q,
-    });
+  const handleFilterChange = async (e: CustomEvent<DatasetFiltersValue>) => {
+    const href = patchQueryString($pageStore.url.searchParams, [
+      ...toFiltersParams(e.detail),
+      makePageParam(1),
+    ]);
+    goto(href, { noscroll: true });
   };
 </script>
 
@@ -130,23 +106,25 @@
 
         <button
           on:click={() => (displayFilters = !displayFilters)}
-          class="fr-btn fr-btn--secondary  fr-btn--icon-right {!displayFilters
-            ? 'fr-icon-arrow-down-s-line'
-            : 'fr-icon-arrow-up-s-line'}"
+          class="fr-btn fr-btn--secondary fr-btn--icon-right"
+          class:fr-icon-arrow-down-s-line={!displayFilters}
+          class:fr-icon-arrow-up-s-line={displayFilters}
         >
           Affiner la recherche
         </button>
       </div>
     </div>
 
-    {#if searchFilters}
+    {#if Maybe.Some(filtersInfo) && displayFilters}
       <div
-        data-testid="dataset-filters"
-        class="fr-grid-row fr-grid-row--gutters fr-py-3w {!displayFilters
-          ? 'hidden'
-          : undefined} filters"
+        data-test-id="filter-panel"
+        class="fr-grid-row fr-grid-row--gutters fr-py-3w filters"
       >
-        <FilterPanel on:change={handleSelectedFilter} filters={searchFilters} />
+        <FilterPanel
+          on:change={handleFilterChange}
+          info={filtersInfo}
+          value={filtersValue}
+        />
       </div>
     {/if}
 
@@ -155,8 +133,8 @@
         <DatasetList datasets={paginatedDatasets.items} />
 
         <PaginationContainer
-          totalPages={paginatedDatasets.totalItems}
           {currentPage}
+          totalPages={paginatedDatasets.totalPages}
         />
       </div>
     </div>
@@ -167,16 +145,9 @@
   .summary__header {
     border-bottom: 1px solid var(--border-default-grey);
   }
-  .pagination-container {
-    display: flex;
-    justify-content: space-around;
-  }
+
   h2 {
     padding: 0;
-  }
-  .hidden {
-    display: none;
-    height: 0;
   }
 
   .filters {
