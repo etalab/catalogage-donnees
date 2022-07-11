@@ -4,7 +4,7 @@
   import { escape } from "$lib/util/string";
   import { clickOutside } from "$lib/actions/clickOutside";
 
-  export let value: string | null = null;
+  export let value: string = "";
   export let error = "";
   export let suggestions: string[] = [];
 
@@ -12,12 +12,9 @@
 
   const dispatch = createEventDispatcher<{ input: string }>();
 
-  $: regexp = Maybe.map(value, (v) => new RegExp(escape(v), "i"));
-  $: filteredSuggestions = showSuggestions
-    ? suggestions.filter((item) =>
-        Maybe.Some(regexp) ? Maybe.Some(item.match(regexp)) : true
-      )
-    : [];
+  $: filteredSuggestions = suggestions.filter((item) =>
+    item.match(new RegExp(escape(value), "i"))
+  );
 
   const onInput = (ev: Event & { currentTarget: HTMLInputElement }) => {
     dispatch("input", ev.currentTarget.value);
@@ -54,7 +51,7 @@
     type="text"
     id="license"
     name="license"
-    {value}
+    bind:value
     role="combobox"
     autocomplete="off"
     aria-controls="license-results"

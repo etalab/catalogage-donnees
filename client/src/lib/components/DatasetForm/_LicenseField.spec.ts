@@ -61,11 +61,9 @@ describe("License field", () => {
 
     await fireEvent.click(suggestions[0]);
 
-    const value = await new Promise<string>((resolve) => {
-      component.$on("input", (event) => resolve(event.detail));
+    component.$on("input", (event) => {
+      expect(event.detail).toBe("Licence Ouverte");
     });
-
-    expect(value).toBe("Licence Ouverte");
   });
 
   test("should show error", async () => {
