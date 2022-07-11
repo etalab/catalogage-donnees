@@ -11,17 +11,6 @@ from ..catalog_records.entities import CatalogRecord
 from ..common.types import ID
 
 
-class GeographicalCoverage(enum.Enum):
-    MUNICIPALITY = "municipality"
-    EPCI = "epci"
-    DEPARTMENT = "department"
-    REGION = "region"
-    NATIONAL = "national"
-    NATIONAL_FULL_TERRITORY = "national_full_territory"
-    EUROPE = "europe"
-    WORLD = "world"
-
-
 class DataFormat(enum.Enum):
     FILE_TABULAR = "file_tabular"
     FILE_GIS = "file_gis"
@@ -46,7 +35,7 @@ class Dataset(Entity):
     title: str
     description: str
     service: str
-    geographical_coverage: GeographicalCoverage
+    geographical_coverage: str
     formats: List[DataFormat]
     technical_source: Optional[str]
     producer_email: Optional[str]
@@ -65,7 +54,7 @@ class Dataset(Entity):
         title: str,
         description: str,
         service: str,
-        geographical_coverage: GeographicalCoverage,
+        geographical_coverage: str,
         formats: List[DataFormat],
         technical_source: Optional[str],
         producer_email: Optional[str],

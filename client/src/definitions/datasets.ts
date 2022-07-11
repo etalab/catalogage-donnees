@@ -19,16 +19,6 @@ export type UpdateFrequency =
   | "monthly"
   | "yearly";
 
-export type GeographicalCoverage =
-  | "municipality"
-  | "epci"
-  | "department"
-  | "region"
-  | "national"
-  | "national_full_territory"
-  | "europe"
-  | "world";
-
 export interface DatasetHeadlines {
   title: string;
   description: Maybe<string>;
@@ -46,7 +36,7 @@ export type Dataset = {
   service: string;
   lastUpdatedAt: Date | null;
   updateFrequency: UpdateFrequency | null;
-  geographicalCoverage: GeographicalCoverage;
+  geographicalCoverage: string;
   technicalSource: string | null;
   url: string | null;
   license: string | null;

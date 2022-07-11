@@ -9,11 +9,7 @@ from server.application.tags.commands import CreateTag
 from server.application.tags.queries import GetTagByID
 from server.config.di import resolve
 from server.domain.common.types import id_factory
-from server.domain.datasets.entities import (
-    DataFormat,
-    GeographicalCoverage,
-    UpdateFrequency,
-)
+from server.domain.datasets.entities import DataFormat, UpdateFrequency
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.seedwork.application.messages import MessageBus
 from tests.factories import CreateDatasetFactory
@@ -105,7 +101,7 @@ async def test_dataset_crud(
             title="Example title",
             description="Example description",
             service="Example service",
-            geographical_coverage=GeographicalCoverage.NATIONAL,
+            geographical_coverage="France métropolitaine",
             formats=[DataFormat.WEBSITE],
             technical_source="Example database",
             producer_email="example.service@mydomain.org",
@@ -131,7 +127,7 @@ async def test_dataset_crud(
         "title": "Example title",
         "description": "Example description",
         "service": "Example service",
-        "geographical_coverage": "national",
+        "geographical_coverage": "France métropolitaine",
         "formats": ["website"],
         "technical_source": "Example database",
         "producer_email": "example.service@mydomain.org",
@@ -322,7 +318,6 @@ class TestDatasetOptionalFields:
             "/datasets/",
             json={
                 **to_payload(CreateDatasetFactory.build()),
-                "geographical_coverage": "not_in_enum",
                 "contact_emails": ["notanemail", "valid@mydomain.org"],
                 "update_frequency": "not_in_enum",
                 "last_updated_at": "not_a_datetime",
@@ -331,13 +326,10 @@ class TestDatasetOptionalFields:
         )
         assert response.status_code == 422
         (
-            err_geographical_coverage,
             err_contact_emails,
             err_update_frequency,
             err_last_updated_at,
         ) = response.json()["detail"]
-        assert err_geographical_coverage["loc"] == ["body", "geographical_coverage"]
-        assert err_geographical_coverage["type"] == "type_error.enum"
         assert err_contact_emails["loc"] == ["body", "contact_emails", 0]
         assert err_contact_emails["type"] == "value_error.email"
         assert err_update_frequency["loc"] == ["body", "update_frequency"]
@@ -447,7 +439,7 @@ class TestDatasetUpdate:
                 title="Other title",
                 description="Other description",
                 service="Other service",
-                geographical_coverage=GeographicalCoverage.REGION,
+                geographical_coverage="Hauts-de-France",
                 formats=[DataFormat.DATABASE],
                 technical_source="Other information system",
                 producer_email="other.service@mydomain.org",
@@ -473,7 +465,7 @@ class TestDatasetUpdate:
             "title": "Other title",
             "description": "Other description",
             "service": "Other service",
-            "geographical_coverage": "region",
+            "geographical_coverage": "Hauts-de-France",
             "formats": ["database"],
             "technical_source": "Other information system",
             "producer_email": "other.service@mydomain.org",
@@ -492,7 +484,7 @@ class TestDatasetUpdate:
         assert dataset.title == "Other title"
         assert dataset.description == "Other description"
         assert dataset.service == "Other service"
-        assert dataset.geographical_coverage == GeographicalCoverage.REGION
+        assert dataset.geographical_coverage == "Hauts-de-France"
         assert dataset.formats == [DataFormat.DATABASE]
         assert dataset.technical_source == "Other information system"
         assert dataset.producer_email == "other.service@mydomain.org"

@@ -5,25 +5,21 @@
   import type {
     DataFormat,
     DatasetFormData,
-    GeographicalCoverage,
     UpdateFrequency,
   } from "src/definitions/datasets";
   import type { Tag } from "src/definitions/tag";
-  import {
-    DATA_FORMAT_LABELS,
-    UPDATE_FREQUENCY_LABELS,
-    GEOGRAPHICAL_COVERAGE_LABELS,
-  } from "src/constants";
+  import { DATA_FORMAT_LABELS, UPDATE_FREQUENCY_LABELS } from "src/constants";
   import { formatHTMLDate } from "$lib/util/format";
   import RequiredMarker from "../RequiredMarker/RequiredMarker.svelte";
   import { user } from "src/lib/stores/auth";
   import ContactEmailsField from "../ContactEmailsField/ContactEmailsField.svelte";
+  import GeographicalCoverageField from "./_GeographicalCoverageField.svelte";
   import Select from "../Select/Select.svelte";
   import InputField from "../InputField/InputField.svelte";
   import TextareaField from "../TextareaField/TextareaField.svelte";
   import { toSelectOptions } from "src/lib/transformers/form";
   import { handleSelectChange } from "src/lib/util/form";
-  import { type DropMaybe, Maybe } from "$lib/util/maybe";
+  import { Maybe } from "$lib/util/maybe";
   import TagSelector from "../TagSelector/TagSelector.svelte";
   import LicenseField from "./_LicenseField.svelte";
 
@@ -32,6 +28,7 @@
   export let loading = false;
   export let tags: Tag[] = [];
   export let licenses: string[] = [];
+  export let geographicalCoverages: string[] = [];
 
   export let initial: DatasetFormData | null = null;
 
@@ -45,7 +42,7 @@
     dataFormats: boolean[];
     producerEmail: string | null;
     contactEmails: string[];
-    geographicalCoverage: Maybe<GeographicalCoverage>;
+    geographicalCoverage: string;
     lastUpdatedAt: string | null;
     updateFrequency: UpdateFrequency | null;
     technicalSource: string | null;
@@ -70,7 +67,7 @@
     lastUpdatedAt: initial?.lastUpdatedAt
       ? formatHTMLDate(initial.lastUpdatedAt)
       : null,
-    geographicalCoverage: initial?.geographicalCoverage || null,
+    geographicalCoverage: initial?.geographicalCoverage || "",
     updateFrequency: initial?.updateFrequency || null,
     technicalSource: initial?.technicalSource || null,
     url: initial?.url || null,
@@ -103,10 +100,7 @@
           .min(1),
         lastUpdatedAt: yup.date().nullable(),
         updateFrequency: yup.string().nullable(),
-        geographicalCoverage: yup
-          .string()
-          .nullable()
-          .required("Ce champs est requis"),
+        geographicalCoverage: yup.string().required("Ce champs est requis"),
         technicalSource: yup.string().nullable(),
         url: yup.string().nullable(),
         license: yup.string().nullable(),
@@ -120,9 +114,7 @@
           )
           .min(1, "Veuillez séléctionner au moins 1 mot-clé"),
       }),
-      onSubmit: (
-        values: DropMaybe<DatasetFormValues, "geographicalCoverage">
-      ) => {
+      onSubmit: (values: DatasetFormValues) => {
         const formats = values.dataFormats
           .map((checked, index) =>
             checked ? dataFormatChoices[index].value : null
@@ -241,30 +233,11 @@
       on:blur={handleFieldChange}
     />
 
-    <Select
-      options={toSelectOptions(GEOGRAPHICAL_COVERAGE_LABELS)}
-      id="geographicalCoverage"
-      name="geographicalCoverage"
-      hintText="Quelle est l'étendue de la zone couverte par votre jeu de données ?"
-      required
-      label="Couverture géographique"
-      placeholder="Sélectionnez une couverture géographique..."
+    <GeographicalCoverageField
       value={$form.geographicalCoverage}
-      on:change={(event) =>
-        handleSelectChange(
-          "geographicalCoverage",
-          event,
-          handleFieldChange,
-          updateValidateField
-        )}
-      on:blur={(event) =>
-        handleSelectChange(
-          "geographicalCoverage",
-          event,
-          handleFieldChange,
-          updateValidateField
-        )}
       error={$errors.geographicalCoverage}
+      suggestions={geographicalCoverages}
+      on:input={(ev) => updateValidateField("geographicalCoverage", ev.detail)}
     />
   </div>
 

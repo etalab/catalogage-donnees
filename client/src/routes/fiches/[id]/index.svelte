@@ -21,10 +21,7 @@
 
 <script lang="ts">
   import paths from "$lib/paths";
-  import {
-    GEOGRAPHICAL_COVERAGE_LABELS,
-    UPDATE_FREQUENCY_LABELS,
-  } from "src/constants";
+  import { UPDATE_FREQUENCY_LABELS } from "src/constants";
   import type { Dataset } from "src/definitions/datasets";
   import { formatFullDate, splitParagraphs } from "src/lib/util/format";
   import { Maybe } from "$lib/util/maybe";
@@ -98,7 +95,7 @@
         <AsideItem
           icon="fr-icon-x-map-2-line"
           label="Couverture géographique"
-          value={GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage]}
+          value={dataset.geographicalCoverage}
         />
 
         <h6 class="fr-mt-4w fr-mb-2w">Mise à jour</h6>

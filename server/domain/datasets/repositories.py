@@ -31,6 +31,9 @@ class DatasetRepository(Repository):
     async def get_by_id(self, id: ID) -> Optional[Dataset]:
         raise NotImplementedError  # pragma: no cover
 
+    async def get_geographical_coverage_set(self) -> Set[str]:
+        raise NotImplementedError  # pragma: no cover
+
     async def get_service_set(self) -> Set[str]:
         raise NotImplementedError  # pragma: no cover
 

@@ -3,20 +3,23 @@
   export const prerender = true;
   import { getTags } from "src/lib/repositories/tags";
   import { getLicenses } from "src/lib/repositories/licenses";
+  import { getDatasetFiltersInfo } from "src/lib/repositories/datasetFilters";
   import { get } from "svelte/store";
 
   export const load: Load = async ({ fetch }) => {
     const apiToken = get(apiTokenStore);
 
-    const [tags, licenses] = await Promise.all([
+    const [tags, licenses, filtersInfo] = await Promise.all([
       getTags({ fetch, apiToken }),
       getLicenses({ fetch, apiToken }),
+      getDatasetFiltersInfo({ fetch, apiToken }),
     ]);
 
     return {
       props: {
         tags,
         licenses,
+        filtersInfo,
       },
     };
   };
@@ -33,6 +36,7 @@
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
   import type { Tag } from "src/definitions/tag";
   import ModalExitFormConfirmation from "src/lib/components/ModalExitFormConfirmation/ModalExitFormConfirmation.svelte";
+  import type { DatasetFiltersInfo } from "src/definitions/datasetFilters";
 
   let modalControlId = "confirm-stop-contributing-modal";
 
@@ -42,6 +46,7 @@
 
   export let tags: Maybe<Tag[]>;
   export let licenses: Maybe<string[]>;
+  export let filtersInfo: Maybe<DatasetFiltersInfo>;
 
   const onSave = async (event: CustomEvent<DatasetFormData>) => {
     try {
@@ -89,7 +94,7 @@
   {/if}
 </header>
 
-{#if Maybe.Some(tags) && Maybe.Some(licenses)}
+{#if Maybe.Some(tags) && Maybe.Some(licenses) && Maybe.Some(filtersInfo)}
   <ModalExitFormConfirmation
     on:confirm={handleExitForm}
     controlId={modalControlId}
@@ -99,6 +104,7 @@
     <DatasetForm
       {tags}
       {licenses}
+      geographicalCoverages={filtersInfo.geographicalCoverage}
       {loading}
       on:save={onSave}
       on:touched={() => (formHasBeenTouched = true)}

@@ -6,7 +6,7 @@ import pytest
 
 from server.config.di import resolve
 from server.domain.common.types import ID, id_factory
-from server.domain.datasets.entities import DataFormat, GeographicalCoverage
+from server.domain.datasets.entities import DataFormat
 from server.seedwork.application.messages import MessageBus
 
 from ..factories import CreateDatasetFactory, CreateTagFactory
@@ -23,6 +23,7 @@ async def test_dataset_filters_info(
 
     await bus.execute(
         CreateDatasetFactory.build(
+            geographical_coverage="France métropolitaine",
             service="Same example service",
             technical_source="Example database system",
             license="Une licence spéciale",
@@ -32,6 +33,7 @@ async def test_dataset_filters_info(
     # Add another with filterable optional fields left out
     await bus.execute(
         CreateDatasetFactory.build(
+            geographical_coverage="Région Nouvelle-Aquitaine",
             service="Same example service",
             technical_source=None,
         )
@@ -51,15 +53,9 @@ async def test_dataset_filters_info(
         "license",
     }
 
-    assert sorted(data["geographical_coverage"]) == [
-        "department",
-        "epci",
-        "europe",
-        "municipality",
-        "national",
-        "national_full_territory",
-        "region",
-        "world",
+    assert data["geographical_coverage"] == [
+        "France métropolitaine",
+        "Région Nouvelle-Aquitaine",
     ]
 
     assert data["service"] == [
@@ -102,9 +98,9 @@ class _Env:
     [
         pytest.param(
             "geographical_coverage",
-            lambda _: {"geographical_coverage": GeographicalCoverage.NATIONAL.value},
-            lambda _: [GeographicalCoverage.REGION.value],
-            lambda _: [GeographicalCoverage.NATIONAL.value],
+            lambda _: {"geographical_coverage": "France métropolitaine"},
+            lambda _: ["Hauts-de-France"],
+            lambda _: ["France métropolitaine"],
             id="geographical_coverage",
         ),
         pytest.param(

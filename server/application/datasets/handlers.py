@@ -5,7 +5,7 @@ from server.domain.catalog_records.entities import CatalogRecord
 from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.common.pagination import Pagination
 from server.domain.common.types import ID
-from server.domain.datasets.entities import DataFormat, Dataset, GeographicalCoverage
+from server.domain.datasets.entities import DataFormat, Dataset
 from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.domain.datasets.repositories import DatasetRepository
 from server.domain.tags.repositories import TagRepository
@@ -66,13 +66,14 @@ async def get_dataset_filters(query: GetDatasetFilters) -> DatasetFiltersView:
     bus = resolve(MessageBus)
     repository = resolve(DatasetRepository)
 
+    geographical_coverages = await repository.get_geographical_coverage_set()
     services = await repository.get_service_set()
     technical_sources = await repository.get_technical_source_set()
     tags = await bus.execute(GetAllTags())
     licenses = await bus.execute(GetLicenseSet())
 
     return DatasetFiltersView(
-        geographical_coverage=list(GeographicalCoverage),
+        geographical_coverage=sorted(geographical_coverages),
         service=list(services),
         format=list(DataFormat),
         technical_source=list(technical_sources),
