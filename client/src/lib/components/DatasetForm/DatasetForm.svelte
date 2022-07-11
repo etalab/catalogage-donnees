@@ -4,12 +4,10 @@
   import { createForm } from "svelte-forms-lib";
   import type {
     DataFormat,
-    Dataset,
     DatasetFormData,
     GeographicalCoverage,
     UpdateFrequency,
   } from "src/definitions/datasets";
-  import type { SelectOption } from "src/definitions/form";
   import type { Tag } from "src/definitions/tag";
   import {
     DATA_FORMAT_LABELS,
@@ -52,7 +50,7 @@
     updateFrequency: UpdateFrequency | null;
     technicalSource: string | null;
     url: string | null;
-    license: string | null;
+    license: string;
     tags: Tag[];
   };
 
@@ -76,17 +74,12 @@
     updateFrequency: initial?.updateFrequency || null,
     technicalSource: initial?.technicalSource || null,
     url: initial?.url || null,
-    license: initial?.license || null,
+    license: initial?.license || "",
     tags: initial?.tags || [],
   };
 
   // Handle this value manually.
   const dataFormatsValue = initialValues.dataFormats;
-
-  const isOpenDataOptions: SelectOption<boolean>[] = [
-    { label: "Oui", value: true },
-    { label: "Non", value: false },
-  ];
 
   const { form, errors, handleChange, handleSubmit, updateValidateField } =
     createForm({

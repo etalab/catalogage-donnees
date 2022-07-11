@@ -21,7 +21,15 @@ describe("License field", () => {
     expect(options.length).toBe(0);
   });
 
-  test("should show suggestions on click", async () => {
+  test("should not show suggestions initially", async () => {
+    const { queryAllByRole } = render(LicenseField, {
+      props: { suggestions: ["Licence Ouverte", "ODC Open Database License"] },
+    });
+    const options = queryAllByRole("option");
+    expect(options.length).toBe(0);
+  });
+
+  test("should show suggestions on focusing the input", async () => {
     const { getByRole, getAllByRole } = render(LicenseField, {
       props: { suggestions: ["Licence Ouverte", "ODC Open Database License"] },
     });
@@ -59,12 +67,9 @@ describe("License field", () => {
     const suggestions = getAllByRole("option");
     expect(suggestions.length).toBe(2);
 
+    let value = "";
+    component.$on("input", (event) => (value = event.detail));
     await fireEvent.click(suggestions[0]);
-
-    const value = await new Promise<string>((resolve) => {
-      component.$on("input", (event) => resolve(event.detail));
-    });
-
     expect(value).toBe("Licence Ouverte");
   });
 
