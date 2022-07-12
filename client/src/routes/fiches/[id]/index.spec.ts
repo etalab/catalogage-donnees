@@ -45,23 +45,30 @@ describe("Dataset detail description", () => {
     expect(description).toHaveTextContent(dataset.description);
   });
 
-  test("The open data link is not present if the access is restricted", async () => {
-    const { queryByText } = render(index, { dataset });
-    const seeDataLink = queryByText("Voir les données", {
-      exact: false,
+  test("The url link button is present if a url is set", async () => {
+    const { getByText, queryByText, rerender } = render(index, {
+      dataset: { ...dataset, url: null },
     });
-    expect(seeDataLink).not.toBeInTheDocument();
+    let urlLink = queryByText("Voir les données", { exact: false });
+    expect(urlLink).not.toBeInTheDocument();
+    rerender({
+      props: { dataset: { ...dataset, url: "https://example.org" } },
+    });
+    urlLink = getByText("Voir les données", { exact: false });
+    expect(urlLink).toBeInTheDocument();
+    expect(urlLink).toHaveAttribute("href", "https://example.org");
   });
 
-  test("The open data link is present if the access is open", async () => {
-    const { queryByText } = render(index, {
-      dataset: getFakeDataset({
-        url: "http://foo.com",
-      }),
+  test("The license is shown if it is set", async () => {
+    const { getByText, queryByText, rerender } = render(index, {
+      dataset: { ...dataset, license: null },
     });
-    const seeDataLink = queryByText("Voir les données", {
-      exact: false,
+    let license = queryByText("Licence Ouverte", { exact: false });
+    expect(license).not.toBeInTheDocument();
+    rerender({
+      props: { dataset: { ...dataset, license: "Licence Ouverte" } },
     });
-    expect(seeDataLink).toBeInTheDocument();
+    license = getByText("Licence Ouverte", { exact: false });
+    expect(license).toBeInTheDocument();
   });
 });

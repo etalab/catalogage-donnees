@@ -138,9 +138,10 @@ test.describe("Search filters", () => {
     await filterPanel.locator("text=Sources et formats").waitFor();
     await filterPanel.locator("text=Mots-clés thématiques").waitFor();
 
-    expect(await filterPanel.locator("button").count()).toBe(5);
+    expect(await filterPanel.locator("button").count()).toBe(6);
     await filterPanel.locator("text=Couverture géographique").waitFor();
     await filterPanel.locator("text=Service producteur de la donnée").waitFor();
+    await filterPanel.locator("text=Licence de réutilisation").waitFor();
     await filterPanel.locator("text=Format de mise à disposition").waitFor();
     await filterPanel.locator("text=Système d'information source").waitFor();
     await filterPanel.locator("text=Mot-clé").waitFor();

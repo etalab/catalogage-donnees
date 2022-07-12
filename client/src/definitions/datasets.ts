@@ -49,6 +49,7 @@ export type Dataset = {
   geographicalCoverage: GeographicalCoverage;
   technicalSource: string | null;
   url: string | null;
+  license: string | null;
   tags: Tag[];
 };
 

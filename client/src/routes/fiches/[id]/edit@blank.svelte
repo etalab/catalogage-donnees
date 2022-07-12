@@ -4,23 +4,22 @@
   import { getDatasetByID, updateDataset } from "$lib/repositories/datasets";
   import type { Tag } from "src/definitions/tag";
   import { getTags } from "src/lib/repositories/tags";
+  import { getLicenses } from "src/lib/repositories/licenses";
 
   export const load: Load = async ({ fetch, params }) => {
-    const tags = await getTags({
-      fetch,
-      apiToken: get(apiToken),
-    });
+    const apiToken = get(apiTokenStore);
 
-    const dataset = await getDatasetByID({
-      fetch,
-      apiToken: get(apiToken),
-      id: params.id,
-    });
+    const [dataset, tags, licenses] = await Promise.all([
+      getDatasetByID({ fetch, apiToken, id: params.id }),
+      getTags({ fetch, apiToken }),
+      getLicenses({ fetch, apiToken }),
+    ]);
 
     return {
       props: {
         dataset,
         tags,
+        licenses,
       },
     };
   };
@@ -31,7 +30,7 @@
   import type { Dataset, DatasetFormData } from "src/definitions/datasets";
   import DatasetForm from "$lib/components/DatasetForm/DatasetForm.svelte";
   import paths from "$lib/paths";
-  import { isAdmin, apiToken } from "$lib/stores/auth";
+  import { isAdmin, apiToken as apiTokenStore } from "$lib/stores/auth";
   import { deleteDataset } from "$lib/repositories/datasets";
   import { Maybe } from "$lib/util/maybe";
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
@@ -39,6 +38,7 @@
 
   export let dataset: Maybe<Dataset>;
   export let tags: Maybe<Tag[]>;
+  export let licenses: Maybe<string[]>;
 
   let modalControlId = "stop-editing-form-modal";
 
@@ -60,7 +60,7 @@
 
       const updatedDataset = await updateDataset({
         fetch,
-        apiToken: $apiToken,
+        apiToken: $apiTokenStore,
         id: dataset.id,
         data: { ...event.detail, tagIds },
       });
@@ -86,7 +86,7 @@
       return;
     }
 
-    await deleteDataset({ fetch, apiToken: $apiToken, id: dataset.id });
+    await deleteDataset({ fetch, apiToken: $apiTokenStore, id: dataset.id });
     await goto(paths.home);
   };
 
@@ -95,7 +95,7 @@
   };
 </script>
 
-{#if Maybe.Some(dataset) && Maybe.Some(tags)}
+{#if Maybe.Some(dataset) && Maybe.Some(tags) && Maybe.Some(licenses)}
   <header class="fr-p-4w">
     <h5>Modifier la fiche de jeu de données</h5>
 
@@ -127,6 +127,7 @@
   <DatasetFormLayout>
     <DatasetForm
       {tags}
+      {licenses}
       initial={dataset}
       {loading}
       submitLabel="Enregistrer les modifications"

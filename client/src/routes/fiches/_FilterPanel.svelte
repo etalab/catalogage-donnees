@@ -60,6 +60,17 @@
       options={filtersOptions.service}
     />
   </div>
+
+  <div class="fr-mb-2w">
+    <SearchableSelect
+      label="Licence de réutilisation"
+      buttonPlaceholder="Rechercher..."
+      inputPlaceholder="Rechercher..."
+      buttonText={buttonTexts.license || "Rechercher..."}
+      on:clickItem={(e) => handleSelectFilter("license", e)}
+      options={filtersOptions.license}
+    />
+  </div>
 </section>
 
 <section>

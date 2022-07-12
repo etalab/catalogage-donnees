@@ -19,6 +19,7 @@ test.describe("Basic form submission", () => {
     const technicalSourceText = "foo/bar";
     const urlText = "https://data.gouv.fr/datasets/example";
     const tagName = "services des eaux";
+    const licenseText = "Licence Ouverte";
 
     await page.goto("/contribuer");
 
@@ -84,11 +85,15 @@ test.describe("Basic form submission", () => {
       label: UPDATE_FREQUENCY_LABELS.daily,
     });
 
-    // "Ouverture" section
+    // "Accès aux données" section
 
     const url = page.locator("form [name=url]");
     await url.fill(urlText);
     expect(await url.inputValue()).toBe(urlText);
+
+    const license = page.locator("form [name=license]");
+    await license.fill(licenseText);
+    expect(await license.inputValue()).toBe(licenseText);
 
     // "Mots clés" section
 
@@ -110,7 +115,9 @@ test.describe("Basic form submission", () => {
       button.click(),
     ]);
     expect(
-      page.locator("a.fr-sidemenu__link", { hasText: "Ouverture" }).first()
+      page
+        .locator("a.fr-sidemenu__link", { hasText: "Accès aux données" })
+        .first()
     ).toHaveAttribute("aria-current", "page");
     expect(request.method()).toBe("POST");
     expect(response.status()).toBe(201);
@@ -127,6 +134,7 @@ test.describe("Basic form submission", () => {
     expect(json.last_updated_at).toEqual("2000-05-05T00:00:00+00:00");
     expect(json.service).toBe(serviceText);
     expect(json.url).toBe(urlText);
+    expect(json.license).toBe(licenseText);
 
     const hasTag = json.tags.findIndex((item) => item.name === tagName) !== -1;
     expect(hasTag).toBeTruthy();
@@ -148,7 +156,7 @@ test.describe("Basic form submission", () => {
 
     // Scroll to bottom.
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await expect(activeSidebarItem).toHaveText("Ouverture");
+    await expect(activeSidebarItem).toHaveText("Accès aux données");
 
     // Move to a particular section using click.
     // Purposefully test a small-size section: it should become active

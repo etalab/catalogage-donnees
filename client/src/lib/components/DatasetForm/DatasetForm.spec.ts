@@ -91,11 +91,20 @@ describe("Test the dataset form", () => {
 
   test('The "url" field is present', async () => {
     const { getByLabelText } = render(DatasetForm);
-    const url = getByLabelText("Page open data", {
+    const url = getByLabelText("Lien vers les données", {
       exact: false,
     });
     expect(url).toBeInTheDocument();
     expect(url).not.toBeRequired();
+  });
+
+  test('The "license" field is present', async () => {
+    const { getByLabelText } = render(DatasetForm);
+    const license = getByLabelText("Licence de réutilisation", {
+      exact: false,
+    });
+    expect(license).toBeInTheDocument();
+    expect(license).not.toBeRequired();
   });
 
   test("The submit button is present", () => {
@@ -127,6 +136,7 @@ describe("Test the dataset form", () => {
       geographicalCoverage: "europe",
       technicalSource: "foo/bar",
       url: "https://data.gouv.fr/datasets/example",
+      license: "Licence Ouverte",
       tags: [fakeTag],
     };
     const props = { initial };
@@ -181,12 +191,18 @@ describe("Test the dataset form", () => {
     }) as HTMLSelectElement;
     expect(technicalSource.value).toBe("foo/bar");
 
-    const url = getByLabelText("Page open data", {
+    const url = getByLabelText("Lien vers les données", {
       exact: false,
     }) as HTMLSelectElement;
     expect(url.value).toBe("https://data.gouv.fr/datasets/example");
+
     const tags = getAllByText(fakeTag.name);
     expect(tags).toHaveLength(1);
+
+    const license = getByLabelText("Licence de réutilisation", {
+      exact: false,
+    }) as HTMLInputElement;
+    expect(license.value).toBe("Licence Ouverte");
   });
 
   test("Null or empty fields are correctly submitted as null", async () => {
@@ -202,6 +218,7 @@ describe("Test the dataset form", () => {
       geographicalCoverage: "europe",
       technicalSource: "foo/bar",
       url: "",
+      license: null,
       tags: [buildFakeTag()],
     };
     const props = { initial };
@@ -232,6 +249,7 @@ describe("Test the dataset form", () => {
     expect(submittedValue.updateFrequency).toBe(null);
     expect(submittedValue.producerEmail).toBe(null);
     expect(submittedValue.url).toBe(null);
+    expect(submittedValue.license).toBe(null);
   });
 
   describe("Authenticated tests", () => {

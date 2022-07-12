@@ -8,6 +8,7 @@
     GeographicalCoverage,
     UpdateFrequency,
   } from "src/definitions/datasets";
+  import type { Tag } from "src/definitions/tag";
   import {
     DATA_FORMAT_LABELS,
     UPDATE_FREQUENCY_LABELS,
@@ -24,12 +25,13 @@
   import { handleSelectChange } from "src/lib/util/form";
   import { type DropMaybe, Maybe } from "$lib/util/maybe";
   import TagSelector from "../TagSelector/TagSelector.svelte";
-  import type { Tag } from "src/definitions/tag";
+  import LicenseField from "./_LicenseField.svelte";
 
   export let submitLabel = "Publier la fiche de données";
   export let loadingLabel = "Publication en cours...";
   export let loading = false;
   export let tags: Tag[] = [];
+  export let licenses: string[] = [];
 
   export let initial: DatasetFormData | null = null;
 
@@ -48,6 +50,7 @@
     updateFrequency: UpdateFrequency | null;
     technicalSource: string | null;
     url: string | null;
+    license: string;
     tags: Tag[];
   };
 
@@ -71,6 +74,7 @@
     updateFrequency: initial?.updateFrequency || null,
     technicalSource: initial?.technicalSource || null,
     url: initial?.url || null,
+    license: initial?.license || "",
     tags: initial?.tags || [],
   };
 
@@ -105,6 +109,7 @@
           .required("Ce champs est requis"),
         technicalSource: yup.string().nullable(),
         url: yup.string().nullable(),
+        license: yup.string().nullable(),
         tags: yup
           .array()
           .of(
@@ -137,6 +142,7 @@
 
         // Ensure "" becomes null.
         const url = values.url ? values.url : null;
+        const license = values.license ? values.license : null;
 
         const data: DatasetFormData = {
           ...values,
@@ -145,6 +151,7 @@
           contactEmails,
           lastUpdatedAt,
           url,
+          license,
         };
 
         dispatch("save", data);
@@ -405,17 +412,24 @@
     />
   </div>
 
-  <h2 id="ouverture" class="fr-mt-6w fr-mb-5w">Ouverture</h2>
+  <h2 id="acces-aux-donnees" class="fr-mt-6w fr-mb-5w">Accès aux données</h2>
 
   <div class="form--content fr-mb-8w">
     <InputField
       name="url"
-      label="Page open data"
-      hintText="Si le jeu de données est publié en open data, saisissez ici le lien de la page web associée."
+      label="Lien vers les données"
+      hintText="Saisissez ici le lien de la page web associée au jeu de données."
       value={$form.url}
       error={$errors.url}
       on:input={handleFieldChange}
       on:blur={handleFieldChange}
+    />
+
+    <LicenseField
+      value={$form.license}
+      error={$errors.license}
+      suggestions={licenses}
+      on:input={(ev) => updateValidateField("license", ev.detail)}
     />
   </div>
 

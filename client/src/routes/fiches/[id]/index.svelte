@@ -87,28 +87,6 @@
 
     <div class="fr-grid-row fr-grid-row--gutters">
       <aside class="fr-col-md-4">
-        <h6 class="fr-mb-2w">Ouverture</h6>
-
-        <AsideItem
-          icon="fr-icon-x-open-data"
-          label="Accessibilité aux données"
-          value={dataset.url ? "Ouverte" : "Restreinte"}
-        />
-        {#if dataset.url}
-          <a
-            class="fr-btn fr-btn--icon-right fr-icon-external-link-line"
-            href={dataset.url}
-            target="_blank"
-          >
-            Voir les données
-          </a>
-        {:else}
-          <p class="fr-text--xs fr-text-mention--grey fr-mb-0">
-            Veuillez prendre contact avec le producteur afin d'obtenir l'accès
-            au jeu de données.
-          </p>
-        {/if}
-
         <h6 class="fr-mt-4w fr-mb-2w">Informations générales</h6>
 
         <AsideItem
@@ -138,6 +116,28 @@
             dataset.updateFrequency,
             (v) => UPDATE_FREQUENCY_LABELS[v]
           )}
+        />
+
+        <h6 class="fr-mb-2w">Accès aux données</h6>
+
+        <AsideItem
+          icon="fr-icon-global-line"
+          label="Lien vers les données"
+          value={dataset.url}
+        >
+          <a
+            class="fr-btn fr-btn--icon-right fr-icon-external-link-line"
+            href={dataset.url}
+            target="_blank"
+          >
+            Voir les données
+          </a>
+        </AsideItem>
+
+        <AsideItem
+          icon="fr-icon-x-open-data"
+          label="Licence de réutilisation"
+          value={dataset.license}
         />
       </aside>
 

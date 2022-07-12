@@ -25,9 +25,9 @@
         .join(", "),
     },
     {
-      label: "Ouverture",
-      icon: dataset.url ? "fr-icon-x-open-data" : "fr-icon-x-restricted-data",
-      value: dataset.url ? "Open data" : "Restreint",
+      label: "Licence",
+      icon: "fr-icon-x-open-data",
+      value: Maybe.Some(dataset.license) ? dataset.license : "-",
     },
   ];
 </script>

@@ -14,7 +14,13 @@
       {label}
     </div>
     <div>
-      {Maybe.Some(value) ? value : "-"}
+      {#if Maybe.Some(value)}
+        <slot>
+          {value}
+        </slot>
+      {:else}
+        -
+      {/if}
     </div>
   </div>
 </div>
