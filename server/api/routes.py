@@ -5,7 +5,7 @@ from starlette.responses import RedirectResponse
 from server.config import Settings
 from server.config.di import resolve
 
-from . import auth, datasets, licenses, tags
+from . import auth, datasets, licenses, organizations, tags
 
 router = APIRouter()
 
@@ -21,3 +21,4 @@ router.include_router(auth.router)
 router.include_router(datasets.router)
 router.include_router(tags.router)
 router.include_router(licenses.router)
+router.include_router(organizations.router)
