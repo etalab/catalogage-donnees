@@ -1,4 +1,4 @@
-# `catalogue.data.gouv.fr`
+# `catalogage-donnees`
 
 [![CI](https://github.com/etalab/catalogage-donnees/actions/workflows/ci.yml/badge.svg)](https://github.com/etalab/catalogage-donnees/actions/workflows/ci.yml)
 
