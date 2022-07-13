@@ -43,7 +43,7 @@ def upgrade():
             CASE
                 WHEN geographical_coverage = 'MUNICIPALITY' THEN 'Communale'
                 WHEN geographical_coverage = 'EPCI' THEN 'EPCI'
-                WHEN geographical_coverage = 'DEPARTEMENT' THEN 'Départementale'
+                WHEN geographical_coverage = 'DEPARTMENT' THEN 'Départementale'
                 WHEN geographical_coverage = 'REGION' THEN 'Régionale'
                 WHEN geographical_coverage= 'NATIONAL' THEN 'France'
                 WHEN geographical_coverage= 'NATIONAL_FULL_TERRITORY' THEN 'France entière'
