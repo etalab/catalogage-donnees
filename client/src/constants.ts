@@ -1,8 +1,4 @@
-import type {
-  DataFormat,
-  UpdateFrequency,
-  GeographicalCoverage,
-} from "./definitions/datasets";
+import type { DataFormat, UpdateFrequency } from "./definitions/datasets";
 
 export const PUBLIC_PAGES = ["/login"];
 
@@ -31,19 +27,6 @@ export const UPDATE_FREQUENCY_LABELS: { [K in UpdateFrequency]: string } = {
   weekly: "Hebdomadaire (ou plusieurs fois par semaine)",
   monthly: "Mensuelle (ou plusieurs fois pas mois)",
   yearly: "Annuel (ou plusieurs fois par an)",
-};
-
-export const GEOGRAPHICAL_COVERAGE_LABELS: {
-  [K in GeographicalCoverage]: string;
-} = {
-  municipality: "Communale",
-  epci: "EPCI",
-  department: "Départementale",
-  region: "Régionale",
-  national: "Nationale (métropole)",
-  national_full_territory: "Nationale (territoires d'Outre-mer inclus)",
-  europe: "Européenne",
-  world: "Monde",
 };
 
 export const DATASETS_PER_PAGE = 50;

@@ -1,8 +1,5 @@
 import { test, expect } from "@playwright/test";
-import {
-  UPDATE_FREQUENCY_LABELS,
-  GEOGRAPHICAL_COVERAGE_LABELS,
-} from "src/constants";
+import { UPDATE_FREQUENCY_LABELS } from "src/constants";
 import { STATE_AUTHENTICATED } from "./constants";
 
 test.describe("Basic form submission", () => {
@@ -11,6 +8,7 @@ test.describe("Basic form submission", () => {
   test("Visits the contribution page", async ({ page }) => {
     const titleText = "Un nom de jeu de données";
     const descriptionText = "Une longue\ndescription de jeu\nde données";
+    const geographicalCoverageText = "Europe continentale";
     const producerEmailText = "un.service@exemple.gouv.fr";
     const contactEmail1Text = "contact1@mydomain.org";
     const contactEmail2Text = "contact2@mydomain.org";
@@ -41,9 +39,10 @@ test.describe("Basic form submission", () => {
     const geographicalCoverage = page.locator(
       "form [name=geographicalCoverage]"
     );
-    await geographicalCoverage.selectOption({
-      label: GEOGRAPHICAL_COVERAGE_LABELS.europe,
-    });
+    await geographicalCoverage.fill(geographicalCoverageText);
+    expect(await geographicalCoverage.inputValue()).toBe(
+      geographicalCoverageText
+    );
 
     // "Sources et formats" section
 
@@ -124,7 +123,7 @@ test.describe("Basic form submission", () => {
     const json = await response.json();
     expect(json.title).toBe(titleText);
     expect(json.description).toBe(descriptionText);
-    expect(json.geographical_coverage).toBe("europe");
+    expect(json.geographical_coverage).toBe("Europe continentale");
     expect(json.formats).toStrictEqual(["api"]);
     expect(json.producer_email).toBe(producerEmailText);
     expect(json.contact_emails).toEqual([contactEmail1Text, contactEmail2Text]);

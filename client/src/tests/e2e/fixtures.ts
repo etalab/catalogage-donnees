@@ -57,7 +57,7 @@ export const test = base.extend<AppTestArgs>({
       technical_source: "foo/baz",
       update_frequency: "never",
       last_updated_at: new Date(),
-      geographical_coverage: "world",
+      geographical_coverage: "Monde",
       tagIds: ["ceb19363-1681-4052-813c-f771d4459295"],
     };
     let response = await apiContext.post("/datasets/", {

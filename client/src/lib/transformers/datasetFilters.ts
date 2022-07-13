@@ -1,8 +1,4 @@
-import {
-  DATA_FORMAT_LABELS,
-  GEOGRAPHICAL_COVERAGE_LABELS,
-} from "src/constants";
-import type { GeographicalCoverage } from "src/definitions/datasets";
+import { DATA_FORMAT_LABELS } from "src/constants";
 import type {
   DatasetFiltersInfo,
   DatasetFiltersOptions,
@@ -25,9 +21,7 @@ export const toFiltersValue = (
   searchParams: URLSearchParams
 ): DatasetFiltersValue => {
   return {
-    geographicalCoverage: searchParams.get(
-      "geographical_coverage"
-    ) as GeographicalCoverage | null,
+    geographicalCoverage: searchParams.get("geographical_coverage"),
     service: searchParams.get("service"),
     format: searchParams.get("format"),
     technicalSource: searchParams.get("technical_source"),
@@ -63,7 +57,7 @@ export const toFiltersOptions = (
 ): DatasetFiltersOptions => {
   return {
     geographicalCoverage: info.geographicalCoverage.map((value) => ({
-      label: GEOGRAPHICAL_COVERAGE_LABELS[value],
+      label: value,
       value,
     })),
     service: info.service.map((value) => ({ label: value, value })),
@@ -88,10 +82,7 @@ export const toFiltersButtonTexts = (
   tagIdToName: Record<string, string>
 ): { [K in keyof DatasetFiltersValue]: Maybe<string> } => {
   return {
-    geographicalCoverage: Maybe.map(
-      value.geographicalCoverage,
-      (v) => GEOGRAPHICAL_COVERAGE_LABELS[v]
-    ),
+    geographicalCoverage: value.geographicalCoverage,
     service: value.service,
     format: Maybe.map(value.format, (v) => DATA_FORMAT_LABELS[v]),
     technicalSource: value.technicalSource,

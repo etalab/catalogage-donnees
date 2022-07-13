@@ -49,7 +49,7 @@ datasets:
         Les données brutes de l'inventaire forestier correspondent à l'ensemble des données collectées en forêt (y compris en peupleraie) sur le territoire métropolitain par les agents forestiers de terrain de l'IGN. Ces données portent sur les caractéristiques des placettes d'inventaire (6000 par an), les mesures et observations sur les arbres (60 000 par an), les données éco-floristiques.
         Les coordonnées géographiques des placettes sont fournies au kilomètre près.
       service: Service cartographie
-      geographical_coverage: national
+      geographical_coverage: France
       formats:
         - website
       technical_source: SIG national de l'IGN
@@ -69,7 +69,7 @@ datasets:
       description: |
         Les ressources ci-dessous recensent les restaurants, brasseries et cafétérias dans le réseau des CROUS.
       service: Direction des données du CROUS
-      geographical_coverage: national
+      geographical_coverage: France
       formats:
         - file_tabular
       technical_source: Système d'information central du CROUS
@@ -89,7 +89,7 @@ datasets:
       description: |
         Par région, les ressources ci-dessous recensent les restaurants, brasseries et cafétérias dans le réseau des CROUS.
       service: Direction des données du CROUS
-      geographical_coverage: world
+      geographical_coverage: Monde  # Fake, for E2E testing purposes
       formats:
         - file_tabular
       technical_source: Système d'information central du CROUS
@@ -109,7 +109,7 @@ datasets:
       description: |
         Présentation sous forme de fiches répertoriées par thèmes des enquêtes menées par la DARES avec reprise des objectifs, de la périodicité, de la taille de l'échantillon, des publications.
       service: Service enquêtes
-      geographical_coverage: national_full_territory
+      geographical_coverage: France
       formats:
         - other
       technical_source: Catalogue des fiches de la DARES

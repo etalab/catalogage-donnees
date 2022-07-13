@@ -3,13 +3,13 @@ from typing import Optional, Sequence
 
 from server.domain.common.types import ID
 
-from .entities import DataFormat, GeographicalCoverage
+from .entities import DataFormat
 
 
 @dataclass(frozen=True)
 class DatasetSpec:
     search_term: Optional[str] = None
-    geographical_coverage__in: Optional[Sequence[GeographicalCoverage]] = None
+    geographical_coverage__in: Optional[Sequence[str]] = None
     service__in: Optional[Sequence[str]] = None
     format__in: Optional[Sequence[DataFormat]] = None
     technical_source__in: Optional[Sequence[str]] = None

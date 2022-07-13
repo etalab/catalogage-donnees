@@ -67,6 +67,12 @@ class SqlDatasetRepository(DatasetRepository):
 
             return make_entity(instance)
 
+    async def get_geographical_coverage_set(self) -> Set[str]:
+        async with self._db.session() as session:
+            stmt = select(DatasetModel.geographical_coverage.distinct())
+            result = await session.execute(stmt)
+            return set(result.scalars())
+
     async def get_service_set(self) -> Set[str]:
         async with self._db.session() as session:
             stmt = select(DatasetModel.service.distinct())

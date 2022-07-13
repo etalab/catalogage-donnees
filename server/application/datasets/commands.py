@@ -4,11 +4,7 @@ from typing import List, Optional
 from pydantic import EmailStr, Field
 
 from server.domain.common.types import ID
-from server.domain.datasets.entities import (
-    DataFormat,
-    GeographicalCoverage,
-    UpdateFrequency,
-)
+from server.domain.datasets.entities import DataFormat, UpdateFrequency
 from server.seedwork.application.commands import Command
 
 from .validation import CreateDatasetValidationMixin, UpdateDatasetValidationMixin
@@ -18,7 +14,7 @@ class CreateDataset(CreateDatasetValidationMixin, Command[ID]):
     title: str
     description: str
     service: str
-    geographical_coverage: GeographicalCoverage
+    geographical_coverage: str
     formats: List[DataFormat]
     technical_source: Optional[str] = None
     producer_email: Optional[EmailStr] = None
@@ -35,7 +31,7 @@ class UpdateDataset(UpdateDatasetValidationMixin, Command[None]):
     title: str
     description: str
     service: str
-    geographical_coverage: GeographicalCoverage
+    geographical_coverage: str
     formats: List[DataFormat]
     technical_source: Optional[str] = Field(...)
     producer_email: Optional[EmailStr] = Field(...)

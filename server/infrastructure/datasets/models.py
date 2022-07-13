@@ -15,11 +15,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import ARRAY, TSVECTOR, UUID
 from sqlalchemy.orm import Mapped, relationship
 
-from server.domain.datasets.entities import (
-    DataFormat,
-    GeographicalCoverage,
-    UpdateFrequency,
-)
+from server.domain.datasets.entities import DataFormat, UpdateFrequency
 
 from ..catalog_records.repositories import CatalogRecordModel
 from ..database import Base, mapper_registry
@@ -64,9 +60,7 @@ class DatasetModel(Base):
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
     service = Column(String, nullable=False)
-    geographical_coverage = Column(
-        Enum(GeographicalCoverage, enum="geographical_coverage_enum"), nullable=False
-    )
+    geographical_coverage = Column(String, nullable=False)
     formats: List[DataFormatModel] = relationship(
         "DataFormatModel",
         back_populates="datasets",

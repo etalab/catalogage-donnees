@@ -177,7 +177,7 @@ test.describe("Search filters", () => {
   test("Visits the search page directly and removes the geographical_coverage filter", async ({
     page,
   }) => {
-    await page.goto("/fiches/search?geographical_coverage=world");
+    await page.goto("/fiches/search?geographical_coverage=Monde");
 
     await page.locator("text=Affiner la recherche").click();
 

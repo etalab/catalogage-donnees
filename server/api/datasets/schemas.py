@@ -9,11 +9,7 @@ from server.application.datasets.validation import (
     UpdateDatasetValidationMixin,
 )
 from server.domain.common.types import ID
-from server.domain.datasets.entities import (
-    DataFormat,
-    GeographicalCoverage,
-    UpdateFrequency,
-)
+from server.domain.datasets.entities import DataFormat, UpdateFrequency
 
 
 class DatasetListParams:
@@ -22,7 +18,7 @@ class DatasetListParams:
         q: Optional[str] = None,
         page_number: int = 1,
         page_size: int = 10,
-        geographical_coverage: Optional[List[GeographicalCoverage]] = Query(None),
+        geographical_coverage: Optional[List[str]] = Query(None),
         service: Optional[List[str]] = Query(None),
         format_: Optional[List[DataFormat]] = Query(None, alias="format"),
         technical_source: Optional[List[str]] = Query(None),
@@ -44,7 +40,7 @@ class DatasetCreate(CreateDatasetValidationMixin, BaseModel):
     title: str
     description: str
     service: str
-    geographical_coverage: GeographicalCoverage
+    geographical_coverage: str
     formats: List[DataFormat]
     technical_source: Optional[str] = None
     producer_email: Optional[EmailStr] = None
@@ -60,7 +56,7 @@ class DatasetUpdate(UpdateDatasetValidationMixin, BaseModel):
     title: str
     description: str
     service: str
-    geographical_coverage: GeographicalCoverage
+    geographical_coverage: str
     formats: List[DataFormat]
     technical_source: Optional[str] = Field(...)
     producer_email: Optional[EmailStr] = Field(...)

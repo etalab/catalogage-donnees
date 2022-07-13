@@ -12,7 +12,10 @@ import {
 
 describe("transformers -- Dataset filters", () => {
   const info: DatasetFiltersInfo = {
-    geographicalCoverage: ["epci", "department"],
+    geographicalCoverage: [
+      "Métropole Européenne de Lille",
+      "France métropolitaine",
+    ],
     service: ["DINUM"],
     format: ["file_tabular", "file_gis"],
     technicalSource: ["Base centrale", "Serveur GIS"],
@@ -30,7 +33,7 @@ describe("transformers -- Dataset filters", () => {
   };
 
   const value: DatasetFiltersValue = {
-    geographicalCoverage: "epci",
+    geographicalCoverage: "France métropolitaine",
     format: "file_gis",
     service: null,
     technicalSource: "Serveur GIS",
@@ -40,7 +43,7 @@ describe("transformers -- Dataset filters", () => {
 
   test("toFiltersParams", () => {
     const params = [
-      ["geographical_coverage", "epci"],
+      ["geographical_coverage", "France métropolitaine"],
       ["service", null],
       ["format", "file_gis"],
       ["technical_source", "Serveur GIS"],
@@ -54,7 +57,7 @@ describe("transformers -- Dataset filters", () => {
   test("getFiltersValueFromParams", () => {
     const queryString = toQueryString(toFiltersParams(value));
     expect(queryString).toBe(
-      "?geographical_coverage=epci&format=file_gis&technical_source=Serveur+GIS&license=Licence+Ouverte"
+      "?geographical_coverage=France+m%C3%A9tropolitaine&format=file_gis&technical_source=Serveur+GIS&license=Licence+Ouverte"
     );
     expect(toFiltersValue(new URLSearchParams(queryString))).toEqual(value);
   });
@@ -62,8 +65,11 @@ describe("transformers -- Dataset filters", () => {
   test("toFiltersOptions", () => {
     const options: DatasetFiltersOptions = {
       geographicalCoverage: [
-        { label: "EPCI", value: "epci" },
-        { label: "Départementale", value: "department" },
+        {
+          label: "Métropole Européenne de Lille",
+          value: "Métropole Européenne de Lille",
+        },
+        { label: "France métropolitaine", value: "France métropolitaine" },
       ],
       service: [{ label: "DINUM", value: "DINUM" }],
       format: [

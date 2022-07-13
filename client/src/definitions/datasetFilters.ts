@@ -1,9 +1,8 @@
-import type { GeographicalCoverage } from "./datasets";
 import type { SelectOption } from "./form";
 import type { Tag } from "./tag";
 
 export type DatasetFiltersInfo = {
-  geographicalCoverage: GeographicalCoverage[];
+  geographicalCoverage: string[];
   service: string[];
   format: string[];
   technicalSource: string[];
@@ -12,7 +11,7 @@ export type DatasetFiltersInfo = {
 };
 
 export type DatasetFiltersValue = {
-  geographicalCoverage: GeographicalCoverage | null;
+  geographicalCoverage: string | null;
   service: string | null;
   format: string | null;
   technicalSource: string | null;

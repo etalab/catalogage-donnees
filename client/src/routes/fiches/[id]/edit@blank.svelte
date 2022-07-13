@@ -5,14 +5,16 @@
   import type { Tag } from "src/definitions/tag";
   import { getTags } from "src/lib/repositories/tags";
   import { getLicenses } from "src/lib/repositories/licenses";
+  import { getDatasetFiltersInfo } from "src/lib/repositories/datasetFilters";
 
   export const load: Load = async ({ fetch, params }) => {
     const apiToken = get(apiTokenStore);
 
-    const [dataset, tags, licenses] = await Promise.all([
+    const [dataset, tags, licenses, filtersInfo] = await Promise.all([
       getDatasetByID({ fetch, apiToken, id: params.id }),
       getTags({ fetch, apiToken }),
       getLicenses({ fetch, apiToken }),
+      getDatasetFiltersInfo({ fetch, apiToken }),
     ]);
 
     return {
@@ -20,6 +22,7 @@
         dataset,
         tags,
         licenses,
+        filtersInfo,
       },
     };
   };
@@ -35,10 +38,12 @@
   import { Maybe } from "$lib/util/maybe";
   import DatasetFormLayout from "src/lib/components/DatasetFormLayout/DatasetFormLayout.svelte";
   import ModalExitFormConfirmation from "src/lib/components/ModalExitFormConfirmation/ModalExitFormConfirmation.svelte";
+  import type { DatasetFiltersInfo } from "src/definitions/datasetFilters";
 
   export let dataset: Maybe<Dataset>;
   export let tags: Maybe<Tag[]>;
   export let licenses: Maybe<string[]>;
+  export let filtersInfo: Maybe<DatasetFiltersInfo>;
 
   let modalControlId = "stop-editing-form-modal";
 
@@ -95,7 +100,7 @@
   };
 </script>
 
-{#if Maybe.Some(dataset) && Maybe.Some(tags) && Maybe.Some(licenses)}
+{#if Maybe.Some(dataset) && Maybe.Some(tags) && Maybe.Some(licenses) && Maybe.Some(filtersInfo)}
   <header class="fr-p-4w">
     <h5>Modifier la fiche de jeu de données</h5>
 
@@ -128,6 +133,7 @@
     <DatasetForm
       {tags}
       {licenses}
+      geographicalCoverages={filtersInfo.geographicalCoverage}
       initial={dataset}
       {loading}
       submitLabel="Enregistrer les modifications"

@@ -1,9 +1,6 @@
 <script lang="ts">
   import type { Dataset } from "src/definitions/datasets";
-  import {
-    DATA_FORMAT_SHORT_NAMES,
-    GEOGRAPHICAL_COVERAGE_LABELS,
-  } from "src/constants";
+  import { DATA_FORMAT_SHORT_NAMES } from "src/constants";
   import paths from "$lib/paths";
   import { Maybe } from "$lib/util/maybe";
   import { capitalize, formatDaysMonthsOrYearsToNow } from "$lib/util/format";
@@ -15,7 +12,7 @@
     {
       label: "Couverture géographique",
       icon: "fr-icon-x-map-2-line",
-      value: GEOGRAPHICAL_COVERAGE_LABELS[dataset.geographicalCoverage],
+      value: dataset.geographicalCoverage,
     },
     {
       label: "Formats",
