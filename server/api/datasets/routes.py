@@ -17,7 +17,7 @@ from server.domain.datasets.exceptions import DatasetDoesNotExist
 from server.domain.datasets.specifications import DatasetSpec
 from server.seedwork.application.messages import MessageBus
 
-from ..auth.dependencies import HasRole, IsAuthenticated
+from ..auth.permissions import HasRole, IsAuthenticated
 from . import filters
 from .schemas import DatasetCreate, DatasetListParams, DatasetUpdate
 
@@ -109,7 +109,7 @@ async def update_dataset(id: ID, data: DatasetUpdate) -> DatasetView:
 
 @router.delete(
     "/{id}/",
-    dependencies=[Depends(IsAuthenticated()), Depends(HasRole(UserRole.ADMIN))],
+    dependencies=[Depends(IsAuthenticated() & HasRole(UserRole.ADMIN))],
     status_code=204,
     response_class=Response,
 )

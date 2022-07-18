@@ -7,7 +7,7 @@ from server.application.tags.views import TagView
 from server.config.di import resolve
 from server.seedwork.application.messages import MessageBus
 
-from ..auth.dependencies import IsAuthenticated
+from ..auth.permissions import IsAuthenticated
 
 router = APIRouter(prefix="/tags", tags=["tags"])
 

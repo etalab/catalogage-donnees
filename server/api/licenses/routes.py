@@ -6,7 +6,7 @@ from server.application.licenses.queries import GetLicenseSet
 from server.config.di import resolve
 from server.seedwork.application.messages import MessageBus
 
-from ..auth.dependencies import IsAuthenticated
+from ..auth.permissions import IsAuthenticated
 
 router = APIRouter(prefix="/licenses", tags=["licenses"])
 
