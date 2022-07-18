@@ -9,7 +9,7 @@ from server.domain.auth.exceptions import EmailAlreadyExists, LoginFailed
 from server.domain.common.types import ID
 from server.seedwork.application.messages import MessageBus
 
-from .dependencies import HasRole, IsAuthenticated
+from .permissions import HasRole, IsAuthenticated
 from .schemas import CheckAuthResponse, UserCreate, UserLogin
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post(
     "/users/",
-    dependencies=[Depends(IsAuthenticated()), Depends(HasRole(UserRole.ADMIN))],
+    dependencies=[Depends(IsAuthenticated() & HasRole(UserRole.ADMIN))],
     response_model=UserView,
     status_code=201,
 )
@@ -49,7 +49,7 @@ async def login(data: UserLogin) -> AuthenticatedUserView:
 
 @router.delete(
     "/users/{id}/",
-    dependencies=[Depends(IsAuthenticated()), Depends(HasRole(UserRole.ADMIN))],
+    dependencies=[Depends(IsAuthenticated() & HasRole(UserRole.ADMIN))],
     status_code=204,
 )
 async def delete_user(id: ID) -> None:
