@@ -63,6 +63,7 @@ from server.application.auth.passwords import PasswordEncoder
 from server.domain.auth.repositories import UserRepository
 from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.datasets.repositories import DatasetRepository
+from server.domain.organizations.repositories import OrganizationRepository
 from server.domain.tags.repositories import TagRepository
 from server.infrastructure.adapters.messages import MessageBusAdapter
 from server.infrastructure.auth.passwords import Argon2PasswordEncoder
@@ -72,6 +73,7 @@ from server.infrastructure.catalog_records.repositories import (
 )
 from server.infrastructure.database import Database
 from server.infrastructure.datasets.repositories import SqlDatasetRepository
+from server.infrastructure.organizations.repositories import SqlOrganizationRepository
 from server.infrastructure.tags.repositories import SqlTagRepository
 from server.seedwork.application.di import Container
 from server.seedwork.application.messages import MessageBus
@@ -83,6 +85,7 @@ MODULES = [
     "server.infrastructure.datasets.module.DatasetsModule",
     "server.infrastructure.tags.module.TagsModule",
     "server.infrastructure.licenses.module.LicensesModule",
+    "server.infrastructure.organizations.module.OrganizationsModule",
     "server.infrastructure.auth.module.AuthModule",
 ]
 
@@ -133,6 +136,7 @@ def configure(container: "Container") -> None:
     container.register_instance(CatalogRecordRepository, SqlCatalogRecordRepository(db))
     container.register_instance(DatasetRepository, SqlDatasetRepository(db))
     container.register_instance(TagRepository, SqlTagRepository(db))
+    container.register_instance(OrganizationRepository, SqlOrganizationRepository(db))
 
 
 _CONTAINER = Container(configure)

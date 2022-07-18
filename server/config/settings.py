@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     host: str = "localhost"
     port: int = 3579
     docs_url: str = "/docs"
+    config_repo_api_key: str = ""
     debug: bool = False
     testing: bool = False
 

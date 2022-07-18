@@ -9,6 +9,7 @@ from pydantic_factories import ModelFactory, Use
 
 from server.application.auth.commands import CreateUser
 from server.application.datasets.commands import CreateDataset, UpdateDataset
+from server.application.organizations.commands import CreateOrganization
 from server.application.tags.commands import CreateTag
 from server.domain.common import datetime as dtutil
 from server.domain.datasets.entities import DataFormat
@@ -67,3 +68,10 @@ class UpdateDatasetFactory(Factory[UpdateDataset]):
     __model__ = UpdateDataset
 
     tag_ids = Use(lambda: [])
+
+
+class CreateOrganizationFactory(Factory[CreateOrganization]):
+    __model__ = CreateOrganization
+
+    name = Use(fake.company)
+    siret = Use(fake.siret)

@@ -1,15 +1,21 @@
 import functools
 import inspect
+import logging
 from typing import Any, Callable, List, cast
 
 import fastapi.params
 from fastapi import Depends, HTTPException
+from fastapi.security.api_key import APIKeyHeader
 from fastapi.security.base import SecurityBase
 
+from server.config import Settings
+from server.config.di import resolve
 from server.domain.auth.entities import UserRole
 
 from ..resources import auth_backend
 from ..types import APIRequest
+
+logger = logging.getLogger(__name__)
 
 
 class BasePermission:
@@ -188,3 +194,45 @@ def _patch_openapi_security_params(*permissions: BasePermission) -> Callable:
         return f
 
     return decorate
+
+
+class HasAPIKey(BasePermission):
+    """
+    Allow requests with a valid API key attached: 'X-Api-Key: <api_key>'
+    """
+
+    def has_permission(self, request: APIRequest) -> bool:
+        settings = resolve(Settings)
+
+        api_key = request.headers.get("X-Api-Key")
+
+        if api_key is None:
+            logger.info("[HasAPIKey]: no X-Api-Key header")
+            return False
+
+        # A more advanced implementation would reach to the database here.
+        # But all we need for now is to check for the sandbox config API key.
+
+        if not settings.config_repo_api_key:
+            # Not set in the current environment. Would be problematic in the
+            # "sandbox" environment.
+            logger.warning(
+                "[HasAPIKey]: received request with an API key, "
+                "but APP_CONFIG_REPO_API_KEY is empty"
+            )
+            return False
+
+        if api_key != settings.config_repo_api_key:
+            logger.info("[HasAPIKey]: invalid API key")
+            return False
+
+        return True
+
+    def __call__(
+        self,
+        request: APIRequest,
+        _: str = Depends(
+            APIKeyHeader(name="X-Api-Key", scheme_name="API Key", auto_error=False)
+        ),  # For OpenAPI docs.
+    ) -> None:
+        super().__call__(request)
