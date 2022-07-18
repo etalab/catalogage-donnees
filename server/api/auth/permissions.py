@@ -213,16 +213,16 @@ class HasAPIKey(BasePermission):
         # A more advanced implementation would reach to the database here.
         # But all we need for now is to check for the sandbox config API key.
 
-        if not settings.sandbox_config_api_key:
+        if not settings.config_repo_api_key:
             # Not set in the current environment. Would be problematic in the
             # "sandbox" environment.
             logger.warning(
                 "[HasAPIKey]: received request with an API key, "
-                "but APP_SANDBOX_CONFIG_API_KEY is empty"
+                "but APP_CONFIG_REPO_API_KEY is empty"
             )
             return False
 
-        if api_key != settings.sandbox_config_api_key:
+        if api_key != settings.config_repo_api_key:
             logger.info("[HasAPIKey]: invalid API key")
             return False
 

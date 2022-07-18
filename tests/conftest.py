@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from server.api.app import App
 
 os.environ["APP_TESTING"] = "True"
-os.environ["APP_SANDBOX_CONFIG_API_KEY"] = "<testing>"
+os.environ["APP_CONFIG_REPO_API_KEY"] = "<testing>"
 
 bootstrap()
 
