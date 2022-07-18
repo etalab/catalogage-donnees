@@ -10,14 +10,14 @@ from server.config.di import resolve
 from server.domain.organizations.exceptions import OrganizationAlreadyExists
 from server.seedwork.application.messages import MessageBus
 
-from ..auth.dependencies import IsAuthenticated
+from ..auth.permissions import HasAPIKey
 
 router = APIRouter(prefix="/organizations", tags=["organizations"])
 
 
 @router.post(
     "/",
-    dependencies=[Depends(IsAuthenticated())],
+    dependencies=[Depends(HasAPIKey())],
     response_model=OrganizationView,
     status_code=201,
     responses={

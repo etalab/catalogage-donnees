@@ -8,7 +8,12 @@ from fastapi.security.http import HTTPBearer
 
 from server.api.auth.backends.token import TokenAuthBackend
 from server.api.auth.middleware import AuthMiddleware
-from server.api.auth.permissions import BasePermission, HasRole, IsAuthenticated
+from server.api.auth.permissions import (
+    BasePermission,
+    HasAPIKey,
+    HasRole,
+    IsAuthenticated,
+)
 from server.api.types import APIRequest
 from server.domain.auth.entities import UserRole
 
@@ -194,3 +199,20 @@ async def test_bitwise_openapi_security_schemes() -> None:
         # AND
         assert {"API Key": []} in schema["paths"]["/users/"]["delete"]["security"]
         assert {"Bearer": []} in schema["paths"]["/users/"]["delete"]["security"]
+
+
+@pytest.mark.asyncio
+async def test_has_api_key() -> None:
+    app = FastAPI()
+
+    @app.get("/", dependencies=[Depends(HasAPIKey())])
+    async def index() -> str:
+        return "OK"
+
+    async with httpx.AsyncClient(app=app, base_url="http://testserver") as client:
+        response = await client.get("/")
+        assert response.status_code == 403
+
+        headers = {"X-Api-Key": "<testing>"}
+        response = await client.get("/", headers=headers)
+        assert response.status_code == 200
