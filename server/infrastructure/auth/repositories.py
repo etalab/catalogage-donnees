@@ -1,24 +1,38 @@
 import uuid
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
-from sqlalchemy import Column, Enum, String, delete, select
+from sqlalchemy import CHAR, Column, Enum, ForeignKey, String, delete, select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import relationship
 
 from server.application.auth.passwords import API_TOKEN_LENGTH
 from server.domain.auth.entities import User, UserRole
 from server.domain.auth.exceptions import UserDoesNotExist
 from server.domain.auth.repositories import UserRepository
 from server.domain.common.types import ID
+from server.domain.organizations.types import Siret
 
 from ..database import Base, Database
+
+if TYPE_CHECKING:
+    from ..organizations.models import OrganizationModel
 
 
 class UserModel(Base):
     __tablename__ = "user"
 
     id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True)
+    organization_siret: Siret = Column(
+        CHAR(14),
+        ForeignKey("organization.siret"),
+        nullable=False,
+    )
+    organization: "OrganizationModel" = relationship(
+        "OrganizationModel",
+        back_populates="users",
+    )
     email = Column(String, nullable=False, unique=True, index=True)
     password_hash = Column(String, nullable=False)
     role = Column(Enum(UserRole, name="user_role_enum"), nullable=False)
@@ -69,6 +83,7 @@ class SqlUserRepository(UserRepository):
         async with self._db.session() as session:
             instance = UserModel(
                 id=entity.id,
+                organization_siret=entity.organization_siret,
                 email=entity.email,
                 password_hash=entity.password_hash,
                 role=entity.role,

@@ -86,6 +86,7 @@ MODULES = [
     "server.infrastructure.tags.module.TagsModule",
     "server.infrastructure.licenses.module.LicensesModule",
     "server.infrastructure.organizations.module.OrganizationsModule",
+    "server.infrastructure.catalogs.module.CatalogsModule",
     "server.infrastructure.auth.module.AuthModule",
 ]
 

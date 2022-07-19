@@ -11,6 +11,7 @@ from server.config.di import resolve
 from server.domain.common.types import id_factory
 from server.domain.datasets.entities import DataFormat, UpdateFrequency
 from server.domain.datasets.exceptions import DatasetDoesNotExist
+from server.domain.organizations.entities import LEGACY_ORGANIZATION_SIRET
 from server.seedwork.application.messages import MessageBus
 from tests.factories import CreateDatasetFactory
 
@@ -123,7 +124,10 @@ async def test_dataset_crud(
 
     assert data == {
         "id": pk,
-        "catalog_record": data["catalog_record"],
+        "catalog_record": {
+            **data["catalog_record"],
+            "organization_siret": str(LEGACY_ORGANIZATION_SIRET),
+        },
         "title": "Example title",
         "description": "Example description",
         "service": "Example service",
@@ -461,7 +465,10 @@ class TestDatasetUpdate:
         data = response.json()
         assert data == {
             "id": str(dataset_id),
-            "catalog_record": data["catalog_record"],
+            "catalog_record": {
+                **data["catalog_record"],
+                "organization_siret": str(LEGACY_ORGANIZATION_SIRET),
+            },
             "title": "Other title",
             "description": "Other description",
             "service": "Other service",

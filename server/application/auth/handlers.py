@@ -35,6 +35,7 @@ async def create_user(
 
     user = User(
         id=id_,
+        organization_siret=command.organization_siret,
         email=email,
         password_hash=password_hash,
         role=role,

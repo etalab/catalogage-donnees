@@ -25,7 +25,10 @@ async def create_dataset(command: CreateDataset, *, id_: ID = None) -> ID:
         id_ = repository.make_id()
 
     catalog_record_id = await catalog_record_repository.insert(
-        CatalogRecord(id=catalog_record_repository.make_id())
+        CatalogRecord(
+            id=catalog_record_repository.make_id(),
+            organization_siret=command.organization_siret,
+        )
     )
     catalog_record = await catalog_record_repository.get_by_id(catalog_record_id)
     assert catalog_record is not None

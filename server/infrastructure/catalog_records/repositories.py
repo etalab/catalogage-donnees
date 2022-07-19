@@ -1,7 +1,7 @@
 import datetime as dt
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Column, DateTime, func, select
+from sqlalchemy import CHAR, Column, DateTime, ForeignKey, func, select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import relationship
@@ -9,10 +9,12 @@ from sqlalchemy.orm import relationship
 from server.domain.catalog_records.entities import CatalogRecord
 from server.domain.catalog_records.repositories import CatalogRecordRepository
 from server.domain.common.types import ID
+from server.domain.organizations.types import Siret
 
 from ..database import Base, Database
 
 if TYPE_CHECKING:
+    from ..catalogs.models import CatalogModel
     from ..datasets.models import DatasetModel
 
 
@@ -23,17 +25,27 @@ class CatalogRecordModel(Base):
     created_at: dt.datetime = Column(
         DateTime(timezone=True), server_default=func.clock_timestamp(), nullable=False
     )
+    organization_siret: Siret = Column(
+        CHAR(14),
+        ForeignKey("catalog.organization_siret"),
+        nullable=False,
+    )
+
+    catalog: "CatalogModel" = relationship(
+        "CatalogModel",
+        back_populates="catalog_records",
+    )
 
     dataset: "DatasetModel" = relationship(
         "DatasetModel",
         back_populates="catalog_record",
-        cascade="delete",
     )
 
 
 def make_entity(instance: CatalogRecordModel) -> CatalogRecord:
     return CatalogRecord(
         id=instance.id,
+        organization_siret=instance.organization_siret,
         created_at=instance.created_at,
     )
 
