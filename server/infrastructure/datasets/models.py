@@ -49,11 +49,15 @@ class DatasetModel(Base):
 
     id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True)
 
+    catalog_record_id: uuid.UUID = Column(
+        UUID(as_uuid=True),
+        ForeignKey("catalog_record.id", ondelete="CASCADE"),
+        nullable=False,
+    )
     catalog_record: "CatalogRecordModel" = relationship(
         "CatalogRecordModel",
         back_populates="dataset",
         cascade="delete",
-        lazy="joined",
         uselist=False,
     )
 
