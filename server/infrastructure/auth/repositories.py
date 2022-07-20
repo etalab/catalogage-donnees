@@ -1,7 +1,7 @@
 import uuid
 from typing import Any, Optional
 
-from sqlalchemy import Column, Enum, String, delete, select
+from sqlalchemy import Column, Enum, String, select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,6 +11,7 @@ from server.domain.auth.entities import User, UserRole
 from server.domain.auth.exceptions import UserDoesNotExist
 from server.domain.auth.repositories import UserRepository
 from server.domain.common.types import ID
+from server.infrastructure.deletion.helpers import soft_delete
 
 from ..database import Base, Database
 
@@ -95,6 +96,10 @@ class SqlUserRepository(UserRepository):
 
     async def delete(self, id: ID) -> None:
         async with self._db.session() as session:
-            stmt = delete(UserModel).where(UserModel.id == id)
-            await session.execute(stmt)
+            user = await self._maybe_get_by(session, id=id)
+
+            if user is None:
+                return
+
+            await soft_delete(session, user)
             await session.commit()

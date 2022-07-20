@@ -1,6 +1,6 @@
 from typing import List, Optional, Set, Tuple
 
-from sqlalchemy import select
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -10,12 +10,13 @@ from server.domain.datasets.entities import DataFormat, Dataset
 from server.domain.datasets.repositories import DatasetGetAllExtras, DatasetRepository
 from server.domain.datasets.specifications import DatasetSpec
 from server.domain.tags.entities import Tag
+from server.infrastructure.deletion.helpers import soft_delete, soft_delete_table
 
 from ..catalog_records.repositories import CatalogRecordModel
 from ..database import Database
 from ..helpers.sqlalchemy import get_count_from, to_limit_offset
 from ..tags.repositories import TagModel
-from .models import DataFormatModel, DatasetModel
+from .models import DataFormatModel, DatasetModel, dataset_dataformat, dataset_tag
 from .queries.get_all import GetAllQuery
 from .transformers import make_entity, make_instance, update_instance
 
@@ -149,6 +150,33 @@ class SqlDatasetRepository(DatasetRepository):
             if instance is None:
                 return
 
-            await session.delete(instance)
+            # Delete related rows.
+
+            await soft_delete(session, instance.catalog_record)
+
+            for format in instance.formats:
+                await soft_delete_table(
+                    session,
+                    table=dataset_dataformat,
+                    where=and_(
+                        dataset_dataformat.c.dataset_id == id,
+                        dataset_dataformat.c.dataformat_id == format.id,
+                    ),
+                    pk_jsonb={"dataset_id": id, "dataformat_id": format.id},
+                )
+
+            for tag in instance.tags:
+                await soft_delete_table(
+                    session,
+                    table=dataset_tag,
+                    where=and_(
+                        dataset_tag.c.dataset_id == id,
+                        dataset_tag.c.tag_id == tag.id,
+                    ),
+                    pk_jsonb={"dataset_id": id, "tag_id": tag.id},
+                )
+
+            # Delete instance itself.
+            await soft_delete(session, instance)
 
             await session.commit()
