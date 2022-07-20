@@ -1,7 +1,7 @@
 import datetime as dt
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Column, DateTime, ForeignKey, func, select
+from sqlalchemy import Column, DateTime, func, select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import relationship
@@ -20,13 +20,14 @@ class CatalogRecordModel(Base):
     __tablename__ = "catalog_record"
 
     id: ID = Column(UUID(as_uuid=True), primary_key=True)
-    dataset_id: ID = Column(UUID(as_uuid=True), ForeignKey("dataset.id"))
+    created_at: dt.datetime = Column(
+        DateTime(timezone=True), server_default=func.clock_timestamp(), nullable=False
+    )
+
     dataset: "DatasetModel" = relationship(
         "DatasetModel",
         back_populates="catalog_record",
-    )
-    created_at: dt.datetime = Column(
-        DateTime(timezone=True), server_default=func.clock_timestamp(), nullable=False
+        cascade="delete",
     )
 
 

@@ -2,7 +2,7 @@ from typing import List, Optional, Set, Tuple
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import contains_eager, selectinload
 
 from server.domain.common.pagination import Page
 from server.domain.common.types import ID
@@ -48,8 +48,10 @@ class SqlDatasetRepository(DatasetRepository):
     ) -> Optional[DatasetModel]:
         stmt = (
             select(DatasetModel)
+            .join(DatasetModel.catalog_record)
             .where(DatasetModel.id == id)
             .options(
+                contains_eager(DatasetModel.catalog_record),
                 selectinload(DatasetModel.formats),
                 selectinload(DatasetModel.tags),
             )
