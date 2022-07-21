@@ -8,6 +8,7 @@ from server.application.auth.queries import GetUserByEmail
 from server.config.di import resolve
 from server.domain.auth.exceptions import UserDoesNotExist
 from server.domain.common.types import id_factory
+from server.domain.organizations.entities import LEGACY_ORGANIZATION_SIRET
 from server.seedwork.application.messages import MessageBus
 
 from ..helpers import TestUser
@@ -86,7 +87,12 @@ async def test_create_user(
     user = response.json()
     id_ = user["id"]
     assert isinstance(id_, str)
-    assert user == {"id": id_, "email": "john@doe.com", "role": "USER"}
+    assert user == {
+        "id": id_,
+        "organization_siret": str(LEGACY_ORGANIZATION_SIRET),
+        "email": "john@doe.com",
+        "role": "USER",
+    }
 
 
 @pytest.mark.asyncio
@@ -106,6 +112,7 @@ async def test_login(client: httpx.AsyncClient, temp_user: TestUser) -> None:
     user = response.json()
     assert user == {
         "id": str(temp_user.id),
+        "organization_siret": str(LEGACY_ORGANIZATION_SIRET),
         "email": temp_user.email,
         "role": temp_user.role.value,
         "api_token": temp_user.api_token,

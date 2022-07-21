@@ -3,6 +3,7 @@ import enum
 from server.seedwork.domain.entities import Entity
 
 from ..common.types import ID
+from ..organizations.types import Siret
 
 
 class UserRole(enum.Enum):
@@ -12,6 +13,7 @@ class UserRole(enum.Enum):
 
 class User(Entity):
     id: ID
+    organization_siret: Siret
     email: str
     password_hash: str
     role: UserRole

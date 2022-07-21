@@ -14,6 +14,7 @@ from server.application.tags.commands import CreateTag
 from server.domain.common import datetime as dtutil
 from server.domain.datasets.entities import DataFormat
 from server.domain.licenses.entities import BUILTIN_LICENSE_SUGGESTIONS
+from server.domain.organizations.entities import LEGACY_ORGANIZATION_SIRET
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -40,6 +41,8 @@ class Factory(ModelFactory[T]):
 class CreateUserFactory(Factory[CreateUser]):
     __model__ = CreateUser
 
+    organization_siret = Use(lambda: LEGACY_ORGANIZATION_SIRET)
+
 
 class CreateTagFactory(Factory[CreateTag]):
     __model__ = CreateTag
@@ -48,6 +51,7 @@ class CreateTagFactory(Factory[CreateTag]):
 class CreateDatasetFactory(Factory[CreateDataset]):
     __model__ = CreateDataset
 
+    organization_siret = Use(lambda: LEGACY_ORGANIZATION_SIRET)
     title = Use(fake.sentence)
     description = Use(fake.text)
     service = Use(fake.company)
